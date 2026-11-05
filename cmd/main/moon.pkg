@@ -1,0 +1,6 @@
+import {
+  "wdgodghl/moonantlr/generated/json",
+  "wdgodghl/moonantlr/generated/arithmetic",
+}
+
+pkgtype(kind: "executable")

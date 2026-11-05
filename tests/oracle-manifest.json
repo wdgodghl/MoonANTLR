@@ -1,0 +1,14 @@
+{
+  "upstream": "ANTLR 4.13.2 Java target",
+  "seed": 20261105,
+  "grammars": {
+    "Json": {
+      "cases": 98,
+      "accepted": 81
+    },
+    "Arithmetic": {
+      "cases": 65,
+      "accepted": 55
+    }
+  }
+}

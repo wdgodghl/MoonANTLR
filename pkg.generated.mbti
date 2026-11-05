@@ -1,0 +1,67 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn deserialize(Array[Int32]) -> Atn raise RuntimeError
+
+// Errors
+pub(all) suberror RuntimeError {
+  InvalidAtn(String)
+  Unsupported(String)
+  LexicalError(Int32, Int32, String)
+  SyntaxError(Int32, Int32, Array[Int32])
+  LimitExceeded(String)
+} derive(@debug.Debug)
+pub fn RuntimeError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub struct Atn {
+  kind : Int32
+  max_token : Int32
+  states : Array[State]
+  starts : Array[Int32]
+  token_types : Array[Int32]
+  modes : Array[Int32]
+  sets : Array[Array[(Int32, Int32)]]
+  actions : Array[(Int32, Int32, Int32)]
+}
+
+pub(all) struct Grammar {
+  lexer : Atn
+  parser : Atn
+  rules : Array[String]
+}
+pub fn Grammar::parse(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseTree raise RuntimeError
+pub fn Grammar::tokenize(Self, String, work_limit? : Int32) -> Array[Token] raise RuntimeError
+
+pub(all) enum ParseTree {
+  Terminal(Token)
+  Rule(String, Array[ParseTree])
+} derive(Eq, @debug.Debug)
+pub fn ParseTree::equal(Self, Self) -> Bool
+pub fn ParseTree::not_equal(Self, Self) -> Bool
+pub fn ParseTree::to_repr(Self) -> @debug.Repr
+pub fn ParseTree::to_sexpr(Self) -> String
+
+type State
+
+pub(all) struct Token {
+  kind : Int32
+  text : String
+  start : Int32
+  end : Int32
+  line : Int32
+  column : Int32
+  channel : Int32
+} derive(Eq, @debug.Debug)
+pub fn Token::equal(Self, Self) -> Bool
+pub fn Token::not_equal(Self, Self) -> Bool
+pub fn Token::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
