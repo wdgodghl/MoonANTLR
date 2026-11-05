@@ -1,0 +1,14 @@
+.DS_Store
+_build/
+target/
+target
+.mooncakes/
+.moonagent/
+AGENTS.md
+.tools/
+.local/
+__pycache__/
+*.pyc
+.env
+.env.*
+*.log
