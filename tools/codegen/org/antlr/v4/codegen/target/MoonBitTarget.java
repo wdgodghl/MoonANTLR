@@ -51,7 +51,10 @@ public final class MoonBitTarget extends JavaTarget {
     private static String type(Grammar g, String name) {
         return g.name + Character.toUpperCase(name.charAt(0)) + name.substring(1) + "Context";
     }
-    private static void block(StringBuilder out, String code) { out.append("\n///|\n").append(code).append('\n'); }
+    private static void block(StringBuilder out, String code) {
+        if (code.startsWith("pub(all) struct ")) code = code.replace(",\n", "\n");
+        out.append("\n///|\n").append(code).append('\n');
+    }
     private void write(Grammar g, String file, String text) {
         try (Writer writer = gen.tool.getOutputFileWriter(g, file)) { writer.write(text); }
         catch (IOException e) { throw new IllegalStateException("Cannot write " + file, e); }
@@ -171,7 +174,7 @@ public final class MoonBitTarget extends JavaTarget {
                 init.append("visit_alt_").append(label).append(": None,\n");
                 cases.append("if context.alternative() == Some(").append(q(label)).append(") { if self.visit_alt_").append(label).append(" is Some(callback) { return callback(").append(type(g,label)).append("::{node}, values) } }\n");
             }
-            cases.append("self.visit_").append(rule.name).append("(context, values) },\n");
+            cases.append("self.visit_").append(rule.name).append("(context, values) }\n");
         }
         block(out, "pub(all) struct " + name + "[T] { " + fields + " }");
         block(out, "pub fn[T] " + name + "::new(terminal~ : (@runtime.Token) -> T, rule~ : (@runtime.RuleContext, Array[T]) -> T) -> " + name + "[T] { {" + init + "} }");
@@ -188,7 +191,7 @@ public final class MoonBitTarget extends JavaTarget {
             for (String phase : new String[]{"enter", "exit"}) {
                 fields.append(phase).append('_').append(rule.name).append(" : (").append(ctx).append(") -> Unit,\n");
                 init.append(phase).append('_').append(rule.name).append(": (_) => (),\n");
-                (phase.equals("enter") ? enter : exit).append(q(rule.name)).append(" => self.").append(phase).append('_').append(rule.name).append('(').append(ctx).append("::{node}),\n");
+                (phase.equals("enter") ? enter : exit).append(q(rule.name)).append(" => self.").append(phase).append('_').append(rule.name).append('(').append(ctx).append("::{node})\n");
             }
         }
         StringBuilder altEnter = new StringBuilder(), altExit = new StringBuilder();
