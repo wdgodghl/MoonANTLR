@@ -149,9 +149,7 @@ pub fn Grammar::parse(
   if start_rule < 0 || start_rule >= self.rules.length() {
     raise InvalidAtn("unknown start rule")
   }
-  let tokens = self
-    .tokenize(source, work_limit~)
-    .filter(token => token.channel == 0)
+  let tokens = TokenStream::new(self.tokenize(source, work_limit~)).visible_tokens()
   let ctx : ParseContext = {
     atn: self.parser,
     rules: self.rules,

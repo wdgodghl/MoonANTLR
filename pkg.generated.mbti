@@ -10,6 +10,7 @@ pub fn deserialize(Array[Int32]) -> Atn raise RuntimeError
 
 // Errors
 pub(all) suberror RuntimeError {
+  InvalidArgument(String)
   InvalidAtn(String)
   Unsupported(String)
   LexicalError(Int32, Int32, String)
@@ -76,6 +77,19 @@ pub(all) struct Token {
 pub fn Token::equal(Self, Self) -> Bool
 pub fn Token::not_equal(Self, Self) -> Bool
 pub fn Token::to_repr(Self) -> @debug.Repr
+
+pub struct TokenStream {
+  tokens : Array[Token]
+  channel : Int32
+  mut cursor : Int32
+}
+pub fn TokenStream::all_tokens(Self) -> Array[Token]
+pub fn TokenStream::consume(Self) -> Unit raise RuntimeError
+pub fn TokenStream::index(Self) -> Int32
+pub fn TokenStream::lookahead(Self, Int32) -> Token raise RuntimeError
+pub fn TokenStream::new(Array[Token], channel? : Int32) -> Self raise RuntimeError
+pub fn TokenStream::seek(Self, Int32) -> Unit raise RuntimeError
+pub fn TokenStream::visible_tokens(Self) -> Array[Token]
 
 // Type aliases
 

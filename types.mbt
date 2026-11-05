@@ -1,6 +1,7 @@
 ///|
 /// Errors are explicit: unsupported ATN features never silently change meaning.
 pub(all) suberror RuntimeError {
+  InvalidArgument(String)
   InvalidAtn(String)
   Unsupported(String)
   LexicalError(Int32, Int32, String)

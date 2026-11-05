@@ -36,6 +36,14 @@ pub fn RuntimeError::diagnostic(
   grammar : Grammar,
 ) -> Diagnostic {
   match self {
+    InvalidArgument(message) =>
+      {
+        code: "invalid_argument",
+        message,
+        line: None,
+        column: None,
+        expected: [],
+      }
     InvalidAtn(message) =>
       { code: "invalid_atn", message, line: None, column: None, expected: [], }
     Unsupported(message) =>
