@@ -1,4 +1,5 @@
 import {
+  "wdgodghl/moonantlr/generated/modes",
   "moonbitlang/core/debug",
   "wdgodghl/moonantlr" @runtime,
   "wdgodghl/moonantlr/generated/json",

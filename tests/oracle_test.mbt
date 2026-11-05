@@ -3403,3 +3403,220 @@ test "Java oracle Arithmetic 064" {
   }
   assert_true(rejected)
 }
+
+///|
+test "Java oracle Modes 000" {
+  let grammar = @modes.grammar()
+  let source = ""
+  assert_eq(grammar.parse(source).to_sexpr(), "(document <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [(-1, "<EOF>", 0, 0, 1, 0, 0)])
+}
+
+///|
+test "Java oracle Modes 001" {
+  let grammar = @modes.grammar()
+  let source = "alpha"
+  assert_eq(grammar.parse(source).to_sexpr(), "(document \"alpha\" <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "alpha", 0, 5, 1, 0, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 002" {
+  let grammar = @modes.grammar()
+  let source = "alpha beta"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"alpha\" \"beta\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "alpha", 0, 5, 1, 0, 0),
+    (3, "beta", 6, 10, 1, 6, 0),
+    (-1, "<EOF>", 10, 10, 1, 10, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 003" {
+  let grammar = @modes.grammar()
+  let source = "#hash"
+  assert_eq(grammar.parse(source).to_sexpr(), "(document \"#hash\" <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "#hash", 0, 5, 1, 0, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 004" {
+  let grammar = @modes.grammar()
+  let source = "\"hello\""
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"\\\"hello\\\"\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "\"hello\"", 0, 7, 1, 0, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 005" {
+  let grammar = @modes.grammar()
+  let source = "@\"hidden\" visible"
+  assert_eq(grammar.parse(source).to_sexpr(), "(document \"visible\" <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "@\"hidden\"", 0, 9, 1, 0, 1),
+    (3, "visible", 10, 17, 1, 10, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 006" {
+  let grammar = @modes.grammar()
+  let source = "//comment\nword"
+  assert_eq(grammar.parse(source).to_sexpr(), "(document \"word\" <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "//comment", 0, 9, 1, 0, 1),
+    (3, "word", 10, 14, 2, 0, 0),
+    (-1, "<EOF>", 14, 14, 2, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 007" {
+  let grammar = @modes.grammar()
+  let source = "\"😀中文\""
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"\\\"😀中文\\\"\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "\"😀中文\"", 0, 5, 1, 0, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 008" {
+  let grammar = @modes.grammar()
+  let source = "\"a\\\"b\""
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"\\\"a\\\\\\\"b\\\"\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "\"a\\\"b\"", 0, 6, 1, 0, 0),
+    (-1, "<EOF>", 6, 6, 1, 6, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 009" {
+  let grammar = @modes.grammar()
+  let source = "@\"\" #abc"
+  assert_eq(grammar.parse(source).to_sexpr(), "(document \"#abc\" <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "@\"\"", 0, 3, 1, 0, 1),
+    (2, "#abc", 4, 8, 1, 4, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 010" {
+  let grammar = @modes.grammar()
+  let source = "\"line\ntext\""
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"\\\"line\\ntext\\\"\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "\"line\ntext\"", 0, 11, 1, 0, 0),
+    (-1, "<EOF>", 11, 11, 2, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Modes 011" {
+  let grammar = @modes.grammar()
+  let source = "\"unterminated"
+  assert_eq(grammar.parse(source).to_sexpr(), "(document <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [(-1, "\"unterminated", 0, 13, 1, 0, 0)])
+}
+
+///|
+test "Java oracle Modes 012" {
+  let grammar = @modes.grammar()
+  let rejected = try {
+    let _ = grammar.parse("\"bad\\")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Modes 013" {
+  let grammar = @modes.grammar()
+  let rejected = try {
+    let _ = grammar.parse("#123")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Modes 014" {
+  let grammar = @modes.grammar()
+  let rejected = try {
+    let _ = grammar.parse("@word")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}

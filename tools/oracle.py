@@ -47,7 +47,8 @@ def corpus():
     arithmetic = ["1+2*3", "(1+2)*3", " 12 / 3 - 2\n", "1-2-3", "1/(2+3)"]
     arithmetic += [expression(rng) for _ in range(50)]
     arithmetic += ["", "1+", "+1", "1+*2", "(1+2", "1 2", "1.2", "a", "1)2", "()"]
-    return {"Json": json_cases, "Arithmetic": arithmetic}
+    modes = ["", "alpha", "alpha beta", "#hash", '"hello"', '@"hidden" visible', '//comment\nword', '"😀中文"', '"a\\\"b"', '@"" #abc', '"line\ntext"', '"unterminated', '"bad\\', '#123', '@word']
+    return {"Json": json_cases, "Arithmetic": arithmetic, "Modes": modes}
 
 
 def run(args, **kwargs):
@@ -69,7 +70,11 @@ def main():
     counts = {}
     with tempfile.TemporaryDirectory(prefix="oracle-", dir=scratch) as temp:
         directory = Path(temp)
-        run([args.java, "-Dfile.encoding=UTF-8", "-jar", str(jar), "-encoding", "UTF-8", "-Dlanguage=Java", "-Xexact-output-dir", "-o", str(directory)] + [str(ROOT / "grammars" / (name + ".g4")) for name in corpus()])
+        sources = []
+        for name in corpus():
+            names = ["ModesLexer", "ModesParser"] if name == "Modes" else [name]
+            sources.extend(str(ROOT / "grammars" / (n + ".g4")) for n in names)
+        run([args.java, "-Dfile.encoding=UTF-8", "-jar", str(jar), "-encoding", "UTF-8", "-Dlanguage=Java", "-Xexact-output-dir", "-lib", str(directory), "-o", str(directory)] + sources)
         run([args.javac, "-encoding", "UTF-8", "-cp", str(jar), "-d", str(directory), str(ROOT / "tools" / "Oracle.java")] + [str(p) for p in directory.glob("*.java")])
         for name, cases in corpus().items():
             payload = "".join(base64.b64encode(s.encode()).decode() + "\n" for s in cases)
@@ -78,7 +83,7 @@ def main():
             if len(expected) != len(cases):
                 raise RuntimeError("Oracle output count differs from input count")
             counts[name] = {"cases": len(cases), "accepted": sum(row["accepted"] for row in expected)}
-            alias = "json" if name == "Json" else "arithmetic"
+            alias = {"Json": "json", "Arithmetic": "arithmetic", "Modes": "modes"}[name]
             for index, (source, row) in enumerate(zip(cases, expected)):
                 quoted = json.dumps(source, ensure_ascii=False)
                 output += ["///|", f'test "Java oracle {name} {index:03d}" {{', f"  let grammar = @{alias}.grammar()"]

@@ -224,17 +224,34 @@ pub fn Grammar::tokenize(
       })
     }
   }
-  if continuing {
-    raise LexicalError(token_line, token_column, "unterminated more token")
-  }
   tokens.push({
     kind: -1,
-    text: "<EOF>",
-    start: pos,
+    text: if continuing {
+      String::from_array(chars[token_start:pos])
+    } else {
+      "<EOF>"
+    },
+    start: if continuing {
+      token_start
+    } else {
+      pos
+    },
     end: pos,
-    line,
-    column,
-    channel: 0,
+    line: if continuing {
+      token_line
+    } else {
+      line
+    },
+    column: if continuing {
+      token_column
+    } else {
+      column
+    },
+    channel: if continuing {
+      channel
+    } else {
+      0
+    },
   })
   tokens
 }

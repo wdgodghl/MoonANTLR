@@ -58,6 +58,7 @@ jobs:
           python tools/generate.py grammars/Precedence.g4 --output generated/precedence --jar .local/antlr.jar
           python tools/generate.py grammars/NonGreedy.g4 --output generated/nongreedy --jar .local/antlr.jar
           python tools/generate.py grammars/Predicate.g4 --output generated/predicate --jar .local/antlr.jar
+          python tools/generate.py grammars/ModesParser.g4 --lexer grammars/ModesLexer.g4 --output generated/modes --jar .local/antlr.jar
           python tools/oracle.py --jar .local/antlr.jar
           moon fmt
           git diff --exit-code -- generated tests

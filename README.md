@@ -14,7 +14,8 @@ MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` �
 - 基于 ATN 的最长词法匹配、规则优先级、fragment 调用及跳过空白。
 - 无动作语法的有界解析、规则/位置缓存、完整输入检查与解析树输出。
 - Unicode 标量位置、带行列信息的错误以及可配置执行预算。
-- 163 个官方 ANTLR Java 目标对照用例，比较解析树与每个 Token 的类型、文本及位置。
+- 官方 ANTLR Java 目标对照用例，比较解析树与每个 Token 的类型、文本及位置；数量见 `tests/oracle-manifest.json`。
+- 支持独立 lexer/parser 语法、词法模式切换、MORE、隐藏通道及 Token 类型重映射。
 - 畸形 ATN、错误输入和不支持特性的回归测试。
 
 当前解析算法是有界 ATN 解释器，尚未实现 ANTLR 自适应 LL(*) 预测、完整 MoonBitTarget、Visitor/Listener 或错误恢复。语义谓词、优先级谓词、内嵌动作、自定义词法动作及非贪婪词法决策会明确报错。详细边界见[架构说明](docs/ARCHITECTURE.md)。
@@ -60,7 +61,7 @@ println(tree.to_sexpr())
 
 ## 生成语法模块
 
-桥接工具目前接受组合语法。准备 Python 3.10+、Java 17 和官方 [antlr-4.13.2-complete.jar](https://www.antlr.org/download/antlr-4.13.2-complete.jar)：
+桥接工具接受组合语法，或使用 `--lexer` 指定独立词法语法。准备 Python 3.10+、Java 17 和官方 [antlr-4.13.2-complete.jar](https://www.antlr.org/download/antlr-4.13.2-complete.jar)：
 
 ```sh
 python tools/generate.py grammars/Json.g4 --output generated/json --jar /path/to/antlr-4.13.2-complete.jar

@@ -9,6 +9,10 @@
     "Arithmetic": {
       "cases": 65,
       "accepted": 55
+    },
+    "Modes": {
+      "cases": 15,
+      "accepted": 12
     }
   }
 }
