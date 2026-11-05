@@ -50,7 +50,7 @@ pub(all) struct Token {
   line : Int32
   column : Int32
   channel : Int32
-} derive(Debug, Eq)
+} derive(Debug, Eq, ToJson)
 
 ///|
 pub(all) enum ParseTree {
@@ -97,6 +97,9 @@ pub extend Token with @debug.Debug::{to_repr}
 
 ///|
 pub extend Token with Eq::{equal, not_equal}
+
+///|
+pub extend Token with ToJson::{to_json}
 
 ///|
 pub extend ParseTree with @debug.Debug::{to_repr}

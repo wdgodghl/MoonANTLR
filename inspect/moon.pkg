@@ -1,0 +1,7 @@
+import {
+  "wdgodghl/moonantlr" @runtime,
+}
+
+import {
+  "wdgodghl/moonantlr/generated/json",
+} for "test"

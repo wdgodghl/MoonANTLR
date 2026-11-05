@@ -61,6 +61,7 @@ pub(all) enum ParseTree {
 pub fn ParseTree::equal(Self, Self) -> Bool
 pub fn[A] ParseTree::fold(Self, (Token) -> A raise?, (String, Array[A]) -> A raise?) -> A raise?
 pub fn ParseTree::not_equal(Self, Self) -> Bool
+pub fn ParseTree::to_json(Self) -> Json
 pub fn ParseTree::to_repr(Self) -> @debug.Repr
 pub fn ParseTree::to_sexpr(Self) -> String
 
@@ -74,9 +75,10 @@ pub(all) struct Token {
   line : Int32
   column : Int32
   channel : Int32
-} derive(Eq, @debug.Debug)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn Token::equal(Self, Self) -> Bool
 pub fn Token::not_equal(Self, Self) -> Bool
+pub fn Token::to_json(Self) -> Json
 pub fn Token::to_repr(Self) -> @debug.Repr
 
 pub struct TokenStream {

@@ -1,0 +1,10 @@
+import {
+  "wdgodghl/moonantlr" @runtime,
+  "wdgodghl/moonantlr/inspect" @report,
+  "wdgodghl/moonantlr/generated/json" @json_grammar,
+  "wdgodghl/moonantlr/generated/arithmetic",
+  "wdgodghl/moonantlr/generated/modes",
+  "moonbitlang/core/env",
+}
+
+pkgtype(kind: "executable")

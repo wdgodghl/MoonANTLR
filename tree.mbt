@@ -11,3 +11,16 @@ pub fn[A] ParseTree::fold(
       rule(name, children.map(child => child.fold(terminal, rule)))
   }
 }
+
+///|
+/// A stable JSON tree for tools that do not link MoonBit types directly.
+pub fn ParseTree::to_json(self : ParseTree) -> Json {
+  self.fold(token => Json::object(Map([("token", token.to_json())])), (
+    name,
+    children,
+  ) => {
+    Json::object(
+      Map([("rule", Json::string(name)), ("children", Json::array(children))]),
+    )
+  })
+}

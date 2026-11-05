@@ -30,6 +30,7 @@ jobs:
       - run: moon test --target ${{ matrix.target }} --deny-warn
       - run: moon run cmd/main --target ${{ matrix.target }} --deny-warn
       - run: moon run examples/evaluate --target ${{ matrix.target }} --deny-warn
+      - run: moon run cmd/inspect --target ${{ matrix.target }} -- arithmetic '1+2*3'
       - name: Check public interfaces
         run: |
           moon info
@@ -64,3 +65,4 @@ jobs:
           moon fmt
           git diff --exit-code -- generated tests
       - run: moon test --deny-warn
+      - run: python tools/check_cli.py
