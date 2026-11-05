@@ -3,4 +3,7 @@ import {
   "wdgodghl/moonantlr" @runtime,
   "wdgodghl/moonantlr/generated/json",
   "wdgodghl/moonantlr/generated/arithmetic",
+  "wdgodghl/moonantlr/generated/precedence",
+  "wdgodghl/moonantlr/generated/nongreedy",
+  "wdgodghl/moonantlr/generated/predicate",
 } for "test"

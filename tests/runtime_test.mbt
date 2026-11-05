@@ -113,6 +113,45 @@ test "ATN decoder rejects bad versions, lengths, types and trailing data" {
 }
 
 ///|
+test "precedence predicates fail explicitly rather than executing as epsilon" {
+  let rejected = try {
+    let _ = @precedence.grammar().parse("1+2+3")
+    false
+  } catch {
+    @runtime.Unsupported(feature) => {
+      assert_eq(feature, "precedence predicates")
+      true
+    }
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "semantic predicates fail explicitly rather than being ignored" {
+  let rejected = try {
+    let _ = @predicate.grammar().parse("123")
+    false
+  } catch {
+    @runtime.Unsupported(feature) => feature == "semantic predicates"
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "non-greedy lexer decisions fail explicitly" {
+  let rejected = try {
+    let _ = @nongreedy.grammar().parse("/* a */")
+    false
+  } catch {
+    @runtime.Unsupported(feature) => feature == "non-greedy lexer decisions"
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
 test "work limits and unknown start rules produce typed failures" {
   let grammar = @json.grammar()
   let limited = try {

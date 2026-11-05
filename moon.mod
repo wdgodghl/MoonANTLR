@@ -19,7 +19,7 @@ repository = "https://github.com/wdgodghl/MoonANTLR"
 
 license = "BSD-3-Clause"
 
-keywords = ["antlr4", "parser", "lexer", "atn"]
+keywords = [ "antlr4", "parser", "lexer", "atn" ]
 
 preferred_target = "wasm"
 

@@ -1,26 +1,91 @@
 # MoonANTLR
 
-MoonBit runtime and tooling for ANTLR4 grammars.
+[![CI](https://github.com/wdgodghl/MoonANTLR/actions/workflows/ci.yml/badge.svg)](https://github.com/wdgodghl/MoonANTLR/actions/workflows/ci.yml)
 
-MoonANTLR is building toward an ANTLR4 MoonBit code-generation target and a
-reusable MoonBit runtime. The first milestone executes serialized ATNs produced
-by ANTLR 4.13.2, with generated MoonBit grammar modules and reproducible examples.
+**MoonBit runtime and tooling for ANTLR4 grammars.**
 
-This repository is under active development. Full ANTLR4 target compatibility,
-adaptive prediction, precedence predicates and error recovery are planned work.
+MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` 语法能够在 MoonBit 原生程序和 WebAssembly 中复用，为语言工具、配置处理和 DSL 提供解析基础。
 
-## Development
+当前是早期开发版本。已打通 ANTLR 4.13.2 序列化 ATN → MoonBit 语法模块 → 词法分析与解析树的执行链路，提供 JSON、算术语法以及独立 Java 对照测试。运行时完全使用 MoonBit；Java 和 Python 仅用于生成语法数据和参考测试。
 
-Requires MoonBit compiler 0.10.16 or newer. The development baseline is
-moonc 0.10.18. Check, build and test with:
+## 当前能力
+
+- 检查并读取 ANTLR serialized ATN version 4 整数格式。
+- 基于 ATN 的最长词法匹配、规则优先级、fragment 调用及跳过空白。
+- 无动作语法的有界解析、规则/位置缓存、完整输入检查与解析树输出。
+- Unicode 标量位置、带行列信息的错误以及可配置执行预算。
+- 163 个官方 ANTLR Java 目标对照用例，比较解析树与每个 Token 的类型、文本及位置。
+- 畸形 ATN、错误输入和不支持特性的回归测试。
+
+当前解析算法是有界 ATN 解释器，尚未实现 ANTLR 自适应 LL(*) 预测、完整 MoonBitTarget、Visitor/Listener 或错误恢复。语义谓词、优先级谓词、内嵌动作、自定义词法动作及非贪婪词法决策会明确报错。详细边界见[架构说明](docs/ARCHITECTURE.md)。
+
+## 安装与运行
+
+需要 MoonBit 编译器 **0.10.16 或更新版本**，当前开发基线为 **0.10.18**。本项目尚未发布到 Mooncakes，请先从源码运行：
 
 ```sh
-moon check
-moon build
-moon test
+git clone https://github.com/wdgodghl/MoonANTLR.git
+cd MoonANTLR
+moon version --all
+moon check --deny-warn
+moon build --deny-warn
+moon test --deny-warn
+moon run cmd/main
 ```
 
-## License
+示例依次解析 JSON 文档和 `1 + 2 * (3 - 4)`，输出带规则名称的 S-expression。克隆后即可运行，不需要 Java 或 Python，也不需要下载 ANTLR 工具。
 
-BSD-3-Clause. See [LICENSE](LICENSE) and
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+其他目标：
+
+```sh
+moon test --target wasm-gc --deny-warn
+moon test --target js --deny-warn
+moon test --target native --deny-warn
+```
+
+JS 目标需要 Node.js；native 目标需要对应平台的 C 工具链。
+
+## 库接口
+
+[`cmd/main`](cmd/main) 展示了调用生成语法模块的方法：
+
+```moonbit
+let grammar = @json.grammar()
+let tokens = grammar.tokenize("{\"ready\":true}")
+let tree = grammar.parse("{\"ready\":true}")
+println(tree.to_sexpr())
+```
+
+其中 `@json` 对应 `wdgodghl/moonantlr/generated/json`。基础运行时位于 `wdgodghl/moonantlr`，公开接口见 [pkg.generated.mbti](pkg.generated.mbti)。
+
+## 生成语法模块
+
+桥接工具目前接受组合语法。准备 Python 3.10+、Java 17 和官方 [antlr-4.13.2-complete.jar](https://www.antlr.org/download/antlr-4.13.2-complete.jar)：
+
+```sh
+python tools/generate.py grammars/Json.g4 --output generated/json --jar /path/to/antlr-4.13.2-complete.jar
+moon fmt
+moon test --deny-warn
+```
+
+工具校验 JAR 的 SHA-256，并从官方 `.interp` 数据生成 MoonBit 模块。可通过 `--java` 指定 Java 可执行文件路径。生成物不会记录本地绝对路径。
+
+## 开发方向
+
+1. 对接 ANTLR 原生 MoonBitTarget 和代码生成模板。
+2. 完成预测上下文、DFA 缓存和自适应 SLL/LL 算法。
+3. 扩展谓词、左递归、错误恢复及 Visitor/Listener 支持。
+4. 复用更多真实 `.g4` 语法并接入上游运行时测试。
+
+当前 `.interp` 桥接是目标支持的开发基线，完整目标兼容性仍在建设中。
+
+## 文档与来源
+
+- [架构与功能边界](docs/ARCHITECTURE.md)
+- [验证与测试重现](docs/VERIFICATION.md)
+- [ANTLR 4.13.2](https://github.com/antlr/antlr4/tree/4.13.2)
+- [ANTLR 新语言目标开发指南](https://github.com/antlr/antlr4/blob/dev/doc/creating-a-language-target.md)
+
+## 许可证
+
+BSD-3-Clause。项目代码版权归 `wdgodghl`，上游代码与参考来源保留其原有版权。详见 [LICENSE](LICENSE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

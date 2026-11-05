@@ -213,15 +213,19 @@ fn Atn::matches(self : Atn, edge : Edge, symbol : Int32) -> Bool {
 /// Unsupported control flow is rejected before tokenization or parsing.
 fn Atn::validate_supported(self : Atn) -> Unit raise RuntimeError {
   for state in self.states {
+    for edge in state.edges {
+      if edge.kind == 10 {
+        raise Unsupported("precedence predicates")
+      }
+    }
+  }
+  for state in self.states {
     if state.non_greedy {
       raise Unsupported("non-greedy lexer decisions")
     }
     for edge in state.edges {
       if edge.kind == 4 {
         raise Unsupported("semantic predicates")
-      }
-      if edge.kind == 10 {
-        raise Unsupported("precedence predicates")
       }
       if self.kind == 1 && edge.kind == 6 {
         raise Unsupported("embedded parser actions")
