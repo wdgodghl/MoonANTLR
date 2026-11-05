@@ -1,7 +1,7 @@
 .DS_Store
 _build/
-target/
-target
+/target/
+/target
 .mooncakes/
 .moonagent/
 AGENTS.md
@@ -12,3 +12,5 @@ __pycache__/
 .env
 .env.*
 *.log
+generated/**/*.interp
+generated/**/*.tokens

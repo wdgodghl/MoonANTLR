@@ -57,7 +57,15 @@ def corpus():
         for _ in range(rng.randrange(1, 5)):
             writer.writerow([rng.choice(["", "alpha", "with,comma", 'a"b', "line\nbreak", "中文😀"]) for _ in range(rng.randrange(1, 5))])
         csv_cases.append(output.getvalue())
-    return {"Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
+    precedence = arithmetic + ["1+2*3", "1*2+3", "1-2-3", "2^3^4", "2^3*4+5", "-1^2", "(-1)^2", "1*-2", "1^(2+3)", "1^^2"]
+    typed = ["x=1", "x=1+2*3; y=2^3^4 note;", "x=(1+2)*3", "x=1+", "x=", "x=1;;", "=1", "x=1 note extra", ""]
+    typed += ["x=" + expression(rng) for _ in range(35)]
+    decisions = ["", "p a x;", "p a x x;", "q a y;", "q a x y;", "p a y;", "q a x;", "u;", "foo;", "foo bar baz;", "z foo !;", "z foo bar ?;", "z !;", "p a x x x;", "p a x; q a x y; p a x x; u;"]
+    decisions += ["z " + "foo " * length + end + ";" for length in [2, 10, 65, 80] for end in ["!", "?"]]
+    decisions += ["p a x; q a x y; " * length for length in [2, 4, 8]]
+    recursion = ["1[2]", "1[2][3]", "1[2+3]*4", "1[2[3]]+4!", "1!!", "-1!", "1?2:3?4:5", "1?2?3:4:5", "1+2?3:4*5", "(1+2)![3]", "1[", "1?2", "1?2:", "1[2]]", "!1"]
+    recursion += arithmetic
+    return {"Recursion": recursion, "Typed": typed, "Decisions": decisions, "Precedence": precedence, "Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
 
 
 def run(args, **kwargs):
@@ -92,7 +100,7 @@ def main():
             if len(expected) != len(cases):
                 raise RuntimeError("Oracle output count differs from input count")
             counts[name] = {"cases": len(cases), "accepted": sum(row["accepted"] for row in expected)}
-            alias = {"Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar"}[name]
+            alias = {"Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar", "Precedence": "precedence", "Typed": "typed", "Decisions": "decisions", "Recursion": "recursion"}[name]
             for index, (source, row) in enumerate(zip(cases, expected)):
                 quoted = json.dumps(source, ensure_ascii=False)
                 output += ["///|", f'test "Java oracle {name} {index:03d}" {{', f"  let grammar = @{alias}.grammar()"]

@@ -2,6 +2,22 @@
   "upstream": "ANTLR 4.13.2 Java target",
   "seed": 20261105,
   "grammars": {
+    "Recursion": {
+      "cases": 80,
+      "accepted": 29
+    },
+    "Typed": {
+      "cases": 44,
+      "accepted": 38
+    },
+    "Decisions": {
+      "cases": 26,
+      "accepted": 22
+    },
+    "Precedence": {
+      "cases": 75,
+      "accepted": 64
+    },
     "Json": {
       "cases": 98,
       "accepted": 81

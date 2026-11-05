@@ -1,0 +1,149 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/typed"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct TypedDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedDocumentContext::alternative(Self) -> String?
+pub fn TypedDocumentContext::get_document(Self) -> Array[Self]
+pub fn TypedDocumentContext::get_entry(Self) -> Array[TypedEntryContext]
+pub fn TypedDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TypedDocumentContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TypedDocumentContext::label_entries(Self) -> Array[TypedEntryContext]
+pub fn TypedDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TypedEntryContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedEntryContext::alternative(Self) -> String?
+pub fn TypedEntryContext::get_entry(Self) -> Array[Self]
+pub fn TypedEntryContext::get_expression(Self) -> Array[TypedExpressionContext]
+pub fn TypedEntryContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn TypedEntryContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TypedEntryContext::label_key(Self) -> Array[@moonantlr.Token]
+pub fn TypedEntryContext::label_note(Self) -> Array[@moonantlr.Token]
+pub fn TypedEntryContext::label_value(Self) -> Array[TypedExpressionContext]
+pub fn TypedEntryContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TypedExpressionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedExpressionContext::alternative(Self) -> String?
+pub fn TypedExpressionContext::as_Group(Self) -> TypedGroupContext?
+pub fn TypedExpressionContext::as_Number(Self) -> TypedNumberContext?
+pub fn TypedExpressionContext::as_Power(Self) -> TypedPowerContext?
+pub fn TypedExpressionContext::as_Product(Self) -> TypedProductContext?
+pub fn TypedExpressionContext::as_Sum(Self) -> TypedSumContext?
+pub fn TypedExpressionContext::get_expression(Self) -> Array[Self]
+pub fn TypedExpressionContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::label_inner(Self) -> Array[Self]
+pub fn TypedExpressionContext::label_left(Self) -> Array[Self]
+pub fn TypedExpressionContext::label_number(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::label_op(Self) -> Array[@moonantlr.Token]
+pub fn TypedExpressionContext::label_right(Self) -> Array[Self]
+pub fn TypedExpressionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TypedGroupContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedGroupContext::as_rule(Self) -> TypedExpressionContext
+pub fn TypedGroupContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TypedLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TypedLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TypedLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TypedListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (TypedDocumentContext) -> Unit
+  exit_document : (TypedDocumentContext) -> Unit
+  enter_entry : (TypedEntryContext) -> Unit
+  exit_entry : (TypedEntryContext) -> Unit
+  enter_expression : (TypedExpressionContext) -> Unit
+  exit_expression : (TypedExpressionContext) -> Unit
+  enter_alt_Group : (TypedGroupContext) -> Unit
+  exit_alt_Group : (TypedGroupContext) -> Unit
+  enter_alt_Number : (TypedNumberContext) -> Unit
+  exit_alt_Number : (TypedNumberContext) -> Unit
+  enter_alt_Power : (TypedPowerContext) -> Unit
+  exit_alt_Power : (TypedPowerContext) -> Unit
+  enter_alt_Product : (TypedProductContext) -> Unit
+  exit_alt_Product : (TypedProductContext) -> Unit
+  enter_alt_Sum : (TypedSumContext) -> Unit
+  exit_alt_Sum : (TypedSumContext) -> Unit
+}
+pub fn TypedListener::new() -> Self
+pub fn TypedListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TypedNumberContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedNumberContext::as_rule(Self) -> TypedExpressionContext
+pub fn TypedNumberContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TypedParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TypedParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TypedParser::parse_document(Self, String) -> TypedDocumentContext raise @moonantlr.RuntimeError
+pub fn TypedParser::parse_entry(Self, String) -> TypedEntryContext raise @moonantlr.RuntimeError
+pub fn TypedParser::parse_expression(Self, String) -> TypedExpressionContext raise @moonantlr.RuntimeError
+
+pub struct TypedPowerContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedPowerContext::as_rule(Self) -> TypedExpressionContext
+pub fn TypedPowerContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TypedProductContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedProductContext::as_rule(Self) -> TypedExpressionContext
+pub fn TypedProductContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TypedSumContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TypedSumContext::as_rule(Self) -> TypedExpressionContext
+pub fn TypedSumContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct TypedVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (TypedDocumentContext, Array[T]) -> T
+  visit_entry : (TypedEntryContext, Array[T]) -> T
+  visit_expression : (TypedExpressionContext, Array[T]) -> T
+  visit_alt_Group : ((TypedGroupContext, Array[T]) -> T)?
+  visit_alt_Number : ((TypedNumberContext, Array[T]) -> T)?
+  visit_alt_Power : ((TypedPowerContext, Array[T]) -> T)?
+  visit_alt_Product : ((TypedProductContext, Array[T]) -> T)?
+  visit_alt_Sum : ((TypedSumContext, Array[T]) -> T)?
+}
+pub fn[T] TypedVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] TypedVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

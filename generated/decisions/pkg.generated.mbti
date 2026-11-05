@@ -1,0 +1,173 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/decisions"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct DecisionsChoiceContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsChoiceContext::alternative(Self) -> String?
+pub fn DecisionsChoiceContext::as_Long(Self) -> DecisionsLongContext?
+pub fn DecisionsChoiceContext::as_Short(Self) -> DecisionsShortContext?
+pub fn DecisionsChoiceContext::get_choice(Self) -> Array[Self]
+pub fn DecisionsChoiceContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsChoiceContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsChoiceContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsDocumentContext::alternative(Self) -> String?
+pub fn DecisionsDocumentContext::get_document(Self) -> Array[Self]
+pub fn DecisionsDocumentContext::get_item(Self) -> Array[DecisionsItemContext]
+pub fn DecisionsDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsEitherContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsEitherContext::alternative(Self) -> String?
+pub fn DecisionsEitherContext::get_either(Self) -> Array[Self]
+pub fn DecisionsEitherContext::get_first(Self) -> Array[DecisionsFirstContext]
+pub fn DecisionsEitherContext::get_second(Self) -> Array[DecisionsSecondContext]
+pub fn DecisionsEitherContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsFirstContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsFirstContext::alternative(Self) -> String?
+pub fn DecisionsFirstContext::get_first(Self) -> Array[Self]
+pub fn DecisionsFirstContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsFirstContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsItemContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsItemContext::alternative(Self) -> String?
+pub fn DecisionsItemContext::get_choice(Self) -> Array[DecisionsChoiceContext]
+pub fn DecisionsItemContext::get_either(Self) -> Array[DecisionsEitherContext]
+pub fn DecisionsItemContext::get_item(Self) -> Array[Self]
+pub fn DecisionsItemContext::get_longChoice(Self) -> Array[DecisionsLongChoiceContext]
+pub fn DecisionsItemContext::get_sequence(Self) -> Array[DecisionsSequenceContext]
+pub fn DecisionsItemContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsItemContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsItemContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsItemContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsItemContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsItemContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsLexer {
+  atn : @moonantlr.Atn
+}
+pub fn DecisionsLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn DecisionsLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct DecisionsListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (DecisionsDocumentContext) -> Unit
+  exit_document : (DecisionsDocumentContext) -> Unit
+  enter_item : (DecisionsItemContext) -> Unit
+  exit_item : (DecisionsItemContext) -> Unit
+  enter_choice : (DecisionsChoiceContext) -> Unit
+  exit_choice : (DecisionsChoiceContext) -> Unit
+  enter_sequence : (DecisionsSequenceContext) -> Unit
+  exit_sequence : (DecisionsSequenceContext) -> Unit
+  enter_longChoice : (DecisionsLongChoiceContext) -> Unit
+  exit_longChoice : (DecisionsLongChoiceContext) -> Unit
+  enter_either : (DecisionsEitherContext) -> Unit
+  exit_either : (DecisionsEitherContext) -> Unit
+  enter_first : (DecisionsFirstContext) -> Unit
+  exit_first : (DecisionsFirstContext) -> Unit
+  enter_second : (DecisionsSecondContext) -> Unit
+  exit_second : (DecisionsSecondContext) -> Unit
+  enter_alt_Long : (DecisionsLongContext) -> Unit
+  exit_alt_Long : (DecisionsLongContext) -> Unit
+  enter_alt_Short : (DecisionsShortContext) -> Unit
+  exit_alt_Short : (DecisionsShortContext) -> Unit
+}
+pub fn DecisionsListener::new() -> Self
+pub fn DecisionsListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct DecisionsLongChoiceContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsLongChoiceContext::alternative(Self) -> String?
+pub fn DecisionsLongChoiceContext::get_longChoice(Self) -> Array[Self]
+pub fn DecisionsLongChoiceContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsLongChoiceContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsLongChoiceContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsLongChoiceContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsLongChoiceContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsLongContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsLongContext::as_rule(Self) -> DecisionsChoiceContext
+pub fn DecisionsLongContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn DecisionsParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_choice(Self, String) -> DecisionsChoiceContext raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_document(Self, String) -> DecisionsDocumentContext raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_either(Self, String) -> DecisionsEitherContext raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_first(Self, String) -> DecisionsFirstContext raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_item(Self, String) -> DecisionsItemContext raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_longChoice(Self, String) -> DecisionsLongChoiceContext raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_second(Self, String) -> DecisionsSecondContext raise @moonantlr.RuntimeError
+pub fn DecisionsParser::parse_sequence(Self, String) -> DecisionsSequenceContext raise @moonantlr.RuntimeError
+
+pub struct DecisionsSecondContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsSecondContext::alternative(Self) -> String?
+pub fn DecisionsSecondContext::get_second(Self) -> Array[Self]
+pub fn DecisionsSecondContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsSecondContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsSequenceContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsSequenceContext::alternative(Self) -> String?
+pub fn DecisionsSequenceContext::get_sequence(Self) -> Array[Self]
+pub fn DecisionsSequenceContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn DecisionsSequenceContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DecisionsShortContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DecisionsShortContext::as_rule(Self) -> DecisionsChoiceContext
+pub fn DecisionsShortContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct DecisionsVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (DecisionsDocumentContext, Array[T]) -> T
+  visit_item : (DecisionsItemContext, Array[T]) -> T
+  visit_choice : (DecisionsChoiceContext, Array[T]) -> T
+  visit_alt_Long : ((DecisionsLongContext, Array[T]) -> T)?
+  visit_alt_Short : ((DecisionsShortContext, Array[T]) -> T)?
+  visit_sequence : (DecisionsSequenceContext, Array[T]) -> T
+  visit_longChoice : (DecisionsLongChoiceContext, Array[T]) -> T
+  visit_either : (DecisionsEitherContext, Array[T]) -> T
+  visit_first : (DecisionsFirstContext, Array[T]) -> T
+  visit_second : (DecisionsSecondContext, Array[T]) -> T
+}
+pub fn[T] DecisionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] DecisionsVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

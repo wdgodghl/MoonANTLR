@@ -2,6 +2,5081 @@
 // Seed: 20261105. No Java is needed to run these tests.
 
 ///|
+test "Java oracle Recursion 000" {
+  let grammar = @recursion.grammar()
+  let source = "1[2]"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"1\" \"[\" (expression \"2\") \"]\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (7, "[", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (8, "]", 3, 4, 1, 3, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 001" {
+  let grammar = @recursion.grammar()
+  let source = "1[2][3]"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"1\" \"[\" (expression \"2\") \"]\" \"[\" (expression \"3\") \"]\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (7, "[", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (8, "]", 3, 4, 1, 3, 0),
+    (7, "[", 4, 5, 1, 4, 0),
+    (11, "3", 5, 6, 1, 5, 0),
+    (8, "]", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 002" {
+  let grammar = @recursion.grammar()
+  let source = "1[2+3]*4"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\" \"[\" (expression (expression \"2\") \"+\" (expression \"3\")) \"]\") \"*\" (expression \"4\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (7, "[", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (3, "+", 3, 4, 1, 3, 0),
+    (11, "3", 4, 5, 1, 4, 0),
+    (8, "]", 5, 6, 1, 5, 0),
+    (2, "*", 6, 7, 1, 6, 0),
+    (11, "4", 7, 8, 1, 7, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 003" {
+  let grammar = @recursion.grammar()
+  let source = "1[2[3]]+4!"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\" \"[\" (expression \"2\" \"[\" (expression \"3\") \"]\") \"]\") \"+\" (expression (expression \"4\") \"!\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (7, "[", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (7, "[", 3, 4, 1, 3, 0),
+    (11, "3", 4, 5, 1, 4, 0),
+    (8, "]", 5, 6, 1, 5, 0),
+    (8, "]", 6, 7, 1, 6, 0),
+    (3, "+", 7, 8, 1, 7, 0),
+    (11, "4", 8, 9, 1, 8, 0),
+    (1, "!", 9, 10, 1, 9, 0),
+    (-1, "<EOF>", 10, 10, 1, 10, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 004" {
+  let grammar = @recursion.grammar()
+  let source = "1!!"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"!\") \"!\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (1, "!", 1, 2, 1, 1, 0),
+    (1, "!", 2, 3, 1, 2, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 005" {
+  let grammar = @recursion.grammar()
+  let source = "-1!"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"-\" (expression (expression \"1\") \"!\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "-", 0, 1, 1, 0, 0),
+    (11, "1", 1, 2, 1, 1, 0),
+    (1, "!", 2, 3, 1, 2, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 006" {
+  let grammar = @recursion.grammar()
+  let source = "1?2:3?4:5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"?\" (expression \"2\") \":\" (expression (expression \"3\") \"?\" (expression \"4\") \":\" (expression \"5\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (4, "?", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (5, ":", 3, 4, 1, 3, 0),
+    (11, "3", 4, 5, 1, 4, 0),
+    (4, "?", 5, 6, 1, 5, 0),
+    (11, "4", 6, 7, 1, 6, 0),
+    (5, ":", 7, 8, 1, 7, 0),
+    (11, "5", 8, 9, 1, 8, 0),
+    (-1, "<EOF>", 9, 9, 1, 9, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 007" {
+  let grammar = @recursion.grammar()
+  let source = "1?2?3:4:5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"?\" (expression (expression \"2\") \"?\" (expression \"3\") \":\" (expression \"4\")) \":\" (expression \"5\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (4, "?", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (4, "?", 3, 4, 1, 3, 0),
+    (11, "3", 4, 5, 1, 4, 0),
+    (5, ":", 5, 6, 1, 5, 0),
+    (11, "4", 6, 7, 1, 6, 0),
+    (5, ":", 7, 8, 1, 7, 0),
+    (11, "5", 8, 9, 1, 8, 0),
+    (-1, "<EOF>", 9, 9, 1, 9, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 008" {
+  let grammar = @recursion.grammar()
+  let source = "1+2?3:4*5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"+\" (expression \"2\")) \"?\" (expression \"3\") \":\" (expression (expression \"4\") \"*\" (expression \"5\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (3, "+", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (4, "?", 3, 4, 1, 3, 0),
+    (11, "3", 4, 5, 1, 4, 0),
+    (5, ":", 5, 6, 1, 5, 0),
+    (11, "4", 6, 7, 1, 6, 0),
+    (2, "*", 7, 8, 1, 7, 0),
+    (11, "5", 8, 9, 1, 8, 0),
+    (-1, "<EOF>", 9, 9, 1, 9, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 009" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(1+2)![3]")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 010" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1[")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 011" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1?2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 012" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1?2:")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 013" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1[2]]")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 014" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("!1")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 015" {
+  let grammar = @recursion.grammar()
+  let source = "1+2*3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "1", 0, 1, 1, 0, 0),
+    (3, "+", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (2, "*", 3, 4, 1, 3, 0),
+    (11, "3", 4, 5, 1, 4, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 016" {
+  let grammar = @recursion.grammar()
+  let source = "(1+2)*3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) \")\") \"*\" (expression \"3\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (9, "(", 0, 1, 1, 0, 0),
+    (11, "1", 1, 2, 1, 1, 0),
+    (3, "+", 2, 3, 1, 2, 0),
+    (11, "2", 3, 4, 1, 3, 0),
+    (10, ")", 4, 5, 1, 4, 0),
+    (2, "*", 5, 6, 1, 5, 0),
+    (11, "3", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 017" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse(" 12 / 3 - 2\n")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 018" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1-2-3")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 019" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1/(2+3)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 020" {
+  let grammar = @recursion.grammar()
+  let source = "5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"5\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "5", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 021" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((51-(16-13))+71)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 022" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((79-93)+95)*62)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 023" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((54-80)+(90*69))/92)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 024" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((13*74)/(5/51))-(31+85))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 025" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((9-95)*(84+58))/28)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 026" {
+  let grammar = @recursion.grammar()
+  let source = "2"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"2\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "2", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 027" {
+  let grammar = @recursion.grammar()
+  let source = "16"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"16\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "16", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 028" {
+  let grammar = @recursion.grammar()
+  let source = "31"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"31\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "31", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 029" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((77-80)-55)-53)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 030" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((61*44)-(87-98))-((79+14)+43))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 031" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(47/7)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 032" {
+  let grammar = @recursion.grammar()
+  let source = "5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"5\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "5", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 033" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((15+(40*84))/22)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 034" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(89/(8-(20/39)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 035" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((38-72)*(71-1))-((42/49)*4))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 036" {
+  let grammar = @recursion.grammar()
+  let source = "8"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"8\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "8", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 037" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((46-77)/63)/(98/(51-3)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 038" {
+  let grammar = @recursion.grammar()
+  let source = "43"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"43\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "43", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 039" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((48-72)-13)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 040" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((59*(95/87))-96)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 041" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((86*34)+(27+2))+((26-3)/(97/97)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 042" {
+  let grammar = @recursion.grammar()
+  let source = "41"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"41\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "41", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 043" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((26+69)-46)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 044" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((61/61)*50)+21)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 045" {
+  let grammar = @recursion.grammar()
+  let source = "6"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"6\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "6", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 046" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((58+8)/68)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 047" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((62-(87-93))*((50*34)-38))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 048" {
+  let grammar = @recursion.grammar()
+  let source = "13"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"13\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "13", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 049" {
+  let grammar = @recursion.grammar()
+  let source = "56"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"56\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "56", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 050" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(65+(81+(44-88)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 051" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((54+54)-44)/(85*(42*14)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 052" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((30-4)/86)-((25*40)-(82*31)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 053" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("((86+(98-69))-((93+28)*(8/68)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 054" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(6/((33/77)*(51-93)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 055" {
+  let grammar = @recursion.grammar()
+  let source = "95"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"95\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "95", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 056" {
+  let grammar = @recursion.grammar()
+  let source = "10"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"10\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "10", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 057" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(28-85)")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 058" {
+  let grammar = @recursion.grammar()
+  let source = "20"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"20\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "20", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 059" {
+  let grammar = @recursion.grammar()
+  let source = "90"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"90\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "90", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 060" {
+  let grammar = @recursion.grammar()
+  let source = "61"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"61\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "61", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 061" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(5*((77+17)/(50/14)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 062" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(32-((4-80)/(3/91)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 063" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(24/(30/57))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 064" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((32-95)-(13/47))+((28*64)/(3+48)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 065" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((92+51)-(84*60))/(26/(72+68)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 066" {
+  let grammar = @recursion.grammar()
+  let source = "28"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"28\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "28", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 067" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((89*46)/(65-93))-((29+94)+(78*37)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 068" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(((36*80)+(19-80))-((99-62)-(57/76)))")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 069" {
+  let grammar = @recursion.grammar()
+  let source = "30"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"30\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "30", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Recursion 070" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 071" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1+")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 072" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("+1")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 073" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1+*2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 074" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(1+2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 075" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1 2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 076" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1.2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 077" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("a")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 078" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1)2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Recursion 079" {
+  let grammar = @recursion.grammar()
+  let rejected = try {
+    let _ = grammar.parse("()")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Typed 000" {
+  let grammar = @typed.grammar()
+  let source = "x=1"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"1\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "1", 2, 3, 1, 2, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 001" {
+  let grammar = @typed.grammar()
+  let source = "x=1+2*3; y=2^3^4 note;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\")))) \";\" (entry \"y\" \"=\" (expression (expression \"2\") \"^\" (expression (expression \"3\") \"^\" (expression \"4\"))) \"note\") \";\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "1", 2, 3, 1, 2, 0),
+    (6, "+", 3, 4, 1, 3, 0),
+    (11, "2", 4, 5, 1, 4, 0),
+    (4, "*", 5, 6, 1, 5, 0),
+    (11, "3", 6, 7, 1, 6, 0),
+    (1, ";", 7, 8, 1, 7, 0),
+    (10, "y", 9, 10, 1, 9, 0),
+    (2, "=", 10, 11, 1, 10, 0),
+    (11, "2", 11, 12, 1, 11, 0),
+    (3, "^", 12, 13, 1, 12, 0),
+    (11, "3", 13, 14, 1, 13, 0),
+    (3, "^", 14, 15, 1, 14, 0),
+    (11, "4", 15, 16, 1, 15, 0),
+    (10, "note", 17, 21, 1, 17, 0),
+    (1, ";", 21, 22, 1, 21, 0),
+    (-1, "<EOF>", 22, 22, 1, 22, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 002" {
+  let grammar = @typed.grammar()
+  let source = "x=(1+2)*3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) \")\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "1", 3, 4, 1, 3, 0),
+    (6, "+", 4, 5, 1, 4, 0),
+    (11, "2", 5, 6, 1, 5, 0),
+    (9, ")", 6, 7, 1, 6, 0),
+    (4, "*", 7, 8, 1, 7, 0),
+    (11, "3", 8, 9, 1, 8, 0),
+    (-1, "<EOF>", 9, 9, 1, 9, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 003" {
+  let grammar = @typed.grammar()
+  let rejected = try {
+    let _ = grammar.parse("x=1+")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Typed 004" {
+  let grammar = @typed.grammar()
+  let rejected = try {
+    let _ = grammar.parse("x=")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Typed 005" {
+  let grammar = @typed.grammar()
+  let rejected = try {
+    let _ = grammar.parse("x=1;;")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Typed 006" {
+  let grammar = @typed.grammar()
+  let rejected = try {
+    let _ = grammar.parse("=1")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Typed 007" {
+  let grammar = @typed.grammar()
+  let rejected = try {
+    let _ = grammar.parse("x=1 note extra")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Typed 008" {
+  let grammar = @typed.grammar()
+  let rejected = try {
+    let _ = grammar.parse("")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Typed 009" {
+  let grammar = @typed.grammar()
+  let source = "x=39"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"39\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "39", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 010" {
+  let grammar = @typed.grammar()
+  let source = "x=29"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"29\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "29", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 011" {
+  let grammar = @typed.grammar()
+  let source = "x=(((71*9)-22)*1)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"71\") \"*\" (expression \"9\")) \")\") \"-\" (expression \"22\")) \")\") \"*\" (expression \"1\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "71", 5, 7, 1, 5, 0),
+    (4, "*", 7, 8, 1, 7, 0),
+    (11, "9", 8, 9, 1, 8, 0),
+    (9, ")", 9, 10, 1, 9, 0),
+    (7, "-", 10, 11, 1, 10, 0),
+    (11, "22", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (4, "*", 14, 15, 1, 14, 0),
+    (11, "1", 15, 16, 1, 15, 0),
+    (9, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 012" {
+  let grammar = @typed.grammar()
+  let source = "x=(2*(3/56))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"2\") \"*\" (expression \"(\" (expression (expression \"3\") \"/\" (expression \"56\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "2", 3, 4, 1, 3, 0),
+    (4, "*", 4, 5, 1, 4, 0),
+    (8, "(", 5, 6, 1, 5, 0),
+    (11, "3", 6, 7, 1, 6, 0),
+    (5, "/", 7, 8, 1, 7, 0),
+    (11, "56", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (9, ")", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 013" {
+  let grammar = @typed.grammar()
+  let source = "x=(((11/36)-27)*((72-47)-46))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"11\") \"/\" (expression \"36\")) \")\") \"-\" (expression \"27\")) \")\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"72\") \"-\" (expression \"47\")) \")\") \"-\" (expression \"46\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "11", 5, 7, 1, 5, 0),
+    (5, "/", 7, 8, 1, 7, 0),
+    (11, "36", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (7, "-", 11, 12, 1, 11, 0),
+    (11, "27", 12, 14, 1, 12, 0),
+    (9, ")", 14, 15, 1, 14, 0),
+    (4, "*", 15, 16, 1, 15, 0),
+    (8, "(", 16, 17, 1, 16, 0),
+    (8, "(", 17, 18, 1, 17, 0),
+    (11, "72", 18, 20, 1, 18, 0),
+    (7, "-", 20, 21, 1, 20, 0),
+    (11, "47", 21, 23, 1, 21, 0),
+    (9, ")", 23, 24, 1, 23, 0),
+    (7, "-", 24, 25, 1, 24, 0),
+    (11, "46", 25, 27, 1, 25, 0),
+    (9, ")", 27, 28, 1, 27, 0),
+    (9, ")", 28, 29, 1, 28, 0),
+    (-1, "<EOF>", 29, 29, 1, 29, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 014" {
+  let grammar = @typed.grammar()
+  let source = "x=(((1*71)+2)-19)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"1\") \"*\" (expression \"71\")) \")\") \"+\" (expression \"2\")) \")\") \"-\" (expression \"19\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "1", 5, 6, 1, 5, 0),
+    (4, "*", 6, 7, 1, 6, 0),
+    (11, "71", 7, 9, 1, 7, 0),
+    (9, ")", 9, 10, 1, 9, 0),
+    (6, "+", 10, 11, 1, 10, 0),
+    (11, "2", 11, 12, 1, 11, 0),
+    (9, ")", 12, 13, 1, 12, 0),
+    (7, "-", 13, 14, 1, 13, 0),
+    (11, "19", 14, 16, 1, 14, 0),
+    (9, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 015" {
+  let grammar = @typed.grammar()
+  let source = "x=(16/((24-61)*(42+91)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"16\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"24\") \"-\" (expression \"61\")) \")\") \"*\" (expression \"(\" (expression (expression \"42\") \"+\" (expression \"91\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "16", 3, 5, 1, 3, 0),
+    (5, "/", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "24", 8, 10, 1, 8, 0),
+    (7, "-", 10, 11, 1, 10, 0),
+    (11, "61", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (4, "*", 14, 15, 1, 14, 0),
+    (8, "(", 15, 16, 1, 15, 0),
+    (11, "42", 16, 18, 1, 16, 0),
+    (6, "+", 18, 19, 1, 18, 0),
+    (11, "91", 19, 21, 1, 19, 0),
+    (9, ")", 21, 22, 1, 21, 0),
+    (9, ")", 22, 23, 1, 22, 0),
+    (9, ")", 23, 24, 1, 23, 0),
+    (-1, "<EOF>", 24, 24, 1, 24, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 016" {
+  let grammar = @typed.grammar()
+  let source = "x=(52+((36+52)/80))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"52\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"36\") \"+\" (expression \"52\")) \")\") \"/\" (expression \"80\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "52", 3, 5, 1, 3, 0),
+    (6, "+", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "36", 8, 10, 1, 8, 0),
+    (6, "+", 10, 11, 1, 10, 0),
+    (11, "52", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (5, "/", 14, 15, 1, 14, 0),
+    (11, "80", 15, 17, 1, 15, 0),
+    (9, ")", 17, 18, 1, 17, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (-1, "<EOF>", 19, 19, 1, 19, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 017" {
+  let grammar = @typed.grammar()
+  let source = "x=(((77+12)*32)*35)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"77\") \"+\" (expression \"12\")) \")\") \"*\" (expression \"32\")) \")\") \"*\" (expression \"35\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "77", 5, 7, 1, 5, 0),
+    (6, "+", 7, 8, 1, 7, 0),
+    (11, "12", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (4, "*", 11, 12, 1, 11, 0),
+    (11, "32", 12, 14, 1, 12, 0),
+    (9, ")", 14, 15, 1, 14, 0),
+    (4, "*", 15, 16, 1, 15, 0),
+    (11, "35", 16, 18, 1, 16, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (-1, "<EOF>", 19, 19, 1, 19, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 018" {
+  let grammar = @typed.grammar()
+  let source = "x=29"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"29\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "29", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 019" {
+  let grammar = @typed.grammar()
+  let source = "x=35"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"35\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "35", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 020" {
+  let grammar = @typed.grammar()
+  let source = "x=26"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"26\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "26", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 021" {
+  let grammar = @typed.grammar()
+  let source = "x=(90*((13*76)/(53/17)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"90\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"13\") \"*\" (expression \"76\")) \")\") \"/\" (expression \"(\" (expression (expression \"53\") \"/\" (expression \"17\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "90", 3, 5, 1, 3, 0),
+    (4, "*", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "13", 8, 10, 1, 8, 0),
+    (4, "*", 10, 11, 1, 10, 0),
+    (11, "76", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (5, "/", 14, 15, 1, 14, 0),
+    (8, "(", 15, 16, 1, 15, 0),
+    (11, "53", 16, 18, 1, 16, 0),
+    (5, "/", 18, 19, 1, 18, 0),
+    (11, "17", 19, 21, 1, 19, 0),
+    (9, ")", 21, 22, 1, 21, 0),
+    (9, ")", 22, 23, 1, 22, 0),
+    (9, ")", 23, 24, 1, 23, 0),
+    (-1, "<EOF>", 24, 24, 1, 24, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 022" {
+  let grammar = @typed.grammar()
+  let source = "x=(((20/47)*65)*((29/42)-(27*95)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"20\") \"/\" (expression \"47\")) \")\") \"*\" (expression \"65\")) \")\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"29\") \"/\" (expression \"42\")) \")\") \"-\" (expression \"(\" (expression (expression \"27\") \"*\" (expression \"95\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "20", 5, 7, 1, 5, 0),
+    (5, "/", 7, 8, 1, 7, 0),
+    (11, "47", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (4, "*", 11, 12, 1, 11, 0),
+    (11, "65", 12, 14, 1, 12, 0),
+    (9, ")", 14, 15, 1, 14, 0),
+    (4, "*", 15, 16, 1, 15, 0),
+    (8, "(", 16, 17, 1, 16, 0),
+    (8, "(", 17, 18, 1, 17, 0),
+    (11, "29", 18, 20, 1, 18, 0),
+    (5, "/", 20, 21, 1, 20, 0),
+    (11, "42", 21, 23, 1, 21, 0),
+    (9, ")", 23, 24, 1, 23, 0),
+    (7, "-", 24, 25, 1, 24, 0),
+    (8, "(", 25, 26, 1, 25, 0),
+    (11, "27", 26, 28, 1, 26, 0),
+    (4, "*", 28, 29, 1, 28, 0),
+    (11, "95", 29, 31, 1, 29, 0),
+    (9, ")", 31, 32, 1, 31, 0),
+    (9, ")", 32, 33, 1, 32, 0),
+    (9, ")", 33, 34, 1, 33, 0),
+    (-1, "<EOF>", 34, 34, 1, 34, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 023" {
+  let grammar = @typed.grammar()
+  let source = "x=(((79+40)*(89-56))-((78+61)/(2*99)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"79\") \"+\" (expression \"40\")) \")\") \"*\" (expression \"(\" (expression (expression \"89\") \"-\" (expression \"56\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"78\") \"+\" (expression \"61\")) \")\") \"/\" (expression \"(\" (expression (expression \"2\") \"*\" (expression \"99\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "79", 5, 7, 1, 5, 0),
+    (6, "+", 7, 8, 1, 7, 0),
+    (11, "40", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (4, "*", 11, 12, 1, 11, 0),
+    (8, "(", 12, 13, 1, 12, 0),
+    (11, "89", 13, 15, 1, 13, 0),
+    (7, "-", 15, 16, 1, 15, 0),
+    (11, "56", 16, 18, 1, 16, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (9, ")", 19, 20, 1, 19, 0),
+    (7, "-", 20, 21, 1, 20, 0),
+    (8, "(", 21, 22, 1, 21, 0),
+    (8, "(", 22, 23, 1, 22, 0),
+    (11, "78", 23, 25, 1, 23, 0),
+    (6, "+", 25, 26, 1, 25, 0),
+    (11, "61", 26, 28, 1, 26, 0),
+    (9, ")", 28, 29, 1, 28, 0),
+    (5, "/", 29, 30, 1, 29, 0),
+    (8, "(", 30, 31, 1, 30, 0),
+    (11, "2", 31, 32, 1, 31, 0),
+    (4, "*", 32, 33, 1, 32, 0),
+    (11, "99", 33, 35, 1, 33, 0),
+    (9, ")", 35, 36, 1, 35, 0),
+    (9, ")", 36, 37, 1, 36, 0),
+    (9, ")", 37, 38, 1, 37, 0),
+    (-1, "<EOF>", 38, 38, 1, 38, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 024" {
+  let grammar = @typed.grammar()
+  let source = "x=80"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"80\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "80", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 025" {
+  let grammar = @typed.grammar()
+  let source = "x=((53*(69+37))+(43/(84*5)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"53\") \"*\" (expression \"(\" (expression (expression \"69\") \"+\" (expression \"37\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"43\") \"/\" (expression \"(\" (expression (expression \"84\") \"*\" (expression \"5\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (11, "53", 4, 6, 1, 4, 0),
+    (4, "*", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "69", 8, 10, 1, 8, 0),
+    (6, "+", 10, 11, 1, 10, 0),
+    (11, "37", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (9, ")", 14, 15, 1, 14, 0),
+    (6, "+", 15, 16, 1, 15, 0),
+    (8, "(", 16, 17, 1, 16, 0),
+    (11, "43", 17, 19, 1, 17, 0),
+    (5, "/", 19, 20, 1, 19, 0),
+    (8, "(", 20, 21, 1, 20, 0),
+    (11, "84", 21, 23, 1, 21, 0),
+    (4, "*", 23, 24, 1, 23, 0),
+    (11, "5", 24, 25, 1, 24, 0),
+    (9, ")", 25, 26, 1, 25, 0),
+    (9, ")", 26, 27, 1, 26, 0),
+    (9, ")", 27, 28, 1, 27, 0),
+    (-1, "<EOF>", 28, 28, 1, 28, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 026" {
+  let grammar = @typed.grammar()
+  let source = "x=(((91*51)/(56+4))/((74+50)-(40*64)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"91\") \"*\" (expression \"51\")) \")\") \"/\" (expression \"(\" (expression (expression \"56\") \"+\" (expression \"4\")) \")\")) \")\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"74\") \"+\" (expression \"50\")) \")\") \"-\" (expression \"(\" (expression (expression \"40\") \"*\" (expression \"64\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "91", 5, 7, 1, 5, 0),
+    (4, "*", 7, 8, 1, 7, 0),
+    (11, "51", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (5, "/", 11, 12, 1, 11, 0),
+    (8, "(", 12, 13, 1, 12, 0),
+    (11, "56", 13, 15, 1, 13, 0),
+    (6, "+", 15, 16, 1, 15, 0),
+    (11, "4", 16, 17, 1, 16, 0),
+    (9, ")", 17, 18, 1, 17, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (5, "/", 19, 20, 1, 19, 0),
+    (8, "(", 20, 21, 1, 20, 0),
+    (8, "(", 21, 22, 1, 21, 0),
+    (11, "74", 22, 24, 1, 22, 0),
+    (6, "+", 24, 25, 1, 24, 0),
+    (11, "50", 25, 27, 1, 25, 0),
+    (9, ")", 27, 28, 1, 27, 0),
+    (7, "-", 28, 29, 1, 28, 0),
+    (8, "(", 29, 30, 1, 29, 0),
+    (11, "40", 30, 32, 1, 30, 0),
+    (4, "*", 32, 33, 1, 32, 0),
+    (11, "64", 33, 35, 1, 33, 0),
+    (9, ")", 35, 36, 1, 35, 0),
+    (9, ")", 36, 37, 1, 36, 0),
+    (9, ")", 37, 38, 1, 37, 0),
+    (-1, "<EOF>", 38, 38, 1, 38, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 027" {
+  let grammar = @typed.grammar()
+  let source = "x=94"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"94\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "94", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 028" {
+  let grammar = @typed.grammar()
+  let source = "x=((30*61)/37)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"30\") \"*\" (expression \"61\")) \")\") \"/\" (expression \"37\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (11, "30", 4, 6, 1, 4, 0),
+    (4, "*", 6, 7, 1, 6, 0),
+    (11, "61", 7, 9, 1, 7, 0),
+    (9, ")", 9, 10, 1, 9, 0),
+    (5, "/", 10, 11, 1, 10, 0),
+    (11, "37", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (-1, "<EOF>", 14, 14, 1, 14, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 029" {
+  let grammar = @typed.grammar()
+  let source = "x=(71+2)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"71\") \"+\" (expression \"2\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "71", 3, 5, 1, 3, 0),
+    (6, "+", 5, 6, 1, 5, 0),
+    (11, "2", 6, 7, 1, 6, 0),
+    (9, ")", 7, 8, 1, 7, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 030" {
+  let grammar = @typed.grammar()
+  let source = "x=2"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"2\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "2", 2, 3, 1, 2, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 031" {
+  let grammar = @typed.grammar()
+  let source = "x=(98+(32*(19*72)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"98\") \"+\" (expression \"(\" (expression (expression \"32\") \"*\" (expression \"(\" (expression (expression \"19\") \"*\" (expression \"72\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "98", 3, 5, 1, 3, 0),
+    (6, "+", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (11, "32", 7, 9, 1, 7, 0),
+    (4, "*", 9, 10, 1, 9, 0),
+    (8, "(", 10, 11, 1, 10, 0),
+    (11, "19", 11, 13, 1, 11, 0),
+    (4, "*", 13, 14, 1, 13, 0),
+    (11, "72", 14, 16, 1, 14, 0),
+    (9, ")", 16, 17, 1, 16, 0),
+    (9, ")", 17, 18, 1, 17, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (-1, "<EOF>", 19, 19, 1, 19, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 032" {
+  let grammar = @typed.grammar()
+  let source = "x=16"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"16\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "16", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 033" {
+  let grammar = @typed.grammar()
+  let source = "x=73"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"73\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "73", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 034" {
+  let grammar = @typed.grammar()
+  let source = "x=(75/(28-48))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"75\") \"/\" (expression \"(\" (expression (expression \"28\") \"-\" (expression \"48\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "75", 3, 5, 1, 3, 0),
+    (5, "/", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (11, "28", 7, 9, 1, 7, 0),
+    (7, "-", 9, 10, 1, 9, 0),
+    (11, "48", 10, 12, 1, 10, 0),
+    (9, ")", 12, 13, 1, 12, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (-1, "<EOF>", 14, 14, 1, 14, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 035" {
+  let grammar = @typed.grammar()
+  let source = "x=(((89-74)/17)*39)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"89\") \"-\" (expression \"74\")) \")\") \"/\" (expression \"17\")) \")\") \"*\" (expression \"39\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "89", 5, 7, 1, 5, 0),
+    (7, "-", 7, 8, 1, 7, 0),
+    (11, "74", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (5, "/", 11, 12, 1, 11, 0),
+    (11, "17", 12, 14, 1, 12, 0),
+    (9, ")", 14, 15, 1, 14, 0),
+    (4, "*", 15, 16, 1, 15, 0),
+    (11, "39", 16, 18, 1, 16, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (-1, "<EOF>", 19, 19, 1, 19, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 036" {
+  let grammar = @typed.grammar()
+  let source = "x=((76-(31-16))+((32+69)*82))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"76\") \"-\" (expression \"(\" (expression (expression \"31\") \"-\" (expression \"16\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"32\") \"+\" (expression \"69\")) \")\") \"*\" (expression \"82\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (11, "76", 4, 6, 1, 4, 0),
+    (7, "-", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "31", 8, 10, 1, 8, 0),
+    (7, "-", 10, 11, 1, 10, 0),
+    (11, "16", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (9, ")", 14, 15, 1, 14, 0),
+    (6, "+", 15, 16, 1, 15, 0),
+    (8, "(", 16, 17, 1, 16, 0),
+    (8, "(", 17, 18, 1, 17, 0),
+    (11, "32", 18, 20, 1, 18, 0),
+    (6, "+", 20, 21, 1, 20, 0),
+    (11, "69", 21, 23, 1, 21, 0),
+    (9, ")", 23, 24, 1, 23, 0),
+    (4, "*", 24, 25, 1, 24, 0),
+    (11, "82", 25, 27, 1, 25, 0),
+    (9, ")", 27, 28, 1, 27, 0),
+    (9, ")", 28, 29, 1, 28, 0),
+    (-1, "<EOF>", 29, 29, 1, 29, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 037" {
+  let grammar = @typed.grammar()
+  let source = "x=((5-(34/49))/72)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"5\") \"-\" (expression \"(\" (expression (expression \"34\") \"/\" (expression \"49\")) \")\")) \")\") \"/\" (expression \"72\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (11, "5", 4, 5, 1, 4, 0),
+    (7, "-", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (11, "34", 7, 9, 1, 7, 0),
+    (5, "/", 9, 10, 1, 9, 0),
+    (11, "49", 10, 12, 1, 10, 0),
+    (9, ")", 12, 13, 1, 12, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (5, "/", 14, 15, 1, 14, 0),
+    (11, "72", 15, 17, 1, 15, 0),
+    (9, ")", 17, 18, 1, 17, 0),
+    (-1, "<EOF>", 18, 18, 1, 18, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 038" {
+  let grammar = @typed.grammar()
+  let source = "x=90"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"90\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (11, "90", 2, 4, 1, 2, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 039" {
+  let grammar = @typed.grammar()
+  let source = "x=(((4-56)+(5-61))-83)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"4\") \"-\" (expression \"56\")) \")\") \"+\" (expression \"(\" (expression (expression \"5\") \"-\" (expression \"61\")) \")\")) \")\") \"-\" (expression \"83\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "4", 5, 6, 1, 5, 0),
+    (7, "-", 6, 7, 1, 6, 0),
+    (11, "56", 7, 9, 1, 7, 0),
+    (9, ")", 9, 10, 1, 9, 0),
+    (6, "+", 10, 11, 1, 10, 0),
+    (8, "(", 11, 12, 1, 11, 0),
+    (11, "5", 12, 13, 1, 12, 0),
+    (7, "-", 13, 14, 1, 13, 0),
+    (11, "61", 14, 16, 1, 14, 0),
+    (9, ")", 16, 17, 1, 16, 0),
+    (9, ")", 17, 18, 1, 17, 0),
+    (7, "-", 18, 19, 1, 18, 0),
+    (11, "83", 19, 21, 1, 19, 0),
+    (9, ")", 21, 22, 1, 21, 0),
+    (-1, "<EOF>", 22, 22, 1, 22, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 040" {
+  let grammar = @typed.grammar()
+  let source = "x=(25+((38*20)/(3+5)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"25\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"38\") \"*\" (expression \"20\")) \")\") \"/\" (expression \"(\" (expression (expression \"3\") \"+\" (expression \"5\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "25", 3, 5, 1, 3, 0),
+    (6, "+", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "38", 8, 10, 1, 8, 0),
+    (4, "*", 10, 11, 1, 10, 0),
+    (11, "20", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (5, "/", 14, 15, 1, 14, 0),
+    (8, "(", 15, 16, 1, 15, 0),
+    (11, "3", 16, 17, 1, 16, 0),
+    (6, "+", 17, 18, 1, 17, 0),
+    (11, "5", 18, 19, 1, 18, 0),
+    (9, ")", 19, 20, 1, 19, 0),
+    (9, ")", 20, 21, 1, 20, 0),
+    (9, ")", 21, 22, 1, 21, 0),
+    (-1, "<EOF>", 22, 22, 1, 22, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 041" {
+  let grammar = @typed.grammar()
+  let source = "x=(75/((20-96)+(49-78)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"75\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"20\") \"-\" (expression \"96\")) \")\") \"+\" (expression \"(\" (expression (expression \"49\") \"-\" (expression \"78\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "75", 3, 5, 1, 3, 0),
+    (5, "/", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "20", 8, 10, 1, 8, 0),
+    (7, "-", 10, 11, 1, 10, 0),
+    (11, "96", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (6, "+", 14, 15, 1, 14, 0),
+    (8, "(", 15, 16, 1, 15, 0),
+    (11, "49", 16, 18, 1, 16, 0),
+    (7, "-", 18, 19, 1, 18, 0),
+    (11, "78", 19, 21, 1, 19, 0),
+    (9, ")", 21, 22, 1, 21, 0),
+    (9, ")", 22, 23, 1, 22, 0),
+    (9, ")", 23, 24, 1, 23, 0),
+    (-1, "<EOF>", 24, 24, 1, 24, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 042" {
+  let grammar = @typed.grammar()
+  let source = "x=(53*((43-58)/11))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"53\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"43\") \"-\" (expression \"58\")) \")\") \"/\" (expression \"11\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (11, "53", 3, 5, 1, 3, 0),
+    (4, "*", 5, 6, 1, 5, 0),
+    (8, "(", 6, 7, 1, 6, 0),
+    (8, "(", 7, 8, 1, 7, 0),
+    (11, "43", 8, 10, 1, 8, 0),
+    (7, "-", 10, 11, 1, 10, 0),
+    (11, "58", 11, 13, 1, 11, 0),
+    (9, ")", 13, 14, 1, 13, 0),
+    (5, "/", 14, 15, 1, 14, 0),
+    (11, "11", 15, 17, 1, 15, 0),
+    (9, ")", 17, 18, 1, 17, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (-1, "<EOF>", 19, 19, 1, 19, 0),
+  ])
+}
+
+///|
+test "Java oracle Typed 043" {
+  let grammar = @typed.grammar()
+  let source = "x=(((11+70)+(88-40))-((27+62)-(78*83)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"11\") \"+\" (expression \"70\")) \")\") \"+\" (expression \"(\" (expression (expression \"88\") \"-\" (expression \"40\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"27\") \"+\" (expression \"62\")) \")\") \"-\" (expression \"(\" (expression (expression \"78\") \"*\" (expression \"83\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "x", 0, 1, 1, 0, 0),
+    (2, "=", 1, 2, 1, 1, 0),
+    (8, "(", 2, 3, 1, 2, 0),
+    (8, "(", 3, 4, 1, 3, 0),
+    (8, "(", 4, 5, 1, 4, 0),
+    (11, "11", 5, 7, 1, 5, 0),
+    (6, "+", 7, 8, 1, 7, 0),
+    (11, "70", 8, 10, 1, 8, 0),
+    (9, ")", 10, 11, 1, 10, 0),
+    (6, "+", 11, 12, 1, 11, 0),
+    (8, "(", 12, 13, 1, 12, 0),
+    (11, "88", 13, 15, 1, 13, 0),
+    (7, "-", 15, 16, 1, 15, 0),
+    (11, "40", 16, 18, 1, 16, 0),
+    (9, ")", 18, 19, 1, 18, 0),
+    (9, ")", 19, 20, 1, 19, 0),
+    (7, "-", 20, 21, 1, 20, 0),
+    (8, "(", 21, 22, 1, 21, 0),
+    (8, "(", 22, 23, 1, 22, 0),
+    (11, "27", 23, 25, 1, 23, 0),
+    (6, "+", 25, 26, 1, 25, 0),
+    (11, "62", 26, 28, 1, 26, 0),
+    (9, ")", 28, 29, 1, 28, 0),
+    (7, "-", 29, 30, 1, 29, 0),
+    (8, "(", 30, 31, 1, 30, 0),
+    (11, "78", 31, 33, 1, 31, 0),
+    (4, "*", 33, 34, 1, 33, 0),
+    (11, "83", 34, 36, 1, 34, 0),
+    (9, ")", 36, 37, 1, 36, 0),
+    (9, ")", 37, 38, 1, 37, 0),
+    (9, ")", 38, 39, 1, 38, 0),
+    (-1, "<EOF>", 39, 39, 1, 39, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 000" {
+  let grammar = @decisions.grammar()
+  let source = ""
+  assert_eq(grammar.parse(source).to_sexpr(), "(document <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [(-1, "<EOF>", 0, 0, 1, 0, 0)])
+}
+
+///|
+test "Java oracle Decisions 001" {
+  let grammar = @decisions.grammar()
+  let source = "p a x;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "p", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (3, ";", 5, 6, 1, 5, 0),
+    (-1, "<EOF>", 6, 6, 1, 6, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 002" {
+  let grammar = @decisions.grammar()
+  let source = "p a x x;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"p\" (choice \"a\" \"x\") \"x\" \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "p", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (2, "x", 6, 7, 1, 6, 0),
+    (3, ";", 7, 8, 1, 7, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 003" {
+  let grammar = @decisions.grammar()
+  let source = "q a y;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"q\" (choice \"a\") \"y\" \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "q", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (5, "y", 4, 5, 1, 4, 0),
+    (3, ";", 5, 6, 1, 5, 0),
+    (-1, "<EOF>", 6, 6, 1, 6, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 004" {
+  let grammar = @decisions.grammar()
+  let source = "q a x y;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "q", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (5, "y", 6, 7, 1, 6, 0),
+    (3, ";", 7, 8, 1, 7, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 005" {
+  let grammar = @decisions.grammar()
+  let rejected = try {
+    let _ = grammar.parse("p a y;")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Decisions 006" {
+  let grammar = @decisions.grammar()
+  let rejected = try {
+    let _ = grammar.parse("q a x;")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Decisions 007" {
+  let grammar = @decisions.grammar()
+  let source = "u;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (either (first \"u\")) \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (10, "u", 0, 1, 1, 0, 0),
+    (3, ";", 1, 2, 1, 1, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 008" {
+  let grammar = @decisions.grammar()
+  let source = "foo;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (sequence \"foo\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "foo", 0, 3, 1, 0, 0),
+    (3, ";", 3, 4, 1, 3, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 009" {
+  let grammar = @decisions.grammar()
+  let source = "foo bar baz;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (sequence \"foo\" \"bar\" \"baz\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (11, "foo", 0, 3, 1, 0, 0),
+    (11, "bar", 4, 7, 1, 4, 0),
+    (11, "baz", 8, 11, 1, 8, 0),
+    (3, ";", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 010" {
+  let grammar = @decisions.grammar()
+  let source = "z foo !;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (8, "!", 6, 7, 1, 6, 0),
+    (3, ";", 7, 8, 1, 7, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 011" {
+  let grammar = @decisions.grammar()
+  let source = "z foo bar ?;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"bar\" \"?\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "bar", 6, 9, 1, 6, 0),
+    (9, "?", 10, 11, 1, 10, 0),
+    (3, ";", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 012" {
+  let grammar = @decisions.grammar()
+  let rejected = try {
+    let _ = grammar.parse("z !;")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Decisions 013" {
+  let grammar = @decisions.grammar()
+  let rejected = try {
+    let _ = grammar.parse("p a x x x;")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Decisions 014" {
+  let grammar = @decisions.grammar()
+  let source = "p a x; q a x y; p a x x; u;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\" \"x\") \"x\" \";\") (item (either (first \"u\")) \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "p", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (3, ";", 5, 6, 1, 5, 0),
+    (4, "q", 7, 8, 1, 7, 0),
+    (6, "a", 9, 10, 1, 9, 0),
+    (2, "x", 11, 12, 1, 11, 0),
+    (5, "y", 13, 14, 1, 13, 0),
+    (3, ";", 14, 15, 1, 14, 0),
+    (1, "p", 16, 17, 1, 16, 0),
+    (6, "a", 18, 19, 1, 18, 0),
+    (2, "x", 20, 21, 1, 20, 0),
+    (2, "x", 22, 23, 1, 22, 0),
+    (3, ";", 23, 24, 1, 23, 0),
+    (10, "u", 25, 26, 1, 25, 0),
+    (3, ";", 26, 27, 1, 26, 0),
+    (-1, "<EOF>", 27, 27, 1, 27, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 015" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo !;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (8, "!", 10, 11, 1, 10, 0),
+    (3, ";", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 016" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo ?;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (9, "?", 10, 11, 1, 10, 0),
+    (3, ";", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 017" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo foo foo foo foo foo foo foo foo !;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (11, "foo", 10, 13, 1, 10, 0),
+    (11, "foo", 14, 17, 1, 14, 0),
+    (11, "foo", 18, 21, 1, 18, 0),
+    (11, "foo", 22, 25, 1, 22, 0),
+    (11, "foo", 26, 29, 1, 26, 0),
+    (11, "foo", 30, 33, 1, 30, 0),
+    (11, "foo", 34, 37, 1, 34, 0),
+    (11, "foo", 38, 41, 1, 38, 0),
+    (8, "!", 42, 43, 1, 42, 0),
+    (3, ";", 43, 44, 1, 43, 0),
+    (-1, "<EOF>", 44, 44, 1, 44, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 018" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo foo foo foo foo foo foo foo foo ?;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (11, "foo", 10, 13, 1, 10, 0),
+    (11, "foo", 14, 17, 1, 14, 0),
+    (11, "foo", 18, 21, 1, 18, 0),
+    (11, "foo", 22, 25, 1, 22, 0),
+    (11, "foo", 26, 29, 1, 26, 0),
+    (11, "foo", 30, 33, 1, 30, 0),
+    (11, "foo", 34, 37, 1, 34, 0),
+    (11, "foo", 38, 41, 1, 38, 0),
+    (9, "?", 42, 43, 1, 42, 0),
+    (3, ";", 43, 44, 1, 43, 0),
+    (-1, "<EOF>", 44, 44, 1, 44, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 019" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo !;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (11, "foo", 10, 13, 1, 10, 0),
+    (11, "foo", 14, 17, 1, 14, 0),
+    (11, "foo", 18, 21, 1, 18, 0),
+    (11, "foo", 22, 25, 1, 22, 0),
+    (11, "foo", 26, 29, 1, 26, 0),
+    (11, "foo", 30, 33, 1, 30, 0),
+    (11, "foo", 34, 37, 1, 34, 0),
+    (11, "foo", 38, 41, 1, 38, 0),
+    (11, "foo", 42, 45, 1, 42, 0),
+    (11, "foo", 46, 49, 1, 46, 0),
+    (11, "foo", 50, 53, 1, 50, 0),
+    (11, "foo", 54, 57, 1, 54, 0),
+    (11, "foo", 58, 61, 1, 58, 0),
+    (11, "foo", 62, 65, 1, 62, 0),
+    (11, "foo", 66, 69, 1, 66, 0),
+    (11, "foo", 70, 73, 1, 70, 0),
+    (11, "foo", 74, 77, 1, 74, 0),
+    (11, "foo", 78, 81, 1, 78, 0),
+    (11, "foo", 82, 85, 1, 82, 0),
+    (11, "foo", 86, 89, 1, 86, 0),
+    (11, "foo", 90, 93, 1, 90, 0),
+    (11, "foo", 94, 97, 1, 94, 0),
+    (11, "foo", 98, 101, 1, 98, 0),
+    (11, "foo", 102, 105, 1, 102, 0),
+    (11, "foo", 106, 109, 1, 106, 0),
+    (11, "foo", 110, 113, 1, 110, 0),
+    (11, "foo", 114, 117, 1, 114, 0),
+    (11, "foo", 118, 121, 1, 118, 0),
+    (11, "foo", 122, 125, 1, 122, 0),
+    (11, "foo", 126, 129, 1, 126, 0),
+    (11, "foo", 130, 133, 1, 130, 0),
+    (11, "foo", 134, 137, 1, 134, 0),
+    (11, "foo", 138, 141, 1, 138, 0),
+    (11, "foo", 142, 145, 1, 142, 0),
+    (11, "foo", 146, 149, 1, 146, 0),
+    (11, "foo", 150, 153, 1, 150, 0),
+    (11, "foo", 154, 157, 1, 154, 0),
+    (11, "foo", 158, 161, 1, 158, 0),
+    (11, "foo", 162, 165, 1, 162, 0),
+    (11, "foo", 166, 169, 1, 166, 0),
+    (11, "foo", 170, 173, 1, 170, 0),
+    (11, "foo", 174, 177, 1, 174, 0),
+    (11, "foo", 178, 181, 1, 178, 0),
+    (11, "foo", 182, 185, 1, 182, 0),
+    (11, "foo", 186, 189, 1, 186, 0),
+    (11, "foo", 190, 193, 1, 190, 0),
+    (11, "foo", 194, 197, 1, 194, 0),
+    (11, "foo", 198, 201, 1, 198, 0),
+    (11, "foo", 202, 205, 1, 202, 0),
+    (11, "foo", 206, 209, 1, 206, 0),
+    (11, "foo", 210, 213, 1, 210, 0),
+    (11, "foo", 214, 217, 1, 214, 0),
+    (11, "foo", 218, 221, 1, 218, 0),
+    (11, "foo", 222, 225, 1, 222, 0),
+    (11, "foo", 226, 229, 1, 226, 0),
+    (11, "foo", 230, 233, 1, 230, 0),
+    (11, "foo", 234, 237, 1, 234, 0),
+    (11, "foo", 238, 241, 1, 238, 0),
+    (11, "foo", 242, 245, 1, 242, 0),
+    (11, "foo", 246, 249, 1, 246, 0),
+    (11, "foo", 250, 253, 1, 250, 0),
+    (11, "foo", 254, 257, 1, 254, 0),
+    (11, "foo", 258, 261, 1, 258, 0),
+    (8, "!", 262, 263, 1, 262, 0),
+    (3, ";", 263, 264, 1, 263, 0),
+    (-1, "<EOF>", 264, 264, 1, 264, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 020" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo ?;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (11, "foo", 10, 13, 1, 10, 0),
+    (11, "foo", 14, 17, 1, 14, 0),
+    (11, "foo", 18, 21, 1, 18, 0),
+    (11, "foo", 22, 25, 1, 22, 0),
+    (11, "foo", 26, 29, 1, 26, 0),
+    (11, "foo", 30, 33, 1, 30, 0),
+    (11, "foo", 34, 37, 1, 34, 0),
+    (11, "foo", 38, 41, 1, 38, 0),
+    (11, "foo", 42, 45, 1, 42, 0),
+    (11, "foo", 46, 49, 1, 46, 0),
+    (11, "foo", 50, 53, 1, 50, 0),
+    (11, "foo", 54, 57, 1, 54, 0),
+    (11, "foo", 58, 61, 1, 58, 0),
+    (11, "foo", 62, 65, 1, 62, 0),
+    (11, "foo", 66, 69, 1, 66, 0),
+    (11, "foo", 70, 73, 1, 70, 0),
+    (11, "foo", 74, 77, 1, 74, 0),
+    (11, "foo", 78, 81, 1, 78, 0),
+    (11, "foo", 82, 85, 1, 82, 0),
+    (11, "foo", 86, 89, 1, 86, 0),
+    (11, "foo", 90, 93, 1, 90, 0),
+    (11, "foo", 94, 97, 1, 94, 0),
+    (11, "foo", 98, 101, 1, 98, 0),
+    (11, "foo", 102, 105, 1, 102, 0),
+    (11, "foo", 106, 109, 1, 106, 0),
+    (11, "foo", 110, 113, 1, 110, 0),
+    (11, "foo", 114, 117, 1, 114, 0),
+    (11, "foo", 118, 121, 1, 118, 0),
+    (11, "foo", 122, 125, 1, 122, 0),
+    (11, "foo", 126, 129, 1, 126, 0),
+    (11, "foo", 130, 133, 1, 130, 0),
+    (11, "foo", 134, 137, 1, 134, 0),
+    (11, "foo", 138, 141, 1, 138, 0),
+    (11, "foo", 142, 145, 1, 142, 0),
+    (11, "foo", 146, 149, 1, 146, 0),
+    (11, "foo", 150, 153, 1, 150, 0),
+    (11, "foo", 154, 157, 1, 154, 0),
+    (11, "foo", 158, 161, 1, 158, 0),
+    (11, "foo", 162, 165, 1, 162, 0),
+    (11, "foo", 166, 169, 1, 166, 0),
+    (11, "foo", 170, 173, 1, 170, 0),
+    (11, "foo", 174, 177, 1, 174, 0),
+    (11, "foo", 178, 181, 1, 178, 0),
+    (11, "foo", 182, 185, 1, 182, 0),
+    (11, "foo", 186, 189, 1, 186, 0),
+    (11, "foo", 190, 193, 1, 190, 0),
+    (11, "foo", 194, 197, 1, 194, 0),
+    (11, "foo", 198, 201, 1, 198, 0),
+    (11, "foo", 202, 205, 1, 202, 0),
+    (11, "foo", 206, 209, 1, 206, 0),
+    (11, "foo", 210, 213, 1, 210, 0),
+    (11, "foo", 214, 217, 1, 214, 0),
+    (11, "foo", 218, 221, 1, 218, 0),
+    (11, "foo", 222, 225, 1, 222, 0),
+    (11, "foo", 226, 229, 1, 226, 0),
+    (11, "foo", 230, 233, 1, 230, 0),
+    (11, "foo", 234, 237, 1, 234, 0),
+    (11, "foo", 238, 241, 1, 238, 0),
+    (11, "foo", 242, 245, 1, 242, 0),
+    (11, "foo", 246, 249, 1, 246, 0),
+    (11, "foo", 250, 253, 1, 250, 0),
+    (11, "foo", 254, 257, 1, 254, 0),
+    (11, "foo", 258, 261, 1, 258, 0),
+    (9, "?", 262, 263, 1, 262, 0),
+    (3, ";", 263, 264, 1, 263, 0),
+    (-1, "<EOF>", 264, 264, 1, 264, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 021" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo !;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (11, "foo", 10, 13, 1, 10, 0),
+    (11, "foo", 14, 17, 1, 14, 0),
+    (11, "foo", 18, 21, 1, 18, 0),
+    (11, "foo", 22, 25, 1, 22, 0),
+    (11, "foo", 26, 29, 1, 26, 0),
+    (11, "foo", 30, 33, 1, 30, 0),
+    (11, "foo", 34, 37, 1, 34, 0),
+    (11, "foo", 38, 41, 1, 38, 0),
+    (11, "foo", 42, 45, 1, 42, 0),
+    (11, "foo", 46, 49, 1, 46, 0),
+    (11, "foo", 50, 53, 1, 50, 0),
+    (11, "foo", 54, 57, 1, 54, 0),
+    (11, "foo", 58, 61, 1, 58, 0),
+    (11, "foo", 62, 65, 1, 62, 0),
+    (11, "foo", 66, 69, 1, 66, 0),
+    (11, "foo", 70, 73, 1, 70, 0),
+    (11, "foo", 74, 77, 1, 74, 0),
+    (11, "foo", 78, 81, 1, 78, 0),
+    (11, "foo", 82, 85, 1, 82, 0),
+    (11, "foo", 86, 89, 1, 86, 0),
+    (11, "foo", 90, 93, 1, 90, 0),
+    (11, "foo", 94, 97, 1, 94, 0),
+    (11, "foo", 98, 101, 1, 98, 0),
+    (11, "foo", 102, 105, 1, 102, 0),
+    (11, "foo", 106, 109, 1, 106, 0),
+    (11, "foo", 110, 113, 1, 110, 0),
+    (11, "foo", 114, 117, 1, 114, 0),
+    (11, "foo", 118, 121, 1, 118, 0),
+    (11, "foo", 122, 125, 1, 122, 0),
+    (11, "foo", 126, 129, 1, 126, 0),
+    (11, "foo", 130, 133, 1, 130, 0),
+    (11, "foo", 134, 137, 1, 134, 0),
+    (11, "foo", 138, 141, 1, 138, 0),
+    (11, "foo", 142, 145, 1, 142, 0),
+    (11, "foo", 146, 149, 1, 146, 0),
+    (11, "foo", 150, 153, 1, 150, 0),
+    (11, "foo", 154, 157, 1, 154, 0),
+    (11, "foo", 158, 161, 1, 158, 0),
+    (11, "foo", 162, 165, 1, 162, 0),
+    (11, "foo", 166, 169, 1, 166, 0),
+    (11, "foo", 170, 173, 1, 170, 0),
+    (11, "foo", 174, 177, 1, 174, 0),
+    (11, "foo", 178, 181, 1, 178, 0),
+    (11, "foo", 182, 185, 1, 182, 0),
+    (11, "foo", 186, 189, 1, 186, 0),
+    (11, "foo", 190, 193, 1, 190, 0),
+    (11, "foo", 194, 197, 1, 194, 0),
+    (11, "foo", 198, 201, 1, 198, 0),
+    (11, "foo", 202, 205, 1, 202, 0),
+    (11, "foo", 206, 209, 1, 206, 0),
+    (11, "foo", 210, 213, 1, 210, 0),
+    (11, "foo", 214, 217, 1, 214, 0),
+    (11, "foo", 218, 221, 1, 218, 0),
+    (11, "foo", 222, 225, 1, 222, 0),
+    (11, "foo", 226, 229, 1, 226, 0),
+    (11, "foo", 230, 233, 1, 230, 0),
+    (11, "foo", 234, 237, 1, 234, 0),
+    (11, "foo", 238, 241, 1, 238, 0),
+    (11, "foo", 242, 245, 1, 242, 0),
+    (11, "foo", 246, 249, 1, 246, 0),
+    (11, "foo", 250, 253, 1, 250, 0),
+    (11, "foo", 254, 257, 1, 254, 0),
+    (11, "foo", 258, 261, 1, 258, 0),
+    (11, "foo", 262, 265, 1, 262, 0),
+    (11, "foo", 266, 269, 1, 266, 0),
+    (11, "foo", 270, 273, 1, 270, 0),
+    (11, "foo", 274, 277, 1, 274, 0),
+    (11, "foo", 278, 281, 1, 278, 0),
+    (11, "foo", 282, 285, 1, 282, 0),
+    (11, "foo", 286, 289, 1, 286, 0),
+    (11, "foo", 290, 293, 1, 290, 0),
+    (11, "foo", 294, 297, 1, 294, 0),
+    (11, "foo", 298, 301, 1, 298, 0),
+    (11, "foo", 302, 305, 1, 302, 0),
+    (11, "foo", 306, 309, 1, 306, 0),
+    (11, "foo", 310, 313, 1, 310, 0),
+    (11, "foo", 314, 317, 1, 314, 0),
+    (11, "foo", 318, 321, 1, 318, 0),
+    (8, "!", 322, 323, 1, 322, 0),
+    (3, ";", 323, 324, 1, 323, 0),
+    (-1, "<EOF>", 324, 324, 1, 324, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 022" {
+  let grammar = @decisions.grammar()
+  let source = "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo ?;"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (7, "z", 0, 1, 1, 0, 0),
+    (11, "foo", 2, 5, 1, 2, 0),
+    (11, "foo", 6, 9, 1, 6, 0),
+    (11, "foo", 10, 13, 1, 10, 0),
+    (11, "foo", 14, 17, 1, 14, 0),
+    (11, "foo", 18, 21, 1, 18, 0),
+    (11, "foo", 22, 25, 1, 22, 0),
+    (11, "foo", 26, 29, 1, 26, 0),
+    (11, "foo", 30, 33, 1, 30, 0),
+    (11, "foo", 34, 37, 1, 34, 0),
+    (11, "foo", 38, 41, 1, 38, 0),
+    (11, "foo", 42, 45, 1, 42, 0),
+    (11, "foo", 46, 49, 1, 46, 0),
+    (11, "foo", 50, 53, 1, 50, 0),
+    (11, "foo", 54, 57, 1, 54, 0),
+    (11, "foo", 58, 61, 1, 58, 0),
+    (11, "foo", 62, 65, 1, 62, 0),
+    (11, "foo", 66, 69, 1, 66, 0),
+    (11, "foo", 70, 73, 1, 70, 0),
+    (11, "foo", 74, 77, 1, 74, 0),
+    (11, "foo", 78, 81, 1, 78, 0),
+    (11, "foo", 82, 85, 1, 82, 0),
+    (11, "foo", 86, 89, 1, 86, 0),
+    (11, "foo", 90, 93, 1, 90, 0),
+    (11, "foo", 94, 97, 1, 94, 0),
+    (11, "foo", 98, 101, 1, 98, 0),
+    (11, "foo", 102, 105, 1, 102, 0),
+    (11, "foo", 106, 109, 1, 106, 0),
+    (11, "foo", 110, 113, 1, 110, 0),
+    (11, "foo", 114, 117, 1, 114, 0),
+    (11, "foo", 118, 121, 1, 118, 0),
+    (11, "foo", 122, 125, 1, 122, 0),
+    (11, "foo", 126, 129, 1, 126, 0),
+    (11, "foo", 130, 133, 1, 130, 0),
+    (11, "foo", 134, 137, 1, 134, 0),
+    (11, "foo", 138, 141, 1, 138, 0),
+    (11, "foo", 142, 145, 1, 142, 0),
+    (11, "foo", 146, 149, 1, 146, 0),
+    (11, "foo", 150, 153, 1, 150, 0),
+    (11, "foo", 154, 157, 1, 154, 0),
+    (11, "foo", 158, 161, 1, 158, 0),
+    (11, "foo", 162, 165, 1, 162, 0),
+    (11, "foo", 166, 169, 1, 166, 0),
+    (11, "foo", 170, 173, 1, 170, 0),
+    (11, "foo", 174, 177, 1, 174, 0),
+    (11, "foo", 178, 181, 1, 178, 0),
+    (11, "foo", 182, 185, 1, 182, 0),
+    (11, "foo", 186, 189, 1, 186, 0),
+    (11, "foo", 190, 193, 1, 190, 0),
+    (11, "foo", 194, 197, 1, 194, 0),
+    (11, "foo", 198, 201, 1, 198, 0),
+    (11, "foo", 202, 205, 1, 202, 0),
+    (11, "foo", 206, 209, 1, 206, 0),
+    (11, "foo", 210, 213, 1, 210, 0),
+    (11, "foo", 214, 217, 1, 214, 0),
+    (11, "foo", 218, 221, 1, 218, 0),
+    (11, "foo", 222, 225, 1, 222, 0),
+    (11, "foo", 226, 229, 1, 226, 0),
+    (11, "foo", 230, 233, 1, 230, 0),
+    (11, "foo", 234, 237, 1, 234, 0),
+    (11, "foo", 238, 241, 1, 238, 0),
+    (11, "foo", 242, 245, 1, 242, 0),
+    (11, "foo", 246, 249, 1, 246, 0),
+    (11, "foo", 250, 253, 1, 250, 0),
+    (11, "foo", 254, 257, 1, 254, 0),
+    (11, "foo", 258, 261, 1, 258, 0),
+    (11, "foo", 262, 265, 1, 262, 0),
+    (11, "foo", 266, 269, 1, 266, 0),
+    (11, "foo", 270, 273, 1, 270, 0),
+    (11, "foo", 274, 277, 1, 274, 0),
+    (11, "foo", 278, 281, 1, 278, 0),
+    (11, "foo", 282, 285, 1, 282, 0),
+    (11, "foo", 286, 289, 1, 286, 0),
+    (11, "foo", 290, 293, 1, 290, 0),
+    (11, "foo", 294, 297, 1, 294, 0),
+    (11, "foo", 298, 301, 1, 298, 0),
+    (11, "foo", 302, 305, 1, 302, 0),
+    (11, "foo", 306, 309, 1, 306, 0),
+    (11, "foo", 310, 313, 1, 310, 0),
+    (11, "foo", 314, 317, 1, 314, 0),
+    (11, "foo", 318, 321, 1, 318, 0),
+    (9, "?", 322, 323, 1, 322, 0),
+    (3, ";", 323, 324, 1, 323, 0),
+    (-1, "<EOF>", 324, 324, 1, 324, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 023" {
+  let grammar = @decisions.grammar()
+  let source = "p a x; q a x y; p a x; q a x y; "
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "p", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (3, ";", 5, 6, 1, 5, 0),
+    (4, "q", 7, 8, 1, 7, 0),
+    (6, "a", 9, 10, 1, 9, 0),
+    (2, "x", 11, 12, 1, 11, 0),
+    (5, "y", 13, 14, 1, 13, 0),
+    (3, ";", 14, 15, 1, 14, 0),
+    (1, "p", 16, 17, 1, 16, 0),
+    (6, "a", 18, 19, 1, 18, 0),
+    (2, "x", 20, 21, 1, 20, 0),
+    (3, ";", 21, 22, 1, 21, 0),
+    (4, "q", 23, 24, 1, 23, 0),
+    (6, "a", 25, 26, 1, 25, 0),
+    (2, "x", 27, 28, 1, 27, 0),
+    (5, "y", 29, 30, 1, 29, 0),
+    (3, ";", 30, 31, 1, 30, 0),
+    (-1, "<EOF>", 32, 32, 1, 32, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 024" {
+  let grammar = @decisions.grammar()
+  let source = "p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; "
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "p", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (3, ";", 5, 6, 1, 5, 0),
+    (4, "q", 7, 8, 1, 7, 0),
+    (6, "a", 9, 10, 1, 9, 0),
+    (2, "x", 11, 12, 1, 11, 0),
+    (5, "y", 13, 14, 1, 13, 0),
+    (3, ";", 14, 15, 1, 14, 0),
+    (1, "p", 16, 17, 1, 16, 0),
+    (6, "a", 18, 19, 1, 18, 0),
+    (2, "x", 20, 21, 1, 20, 0),
+    (3, ";", 21, 22, 1, 21, 0),
+    (4, "q", 23, 24, 1, 23, 0),
+    (6, "a", 25, 26, 1, 25, 0),
+    (2, "x", 27, 28, 1, 27, 0),
+    (5, "y", 29, 30, 1, 29, 0),
+    (3, ";", 30, 31, 1, 30, 0),
+    (1, "p", 32, 33, 1, 32, 0),
+    (6, "a", 34, 35, 1, 34, 0),
+    (2, "x", 36, 37, 1, 36, 0),
+    (3, ";", 37, 38, 1, 37, 0),
+    (4, "q", 39, 40, 1, 39, 0),
+    (6, "a", 41, 42, 1, 41, 0),
+    (2, "x", 43, 44, 1, 43, 0),
+    (5, "y", 45, 46, 1, 45, 0),
+    (3, ";", 46, 47, 1, 46, 0),
+    (1, "p", 48, 49, 1, 48, 0),
+    (6, "a", 50, 51, 1, 50, 0),
+    (2, "x", 52, 53, 1, 52, 0),
+    (3, ";", 53, 54, 1, 53, 0),
+    (4, "q", 55, 56, 1, 55, 0),
+    (6, "a", 57, 58, 1, 57, 0),
+    (2, "x", 59, 60, 1, 59, 0),
+    (5, "y", 61, 62, 1, 61, 0),
+    (3, ";", 62, 63, 1, 62, 0),
+    (-1, "<EOF>", 64, 64, 1, 64, 0),
+  ])
+}
+
+///|
+test "Java oracle Decisions 025" {
+  let grammar = @decisions.grammar()
+  let source = "p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; "
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "p", 0, 1, 1, 0, 0),
+    (6, "a", 2, 3, 1, 2, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (3, ";", 5, 6, 1, 5, 0),
+    (4, "q", 7, 8, 1, 7, 0),
+    (6, "a", 9, 10, 1, 9, 0),
+    (2, "x", 11, 12, 1, 11, 0),
+    (5, "y", 13, 14, 1, 13, 0),
+    (3, ";", 14, 15, 1, 14, 0),
+    (1, "p", 16, 17, 1, 16, 0),
+    (6, "a", 18, 19, 1, 18, 0),
+    (2, "x", 20, 21, 1, 20, 0),
+    (3, ";", 21, 22, 1, 21, 0),
+    (4, "q", 23, 24, 1, 23, 0),
+    (6, "a", 25, 26, 1, 25, 0),
+    (2, "x", 27, 28, 1, 27, 0),
+    (5, "y", 29, 30, 1, 29, 0),
+    (3, ";", 30, 31, 1, 30, 0),
+    (1, "p", 32, 33, 1, 32, 0),
+    (6, "a", 34, 35, 1, 34, 0),
+    (2, "x", 36, 37, 1, 36, 0),
+    (3, ";", 37, 38, 1, 37, 0),
+    (4, "q", 39, 40, 1, 39, 0),
+    (6, "a", 41, 42, 1, 41, 0),
+    (2, "x", 43, 44, 1, 43, 0),
+    (5, "y", 45, 46, 1, 45, 0),
+    (3, ";", 46, 47, 1, 46, 0),
+    (1, "p", 48, 49, 1, 48, 0),
+    (6, "a", 50, 51, 1, 50, 0),
+    (2, "x", 52, 53, 1, 52, 0),
+    (3, ";", 53, 54, 1, 53, 0),
+    (4, "q", 55, 56, 1, 55, 0),
+    (6, "a", 57, 58, 1, 57, 0),
+    (2, "x", 59, 60, 1, 59, 0),
+    (5, "y", 61, 62, 1, 61, 0),
+    (3, ";", 62, 63, 1, 62, 0),
+    (1, "p", 64, 65, 1, 64, 0),
+    (6, "a", 66, 67, 1, 66, 0),
+    (2, "x", 68, 69, 1, 68, 0),
+    (3, ";", 69, 70, 1, 69, 0),
+    (4, "q", 71, 72, 1, 71, 0),
+    (6, "a", 73, 74, 1, 73, 0),
+    (2, "x", 75, 76, 1, 75, 0),
+    (5, "y", 77, 78, 1, 77, 0),
+    (3, ";", 78, 79, 1, 78, 0),
+    (1, "p", 80, 81, 1, 80, 0),
+    (6, "a", 82, 83, 1, 82, 0),
+    (2, "x", 84, 85, 1, 84, 0),
+    (3, ";", 85, 86, 1, 85, 0),
+    (4, "q", 87, 88, 1, 87, 0),
+    (6, "a", 89, 90, 1, 89, 0),
+    (2, "x", 91, 92, 1, 91, 0),
+    (5, "y", 93, 94, 1, 93, 0),
+    (3, ";", 94, 95, 1, 94, 0),
+    (1, "p", 96, 97, 1, 96, 0),
+    (6, "a", 98, 99, 1, 98, 0),
+    (2, "x", 100, 101, 1, 100, 0),
+    (3, ";", 101, 102, 1, 101, 0),
+    (4, "q", 103, 104, 1, 103, 0),
+    (6, "a", 105, 106, 1, 105, 0),
+    (2, "x", 107, 108, 1, 107, 0),
+    (5, "y", 109, 110, 1, 109, 0),
+    (3, ";", 110, 111, 1, 110, 0),
+    (1, "p", 112, 113, 1, 112, 0),
+    (6, "a", 114, 115, 1, 114, 0),
+    (2, "x", 116, 117, 1, 116, 0),
+    (3, ";", 117, 118, 1, 117, 0),
+    (4, "q", 119, 120, 1, 119, 0),
+    (6, "a", 121, 122, 1, 121, 0),
+    (2, "x", 123, 124, 1, 123, 0),
+    (5, "y", 125, 126, 1, 125, 0),
+    (3, ";", 126, 127, 1, 126, 0),
+    (-1, "<EOF>", 128, 128, 1, 128, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 000" {
+  let grammar = @precedence.grammar()
+  let source = "1+2*3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (4, "+", 1, 2, 1, 1, 0),
+    (8, "2", 2, 3, 1, 2, 0),
+    (2, "*", 3, 4, 1, 3, 0),
+    (8, "3", 4, 5, 1, 4, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 001" {
+  let grammar = @precedence.grammar()
+  let source = "(1+2)*3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) \")\") \"*\" (expression \"3\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "1", 1, 2, 1, 1, 0),
+    (4, "+", 2, 3, 1, 2, 0),
+    (8, "2", 3, 4, 1, 3, 0),
+    (7, ")", 4, 5, 1, 4, 0),
+    (2, "*", 5, 6, 1, 5, 0),
+    (8, "3", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 002" {
+  let grammar = @precedence.grammar()
+  let source = " 12 / 3 - 2\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression (expression \"12\") \"/\" (expression \"3\")) \"-\" (expression \"2\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "12", 1, 3, 1, 1, 0),
+    (3, "/", 4, 5, 1, 4, 0),
+    (8, "3", 6, 7, 1, 6, 0),
+    (5, "-", 8, 9, 1, 8, 0),
+    (8, "2", 10, 11, 1, 10, 0),
+    (-1, "<EOF>", 12, 12, 2, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 003" {
+  let grammar = @precedence.grammar()
+  let source = "1-2-3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"-\" (expression \"2\")) \"-\" (expression \"3\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (5, "-", 1, 2, 1, 1, 0),
+    (8, "2", 2, 3, 1, 2, 0),
+    (5, "-", 3, 4, 1, 3, 0),
+    (8, "3", 4, 5, 1, 4, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 004" {
+  let grammar = @precedence.grammar()
+  let source = "1/(2+3)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"/\" (expression \"(\" (expression (expression \"2\") \"+\" (expression \"3\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (3, "/", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "2", 3, 4, 1, 3, 0),
+    (4, "+", 4, 5, 1, 4, 0),
+    (8, "3", 5, 6, 1, 5, 0),
+    (7, ")", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 005" {
+  let grammar = @precedence.grammar()
+  let source = "5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"5\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "5", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 006" {
+  let grammar = @precedence.grammar()
+  let source = "((51-(16-13))+71)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"51\") \"-\" (expression \"(\" (expression (expression \"16\") \"-\" (expression \"13\")) \")\")) \")\") \"+\" (expression \"71\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "51", 2, 4, 1, 2, 0),
+    (5, "-", 4, 5, 1, 4, 0),
+    (6, "(", 5, 6, 1, 5, 0),
+    (8, "16", 6, 8, 1, 6, 0),
+    (5, "-", 8, 9, 1, 8, 0),
+    (8, "13", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (4, "+", 13, 14, 1, 13, 0),
+    (8, "71", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 007" {
+  let grammar = @precedence.grammar()
+  let source = "(((79-93)+95)*62)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"79\") \"-\" (expression \"93\")) \")\") \"+\" (expression \"95\")) \")\") \"*\" (expression \"62\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "79", 3, 5, 1, 3, 0),
+    (5, "-", 5, 6, 1, 5, 0),
+    (8, "93", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (4, "+", 9, 10, 1, 9, 0),
+    (8, "95", 10, 12, 1, 10, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (2, "*", 13, 14, 1, 13, 0),
+    (8, "62", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 008" {
+  let grammar = @precedence.grammar()
+  let source = "(((54-80)+(90*69))/92)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"54\") \"-\" (expression \"80\")) \")\") \"+\" (expression \"(\" (expression (expression \"90\") \"*\" (expression \"69\")) \")\")) \")\") \"/\" (expression \"92\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "54", 3, 5, 1, 3, 0),
+    (5, "-", 5, 6, 1, 5, 0),
+    (8, "80", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (4, "+", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "90", 11, 13, 1, 11, 0),
+    (2, "*", 13, 14, 1, 13, 0),
+    (8, "69", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (7, ")", 17, 18, 1, 17, 0),
+    (3, "/", 18, 19, 1, 18, 0),
+    (8, "92", 19, 21, 1, 19, 0),
+    (7, ")", 21, 22, 1, 21, 0),
+    (-1, "<EOF>", 22, 22, 1, 22, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 009" {
+  let grammar = @precedence.grammar()
+  let source = "(((13*74)/(5/51))-(31+85))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"13\") \"*\" (expression \"74\")) \")\") \"/\" (expression \"(\" (expression (expression \"5\") \"/\" (expression \"51\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"31\") \"+\" (expression \"85\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "13", 3, 5, 1, 3, 0),
+    (2, "*", 5, 6, 1, 5, 0),
+    (8, "74", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (3, "/", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "5", 11, 12, 1, 11, 0),
+    (3, "/", 12, 13, 1, 12, 0),
+    (8, "51", 13, 15, 1, 13, 0),
+    (7, ")", 15, 16, 1, 15, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (5, "-", 17, 18, 1, 17, 0),
+    (6, "(", 18, 19, 1, 18, 0),
+    (8, "31", 19, 21, 1, 19, 0),
+    (4, "+", 21, 22, 1, 21, 0),
+    (8, "85", 22, 24, 1, 22, 0),
+    (7, ")", 24, 25, 1, 24, 0),
+    (7, ")", 25, 26, 1, 25, 0),
+    (-1, "<EOF>", 26, 26, 1, 26, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 010" {
+  let grammar = @precedence.grammar()
+  let source = "(((9-95)*(84+58))/28)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"9\") \"-\" (expression \"95\")) \")\") \"*\" (expression \"(\" (expression (expression \"84\") \"+\" (expression \"58\")) \")\")) \")\") \"/\" (expression \"28\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "9", 3, 4, 1, 3, 0),
+    (5, "-", 4, 5, 1, 4, 0),
+    (8, "95", 5, 7, 1, 5, 0),
+    (7, ")", 7, 8, 1, 7, 0),
+    (2, "*", 8, 9, 1, 8, 0),
+    (6, "(", 9, 10, 1, 9, 0),
+    (8, "84", 10, 12, 1, 10, 0),
+    (4, "+", 12, 13, 1, 12, 0),
+    (8, "58", 13, 15, 1, 13, 0),
+    (7, ")", 15, 16, 1, 15, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (3, "/", 17, 18, 1, 17, 0),
+    (8, "28", 18, 20, 1, 18, 0),
+    (7, ")", 20, 21, 1, 20, 0),
+    (-1, "<EOF>", 21, 21, 1, 21, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 011" {
+  let grammar = @precedence.grammar()
+  let source = "2"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"2\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "2", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 012" {
+  let grammar = @precedence.grammar()
+  let source = "16"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"16\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "16", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 013" {
+  let grammar = @precedence.grammar()
+  let source = "31"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"31\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "31", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 014" {
+  let grammar = @precedence.grammar()
+  let source = "(((77-80)-55)-53)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"77\") \"-\" (expression \"80\")) \")\") \"-\" (expression \"55\")) \")\") \"-\" (expression \"53\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "77", 3, 5, 1, 3, 0),
+    (5, "-", 5, 6, 1, 5, 0),
+    (8, "80", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (5, "-", 9, 10, 1, 9, 0),
+    (8, "55", 10, 12, 1, 10, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (5, "-", 13, 14, 1, 13, 0),
+    (8, "53", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 015" {
+  let grammar = @precedence.grammar()
+  let source = "(((61*44)-(87-98))-((79+14)+43))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"61\") \"*\" (expression \"44\")) \")\") \"-\" (expression \"(\" (expression (expression \"87\") \"-\" (expression \"98\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"79\") \"+\" (expression \"14\")) \")\") \"+\" (expression \"43\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "61", 3, 5, 1, 3, 0),
+    (2, "*", 5, 6, 1, 5, 0),
+    (8, "44", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (5, "-", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "87", 11, 13, 1, 11, 0),
+    (5, "-", 13, 14, 1, 13, 0),
+    (8, "98", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (7, ")", 17, 18, 1, 17, 0),
+    (5, "-", 18, 19, 1, 18, 0),
+    (6, "(", 19, 20, 1, 19, 0),
+    (6, "(", 20, 21, 1, 20, 0),
+    (8, "79", 21, 23, 1, 21, 0),
+    (4, "+", 23, 24, 1, 23, 0),
+    (8, "14", 24, 26, 1, 24, 0),
+    (7, ")", 26, 27, 1, 26, 0),
+    (4, "+", 27, 28, 1, 27, 0),
+    (8, "43", 28, 30, 1, 28, 0),
+    (7, ")", 30, 31, 1, 30, 0),
+    (7, ")", 31, 32, 1, 31, 0),
+    (-1, "<EOF>", 32, 32, 1, 32, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 016" {
+  let grammar = @precedence.grammar()
+  let source = "(47/7)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"47\") \"/\" (expression \"7\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "47", 1, 3, 1, 1, 0),
+    (3, "/", 3, 4, 1, 3, 0),
+    (8, "7", 4, 5, 1, 4, 0),
+    (7, ")", 5, 6, 1, 5, 0),
+    (-1, "<EOF>", 6, 6, 1, 6, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 017" {
+  let grammar = @precedence.grammar()
+  let source = "5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"5\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "5", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 018" {
+  let grammar = @precedence.grammar()
+  let source = "((15+(40*84))/22)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"15\") \"+\" (expression \"(\" (expression (expression \"40\") \"*\" (expression \"84\")) \")\")) \")\") \"/\" (expression \"22\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "15", 2, 4, 1, 2, 0),
+    (4, "+", 4, 5, 1, 4, 0),
+    (6, "(", 5, 6, 1, 5, 0),
+    (8, "40", 6, 8, 1, 6, 0),
+    (2, "*", 8, 9, 1, 8, 0),
+    (8, "84", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (3, "/", 13, 14, 1, 13, 0),
+    (8, "22", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 019" {
+  let grammar = @precedence.grammar()
+  let source = "(89/(8-(20/39)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"89\") \"/\" (expression \"(\" (expression (expression \"8\") \"-\" (expression \"(\" (expression (expression \"20\") \"/\" (expression \"39\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "89", 1, 3, 1, 1, 0),
+    (3, "/", 3, 4, 1, 3, 0),
+    (6, "(", 4, 5, 1, 4, 0),
+    (8, "8", 5, 6, 1, 5, 0),
+    (5, "-", 6, 7, 1, 6, 0),
+    (6, "(", 7, 8, 1, 7, 0),
+    (8, "20", 8, 10, 1, 8, 0),
+    (3, "/", 10, 11, 1, 10, 0),
+    (8, "39", 11, 13, 1, 11, 0),
+    (7, ")", 13, 14, 1, 13, 0),
+    (7, ")", 14, 15, 1, 14, 0),
+    (7, ")", 15, 16, 1, 15, 0),
+    (-1, "<EOF>", 16, 16, 1, 16, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 020" {
+  let grammar = @precedence.grammar()
+  let source = "(((38-72)*(71-1))-((42/49)*4))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"38\") \"-\" (expression \"72\")) \")\") \"*\" (expression \"(\" (expression (expression \"71\") \"-\" (expression \"1\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"42\") \"/\" (expression \"49\")) \")\") \"*\" (expression \"4\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "38", 3, 5, 1, 3, 0),
+    (5, "-", 5, 6, 1, 5, 0),
+    (8, "72", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (2, "*", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "71", 11, 13, 1, 11, 0),
+    (5, "-", 13, 14, 1, 13, 0),
+    (8, "1", 14, 15, 1, 14, 0),
+    (7, ")", 15, 16, 1, 15, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (5, "-", 17, 18, 1, 17, 0),
+    (6, "(", 18, 19, 1, 18, 0),
+    (6, "(", 19, 20, 1, 19, 0),
+    (8, "42", 20, 22, 1, 20, 0),
+    (3, "/", 22, 23, 1, 22, 0),
+    (8, "49", 23, 25, 1, 23, 0),
+    (7, ")", 25, 26, 1, 25, 0),
+    (2, "*", 26, 27, 1, 26, 0),
+    (8, "4", 27, 28, 1, 27, 0),
+    (7, ")", 28, 29, 1, 28, 0),
+    (7, ")", 29, 30, 1, 29, 0),
+    (-1, "<EOF>", 30, 30, 1, 30, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 021" {
+  let grammar = @precedence.grammar()
+  let source = "8"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"8\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "8", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 022" {
+  let grammar = @precedence.grammar()
+  let source = "(((46-77)/63)/(98/(51-3)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"46\") \"-\" (expression \"77\")) \")\") \"/\" (expression \"63\")) \")\") \"/\" (expression \"(\" (expression (expression \"98\") \"/\" (expression \"(\" (expression (expression \"51\") \"-\" (expression \"3\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "46", 3, 5, 1, 3, 0),
+    (5, "-", 5, 6, 1, 5, 0),
+    (8, "77", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (3, "/", 9, 10, 1, 9, 0),
+    (8, "63", 10, 12, 1, 10, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (3, "/", 13, 14, 1, 13, 0),
+    (6, "(", 14, 15, 1, 14, 0),
+    (8, "98", 15, 17, 1, 15, 0),
+    (3, "/", 17, 18, 1, 17, 0),
+    (6, "(", 18, 19, 1, 18, 0),
+    (8, "51", 19, 21, 1, 19, 0),
+    (5, "-", 21, 22, 1, 21, 0),
+    (8, "3", 22, 23, 1, 22, 0),
+    (7, ")", 23, 24, 1, 23, 0),
+    (7, ")", 24, 25, 1, 24, 0),
+    (7, ")", 25, 26, 1, 25, 0),
+    (-1, "<EOF>", 26, 26, 1, 26, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 023" {
+  let grammar = @precedence.grammar()
+  let source = "43"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"43\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "43", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 024" {
+  let grammar = @precedence.grammar()
+  let source = "((48-72)-13)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"48\") \"-\" (expression \"72\")) \")\") \"-\" (expression \"13\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "48", 2, 4, 1, 2, 0),
+    (5, "-", 4, 5, 1, 4, 0),
+    (8, "72", 5, 7, 1, 5, 0),
+    (7, ")", 7, 8, 1, 7, 0),
+    (5, "-", 8, 9, 1, 8, 0),
+    (8, "13", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 025" {
+  let grammar = @precedence.grammar()
+  let source = "((59*(95/87))-96)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"59\") \"*\" (expression \"(\" (expression (expression \"95\") \"/\" (expression \"87\")) \")\")) \")\") \"-\" (expression \"96\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "59", 2, 4, 1, 2, 0),
+    (2, "*", 4, 5, 1, 4, 0),
+    (6, "(", 5, 6, 1, 5, 0),
+    (8, "95", 6, 8, 1, 6, 0),
+    (3, "/", 8, 9, 1, 8, 0),
+    (8, "87", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (5, "-", 13, 14, 1, 13, 0),
+    (8, "96", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 026" {
+  let grammar = @precedence.grammar()
+  let source = "(((86*34)+(27+2))+((26-3)/(97/97)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"86\") \"*\" (expression \"34\")) \")\") \"+\" (expression \"(\" (expression (expression \"27\") \"+\" (expression \"2\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"26\") \"-\" (expression \"3\")) \")\") \"/\" (expression \"(\" (expression (expression \"97\") \"/\" (expression \"97\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "86", 3, 5, 1, 3, 0),
+    (2, "*", 5, 6, 1, 5, 0),
+    (8, "34", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (4, "+", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "27", 11, 13, 1, 11, 0),
+    (4, "+", 13, 14, 1, 13, 0),
+    (8, "2", 14, 15, 1, 14, 0),
+    (7, ")", 15, 16, 1, 15, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (4, "+", 17, 18, 1, 17, 0),
+    (6, "(", 18, 19, 1, 18, 0),
+    (6, "(", 19, 20, 1, 19, 0),
+    (8, "26", 20, 22, 1, 20, 0),
+    (5, "-", 22, 23, 1, 22, 0),
+    (8, "3", 23, 24, 1, 23, 0),
+    (7, ")", 24, 25, 1, 24, 0),
+    (3, "/", 25, 26, 1, 25, 0),
+    (6, "(", 26, 27, 1, 26, 0),
+    (8, "97", 27, 29, 1, 27, 0),
+    (3, "/", 29, 30, 1, 29, 0),
+    (8, "97", 30, 32, 1, 30, 0),
+    (7, ")", 32, 33, 1, 32, 0),
+    (7, ")", 33, 34, 1, 33, 0),
+    (7, ")", 34, 35, 1, 34, 0),
+    (-1, "<EOF>", 35, 35, 1, 35, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 027" {
+  let grammar = @precedence.grammar()
+  let source = "41"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"41\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "41", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 028" {
+  let grammar = @precedence.grammar()
+  let source = "((26+69)-46)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"26\") \"+\" (expression \"69\")) \")\") \"-\" (expression \"46\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "26", 2, 4, 1, 2, 0),
+    (4, "+", 4, 5, 1, 4, 0),
+    (8, "69", 5, 7, 1, 5, 0),
+    (7, ")", 7, 8, 1, 7, 0),
+    (5, "-", 8, 9, 1, 8, 0),
+    (8, "46", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 029" {
+  let grammar = @precedence.grammar()
+  let source = "(((61/61)*50)+21)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"61\") \"/\" (expression \"61\")) \")\") \"*\" (expression \"50\")) \")\") \"+\" (expression \"21\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "61", 3, 5, 1, 3, 0),
+    (3, "/", 5, 6, 1, 5, 0),
+    (8, "61", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (2, "*", 9, 10, 1, 9, 0),
+    (8, "50", 10, 12, 1, 10, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (4, "+", 13, 14, 1, 13, 0),
+    (8, "21", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 030" {
+  let grammar = @precedence.grammar()
+  let source = "6"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"6\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "6", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 031" {
+  let grammar = @precedence.grammar()
+  let source = "((58+8)/68)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"58\") \"+\" (expression \"8\")) \")\") \"/\" (expression \"68\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "58", 2, 4, 1, 2, 0),
+    (4, "+", 4, 5, 1, 4, 0),
+    (8, "8", 5, 6, 1, 5, 0),
+    (7, ")", 6, 7, 1, 6, 0),
+    (3, "/", 7, 8, 1, 7, 0),
+    (8, "68", 8, 10, 1, 8, 0),
+    (7, ")", 10, 11, 1, 10, 0),
+    (-1, "<EOF>", 11, 11, 1, 11, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 032" {
+  let grammar = @precedence.grammar()
+  let source = "((62-(87-93))*((50*34)-38))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"62\") \"-\" (expression \"(\" (expression (expression \"87\") \"-\" (expression \"93\")) \")\")) \")\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"50\") \"*\" (expression \"34\")) \")\") \"-\" (expression \"38\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "62", 2, 4, 1, 2, 0),
+    (5, "-", 4, 5, 1, 4, 0),
+    (6, "(", 5, 6, 1, 5, 0),
+    (8, "87", 6, 8, 1, 6, 0),
+    (5, "-", 8, 9, 1, 8, 0),
+    (8, "93", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (2, "*", 13, 14, 1, 13, 0),
+    (6, "(", 14, 15, 1, 14, 0),
+    (6, "(", 15, 16, 1, 15, 0),
+    (8, "50", 16, 18, 1, 16, 0),
+    (2, "*", 18, 19, 1, 18, 0),
+    (8, "34", 19, 21, 1, 19, 0),
+    (7, ")", 21, 22, 1, 21, 0),
+    (5, "-", 22, 23, 1, 22, 0),
+    (8, "38", 23, 25, 1, 23, 0),
+    (7, ")", 25, 26, 1, 25, 0),
+    (7, ")", 26, 27, 1, 26, 0),
+    (-1, "<EOF>", 27, 27, 1, 27, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 033" {
+  let grammar = @precedence.grammar()
+  let source = "13"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"13\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "13", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 034" {
+  let grammar = @precedence.grammar()
+  let source = "56"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"56\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "56", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 035" {
+  let grammar = @precedence.grammar()
+  let source = "(65+(81+(44-88)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"65\") \"+\" (expression \"(\" (expression (expression \"81\") \"+\" (expression \"(\" (expression (expression \"44\") \"-\" (expression \"88\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "65", 1, 3, 1, 1, 0),
+    (4, "+", 3, 4, 1, 3, 0),
+    (6, "(", 4, 5, 1, 4, 0),
+    (8, "81", 5, 7, 1, 5, 0),
+    (4, "+", 7, 8, 1, 7, 0),
+    (6, "(", 8, 9, 1, 8, 0),
+    (8, "44", 9, 11, 1, 9, 0),
+    (5, "-", 11, 12, 1, 11, 0),
+    (8, "88", 12, 14, 1, 12, 0),
+    (7, ")", 14, 15, 1, 14, 0),
+    (7, ")", 15, 16, 1, 15, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (-1, "<EOF>", 17, 17, 1, 17, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 036" {
+  let grammar = @precedence.grammar()
+  let source = "(((54+54)-44)/(85*(42*14)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"54\") \"+\" (expression \"54\")) \")\") \"-\" (expression \"44\")) \")\") \"/\" (expression \"(\" (expression (expression \"85\") \"*\" (expression \"(\" (expression (expression \"42\") \"*\" (expression \"14\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "54", 3, 5, 1, 3, 0),
+    (4, "+", 5, 6, 1, 5, 0),
+    (8, "54", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (5, "-", 9, 10, 1, 9, 0),
+    (8, "44", 10, 12, 1, 10, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (3, "/", 13, 14, 1, 13, 0),
+    (6, "(", 14, 15, 1, 14, 0),
+    (8, "85", 15, 17, 1, 15, 0),
+    (2, "*", 17, 18, 1, 17, 0),
+    (6, "(", 18, 19, 1, 18, 0),
+    (8, "42", 19, 21, 1, 19, 0),
+    (2, "*", 21, 22, 1, 21, 0),
+    (8, "14", 22, 24, 1, 22, 0),
+    (7, ")", 24, 25, 1, 24, 0),
+    (7, ")", 25, 26, 1, 25, 0),
+    (7, ")", 26, 27, 1, 26, 0),
+    (-1, "<EOF>", 27, 27, 1, 27, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 037" {
+  let grammar = @precedence.grammar()
+  let source = "(((30-4)/86)-((25*40)-(82*31)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"30\") \"-\" (expression \"4\")) \")\") \"/\" (expression \"86\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"25\") \"*\" (expression \"40\")) \")\") \"-\" (expression \"(\" (expression (expression \"82\") \"*\" (expression \"31\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "30", 3, 5, 1, 3, 0),
+    (5, "-", 5, 6, 1, 5, 0),
+    (8, "4", 6, 7, 1, 6, 0),
+    (7, ")", 7, 8, 1, 7, 0),
+    (3, "/", 8, 9, 1, 8, 0),
+    (8, "86", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (5, "-", 12, 13, 1, 12, 0),
+    (6, "(", 13, 14, 1, 13, 0),
+    (6, "(", 14, 15, 1, 14, 0),
+    (8, "25", 15, 17, 1, 15, 0),
+    (2, "*", 17, 18, 1, 17, 0),
+    (8, "40", 18, 20, 1, 18, 0),
+    (7, ")", 20, 21, 1, 20, 0),
+    (5, "-", 21, 22, 1, 21, 0),
+    (6, "(", 22, 23, 1, 22, 0),
+    (8, "82", 23, 25, 1, 23, 0),
+    (2, "*", 25, 26, 1, 25, 0),
+    (8, "31", 26, 28, 1, 26, 0),
+    (7, ")", 28, 29, 1, 28, 0),
+    (7, ")", 29, 30, 1, 29, 0),
+    (7, ")", 30, 31, 1, 30, 0),
+    (-1, "<EOF>", 31, 31, 1, 31, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 038" {
+  let grammar = @precedence.grammar()
+  let source = "((86+(98-69))-((93+28)*(8/68)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"86\") \"+\" (expression \"(\" (expression (expression \"98\") \"-\" (expression \"69\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"93\") \"+\" (expression \"28\")) \")\") \"*\" (expression \"(\" (expression (expression \"8\") \"/\" (expression \"68\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (8, "86", 2, 4, 1, 2, 0),
+    (4, "+", 4, 5, 1, 4, 0),
+    (6, "(", 5, 6, 1, 5, 0),
+    (8, "98", 6, 8, 1, 6, 0),
+    (5, "-", 8, 9, 1, 8, 0),
+    (8, "69", 9, 11, 1, 9, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (7, ")", 12, 13, 1, 12, 0),
+    (5, "-", 13, 14, 1, 13, 0),
+    (6, "(", 14, 15, 1, 14, 0),
+    (6, "(", 15, 16, 1, 15, 0),
+    (8, "93", 16, 18, 1, 16, 0),
+    (4, "+", 18, 19, 1, 18, 0),
+    (8, "28", 19, 21, 1, 19, 0),
+    (7, ")", 21, 22, 1, 21, 0),
+    (2, "*", 22, 23, 1, 22, 0),
+    (6, "(", 23, 24, 1, 23, 0),
+    (8, "8", 24, 25, 1, 24, 0),
+    (3, "/", 25, 26, 1, 25, 0),
+    (8, "68", 26, 28, 1, 26, 0),
+    (7, ")", 28, 29, 1, 28, 0),
+    (7, ")", 29, 30, 1, 29, 0),
+    (7, ")", 30, 31, 1, 30, 0),
+    (-1, "<EOF>", 31, 31, 1, 31, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 039" {
+  let grammar = @precedence.grammar()
+  let source = "(6/((33/77)*(51-93)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"6\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"33\") \"/\" (expression \"77\")) \")\") \"*\" (expression \"(\" (expression (expression \"51\") \"-\" (expression \"93\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "6", 1, 2, 1, 1, 0),
+    (3, "/", 2, 3, 1, 2, 0),
+    (6, "(", 3, 4, 1, 3, 0),
+    (6, "(", 4, 5, 1, 4, 0),
+    (8, "33", 5, 7, 1, 5, 0),
+    (3, "/", 7, 8, 1, 7, 0),
+    (8, "77", 8, 10, 1, 8, 0),
+    (7, ")", 10, 11, 1, 10, 0),
+    (2, "*", 11, 12, 1, 11, 0),
+    (6, "(", 12, 13, 1, 12, 0),
+    (8, "51", 13, 15, 1, 13, 0),
+    (5, "-", 15, 16, 1, 15, 0),
+    (8, "93", 16, 18, 1, 16, 0),
+    (7, ")", 18, 19, 1, 18, 0),
+    (7, ")", 19, 20, 1, 19, 0),
+    (7, ")", 20, 21, 1, 20, 0),
+    (-1, "<EOF>", 21, 21, 1, 21, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 040" {
+  let grammar = @precedence.grammar()
+  let source = "95"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"95\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "95", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 041" {
+  let grammar = @precedence.grammar()
+  let source = "10"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"10\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "10", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 042" {
+  let grammar = @precedence.grammar()
+  let source = "(28-85)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"28\") \"-\" (expression \"85\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "28", 1, 3, 1, 1, 0),
+    (5, "-", 3, 4, 1, 3, 0),
+    (8, "85", 4, 6, 1, 4, 0),
+    (7, ")", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 043" {
+  let grammar = @precedence.grammar()
+  let source = "20"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"20\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "20", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 044" {
+  let grammar = @precedence.grammar()
+  let source = "90"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"90\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "90", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 045" {
+  let grammar = @precedence.grammar()
+  let source = "61"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"61\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "61", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 046" {
+  let grammar = @precedence.grammar()
+  let source = "(5*((77+17)/(50/14)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"5\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"77\") \"+\" (expression \"17\")) \")\") \"/\" (expression \"(\" (expression (expression \"50\") \"/\" (expression \"14\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "5", 1, 2, 1, 1, 0),
+    (2, "*", 2, 3, 1, 2, 0),
+    (6, "(", 3, 4, 1, 3, 0),
+    (6, "(", 4, 5, 1, 4, 0),
+    (8, "77", 5, 7, 1, 5, 0),
+    (4, "+", 7, 8, 1, 7, 0),
+    (8, "17", 8, 10, 1, 8, 0),
+    (7, ")", 10, 11, 1, 10, 0),
+    (3, "/", 11, 12, 1, 11, 0),
+    (6, "(", 12, 13, 1, 12, 0),
+    (8, "50", 13, 15, 1, 13, 0),
+    (3, "/", 15, 16, 1, 15, 0),
+    (8, "14", 16, 18, 1, 16, 0),
+    (7, ")", 18, 19, 1, 18, 0),
+    (7, ")", 19, 20, 1, 19, 0),
+    (7, ")", 20, 21, 1, 20, 0),
+    (-1, "<EOF>", 21, 21, 1, 21, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 047" {
+  let grammar = @precedence.grammar()
+  let source = "(32-((4-80)/(3/91)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"32\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"4\") \"-\" (expression \"80\")) \")\") \"/\" (expression \"(\" (expression (expression \"3\") \"/\" (expression \"91\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "32", 1, 3, 1, 1, 0),
+    (5, "-", 3, 4, 1, 3, 0),
+    (6, "(", 4, 5, 1, 4, 0),
+    (6, "(", 5, 6, 1, 5, 0),
+    (8, "4", 6, 7, 1, 6, 0),
+    (5, "-", 7, 8, 1, 7, 0),
+    (8, "80", 8, 10, 1, 8, 0),
+    (7, ")", 10, 11, 1, 10, 0),
+    (3, "/", 11, 12, 1, 11, 0),
+    (6, "(", 12, 13, 1, 12, 0),
+    (8, "3", 13, 14, 1, 13, 0),
+    (3, "/", 14, 15, 1, 14, 0),
+    (8, "91", 15, 17, 1, 15, 0),
+    (7, ")", 17, 18, 1, 17, 0),
+    (7, ")", 18, 19, 1, 18, 0),
+    (7, ")", 19, 20, 1, 19, 0),
+    (-1, "<EOF>", 20, 20, 1, 20, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 048" {
+  let grammar = @precedence.grammar()
+  let source = "(24/(30/57))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"24\") \"/\" (expression \"(\" (expression (expression \"30\") \"/\" (expression \"57\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (8, "24", 1, 3, 1, 1, 0),
+    (3, "/", 3, 4, 1, 3, 0),
+    (6, "(", 4, 5, 1, 4, 0),
+    (8, "30", 5, 7, 1, 5, 0),
+    (3, "/", 7, 8, 1, 7, 0),
+    (8, "57", 8, 10, 1, 8, 0),
+    (7, ")", 10, 11, 1, 10, 0),
+    (7, ")", 11, 12, 1, 11, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 049" {
+  let grammar = @precedence.grammar()
+  let source = "(((32-95)-(13/47))+((28*64)/(3+48)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"32\") \"-\" (expression \"95\")) \")\") \"-\" (expression \"(\" (expression (expression \"13\") \"/\" (expression \"47\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"28\") \"*\" (expression \"64\")) \")\") \"/\" (expression \"(\" (expression (expression \"3\") \"+\" (expression \"48\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "32", 3, 5, 1, 3, 0),
+    (5, "-", 5, 6, 1, 5, 0),
+    (8, "95", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (5, "-", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "13", 11, 13, 1, 11, 0),
+    (3, "/", 13, 14, 1, 13, 0),
+    (8, "47", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (7, ")", 17, 18, 1, 17, 0),
+    (4, "+", 18, 19, 1, 18, 0),
+    (6, "(", 19, 20, 1, 19, 0),
+    (6, "(", 20, 21, 1, 20, 0),
+    (8, "28", 21, 23, 1, 21, 0),
+    (2, "*", 23, 24, 1, 23, 0),
+    (8, "64", 24, 26, 1, 24, 0),
+    (7, ")", 26, 27, 1, 26, 0),
+    (3, "/", 27, 28, 1, 27, 0),
+    (6, "(", 28, 29, 1, 28, 0),
+    (8, "3", 29, 30, 1, 29, 0),
+    (4, "+", 30, 31, 1, 30, 0),
+    (8, "48", 31, 33, 1, 31, 0),
+    (7, ")", 33, 34, 1, 33, 0),
+    (7, ")", 34, 35, 1, 34, 0),
+    (7, ")", 35, 36, 1, 35, 0),
+    (-1, "<EOF>", 36, 36, 1, 36, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 050" {
+  let grammar = @precedence.grammar()
+  let source = "(((92+51)-(84*60))/(26/(72+68)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"92\") \"+\" (expression \"51\")) \")\") \"-\" (expression \"(\" (expression (expression \"84\") \"*\" (expression \"60\")) \")\")) \")\") \"/\" (expression \"(\" (expression (expression \"26\") \"/\" (expression \"(\" (expression (expression \"72\") \"+\" (expression \"68\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "92", 3, 5, 1, 3, 0),
+    (4, "+", 5, 6, 1, 5, 0),
+    (8, "51", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (5, "-", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "84", 11, 13, 1, 11, 0),
+    (2, "*", 13, 14, 1, 13, 0),
+    (8, "60", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (7, ")", 17, 18, 1, 17, 0),
+    (3, "/", 18, 19, 1, 18, 0),
+    (6, "(", 19, 20, 1, 19, 0),
+    (8, "26", 20, 22, 1, 20, 0),
+    (3, "/", 22, 23, 1, 22, 0),
+    (6, "(", 23, 24, 1, 23, 0),
+    (8, "72", 24, 26, 1, 24, 0),
+    (4, "+", 26, 27, 1, 26, 0),
+    (8, "68", 27, 29, 1, 27, 0),
+    (7, ")", 29, 30, 1, 29, 0),
+    (7, ")", 30, 31, 1, 30, 0),
+    (7, ")", 31, 32, 1, 31, 0),
+    (-1, "<EOF>", 32, 32, 1, 32, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 051" {
+  let grammar = @precedence.grammar()
+  let source = "28"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"28\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "28", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 052" {
+  let grammar = @precedence.grammar()
+  let source = "(((89*46)/(65-93))-((29+94)+(78*37)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"89\") \"*\" (expression \"46\")) \")\") \"/\" (expression \"(\" (expression (expression \"65\") \"-\" (expression \"93\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"29\") \"+\" (expression \"94\")) \")\") \"+\" (expression \"(\" (expression (expression \"78\") \"*\" (expression \"37\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "89", 3, 5, 1, 3, 0),
+    (2, "*", 5, 6, 1, 5, 0),
+    (8, "46", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (3, "/", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "65", 11, 13, 1, 11, 0),
+    (5, "-", 13, 14, 1, 13, 0),
+    (8, "93", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (7, ")", 17, 18, 1, 17, 0),
+    (5, "-", 18, 19, 1, 18, 0),
+    (6, "(", 19, 20, 1, 19, 0),
+    (6, "(", 20, 21, 1, 20, 0),
+    (8, "29", 21, 23, 1, 21, 0),
+    (4, "+", 23, 24, 1, 23, 0),
+    (8, "94", 24, 26, 1, 24, 0),
+    (7, ")", 26, 27, 1, 26, 0),
+    (4, "+", 27, 28, 1, 27, 0),
+    (6, "(", 28, 29, 1, 28, 0),
+    (8, "78", 29, 31, 1, 29, 0),
+    (2, "*", 31, 32, 1, 31, 0),
+    (8, "37", 32, 34, 1, 32, 0),
+    (7, ")", 34, 35, 1, 34, 0),
+    (7, ")", 35, 36, 1, 35, 0),
+    (7, ")", 36, 37, 1, 36, 0),
+    (-1, "<EOF>", 37, 37, 1, 37, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 053" {
+  let grammar = @precedence.grammar()
+  let source = "(((36*80)+(19-80))-((99-62)-(57/76)))"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"36\") \"*\" (expression \"80\")) \")\") \"+\" (expression \"(\" (expression (expression \"19\") \"-\" (expression \"80\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"99\") \"-\" (expression \"62\")) \")\") \"-\" (expression \"(\" (expression (expression \"57\") \"/\" (expression \"76\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (6, "(", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "36", 3, 5, 1, 3, 0),
+    (2, "*", 5, 6, 1, 5, 0),
+    (8, "80", 6, 8, 1, 6, 0),
+    (7, ")", 8, 9, 1, 8, 0),
+    (4, "+", 9, 10, 1, 9, 0),
+    (6, "(", 10, 11, 1, 10, 0),
+    (8, "19", 11, 13, 1, 11, 0),
+    (5, "-", 13, 14, 1, 13, 0),
+    (8, "80", 14, 16, 1, 14, 0),
+    (7, ")", 16, 17, 1, 16, 0),
+    (7, ")", 17, 18, 1, 17, 0),
+    (5, "-", 18, 19, 1, 18, 0),
+    (6, "(", 19, 20, 1, 19, 0),
+    (6, "(", 20, 21, 1, 20, 0),
+    (8, "99", 21, 23, 1, 21, 0),
+    (5, "-", 23, 24, 1, 23, 0),
+    (8, "62", 24, 26, 1, 24, 0),
+    (7, ")", 26, 27, 1, 26, 0),
+    (5, "-", 27, 28, 1, 27, 0),
+    (6, "(", 28, 29, 1, 28, 0),
+    (8, "57", 29, 31, 1, 29, 0),
+    (3, "/", 31, 32, 1, 31, 0),
+    (8, "76", 32, 34, 1, 32, 0),
+    (7, ")", 34, 35, 1, 34, 0),
+    (7, ")", 35, 36, 1, 35, 0),
+    (7, ")", 36, 37, 1, 36, 0),
+    (-1, "<EOF>", 37, 37, 1, 37, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 054" {
+  let grammar = @precedence.grammar()
+  let source = "30"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"30\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "30", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 055" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 056" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1+")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 057" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("+1")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 058" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1+*2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 059" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("(1+2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 060" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1 2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 061" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1.2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 062" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("a")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 063" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1)2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 064" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("()")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Precedence 065" {
+  let grammar = @precedence.grammar()
+  let source = "1+2*3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (4, "+", 1, 2, 1, 1, 0),
+    (8, "2", 2, 3, 1, 2, 0),
+    (2, "*", 3, 4, 1, 3, 0),
+    (8, "3", 4, 5, 1, 4, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 066" {
+  let grammar = @precedence.grammar()
+  let source = "1*2+3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"*\" (expression \"2\")) \"+\" (expression \"3\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (2, "*", 1, 2, 1, 1, 0),
+    (8, "2", 2, 3, 1, 2, 0),
+    (4, "+", 3, 4, 1, 3, 0),
+    (8, "3", 4, 5, 1, 4, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 067" {
+  let grammar = @precedence.grammar()
+  let source = "1-2-3"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"-\" (expression \"2\")) \"-\" (expression \"3\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (5, "-", 1, 2, 1, 1, 0),
+    (8, "2", 2, 3, 1, 2, 0),
+    (5, "-", 3, 4, 1, 3, 0),
+    (8, "3", 4, 5, 1, 4, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 068" {
+  let grammar = @precedence.grammar()
+  let source = "2^3^4"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"2\") \"^\" (expression (expression \"3\") \"^\" (expression \"4\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "2", 0, 1, 1, 0, 0),
+    (1, "^", 1, 2, 1, 1, 0),
+    (8, "3", 2, 3, 1, 2, 0),
+    (1, "^", 3, 4, 1, 3, 0),
+    (8, "4", 4, 5, 1, 4, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 069" {
+  let grammar = @precedence.grammar()
+  let source = "2^3*4+5"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression (expression (expression \"2\") \"^\" (expression \"3\")) \"*\" (expression \"4\")) \"+\" (expression \"5\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "2", 0, 1, 1, 0, 0),
+    (1, "^", 1, 2, 1, 1, 0),
+    (8, "3", 2, 3, 1, 2, 0),
+    (2, "*", 3, 4, 1, 3, 0),
+    (8, "4", 4, 5, 1, 4, 0),
+    (4, "+", 5, 6, 1, 5, 0),
+    (8, "5", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 070" {
+  let grammar = @precedence.grammar()
+  let source = "-1^2"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression \"-\" (expression (expression \"1\") \"^\" (expression \"2\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (5, "-", 0, 1, 1, 0, 0),
+    (8, "1", 1, 2, 1, 1, 0),
+    (1, "^", 2, 3, 1, 2, 0),
+    (8, "2", 3, 4, 1, 3, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 071" {
+  let grammar = @precedence.grammar()
+  let source = "(-1)^2"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"(\" (expression \"-\" (expression \"1\")) \")\") \"^\" (expression \"2\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (6, "(", 0, 1, 1, 0, 0),
+    (5, "-", 1, 2, 1, 1, 0),
+    (8, "1", 2, 3, 1, 2, 0),
+    (7, ")", 3, 4, 1, 3, 0),
+    (1, "^", 4, 5, 1, 4, 0),
+    (8, "2", 5, 6, 1, 5, 0),
+    (-1, "<EOF>", 6, 6, 1, 6, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 072" {
+  let grammar = @precedence.grammar()
+  let source = "1*-2"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"*\" (expression \"-\" (expression \"2\"))) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (2, "*", 1, 2, 1, 1, 0),
+    (5, "-", 2, 3, 1, 2, 0),
+    (8, "2", 3, 4, 1, 3, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 073" {
+  let grammar = @precedence.grammar()
+  let source = "1^(2+3)"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (expression (expression \"1\") \"^\" (expression \"(\" (expression (expression \"2\") \"+\" (expression \"3\")) \")\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (8, "1", 0, 1, 1, 0, 0),
+    (1, "^", 1, 2, 1, 1, 0),
+    (6, "(", 2, 3, 1, 2, 0),
+    (8, "2", 3, 4, 1, 3, 0),
+    (4, "+", 4, 5, 1, 4, 0),
+    (8, "3", 5, 6, 1, 5, 0),
+    (7, ")", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Precedence 074" {
+  let grammar = @precedence.grammar()
+  let rejected = try {
+    let _ = grammar.parse("1^^2")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
 test "Java oracle Json 000" {
   let grammar = @json.grammar()
   let source = "{}"
