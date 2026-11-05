@@ -31,6 +31,12 @@ pub struct Atn {
   sets : Array[Array[(Int32, Int32)]]
   actions : Array[(Int32, Int32, Int32)]
 }
+pub fn Atn::tokenize(Self, String, work_limit? : Int32) -> Array[Token] raise RuntimeError
+
+pub(all) enum ContextChild {
+  TokenChild(Token)
+  RuleChild(RuleContext)
+}
 
 pub(all) struct Diagnostic {
   code : String
@@ -51,8 +57,15 @@ pub(all) struct Grammar {
   vocabulary : Array[String]
 }
 pub fn Grammar::parse(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseTree raise RuntimeError
+pub fn Grammar::parse_context(Self, String, start_rule? : Int32, work_limit? : Int32) -> RuleContext raise RuntimeError
+pub fn Grammar::parse_detailed(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseResult raise RuntimeError
 pub fn Grammar::token_name(Self, Int32) -> String
 pub fn Grammar::tokenize(Self, String, work_limit? : Int32) -> Array[Token] raise RuntimeError
+
+pub(all) struct ParseResult {
+  context : RuleContext
+  prediction : PredictionStatistics
+}
 
 pub(all) enum ParseTree {
   Terminal(Token)
@@ -64,6 +77,26 @@ pub fn ParseTree::not_equal(Self, Self) -> Bool
 pub fn ParseTree::to_json(Self) -> Json
 pub fn ParseTree::to_repr(Self) -> @debug.Repr
 pub fn ParseTree::to_sexpr(Self) -> String
+
+pub(all) struct PredictionStatistics {
+  decisions : Int32
+  full_context_fallbacks : Int32
+  dfa_states : Int32
+  dfa_hits : Int32
+}
+
+pub(all) struct RuleContext {
+  name : String
+  children : Array[ContextChild]
+  sources : Array[Int32]
+  path : Array[Int32]
+}
+pub fn RuleContext::rules(Self, String, states? : Array[Int32]) -> Array[Self]
+pub fn RuleContext::select_tokens(Self, Array[Int32]) -> Array[Token]
+pub fn RuleContext::span(Self) -> (Int32, Int32)?
+pub fn RuleContext::text(Self) -> String
+pub fn RuleContext::to_tree(Self) -> ParseTree
+pub fn RuleContext::tokens(Self, Int32, states? : Array[Int32]) -> Array[Token]
 
 type State
 

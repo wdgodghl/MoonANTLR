@@ -113,18 +113,11 @@ test "ATN decoder rejects bad versions, lengths, types and trailing data" {
 }
 
 ///|
-test "precedence predicates fail explicitly rather than executing as epsilon" {
-  let rejected = try {
-    let _ = @precedence.grammar().parse("1+2+3")
-    false
-  } catch {
-    @runtime.Unsupported(feature) => {
-      assert_eq(feature, "precedence predicates")
-      true
-    }
-    _ => false
-  }
-  assert_true(rejected)
+test "left recursive expressions preserve left associative trees" {
+  assert_eq(
+    @precedence.grammar().parse("1+2+3").to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"+\" (expression \"2\")) \"+\" (expression \"3\")) <EOF>)",
+  )
 }
 
 ///|

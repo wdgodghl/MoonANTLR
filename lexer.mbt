@@ -134,15 +134,15 @@ fn lex_match(
 
 ///|
 /// Tokenize using the generated lexer ATN. Hidden channels are retained.
-pub fn Grammar::tokenize(
-  self : Grammar,
+pub fn Atn::tokenize(
+  self : Atn,
   source : String,
   work_limit~ : Int32 = 1_000_000,
 ) -> Array[Token] raise RuntimeError {
-  if self.lexer.kind != 0 {
+  if self.kind != 0 {
     raise InvalidAtn("lexer ATN expected")
   }
-  self.lexer.validate_supported()
+  self.validate_supported()
   let budget = Budget::{ remaining: work_limit, }
   let chars = source.to_array()
   let tokens : Array[Token] = []
@@ -163,18 +163,18 @@ pub fn Grammar::tokenize(
       token_column = column
       channel = 0
     }
-    let accepted = match lex_match(self.lexer, chars, pos, mode, budget) {
+    let accepted = match lex_match(self, chars, pos, mode, budget) {
       Some(cfg) => cfg
       None => raise LexicalError(line, column, "no lexer rule matches input")
     }
     if accepted.pos == pos {
       raise Unsupported("zero-width lexer token")
     }
-    let mut kind = self.lexer.token_types[accepted.root]
+    let mut kind = self.token_types[accepted.root]
     let mut skip = false
     let mut more = false
     for index in accepted.actions {
-      let (action, argument, _) = self.lexer.actions[index]
+      let (action, argument, _) = self.actions[index]
       match action {
         0 => channel = argument
         2 => mode = argument
@@ -205,12 +205,12 @@ pub fn Grammar::tokenize(
       }
     }
     pos = accepted.pos
-    if mode < 0 || mode >= self.lexer.modes.length() {
+    if mode < 0 || mode >= self.modes.length() {
       raise InvalidAtn("lexer action selected unknown mode")
     }
     continuing = more && !skip
     if !skip && !more {
-      if kind <= 0 || kind > self.lexer.max_token || channel < 0 {
+      if kind <= 0 || kind > self.max_token || channel < 0 {
         raise InvalidAtn("invalid emitted token type or channel")
       }
       tokens.push({
@@ -254,4 +254,14 @@ pub fn Grammar::tokenize(
     },
   })
   tokens
+}
+
+///|
+/// Tokenize a source with this grammar's lexer.
+pub fn Grammar::tokenize(
+  self : Grammar,
+  source : String,
+  work_limit~ : Int32 = 1_000_000,
+) -> Array[Token] raise RuntimeError {
+  self.lexer.tokenize(source, work_limit~)
 }

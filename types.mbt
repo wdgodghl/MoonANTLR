@@ -24,6 +24,7 @@ struct State {
   kind : Int32
   rule : Int32
   mut non_greedy : Bool
+  mut precedence : Bool
   edges : Array[Edge]
 }
 

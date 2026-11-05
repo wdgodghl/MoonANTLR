@@ -39,6 +39,24 @@ fn is_decision(kind : Int32) -> Bool {
 }
 
 ///|
+/// ANTLR marks only the outer rewritten loop as a precedence decision.
+/// An EBNF star nested in the same rule must not create recursive contexts.
+fn Atn::is_precedence_decision(self : Atn, index : Int32) -> Bool {
+  let state = self.states[index]
+  if state.kind != 10 || !self.states[self.starts[state.rule]].precedence {
+    return false
+  }
+  if state.edges.last() is Some(edge) {
+    let end = self.states[edge.target]
+    if end.kind == 12 && end.edges.length() == 1 {
+      let exit = end.edges[0]
+      return exit.kind == 1 && self.states[exit.target].kind == 7
+    }
+  }
+  false
+}
+
+///|
 /// Decode the integer form emitted by ANTLR 4.13.2's .interp artifacts.
 pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
   let rd = Reader::{ data, offset: 0, }
@@ -65,7 +83,13 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     if state_kind == 12 || state_kind == 3 || state_kind == 4 || state_kind == 5 {
       links.push((state_kind, rd.read()))
     }
-    states.push({ kind: state_kind, rule, non_greedy: false, edges: [], })
+    states.push({
+      kind: state_kind,
+      rule,
+      non_greedy: false,
+      precedence: false,
+      edges: [],
+    })
   }
   let atn : Atn = {
     kind,
@@ -104,6 +128,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     if atn.states[state].kind != 2 {
       raise InvalidAtn("precedence flag requires a rule start")
     }
+    atn.states[state].precedence = true
   }
   let nrules = rd.count()
   if nrules == 0 {
@@ -283,13 +308,6 @@ fn Atn::matches(self : Atn, edge : Edge, symbol : Int32) -> Bool {
 /// Unsupported control flow is rejected before tokenization or parsing.
 fn Atn::validate_supported(self : Atn) -> Unit raise RuntimeError {
   for state in self.states {
-    for edge in state.edges {
-      if edge.kind == 10 {
-        raise Unsupported("precedence predicates")
-      }
-    }
-  }
-  for state in self.states {
     if state.non_greedy {
       raise Unsupported("non-greedy lexer decisions")
     }
@@ -297,7 +315,9 @@ fn Atn::validate_supported(self : Atn) -> Unit raise RuntimeError {
       if edge.kind == 4 {
         raise Unsupported("semantic predicates")
       }
-      if self.kind == 1 && edge.kind == 6 {
+      if self.kind == 1 &&
+        edge.kind == 6 &&
+        !(edge.b == -1 && self.states[self.starts[state.rule]].precedence) {
         raise Unsupported("embedded parser actions")
       }
     }
