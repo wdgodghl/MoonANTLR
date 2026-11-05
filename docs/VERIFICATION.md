@@ -9,6 +9,8 @@ moon build --deny-warn
 moon test --deny-warn
 moon test --target wasm-gc --deny-warn
 moon test --target js --deny-warn
+moon test --target native --deny-warn
+moon run examples/typed
 moon run cmd/main
 ```
 
@@ -26,6 +28,10 @@ no external package dependency beyond the standard library.
 | Arithmetic | 65 | 55 |
 | Split lexer/parser with modes | 15 | 12 |
 | CSV | 34 | 30 |
+| Precedence / associativity | 75 | 64 |
+| Prefix, postfix, ternary and nested EBNF | 80 | 29 |
+| Typed labelled grammar | 44 | 38 |
+| Context-sensitive / ambiguous decisions | 26 | 22 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
 type, text, scalar offsets, line, column and channel. Rejected cases must also
@@ -33,6 +39,20 @@ be rejected by MoonANTLR. Rejection tests do not claim matching error text or
 ANTLR error-recovery behavior. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
+
+There are 437 independent oracle cases. Accepted cases verify exact trees,
+not merely acceptance. Decision cases include caller-sensitive short/long
+alternatives, ambiguity order and common prefixes longer than the predictor's
+64-token window. Left-recursion cases exercise nested EBNF stars to prevent
+accidental creation of recursive contexts at unrelated loop entries.
+
+Generated API tests check optional/list labels, left/right operand identity,
+alternative narrowing, spans, Visitor results and Listener event order.
+Prediction tests require full-context fallbacks and DFA cache hits.
+`python tools/check_target.py --jar /path/to/antlr-4.13.2-complete.jar` separately
+builds the plugin and checks the real ANTLR CLI on combined/split grammars,
+listener/visitor flags, and exact emitted ATN equality with `.interp` artifacts.
+CI regenerates and compiles the native-target fixtures as well.
 
 The handwritten runtime tests additionally cover all truncated prefixes of a
 real parser ATN, corrupted headers and section data, trailing serialized data,
