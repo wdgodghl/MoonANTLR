@@ -16,6 +16,7 @@ pub(all) suberror RuntimeError {
   SyntaxError(Int32, Int32, Array[Int32])
   LimitExceeded(String)
 } derive(@debug.Debug)
+pub fn RuntimeError::diagnostic(Self, Grammar) -> Diagnostic
 pub fn RuntimeError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
@@ -30,12 +31,26 @@ pub struct Atn {
   actions : Array[(Int32, Int32, Int32)]
 }
 
+pub(all) struct Diagnostic {
+  code : String
+  message : String
+  line : Int32?
+  column : Int32?
+  expected : Array[String]
+} derive(Eq, ToJson, @debug.Debug)
+pub fn Diagnostic::equal(Self, Self) -> Bool
+pub fn Diagnostic::not_equal(Self, Self) -> Bool
+pub fn Diagnostic::to_json(Self) -> Json
+pub fn Diagnostic::to_repr(Self) -> @debug.Repr
+
 pub(all) struct Grammar {
   lexer : Atn
   parser : Atn
   rules : Array[String]
+  vocabulary : Array[String]
 }
 pub fn Grammar::parse(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseTree raise RuntimeError
+pub fn Grammar::token_name(Self, Int32) -> String
 pub fn Grammar::tokenize(Self, String, work_limit? : Int32) -> Array[Token] raise RuntimeError
 
 pub(all) enum ParseTree {

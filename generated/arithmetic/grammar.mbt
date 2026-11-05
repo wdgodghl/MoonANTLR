@@ -46,5 +46,10 @@ pub fn parser_data() -> Array[Int32] {
 pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
   let lexer = @runtime.deserialize(lexer_data())
   let parser = @runtime.deserialize(parser_data())
-  { lexer, parser, rules: ["document", "expression", "term", "factor"], }
+  {
+    lexer,
+    parser,
+    rules: ["document", "expression", "term", "factor"],
+    vocabulary: ["0", "'+'", "'-'", "'*'", "'/'", "'('", "')'", "INT", "WS"],
+  }
 }

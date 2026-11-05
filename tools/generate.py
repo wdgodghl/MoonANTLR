@@ -17,7 +17,7 @@ ANTLR_VERSION = "4.13.2"
 ANTLR_SHA256 = "eae2dfa119a64327444672aff63e9ec35a20180dc5b8090b7a6ab85125df4d76"
 
 
-def read_interp(path):
+def read_sections(path):
     sections = {}
     current = None
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -26,6 +26,11 @@ def read_interp(path):
             sections[current] = []
         elif line and current:
             sections[current].append(line)
+    return sections
+
+
+def read_interp(path):
+    sections = read_sections(path)
     if "atn" not in sections or "rule names" not in sections:
         raise ValueError("Missing ATN or rule names in .interp artifact")
     atn = ast.literal_eval("".join(sections["atn"]))
@@ -36,7 +41,19 @@ def read_interp(path):
     return atn, sections["rule names"]
 
 
-def render(grammar_path, lexer, parser, rules, lexer_path=None):
+def read_vocabulary(path):
+    sections = read_sections(path)
+    literals = sections.get("token literal names", [])
+    symbolic = sections.get("token symbolic names", [])
+    names = []
+    for index in range(max(len(literals), len(symbolic))):
+        literal = literals[index] if index < len(literals) else "null"
+        symbol = symbolic[index] if index < len(symbolic) else "null"
+        names.append(literal if literal != "null" else symbol if symbol != "null" else str(index))
+    return names
+
+
+def render(grammar_path, lexer, parser, rules, vocabulary, lexer_path=None):
     digest = hashlib.sha256(grammar_path.read_bytes()).hexdigest()
     extra = ""
     if lexer_path:
@@ -49,7 +66,7 @@ def render(grammar_path, lexer, parser, rules, lexer_path=None):
         "///|\npub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {\n"
         "  let lexer = @runtime.deserialize(lexer_data())\n"
         "  let parser = @runtime.deserialize(parser_data())\n"
-        f"  {{ lexer, parser, rules: {json.dumps(rules)} }}\n"
+        f"  {{ lexer, parser, rules: {json.dumps(rules)}, vocabulary: {json.dumps(vocabulary)} }}\n"
         "}\n"
     )
 
@@ -83,7 +100,8 @@ def main():
         lexer_name = lexer_path.stem if lexer_path else grammar.stem + "Lexer"
         lexer, _ = read_interp(Path(directory) / (lexer_name + ".interp"))
         parser, rules = read_interp(Path(directory) / (grammar.stem + ".interp"))
-        source = render(grammar, lexer, parser, rules, lexer_path)
+        vocabulary = read_vocabulary(Path(directory) / (grammar.stem + ".interp"))
+        source = render(grammar, lexer, parser, rules, vocabulary, lexer_path)
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "grammar.mbt").write_text(source, encoding="utf-8", newline="\n")
     (args.output / "moon.pkg").write_text(

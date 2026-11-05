@@ -85,6 +85,7 @@ pub(all) struct Grammar {
   lexer : Atn
   parser : Atn
   rules : Array[String]
+  vocabulary : Array[String]
 }
 
 ///|
