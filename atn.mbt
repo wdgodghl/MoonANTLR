@@ -34,6 +34,11 @@ fn Atn::check_state(self : Atn, index : Int32) -> Unit raise RuntimeError {
 }
 
 ///|
+fn is_decision(kind : Int32) -> Bool {
+  kind == 3 || kind == 4 || kind == 5 || kind == 6 || kind == 10 || kind == 11
+}
+
+///|
 /// Decode the integer form emitted by ANTLR 4.13.2's .interp artifacts.
 pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
   let rd = Reader::{ data, offset: 0, }
@@ -49,6 +54,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     raise InvalidAtn("maximum token type outside supported bounds")
   }
   let states : Array[State] = []
+  let links : Array[(Int32, Int32)] = []
   let nstates = rd.count()
   for _ in 0..<nstates {
     let state_kind = rd.read()
@@ -57,7 +63,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     }
     let rule = if state_kind == 0 { -1 } else { rd.read() }
     if state_kind == 12 || state_kind == 3 || state_kind == 4 || state_kind == 5 {
-      let _ = rd.read()
+      links.push((state_kind, rd.read()))
     }
     states.push({ kind: state_kind, rule, non_greedy: false, edges: [], })
   }
@@ -72,16 +78,37 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     actions: [],
   }
   let nnon_greedy = rd.count()
+  for (source_kind, target) in links {
+    atn.check_state(target)
+    let target_kind = atn.states[target].kind
+    if source_kind == 12 {
+      if target_kind != 9 && target_kind != 11 {
+        raise InvalidAtn("loopback state expected")
+      }
+    } else if target_kind != 8 {
+      raise InvalidAtn("block end state expected")
+    }
+  }
   for _ in 0..<nnon_greedy {
     let state = rd.read()
     atn.check_state(state)
+    if !is_decision(atn.states[state].kind) {
+      raise InvalidAtn("non-greedy flag requires a decision state")
+    }
     atn.states[state].non_greedy = true
   }
   let nprecedence = rd.count()
   for _ in 0..<nprecedence {
-    atn.check_state(rd.read())
+    let state = rd.read()
+    atn.check_state(state)
+    if atn.states[state].kind != 2 {
+      raise InvalidAtn("precedence flag requires a rule start")
+    }
   }
   let nrules = rd.count()
+  if nrules == 0 {
+    raise InvalidAtn("ATN must contain a rule")
+  }
   for index in 0..<nrules {
     let state = rd.read()
     atn.check_state(state)
@@ -97,6 +124,9 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     }
   }
   let nmodes = rd.count()
+  if (kind == 1 && nmodes != 0) || (kind == 0 && nmodes == 0) {
+    raise InvalidAtn("grammar/mode table mismatch")
+  }
   for _ in 0..<nmodes {
     let state = rd.read()
     atn.check_state(state)
@@ -119,7 +149,9 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     for _ in 0..<nintervals {
       let lo = rd.read()
       let hi = rd.read()
-      if lo < 0 || hi < lo {
+      let minimum = if kind == 0 { 0 } else { 1 }
+      let maximum = if kind == 0 { 0x10FFFF } else { max_token }
+      if lo < minimum || hi < lo || hi > maximum {
         raise InvalidAtn("invalid interval")
       }
       intervals.push((lo, hi))
@@ -139,6 +171,18 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     if edge_kind < 1 || edge_kind > 10 {
       raise InvalidAtn("unknown transition type")
     }
+    if edge_kind == 2 || edge_kind == 5 {
+      let maximum = if kind == 0 { 0x10FFFF } else { max_token }
+      if c != 0 && c != 1 {
+        raise InvalidAtn("invalid EOF transition flag")
+      }
+      if c == 0 && (a < (if kind == 0 { 0 } else { 1 }) || a > maximum) {
+        raise InvalidAtn("transition symbol out of bounds")
+      }
+      if edge_kind == 2 && (b < a || b > maximum) {
+        raise InvalidAtn("transition range out of bounds")
+      }
+    }
     if edge_kind == 3 {
       atn.check_state(a)
       if b < 0 || b >= atn.starts.length() {
@@ -155,7 +199,11 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
   }
   let ndecisions = rd.count()
   for _ in 0..<ndecisions {
-    atn.check_state(rd.read())
+    let state = rd.read()
+    atn.check_state(state)
+    if !is_decision(atn.states[state].kind) {
+      raise InvalidAtn("decision table references a non-decision state")
+    }
   }
   if kind == 0 {
     let nactions = rd.count()
@@ -166,17 +214,33 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
       if action < 0 || action > 7 {
         raise InvalidAtn("unknown lexer action")
       }
+      if (action == 2 || action == 5) && (a < 0 || a >= nmodes) {
+        raise InvalidAtn("lexer action mode out of bounds")
+      }
+      if action == 0 && a < 0 {
+        raise InvalidAtn("negative lexer channel")
+      }
+      if action == 7 && a != -1 && (a < 1 || a > max_token) {
+        raise InvalidAtn("lexer action token type out of bounds")
+      }
       atn.actions.push((action, a, b))
     }
   }
   if rd.offset != data.length() {
     raise InvalidAtn("trailing serialized ATN data")
   }
+  let stops : Array[Int32] = Array::make(nrules, 0)
   for state in atn.states {
     if state.kind != 0 &&
       state.kind != 6 &&
       (state.rule < 0 || state.rule >= nrules) {
       raise InvalidAtn("invalid state rule index")
+    }
+    if state.kind == 6 && state.rule != -1 {
+      raise InvalidAtn("mode state must not belong to a rule")
+    }
+    if state.kind == 7 {
+      stops[state.rule] += 1
     }
     for edge in state.edges {
       if kind == 0 &&
@@ -185,6 +249,12 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
         raise InvalidAtn("invalid lexer action reference")
       }
     }
+  }
+  if stops.any(count => count != 1) {
+    raise InvalidAtn("each rule must have one stop state")
+  }
+  if atn.token_types.any(token => token < 0 || token > max_token) {
+    raise InvalidAtn("rule token type out of bounds")
   }
   atn
 }
@@ -233,6 +303,9 @@ fn Atn::validate_supported(self : Atn) -> Unit raise RuntimeError {
     }
   }
   for action in self.actions {
+    if action.0 == 7 && action.1 == -1 {
+      raise Unsupported("lexer EOF remapping")
+    }
     if action.0 == 1 {
       raise Unsupported("custom lexer actions")
     }

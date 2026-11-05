@@ -38,6 +38,11 @@ exclusive. The included reference uses ANTLR Java `CharStreams.fromString`.
 - `wdgodghl/moonantlr`: ATN decoder, lexer, parser, tokens, trees and typed errors.
 - `wdgodghl/moonantlr/generated/json`: generated JSON grammar fixture.
 - `wdgodghl/moonantlr/generated/arithmetic`: generated arithmetic grammar fixture.
+- `wdgodghl/moonantlr/generated/modes`: separate lexer/parser and mode fixture.
+- `wdgodghl/moonantlr/generated/csv`: generated CSV grammar fixture.
+- `wdgodghl/moonantlr/evaluate`: arithmetic tree-fold consumer.
+- `wdgodghl/moonantlr/csv`: CSV record/field extraction.
+- `wdgodghl/moonantlr/inspect`: structured JSON reports for external consumers.
 
 Generated fixtures expose the serialized arrays so decoder validation can be
 tested independently. The runtime graph is opaque outside the package.

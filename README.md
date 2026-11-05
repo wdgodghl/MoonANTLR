@@ -6,7 +6,7 @@
 
 MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` 语法能够在 MoonBit 原生程序和 WebAssembly 中复用，为语言工具、配置处理和 DSL 提供解析基础。
 
-当前是早期开发版本。已打通 ANTLR 4.13.2 序列化 ATN → MoonBit 语法模块 → 词法分析与解析树的执行链路，提供 JSON、算术语法以及独立 Java 对照测试。运行时完全使用 MoonBit；Java 和 Python 仅用于生成语法数据和参考测试。
+当前是早期开发版本。已打通 ANTLR 4.13.2 序列化 ATN → MoonBit 语法模块 → 词法分析与解析树的执行链路，提供 JSON、算术、CSV 和独立词法模式语法的 Java 对照测试，以及可运行的算术求值、CSV 字段提取和 JSON 报告工具。运行时完全使用 MoonBit；Java 和 Python 仅用于生成语法数据和参考测试。
 
 ## 当前能力
 
@@ -17,6 +17,7 @@ MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` �
 - 官方 ANTLR Java 目标对照用例，比较解析树与每个 Token 的类型、文本及位置；数量见 `tests/oracle-manifest.json`。
 - 支持独立 lexer/parser 语法、词法模式切换、MORE、隐藏通道及 Token 类型重映射。
 - 畸形 ATN、错误输入和不支持特性的回归测试。
+- 带通道筛选和安全游标操作的 Token 流、可读错误诊断和通用树折叠接口。
 
 当前解析算法是有界 ATN 解释器，尚未实现 ANTLR 自适应 LL(*) 预测、完整 MoonBitTarget、Visitor/Listener 或错误恢复。语义谓词、优先级谓词、内嵌动作、自定义词法动作及非贪婪词法决策会明确报错。详细边界见[架构说明](docs/ARCHITECTURE.md)。
 
@@ -35,6 +36,18 @@ moon run cmd/main
 ```
 
 示例依次解析 JSON 文档和 `1 + 2 * (3 - 4)`，输出带规则名称的 S-expression。克隆后即可运行，不需要 Java 或 Python，也不需要下载 ANTLR 工具。
+
+下游使用场景：
+
+```sh
+moon run examples/evaluate
+moon run examples/csv
+moon run cmd/inspect -- arithmetic '1+2*3'
+```
+
+`cmd/inspect` 接受 `json`、`arithmetic`、`modes` 或 `csv` 与源文本，输出 JSON 报告。
+业务解析失败时输出 `ok: false` 和诊断对象；进程退出码不用于表示该报告的业务状态。
+CSV 示例保留空字段，支持引号内换行和双引号转义；空源没有记录，末尾换行不额外生成记录。
 
 其他目标：
 

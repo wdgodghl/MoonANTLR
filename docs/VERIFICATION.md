@@ -25,6 +25,7 @@ no external package dependency beyond the standard library.
 | JSON | 98 | 81 |
 | Arithmetic | 65 | 55 |
 | Split lexer/parser with modes | 15 | 12 |
+| CSV | 34 | 30 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
 type, text, scalar offsets, line, column and channel. Rejected cases must also
@@ -36,6 +37,14 @@ the tests does not require Java.
 The handwritten runtime tests additionally cover all truncated prefixes of a
 real parser ATN, corrupted headers and section data, trailing serialized data,
 unknown rules, explicit work limits, Unicode positions and invalid JSON.
+They also cover every truncated prefix of the lexer artifact and two sentinel
+mutations at every field of the JSON lexer/parser and mode lexer artifacts.
+Structural validation checks block/loop references, decision tables, rule stop
+states, symbol bounds and mode/action indices before execution.
+
+`python tools/check_cli.py` exercises the command as an external JSON consumer.
+The arithmetic evaluator and CSV reader have application-level tests alongside
+the Java conformance corpus.
 
 Regenerate with Java 17, Python 3.10+ and the official complete JAR:
 
