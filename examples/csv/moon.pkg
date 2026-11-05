@@ -1,0 +1,6 @@
+import {
+  "wdgodghl/moonantlr/csv" @csv_reader,
+  "moonbitlang/core/debug",
+}
+
+pkgtype(kind: "executable")

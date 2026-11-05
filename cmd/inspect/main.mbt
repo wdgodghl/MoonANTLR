@@ -9,7 +9,7 @@ fn main {
           (
             "usage",
             Json::string(
-              "moon run cmd/inspect -- <json|arithmetic|modes> <source>",
+              "moon run cmd/inspect -- <json|arithmetic|modes|csv> <source>",
             ),
           ),
         ]),
@@ -20,6 +20,7 @@ fn main {
   let grammar = try {
     match args[1] {
       "json" => @json_grammar.grammar()
+      "csv" => @csv_grammar.grammar()
       "arithmetic" => @arithmetic.grammar()
       "modes" => @modes.grammar()
       _ => raise @runtime.InvalidArgument("unknown grammar")

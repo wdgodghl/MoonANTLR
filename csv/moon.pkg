@@ -1,0 +1,8 @@
+import {
+  "wdgodghl/moonantlr" @runtime,
+  "wdgodghl/moonantlr/generated/csv" @grammar,
+}
+
+import {
+  "moonbitlang/core/debug",
+} for "test"

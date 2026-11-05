@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/csv"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn read(String) -> Array[Array[String]] raise @moonantlr.RuntimeError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

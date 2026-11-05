@@ -30,6 +30,7 @@ jobs:
       - run: moon test --target ${{ matrix.target }} --deny-warn
       - run: moon run cmd/main --target ${{ matrix.target }} --deny-warn
       - run: moon run examples/evaluate --target ${{ matrix.target }} --deny-warn
+      - run: moon run examples/csv --target ${{ matrix.target }} --deny-warn
       - run: moon run cmd/inspect --target ${{ matrix.target }} -- arithmetic '1+2*3'
       - name: Check public interfaces
         run: |
@@ -57,6 +58,7 @@ jobs:
           curl -fLsS --retry 3 -o .local/antlr.jar https://www.antlr.org/download/antlr-4.13.2-complete.jar
           python tools/generate.py grammars/Json.g4 --output generated/json --jar .local/antlr.jar
           python tools/generate.py grammars/Arithmetic.g4 --output generated/arithmetic --jar .local/antlr.jar
+          python tools/generate.py grammars/Csv.g4 --output generated/csv --jar .local/antlr.jar
           python tools/generate.py grammars/Precedence.g4 --output generated/precedence --jar .local/antlr.jar
           python tools/generate.py grammars/NonGreedy.g4 --output generated/nongreedy --jar .local/antlr.jar
           python tools/generate.py grammars/Predicate.g4 --output generated/predicate --jar .local/antlr.jar

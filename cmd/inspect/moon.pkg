@@ -1,4 +1,5 @@
 import {
+  "wdgodghl/moonantlr/generated/csv" @csv_grammar,
   "wdgodghl/moonantlr" @runtime,
   "wdgodghl/moonantlr/inspect" @report,
   "wdgodghl/moonantlr/generated/json" @json_grammar,

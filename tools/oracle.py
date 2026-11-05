@@ -8,6 +8,8 @@ import argparse
 import base64
 import hashlib
 import json
+import csv
+import io
 import os
 from pathlib import Path
 import random
@@ -48,7 +50,14 @@ def corpus():
     arithmetic += [expression(rng) for _ in range(50)]
     arithmetic += ["", "1+", "+1", "1+*2", "(1+2", "1 2", "1.2", "a", "1)2", "()"]
     modes = ["", "alpha", "alpha beta", "#hash", '"hello"', '@"hidden" visible', '//comment\nword', '"😀中文"', '"a\\\"b"', '@"" #abc', '"line\ntext"', '"unterminated', '"bad\\', '#123', '@word']
-    return {"Json": json_cases, "Arithmetic": arithmetic, "Modes": modes}
+    csv_cases = ["", "a,b", "a,b\n", ",", ",,", '"a,b",c', '"a""b",x', "\n", "\r\n", "a,b\r\n1,2\r\n", '"unfinished', 'a,"b"x', "a\rb", '"a" "b"']
+    for _ in range(20):
+        output = io.StringIO()
+        writer = csv.writer(output, lineterminator=rng.choice(["\n", "\r\n"]))
+        for _ in range(rng.randrange(1, 5)):
+            writer.writerow([rng.choice(["", "alpha", "with,comma", 'a"b', "line\nbreak", "中文😀"]) for _ in range(rng.randrange(1, 5))])
+        csv_cases.append(output.getvalue())
+    return {"Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
 
 
 def run(args, **kwargs):
@@ -83,7 +92,7 @@ def main():
             if len(expected) != len(cases):
                 raise RuntimeError("Oracle output count differs from input count")
             counts[name] = {"cases": len(cases), "accepted": sum(row["accepted"] for row in expected)}
-            alias = {"Json": "json", "Arithmetic": "arithmetic", "Modes": "modes"}[name]
+            alias = {"Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar"}[name]
             for index, (source, row) in enumerate(zip(cases, expected)):
                 quoted = json.dumps(source, ensure_ascii=False)
                 output += ["///|", f'test "Java oracle {name} {index:03d}" {{', f"  let grammar = @{alias}.grammar()"]

@@ -13,6 +13,10 @@
     "Modes": {
       "cases": 15,
       "accepted": 12
+    },
+    "Csv": {
+      "cases": 34,
+      "accepted": 30
     }
   }
 }

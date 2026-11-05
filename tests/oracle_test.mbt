@@ -3620,3 +3620,782 @@ test "Java oracle Modes 014" {
   }
   assert_true(rejected)
 }
+
+///|
+test "Java oracle Csv 000" {
+  let grammar = @csv_grammar.grammar()
+  let source = ""
+  assert_eq(grammar.parse(source).to_sexpr(), "(document (row (field)) <EOF>)")
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [(-1, "<EOF>", 0, 0, 1, 0, 0)])
+}
+
+///|
+test "Java oracle Csv 001" {
+  let grammar = @csv_grammar.grammar()
+  let source = "a,b"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"a\") \",\" (field \"b\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "a", 0, 1, 1, 0, 0),
+    (1, ",", 1, 2, 1, 1, 0),
+    (4, "b", 2, 3, 1, 2, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 002" {
+  let grammar = @csv_grammar.grammar()
+  let source = "a,b\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"a\") \",\" (field \"b\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "a", 0, 1, 1, 0, 0),
+    (1, ",", 1, 2, 1, 1, 0),
+    (4, "b", 2, 3, 1, 2, 0),
+    (2, "\n", 3, 4, 1, 3, 0),
+    (-1, "<EOF>", 4, 4, 2, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 003" {
+  let grammar = @csv_grammar.grammar()
+  let source = ","
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field) \",\" (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, ",", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 004" {
+  let grammar = @csv_grammar.grammar()
+  let source = ",,"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field) \",\" (field) \",\" (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, ",", 0, 1, 1, 0, 0),
+    (1, ",", 1, 2, 1, 1, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 005" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"a,b\",c"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"a,b\\\"\") \",\" (field \"c\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"a,b\"", 0, 5, 1, 0, 0),
+    (1, ",", 5, 6, 1, 5, 0),
+    (4, "c", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 006" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"a\"\"b\",x"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"x\")) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"a\"\"b\"", 0, 6, 1, 0, 0),
+    (1, ",", 6, 7, 1, 6, 0),
+    (4, "x", 7, 8, 1, 7, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 007" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field)) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "\n", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 2, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 008" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "\r\n", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 2, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 009" {
+  let grammar = @csv_grammar.grammar()
+  let source = "a,b\r\n1,2\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"a\") \",\" (field \"b\")) \"\\r\\n\" (row (field \"1\") \",\" (field \"2\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "a", 0, 1, 1, 0, 0),
+    (1, ",", 1, 2, 1, 1, 0),
+    (4, "b", 2, 3, 1, 2, 0),
+    (2, "\r\n", 3, 5, 1, 3, 0),
+    (4, "1", 5, 6, 2, 0, 0),
+    (1, ",", 6, 7, 2, 1, 0),
+    (4, "2", 7, 8, 2, 2, 0),
+    (2, "\r\n", 8, 10, 2, 3, 0),
+    (-1, "<EOF>", 10, 10, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 010" {
+  let grammar = @csv_grammar.grammar()
+  let rejected = try {
+    let _ = grammar.parse("\"unfinished")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Csv 011" {
+  let grammar = @csv_grammar.grammar()
+  let rejected = try {
+    let _ = grammar.parse("a,\"b\"x")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Csv 012" {
+  let grammar = @csv_grammar.grammar()
+  let rejected = try {
+    let _ = grammar.parse("a\rb")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Csv 013" {
+  let grammar = @csv_grammar.grammar()
+  let rejected = try {
+    let _ = grammar.parse("\"a\" \"b\"")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Csv 014" {
+  let grammar = @csv_grammar.grammar()
+  let source = ",\"line\nbreak\",中文😀,\"a\"\"b\"\n中文😀,中文😀\n,,alpha,中文😀\n\"a\"\"b\",\"line\nbreak\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field) \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"中文😀\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"中文😀\") \",\" (field \"中文😀\")) \"\\n\" (row (field) \",\" (field) \",\" (field \"alpha\") \",\" (field \"中文😀\")) \"\\n\" (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, ",", 0, 1, 1, 0, 0),
+    (3, "\"line\nbreak\"", 1, 13, 1, 1, 0),
+    (1, ",", 13, 14, 2, 6, 0),
+    (4, "中文😀", 14, 17, 2, 7, 0),
+    (1, ",", 17, 18, 2, 10, 0),
+    (3, "\"a\"\"b\"", 18, 24, 2, 11, 0),
+    (2, "\n", 24, 25, 2, 17, 0),
+    (4, "中文😀", 25, 28, 3, 0, 0),
+    (1, ",", 28, 29, 3, 3, 0),
+    (4, "中文😀", 29, 32, 3, 4, 0),
+    (2, "\n", 32, 33, 3, 7, 0),
+    (1, ",", 33, 34, 4, 0, 0),
+    (1, ",", 34, 35, 4, 1, 0),
+    (4, "alpha", 35, 40, 4, 2, 0),
+    (1, ",", 40, 41, 4, 7, 0),
+    (4, "中文😀", 41, 44, 4, 8, 0),
+    (2, "\n", 44, 45, 4, 11, 0),
+    (3, "\"a\"\"b\"", 45, 51, 5, 0, 0),
+    (1, ",", 51, 52, 5, 6, 0),
+    (3, "\"line\nbreak\"", 52, 64, 5, 7, 0),
+    (2, "\n", 64, 65, 6, 6, 0),
+    (-1, "<EOF>", 65, 65, 7, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 015" {
+  let grammar = @csv_grammar.grammar()
+  let source = "alpha\r\n\"with,comma\",,\"a\"\"b\",\r\nalpha\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"alpha\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field)) \"\\r\\n\" (row (field \"alpha\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "alpha", 0, 5, 1, 0, 0),
+    (2, "\r\n", 5, 7, 1, 5, 0),
+    (3, "\"with,comma\"", 7, 19, 2, 0, 0),
+    (1, ",", 19, 20, 2, 12, 0),
+    (1, ",", 20, 21, 2, 13, 0),
+    (3, "\"a\"\"b\"", 21, 27, 2, 14, 0),
+    (1, ",", 27, 28, 2, 20, 0),
+    (2, "\r\n", 28, 30, 2, 21, 0),
+    (4, "alpha", 30, 35, 3, 0, 0),
+    (2, "\r\n", 35, 37, 3, 5, 0),
+    (-1, "<EOF>", 37, 37, 4, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 016" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"with,comma\",\"with,comma\",中文😀\r\n,\"a\"\"b\",中文😀\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"with,comma\"", 0, 12, 1, 0, 0),
+    (1, ",", 12, 13, 1, 12, 0),
+    (3, "\"with,comma\"", 13, 25, 1, 13, 0),
+    (1, ",", 25, 26, 1, 25, 0),
+    (4, "中文😀", 26, 29, 1, 26, 0),
+    (2, "\r\n", 29, 31, 1, 29, 0),
+    (1, ",", 31, 32, 2, 0, 0),
+    (3, "\"a\"\"b\"", 32, 38, 2, 1, 0),
+    (1, ",", 38, 39, 2, 7, 0),
+    (4, "中文😀", 39, 42, 2, 8, 0),
+    (2, "\r\n", 42, 44, 2, 11, 0),
+    (-1, "<EOF>", 44, 44, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 017" {
+  let grammar = @csv_grammar.grammar()
+  let source = ",\"a\"\"b\",alpha\n中文😀,,,\"with,comma\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"alpha\")) \"\\n\" (row (field \"中文😀\") \",\" (field) \",\" (field) \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, ",", 0, 1, 1, 0, 0),
+    (3, "\"a\"\"b\"", 1, 7, 1, 1, 0),
+    (1, ",", 7, 8, 1, 7, 0),
+    (4, "alpha", 8, 13, 1, 8, 0),
+    (2, "\n", 13, 14, 1, 13, 0),
+    (4, "中文😀", 14, 17, 2, 0, 0),
+    (1, ",", 17, 18, 2, 3, 0),
+    (1, ",", 18, 19, 2, 4, 0),
+    (1, ",", 19, 20, 2, 5, 0),
+    (3, "\"with,comma\"", 20, 32, 2, 6, 0),
+    (2, "\n", 32, 33, 2, 18, 0),
+    (-1, "<EOF>", 33, 33, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 018" {
+  let grammar = @csv_grammar.grammar()
+  let source = "中文😀,\n\"line\nbreak\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"中文😀\") \",\" (field)) \"\\n\" (row (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "中文😀", 0, 3, 1, 0, 0),
+    (1, ",", 3, 4, 1, 3, 0),
+    (2, "\n", 4, 5, 1, 4, 0),
+    (3, "\"line\nbreak\"", 5, 17, 2, 0, 0),
+    (2, "\n", 17, 18, 3, 6, 0),
+    (-1, "<EOF>", 18, 18, 4, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 019" {
+  let grammar = @csv_grammar.grammar()
+  let source = ",,\"line\nbreak\",\"a\"\"b\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field) \",\" (field) \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, ",", 0, 1, 1, 0, 0),
+    (1, ",", 1, 2, 1, 1, 0),
+    (3, "\"line\nbreak\"", 2, 14, 1, 2, 0),
+    (1, ",", 14, 15, 2, 6, 0),
+    (3, "\"a\"\"b\"", 15, 21, 2, 7, 0),
+    (2, "\n", 21, 22, 2, 13, 0),
+    (-1, "<EOF>", 22, 22, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 020" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"line\nbreak\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"line\nbreak\"", 0, 12, 1, 0, 0),
+    (2, "\n", 12, 13, 2, 6, 0),
+    (-1, "<EOF>", 13, 13, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 021" {
+  let grammar = @csv_grammar.grammar()
+  let source = "alpha,\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"alpha\") \",\" (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "alpha", 0, 5, 1, 0, 0),
+    (1, ",", 5, 6, 1, 5, 0),
+    (2, "\r\n", 6, 8, 1, 6, 0),
+    (-1, "<EOF>", 8, 8, 2, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 022" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"line\nbreak\",\"with,comma\",中文😀,\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"line\nbreak\"", 0, 12, 1, 0, 0),
+    (1, ",", 12, 13, 2, 6, 0),
+    (3, "\"with,comma\"", 13, 25, 2, 7, 0),
+    (1, ",", 25, 26, 2, 19, 0),
+    (4, "中文😀", 26, 29, 2, 20, 0),
+    (1, ",", 29, 30, 2, 23, 0),
+    (2, "\r\n", 30, 32, 2, 24, 0),
+    (-1, "<EOF>", 32, 32, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 023" {
+  let grammar = @csv_grammar.grammar()
+  let source = "中文😀,,alpha\nalpha,\"a\"\"b\"\n\"with,comma\",\"with,comma\",中文😀,\"with,comma\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"中文😀\") \",\" (field) \",\" (field \"alpha\")) \"\\n\" (row (field \"alpha\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "中文😀", 0, 3, 1, 0, 0),
+    (1, ",", 3, 4, 1, 3, 0),
+    (1, ",", 4, 5, 1, 4, 0),
+    (4, "alpha", 5, 10, 1, 5, 0),
+    (2, "\n", 10, 11, 1, 10, 0),
+    (4, "alpha", 11, 16, 2, 0, 0),
+    (1, ",", 16, 17, 2, 5, 0),
+    (3, "\"a\"\"b\"", 17, 23, 2, 6, 0),
+    (2, "\n", 23, 24, 2, 12, 0),
+    (3, "\"with,comma\"", 24, 36, 3, 0, 0),
+    (1, ",", 36, 37, 3, 12, 0),
+    (3, "\"with,comma\"", 37, 49, 3, 13, 0),
+    (1, ",", 49, 50, 3, 25, 0),
+    (4, "中文😀", 50, 53, 3, 26, 0),
+    (1, ",", 53, 54, 3, 29, 0),
+    (3, "\"with,comma\"", 54, 66, 3, 30, 0),
+    (2, "\n", 66, 67, 3, 42, 0),
+    (-1, "<EOF>", 67, 67, 4, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 024" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"with,comma\",\"with,comma\",\"a\"\"b\",\r\n中文😀,,\"a\"\"b\",中文😀\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field)) \"\\r\\n\" (row (field \"中文😀\") \",\" (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"with,comma\"", 0, 12, 1, 0, 0),
+    (1, ",", 12, 13, 1, 12, 0),
+    (3, "\"with,comma\"", 13, 25, 1, 13, 0),
+    (1, ",", 25, 26, 1, 25, 0),
+    (3, "\"a\"\"b\"", 26, 32, 1, 26, 0),
+    (1, ",", 32, 33, 1, 32, 0),
+    (2, "\r\n", 33, 35, 1, 33, 0),
+    (4, "中文😀", 35, 38, 2, 0, 0),
+    (1, ",", 38, 39, 2, 3, 0),
+    (1, ",", 39, 40, 2, 4, 0),
+    (3, "\"a\"\"b\"", 40, 46, 2, 5, 0),
+    (1, ",", 46, 47, 2, 11, 0),
+    (4, "中文😀", 47, 50, 2, 12, 0),
+    (2, "\r\n", 50, 52, 2, 15, 0),
+    (-1, "<EOF>", 52, 52, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 025" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"a\"\"b\",alpha,alpha,alpha\nalpha,alpha,alpha\nalpha\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"alpha\") \",\" (field \"alpha\") \",\" (field \"alpha\")) \"\\n\" (row (field \"alpha\") \",\" (field \"alpha\") \",\" (field \"alpha\")) \"\\n\" (row (field \"alpha\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"a\"\"b\"", 0, 6, 1, 0, 0),
+    (1, ",", 6, 7, 1, 6, 0),
+    (4, "alpha", 7, 12, 1, 7, 0),
+    (1, ",", 12, 13, 1, 12, 0),
+    (4, "alpha", 13, 18, 1, 13, 0),
+    (1, ",", 18, 19, 1, 18, 0),
+    (4, "alpha", 19, 24, 1, 19, 0),
+    (2, "\n", 24, 25, 1, 24, 0),
+    (4, "alpha", 25, 30, 2, 0, 0),
+    (1, ",", 30, 31, 2, 5, 0),
+    (4, "alpha", 31, 36, 2, 6, 0),
+    (1, ",", 36, 37, 2, 11, 0),
+    (4, "alpha", 37, 42, 2, 12, 0),
+    (2, "\n", 42, 43, 2, 17, 0),
+    (4, "alpha", 43, 48, 3, 0, 0),
+    (2, "\n", 48, 49, 3, 5, 0),
+    (-1, "<EOF>", 49, 49, 4, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 026" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"a\"\"b\"\n\"with,comma\",\"with,comma\"\nalpha,中文😀,\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field \"alpha\") \",\" (field \"中文😀\") \",\" (field)) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"a\"\"b\"", 0, 6, 1, 0, 0),
+    (2, "\n", 6, 7, 1, 6, 0),
+    (3, "\"with,comma\"", 7, 19, 2, 0, 0),
+    (1, ",", 19, 20, 2, 12, 0),
+    (3, "\"with,comma\"", 20, 32, 2, 13, 0),
+    (2, "\n", 32, 33, 2, 25, 0),
+    (4, "alpha", 33, 38, 3, 0, 0),
+    (1, ",", 38, 39, 3, 5, 0),
+    (4, "中文😀", 39, 42, 3, 6, 0),
+    (1, ",", 42, 43, 3, 9, 0),
+    (2, "\n", 43, 44, 3, 10, 0),
+    (-1, "<EOF>", 44, 44, 4, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 027" {
+  let grammar = @csv_grammar.grammar()
+  let source = ",\"with,comma\",中文😀,alpha\n,\"with,comma\",,\"a\"\"b\"\n\"line\nbreak\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field) \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field \"alpha\")) \"\\n\" (row (field) \",\" (field \"\\\"with,comma\\\"\") \",\" (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, ",", 0, 1, 1, 0, 0),
+    (3, "\"with,comma\"", 1, 13, 1, 1, 0),
+    (1, ",", 13, 14, 1, 13, 0),
+    (4, "中文😀", 14, 17, 1, 14, 0),
+    (1, ",", 17, 18, 1, 17, 0),
+    (4, "alpha", 18, 23, 1, 18, 0),
+    (2, "\n", 23, 24, 1, 23, 0),
+    (1, ",", 24, 25, 2, 0, 0),
+    (3, "\"with,comma\"", 25, 37, 2, 1, 0),
+    (1, ",", 37, 38, 2, 13, 0),
+    (1, ",", 38, 39, 2, 14, 0),
+    (3, "\"a\"\"b\"", 39, 45, 2, 15, 0),
+    (2, "\n", 45, 46, 2, 21, 0),
+    (3, "\"line\nbreak\"", 46, 58, 3, 0, 0),
+    (2, "\n", 58, 59, 4, 6, 0),
+    (-1, "<EOF>", 59, 59, 5, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 028" {
+  let grammar = @csv_grammar.grammar()
+  let source = "alpha,\"a\"\"b\",alpha\n,\"with,comma\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"alpha\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"alpha\")) \"\\n\" (row (field) \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "alpha", 0, 5, 1, 0, 0),
+    (1, ",", 5, 6, 1, 5, 0),
+    (3, "\"a\"\"b\"", 6, 12, 1, 6, 0),
+    (1, ",", 12, 13, 1, 12, 0),
+    (4, "alpha", 13, 18, 1, 13, 0),
+    (2, "\n", 18, 19, 1, 18, 0),
+    (1, ",", 19, 20, 2, 0, 0),
+    (3, "\"with,comma\"", 20, 32, 2, 1, 0),
+    (2, "\n", 32, 33, 2, 13, 0),
+    (-1, "<EOF>", 33, 33, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 029" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"with,comma\",\"line\nbreak\"\n\"\"\n\"with,comma\",\"a\"\"b\",中文😀,\n中文😀,\"line\nbreak\",中文😀\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field \"\\\"\\\"\")) \"\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\") \",\" (field)) \"\\n\" (row (field \"中文😀\") \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"中文😀\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"with,comma\"", 0, 12, 1, 0, 0),
+    (1, ",", 12, 13, 1, 12, 0),
+    (3, "\"line\nbreak\"", 13, 25, 1, 13, 0),
+    (2, "\n", 25, 26, 2, 6, 0),
+    (3, "\"\"", 26, 28, 3, 0, 0),
+    (2, "\n", 28, 29, 3, 2, 0),
+    (3, "\"with,comma\"", 29, 41, 4, 0, 0),
+    (1, ",", 41, 42, 4, 12, 0),
+    (3, "\"a\"\"b\"", 42, 48, 4, 13, 0),
+    (1, ",", 48, 49, 4, 19, 0),
+    (4, "中文😀", 49, 52, 4, 20, 0),
+    (1, ",", 52, 53, 4, 23, 0),
+    (2, "\n", 53, 54, 4, 24, 0),
+    (4, "中文😀", 54, 57, 5, 0, 0),
+    (1, ",", 57, 58, 5, 3, 0),
+    (3, "\"line\nbreak\"", 58, 70, 5, 4, 0),
+    (1, ",", 70, 71, 6, 6, 0),
+    (4, "中文😀", 71, 74, 6, 7, 0),
+    (2, "\n", 74, 75, 6, 10, 0),
+    (-1, "<EOF>", 75, 75, 7, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 030" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"with,comma\",alpha,中文😀,\"line\nbreak\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"alpha\") \",\" (field \"中文😀\") \",\" (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"with,comma\"", 0, 12, 1, 0, 0),
+    (1, ",", 12, 13, 1, 12, 0),
+    (4, "alpha", 13, 18, 1, 13, 0),
+    (1, ",", 18, 19, 1, 18, 0),
+    (4, "中文😀", 19, 22, 1, 19, 0),
+    (1, ",", 22, 23, 1, 22, 0),
+    (3, "\"line\nbreak\"", 23, 35, 1, 23, 0),
+    (2, "\n", 35, 36, 2, 6, 0),
+    (-1, "<EOF>", 36, 36, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 031" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"with,comma\",中文😀,\"a\"\"b\"\r\n\"line\nbreak\"\r\n\"with,comma\",\"line\nbreak\",\"a\"\"b\",\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\r\\n\" (row (field \"\\\"line\\nbreak\\\"\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"with,comma\"", 0, 12, 1, 0, 0),
+    (1, ",", 12, 13, 1, 12, 0),
+    (4, "中文😀", 13, 16, 1, 13, 0),
+    (1, ",", 16, 17, 1, 16, 0),
+    (3, "\"a\"\"b\"", 17, 23, 1, 17, 0),
+    (2, "\r\n", 23, 25, 1, 23, 0),
+    (3, "\"line\nbreak\"", 25, 37, 2, 0, 0),
+    (2, "\r\n", 37, 39, 3, 6, 0),
+    (3, "\"with,comma\"", 39, 51, 4, 0, 0),
+    (1, ",", 51, 52, 4, 12, 0),
+    (3, "\"line\nbreak\"", 52, 64, 4, 13, 0),
+    (1, ",", 64, 65, 5, 6, 0),
+    (3, "\"a\"\"b\"", 65, 71, 5, 7, 0),
+    (1, ",", 71, 72, 5, 13, 0),
+    (2, "\r\n", 72, 74, 5, 14, 0),
+    (-1, "<EOF>", 74, 74, 6, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 032" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"with,comma\"\n,中文😀,\"with,comma\",\"with,comma\"\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field) \",\" (field \"中文😀\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"with,comma\"", 0, 12, 1, 0, 0),
+    (2, "\n", 12, 13, 1, 12, 0),
+    (1, ",", 13, 14, 2, 0, 0),
+    (4, "中文😀", 14, 17, 2, 1, 0),
+    (1, ",", 17, 18, 2, 4, 0),
+    (3, "\"with,comma\"", 18, 30, 2, 5, 0),
+    (1, ",", 30, 31, 2, 17, 0),
+    (3, "\"with,comma\"", 31, 43, 2, 18, 0),
+    (2, "\n", 43, 44, 2, 30, 0),
+    (-1, "<EOF>", 44, 44, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Csv 033" {
+  let grammar = @csv_grammar.grammar()
+  let source = "\"a\"\"b\",中文😀\r\n\"with,comma\",\"with,comma\"\r\n\"with,comma\",\"with,comma\",\r\nalpha,\"line\nbreak\",\"a\"\"b\",\"a\"\"b\"\r\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field)) \"\\r\\n\" (row (field \"alpha\") \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "\"a\"\"b\"", 0, 6, 1, 0, 0),
+    (1, ",", 6, 7, 1, 6, 0),
+    (4, "中文😀", 7, 10, 1, 7, 0),
+    (2, "\r\n", 10, 12, 1, 10, 0),
+    (3, "\"with,comma\"", 12, 24, 2, 0, 0),
+    (1, ",", 24, 25, 2, 12, 0),
+    (3, "\"with,comma\"", 25, 37, 2, 13, 0),
+    (2, "\r\n", 37, 39, 2, 25, 0),
+    (3, "\"with,comma\"", 39, 51, 3, 0, 0),
+    (1, ",", 51, 52, 3, 12, 0),
+    (3, "\"with,comma\"", 52, 64, 3, 13, 0),
+    (1, ",", 64, 65, 3, 25, 0),
+    (2, "\r\n", 65, 67, 3, 26, 0),
+    (4, "alpha", 67, 72, 4, 0, 0),
+    (1, ",", 72, 73, 4, 5, 0),
+    (3, "\"line\nbreak\"", 73, 85, 4, 6, 0),
+    (1, ",", 85, 86, 5, 6, 0),
+    (3, "\"a\"\"b\"", 86, 92, 5, 7, 0),
+    (1, ",", 92, 93, 5, 13, 0),
+    (3, "\"a\"\"b\"", 93, 99, 5, 14, 0),
+    (2, "\r\n", 99, 101, 5, 20, 0),
+    (-1, "<EOF>", 101, 101, 6, 0, 0),
+  ])
+}
