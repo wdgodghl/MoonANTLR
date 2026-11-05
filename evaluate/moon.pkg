@@ -1,0 +1,5 @@
+import {
+  "wdgodghl/moonantlr/generated/arithmetic" @grammar,
+  "moonbitlang/core/string",
+  "moonbitlang/core/debug",
+}

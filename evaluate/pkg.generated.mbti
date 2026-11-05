@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/evaluate"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn evaluate(String) -> Double raise
+
+// Errors
+pub(all) suberror EvaluationError {
+  DivisionByZero
+  InvalidTree(String)
+} derive(@debug.Debug)
+pub fn EvaluationError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+
+// Type aliases
+
+// Traits

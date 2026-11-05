@@ -1,0 +1,6 @@
+import {
+  "wdgodghl/moonantlr/evaluate" @evaluator,
+  "moonbitlang/core/debug",
+}
+
+pkgtype(kind: "executable")
