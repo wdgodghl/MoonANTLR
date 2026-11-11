@@ -98,6 +98,7 @@ moon run examples/typed
 
 - [生成的类型接口与遍历示例](docs/GENERATED_API.md)
 - [架构与功能边界](docs/ARCHITECTURE.md)
+- [ANTLR4 兼容矩阵与计划交付](docs/ANTLR_COMPATIBILITY.md)
 - [验证与测试重现](docs/VERIFICATION.md)
 - [ANTLR 4.13.2](https://github.com/antlr/antlr4/tree/4.13.2)
 - [ANTLR 新语言目标开发指南](https://github.com/antlr/antlr4/blob/dev/doc/creating-a-language-target.md)
