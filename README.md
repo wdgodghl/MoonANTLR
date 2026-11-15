@@ -49,9 +49,11 @@ moon run examples/evaluate
 moon run examples/csv
 moon run examples/typed
 moon run cmd/inspect -- arithmetic '1+2*3'
+moon run cmd/inspect -- json --file './config.json'
 ```
 
-`cmd/inspect` 接受 `json`、`arithmetic`、`modes` 或 `csv` 与源文本，输出 JSON 报告。
+`cmd/inspect` 接受 `json`、`arithmetic`、`modes` 或 `csv`。可直接传源文本，或通过
+`--file` 读取 UTF-8 文件。读取失败返回 `file_error`，语法错误包含行列位置。
 业务解析失败时输出 `ok: false` 和诊断对象；进程退出码不用于表示该报告的业务状态。
 CSV 示例保留空字段，支持引号内换行和双引号转义；空源没有记录，末尾换行不额外生成记录。
 

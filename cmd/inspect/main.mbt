@@ -1,7 +1,9 @@
 ///|
 fn main {
-  let args = @env.args()
-  if args.length() != 3 {
+  let args = cli_args()
+  let from_file = args.length() == 4 && args[2] == "--file"
+  let from_argument = args.length() == 3 && args[2] != "--file"
+  if !from_argument && !from_file {
     println(
       Json::object(
         Map([
@@ -9,7 +11,7 @@ fn main {
           (
             "usage",
             Json::string(
-              "moon run cmd/inspect -- <json|arithmetic|modes|csv> <source>",
+              "moon run cmd/inspect -- <json|arithmetic|modes|csv> <source | --file path>",
             ),
           ),
         ]),
@@ -38,5 +40,30 @@ fn main {
       return
     }
   }
-  println(@report.analyze(grammar, args[2]).stringify())
+  let source = if from_file {
+    try {
+      let bytes = @fs.read_file_to_bytes(args[3])
+      @utf8.decode(bytes[:])
+    } catch {
+      error => {
+        let message = match error {
+          @fs.IOError::IOError(message) => message
+          _ => "file is not valid UTF-8"
+        }
+        let report : Json = {
+          "ok": Json::boolean(false),
+          "diagnostic": {
+            "code": Json::string("file_error"),
+            "path": Json::string(args[3]),
+            "message": Json::string(message),
+          },
+        }
+        println(report.stringify())
+        return
+      }
+    }
+  } else {
+    args[2]
+  }
+  println(@report.analyze(grammar, source).stringify())
 }

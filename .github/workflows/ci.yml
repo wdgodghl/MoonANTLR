@@ -35,6 +35,7 @@ jobs:
       - if: matrix.target == 'wasm-gc'
         run: node tools/check_editor.mjs
       - run: moon run cmd/inspect --target ${{ matrix.target }} -- arithmetic '1+2*3'
+      - run: python3 tools/check_cli.py --target ${{ matrix.target }}
       - name: Check public interfaces
         run: |
           moon info

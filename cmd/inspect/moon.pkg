@@ -6,6 +6,15 @@ import {
   "wdgodghl/moonantlr/generated/arithmetic",
   "wdgodghl/moonantlr/generated/modes",
   "moonbitlang/core/env",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/x/fs",
 }
 
 pkgtype(kind: "executable")
+
+options(
+  targets: {
+    "args_js.mbt": [ "js" ],
+    "args_other.mbt": [ "wasm", "wasm-gc", "native", "llvm" ],
+  },
+)

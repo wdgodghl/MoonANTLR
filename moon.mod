@@ -11,7 +11,11 @@
 
 name = "wdgodghl/moonantlr"
 
-version = "0.1.1"
+import {
+  "moonbitlang/x@0.5.7",
+}
+
+version = "0.1.2"
 
 readme = "README.md"
 
