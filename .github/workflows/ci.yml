@@ -24,6 +24,7 @@ jobs:
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.20+65efd5b93
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - run: moon version --all
+      - run: moon update
       - run: moon fmt --check
       - run: moon check --target ${{ matrix.target }} --deny-warn
       - run: moon build --target ${{ matrix.target }} --deny-warn
@@ -56,6 +57,7 @@ jobs:
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.20+65efd5b93
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - run: moon update
       - name: Regenerate upstream artifacts and reference cases
         run: |
           mkdir -p .local

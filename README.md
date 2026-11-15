@@ -34,6 +34,7 @@ Mooncakes 已发布 `wdgodghl/moonantlr`。在 MoonBit 项目中运行 `moon add
 git clone https://github.com/wdgodghl/MoonANTLR.git
 cd MoonANTLR
 moon version --all
+moon update
 moon check --deny-warn
 moon build --deny-warn
 moon test --deny-warn
