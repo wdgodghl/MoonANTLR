@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.*;
 import org.antlr.v4.codegen.CodeGenerator;
 import org.antlr.v4.runtime.atn.ATNSerializer;
+import org.antlr.v4.runtime.atn.PredicateTransition;
 import org.antlr.v4.tool.*;
 import org.antlr.v4.tool.ast.*;
 import org.antlr.v4.parse.ANTLRParser;
@@ -88,7 +89,10 @@ public final class MoonBitTarget extends JavaTarget {
         block(out, "pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError { { lexer: @runtime.deserialize(lexer_data()), parser: @runtime.deserialize(parser_data()), rules: " + rules + ", vocabulary: " + vocab + " } }");
         block(out, "pub struct " + recognizer + " { grammar : @runtime.Grammar }");
         block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { {grammar: grammar()} }");
-        boolean hasPredicates = !g.getIndexToPredicateMap().isEmpty();
+        boolean hasPredicates = g.atn.states.stream()
+            .filter(Objects::nonNull)
+            .flatMap(state -> Arrays.stream(state.getTransitions()))
+            .anyMatch(PredicateTransition.class::isInstance);
         for (Rule rule : g.rules.values()) {
             String ctx = type(g, rule.name);
             block(out, "pub struct " + ctx + " { node : @runtime.RuleContext }");

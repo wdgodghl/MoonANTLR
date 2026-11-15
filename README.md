@@ -26,7 +26,9 @@ MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` �
 
 ## 安装与运行
 
-需要 MoonBit 编译器 **0.10.16 或更新版本**，当前开发基线为 **0.10.20**。可从源码运行：
+Mooncakes 已发布 `wdgodghl/moonantlr`。在 MoonBit 项目中运行 `moon add wdgodghl/moonantlr` 添加依赖。
+
+需要 MoonBit 编译器 **0.10.16 或更新版本**，当前开发基线为 **0.10.20**。也可从源码运行：
 
 ```sh
 git clone https://github.com/wdgodghl/MoonANTLR.git
