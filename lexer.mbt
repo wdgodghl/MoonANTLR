@@ -18,6 +18,7 @@ priv struct LexConfig {
   root : Int32
   returns : Array[Int32]
   actions : Array[Int32]
+  passed_non_greedy : Bool
 }
 
 ///|
@@ -30,6 +31,9 @@ fn LexConfig::key(self : LexConfig) -> String {
     ":" +
     self.root.to_string(),
   )
+  if self.passed_non_greedy {
+    out.write_string("!")
+  }
   for n in self.returns {
     out.write_string("/" + n.to_string())
   }
@@ -41,7 +45,8 @@ fn LexConfig::key(self : LexConfig) -> String {
 }
 
 ///|
-/// Exhaustive bounded NFA execution: longest match, then rule declaration order.
+/// Ordered NFA execution. A rule acceptance suppresses lower-priority paths
+/// that passed a non-greedy decision. Competing rules still prefer longest match.
 fn lex_match(
   atn : Atn,
   chars : Array[Char],
@@ -53,7 +58,9 @@ fn lex_match(
     raise InvalidAtn("unknown lexer mode")
   }
   let work : Array[LexConfig] = []
-  for edge in atn.states[atn.modes[mode]].edges {
+  let entries = atn.states[atn.modes[mode]].edges
+  for i = entries.length() - 1; i >= 0; i = i - 1 {
+    let edge = entries[i]
     if edge.kind != 1 {
       raise InvalidAtn("mode must enter rules through epsilon edges")
     }
@@ -66,21 +73,40 @@ fn lex_match(
       root: atn.states[edge.target].rule,
       returns: [],
       actions: [],
+      passed_non_greedy: false,
     })
   }
   let seen : Map[String, Bool] = Map([])
   let mut best : LexConfig? = None
-  while work.length() > 0 {
+  let mut next : Array[LexConfig] = []
+  let accepted : Map[Int32, Bool] = Map([])
+  while !work.is_empty() || !next.is_empty() {
+    if work.is_empty() {
+      for i = next.length() - 1; i >= 0; i = i - 1 {
+        work.push(next[i])
+      }
+      next = []
+      accepted.clear()
+      seen.clear()
+    }
     budget.tick()
     let cfg = work.pop().unwrap()
+    let state = atn.states[cfg.state]
+    let cfg = {
+      ..cfg,
+      passed_non_greedy: cfg.passed_non_greedy || state.non_greedy,
+    }
+    if cfg.passed_non_greedy && accepted.contains(cfg.root) {
+      continue
+    }
     let key = cfg.key()
     if seen.contains(key) {
       continue
     }
     seen[key] = true
-    let state = atn.states[cfg.state]
     if state.kind == 7 {
       if cfg.returns.is_empty() {
+        accepted[cfg.root] = true
         match best {
           None => best = Some(cfg)
           Some(old) =>
@@ -95,7 +121,8 @@ fn lex_match(
       }
       continue
     }
-    for edge in state.edges {
+    for i = state.edges.length() - 1; i >= 0; i = i - 1 {
+      let edge = state.edges[i]
       match edge.kind {
         1 => work.push({ ..cfg, state: edge.target, })
         3 => {
@@ -118,11 +145,11 @@ fn lex_match(
             -1
           }
           if atn.matches(edge, symbol) {
-            work.push({
-              ..cfg,
-              state: edge.target,
-              pos: cfg.pos + (if symbol == -1 { 0 } else { 1 }),
-            })
+            if symbol == -1 {
+              work.push({ ..cfg, state: edge.target, })
+            } else {
+              next.push({ ..cfg, state: edge.target, pos: cfg.pos + 1, })
+            }
           }
         }
         _ => raise Unsupported("unsupported lexer transition")

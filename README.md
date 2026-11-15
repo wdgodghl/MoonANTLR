@@ -22,11 +22,11 @@ MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` �
 - 畸形 ATN、错误输入和不支持特性的回归测试。
 - 带通道筛选和安全游标操作的 Token 流、可读错误诊断和通用树折叠接口。
 
-预测和代码生成均为首版实现，尚未达到上游 ANTLR 完整兼容性。预测在 64 Token 内未决时保留候选，由带上下文缓存的解析器继续执行；多解时取语法顺序中的第一个完整结果。语义谓词、内嵌动作、自定义词法动作及非贪婪词法决策仍会明确报错，暂不提供错误恢复。详细边界见[架构说明](docs/ARCHITECTURE.md)。
+预测和代码生成均为首版实现，尚未达到上游 ANTLR 完整兼容性。预测在 64 Token 内未决时保留候选，由带上下文缓存的解析器继续执行；多解时取语法顺序中的第一个完整结果。支持 Parser 谓词回调、Lexer 非贪婪量词，以及可选的 Token 修复与同步恢复。内嵌动作、Lexer 谓词和依赖局部属性的谓词会明确报错。详细边界见[架构说明](docs/ARCHITECTURE.md)。
 
 ## 安装与运行
 
-需要 MoonBit 编译器 **0.10.16 或更新版本**，当前开发基线为 **0.10.18**。本项目尚未发布到 Mooncakes，请先从源码运行：
+需要 MoonBit 编译器 **0.10.16 或更新版本**，当前开发基线为 **0.10.20**。可从源码运行：
 
 ```sh
 git clone https://github.com/wdgodghl/MoonANTLR.git
@@ -62,6 +62,13 @@ moon test --target native --deny-warn
 ```
 
 JS 目标需要 Node.js；native 目标需要对应平台的 C 工具链。
+
+## 浏览器示例
+
+在仓库根目录运行 `moon build examples/editor --target wasm-gc` 和
+`python -m http.server 8000`，然后用支持 WebAssembly JS String Builtins 的浏览器打开
+`http://localhost:8000/examples/editor/`。示例展示赋值 DSL 的解析树、AST 和行列诊断。
+输入 `x=1; = = = ; y=2` 可观察错误后仍保留的语句。
 
 ## 库接口
 

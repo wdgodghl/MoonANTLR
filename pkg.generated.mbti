@@ -3,12 +3,14 @@ package "wdgodghl/moonantlr"
 
 import {
   "moonbitlang/core/debug",
+  "moonbitlang/core/json",
 }
 
 // Values
 pub fn deserialize(Array[Int32]) -> Atn raise RuntimeError
 
 // Errors
+#derive(@debug.Debug)
 pub(all) suberror RuntimeError {
   InvalidArgument(String)
   InvalidAtn(String)
@@ -16,7 +18,7 @@ pub(all) suberror RuntimeError {
   LexicalError(Int32, Int32, String)
   SyntaxError(Int32, Int32, Array[Int32])
   LimitExceeded(String)
-} derive(@debug.Debug)
+}
 pub fn RuntimeError::diagnostic(Self, Grammar) -> Diagnostic
 pub fn RuntimeError::to_repr(Self) -> @debug.Repr
 
@@ -38,16 +40,17 @@ pub(all) enum ContextChild {
   RuleChild(RuleContext)
 }
 
+#derive(Eq, @debug.Debug, @json.ToJson)
 pub(all) struct Diagnostic {
   code : String
   message : String
   line : Int32?
   column : Int32?
   expected : Array[String]
-} derive(Eq, ToJson, @debug.Debug)
+}
 pub fn Diagnostic::equal(Self, Self) -> Bool
 pub fn Diagnostic::not_equal(Self, Self) -> Bool
-pub fn Diagnostic::to_json(Self) -> Json
+pub fn Diagnostic::to_json(Self) -> @json.Json
 pub fn Diagnostic::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Grammar {
@@ -57,8 +60,9 @@ pub(all) struct Grammar {
   vocabulary : Array[String]
 }
 pub fn Grammar::parse(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseTree raise RuntimeError
-pub fn Grammar::parse_context(Self, String, start_rule? : Int32, work_limit? : Int32) -> RuleContext raise RuntimeError
-pub fn Grammar::parse_detailed(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseResult raise RuntimeError
+pub fn Grammar::parse_context(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool) -> RuleContext raise RuntimeError
+pub fn Grammar::parse_detailed(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool) -> ParseResult raise RuntimeError
+pub fn Grammar::parse_recovering(Self, String, start_rule? : Int32, sync_tokens? : Array[Int32], max_repairs? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool) -> RecoveryResult raise RuntimeError
 pub fn Grammar::token_name(Self, Int32) -> String
 pub fn Grammar::tokenize(Self, String, work_limit? : Int32) -> Array[Token] raise RuntimeError
 
@@ -67,14 +71,15 @@ pub(all) struct ParseResult {
   prediction : PredictionStatistics
 }
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ParseTree {
   Terminal(Token)
   Rule(String, Array[ParseTree])
-} derive(Eq, @debug.Debug)
+}
 pub fn ParseTree::equal(Self, Self) -> Bool
 pub fn[A] ParseTree::fold(Self, (Token) -> A raise?, (String, Array[A]) -> A raise?) -> A raise?
 pub fn ParseTree::not_equal(Self, Self) -> Bool
-pub fn ParseTree::to_json(Self) -> Json
+pub fn ParseTree::to_json(Self) -> @json.Json
 pub fn ParseTree::to_repr(Self) -> @debug.Repr
 pub fn ParseTree::to_sexpr(Self) -> String
 
@@ -83,6 +88,12 @@ pub(all) struct PredictionStatistics {
   full_context_fallbacks : Int32
   dfa_states : Int32
   dfa_hits : Int32
+}
+
+pub(all) struct RecoveryResult {
+  context : RuleContext?
+  diagnostics : Array[Diagnostic]
+  complete : Bool
 }
 
 pub(all) struct RuleContext {
@@ -100,6 +111,7 @@ pub fn RuleContext::tokens(Self, Int32, states? : Array[Int32]) -> Array[Token]
 
 type State
 
+#derive(Eq, @debug.Debug, @json.ToJson)
 pub(all) struct Token {
   kind : Int32
   text : String
@@ -108,10 +120,10 @@ pub(all) struct Token {
   line : Int32
   column : Int32
   channel : Int32
-} derive(Eq, ToJson, @debug.Debug)
+}
 pub fn Token::equal(Self, Self) -> Bool
 pub fn Token::not_equal(Self, Self) -> Bool
-pub fn Token::to_json(Self) -> Json
+pub fn Token::to_json(Self) -> @json.Json
 pub fn Token::to_repr(Self) -> @debug.Repr
 
 pub struct TokenStream {
@@ -128,5 +140,6 @@ pub fn TokenStream::seek(Self, Int32) -> Unit raise RuntimeError
 pub fn TokenStream::visible_tokens(Self) -> Array[Token]
 
 // Type aliases
+pub type ParserPredicate = (Int32, Int32, Token) -> Bool
 
 // Traits

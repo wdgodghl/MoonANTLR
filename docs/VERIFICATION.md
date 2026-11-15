@@ -14,7 +14,7 @@ moon run examples/typed
 moon run cmd/main
 ```
 
-The baseline uses moonc 0.10.18. All declared runtime logic is MoonBit and has
+The baseline uses moonc 0.10.20. All declared runtime logic is MoonBit and has
 no external package dependency beyond the standard library.
 
 ## Independent Java reference
@@ -32,6 +32,8 @@ no external package dependency beyond the standard library.
 | Prefix, postfix, ternary and nested EBNF | 80 | 29 |
 | Typed labelled grammar | 44 | 38 |
 | Context-sensitive / ambiguous decisions | 26 | 22 |
+| Predicate gating | 4 | 4 |
+| Non-greedy lexer decisions | 6 | 4 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
 type, text, scalar offsets, line, column and channel. Rejected cases must also
@@ -40,7 +42,7 @@ ANTLR error-recovery behavior. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 437 independent oracle cases. Accepted cases verify exact trees,
+There are 447 independent oracle cases. Accepted cases verify exact trees,
 not merely acceptance. Decision cases include caller-sensitive short/long
 alternatives, ambiguity order and common prefixes longer than the predictor's
 64-token window. Left-recursion cases exercise nested EBNF stars to prevent

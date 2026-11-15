@@ -1,5 +1,6 @@
 ///|
 /// Errors are explicit: unsupported ATN features never silently change meaning.
+#derive(Debug)
 pub(all) suberror RuntimeError {
   InvalidArgument(String)
   InvalidAtn(String)
@@ -7,7 +8,7 @@ pub(all) suberror RuntimeError {
   LexicalError(Int32, Int32, String)
   SyntaxError(Int32, Int32, Array[Int32])
   LimitExceeded(String)
-} derive(Debug)
+}
 
 ///|
 /// ANTLR serialized transition fields, preserved without target-specific encoding.
@@ -43,6 +44,7 @@ pub struct Atn {
 
 ///|
 /// Source offsets and columns count Unicode scalar values; end is exclusive.
+#derive(Debug, Eq, ToJson)
 pub(all) struct Token {
   kind : Int32
   text : String
@@ -51,13 +53,14 @@ pub(all) struct Token {
   line : Int32
   column : Int32
   channel : Int32
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
+#derive(Debug, Eq)
 pub(all) enum ParseTree {
   Terminal(Token)
   Rule(String, Array[ParseTree])
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn ParseTree::to_sexpr(self : ParseTree) -> String {

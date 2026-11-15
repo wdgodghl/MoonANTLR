@@ -1,0 +1,10 @@
+import {
+  "wdgodghl/moonantlr" @runtime,
+  "wdgodghl/moonantlr/generated/typed" @grammar,
+}
+
+options(
+  link: {
+    "wasm-gc": { "exports": [ "analyze" ], "use-js-builtin-string": true },
+  },
+)

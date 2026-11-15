@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<title>MoonANTLR DSL 编辑器</title>
+<h1>MoonANTLR DSL 编辑器</h1>
+<label for="source">赋值语句</label>
+<textarea id="source" rows="5" cols="48" maxlength="8192">x=(1+2)*3; y=2^3</textarea>
+<button id="parse" disabled>解析</button>
+<pre id="result">正在加载解析器</pre>
+<script type="module">
+  const source = document.querySelector("#source");
+  const button = document.querySelector("#parse");
+  const result = document.querySelector("#result");
+  try {
+    const url = "../../_build/wasm-gc/debug/build/examples/editor/editor.wasm";
+    const bytes = await (await fetch(url)).arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, {}, { builtins: ["js-string"], importedStringConstants: "_" });
+    const render = () => {
+      result.textContent = JSON.stringify(JSON.parse(instance.exports.analyze(source.value)), null, 2);
+    };
+    button.addEventListener("click", render);
+    button.disabled = false;
+    render();
+  } catch (error) {
+    result.textContent = String(error);
+  }
+</script>
+</html>

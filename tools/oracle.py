@@ -65,7 +65,7 @@ def corpus():
     decisions += ["p a x; q a x y; " * length for length in [2, 4, 8]]
     recursion = ["1[2]", "1[2][3]", "1[2+3]*4", "1[2[3]]+4!", "1!!", "-1!", "1?2:3?4:5", "1?2?3:4:5", "1+2?3:4*5", "(1+2)![3]", "1[", "1?2", "1?2:", "1[2]]", "!1"]
     recursion += arithmetic
-    return {"Recursion": recursion, "Typed": typed, "Decisions": decisions, "Precedence": precedence, "Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
+    return {"Predicate": ["123", "123", "42", "42"], "NonGreedy": ["/* a */ /* b */ word", "/*x*/! /*y*/", "/**//**/", "/* unterminated", "<ab><cd>word", "<>"], "Recursion": recursion, "Typed": typed, "Decisions": decisions, "Precedence": precedence, "Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
 
 
 def run(args, **kwargs):
@@ -97,15 +97,23 @@ def main():
             payload = "".join(base64.b64encode(s.encode()).decode() + "\n" for s in cases)
             result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar), "Oracle", name], input=payload, capture_output=True)
             expected = [json.loads(line) for line in result.stdout.splitlines()]
+            if name == "Predicate":
+                enabled = run([args.java, "-Dfile.encoding=UTF-8", "-Dmoonantlr.predicate=true", "-cp", str(directory) + os.pathsep + str(jar), "Oracle", name], input=payload, capture_output=True)
+                enabled_rows = [json.loads(line) for line in enabled.stdout.splitlines()]
+                expected[::2] = enabled_rows[::2]
             if len(expected) != len(cases):
                 raise RuntimeError("Oracle output count differs from input count")
             counts[name] = {"cases": len(cases), "accepted": sum(row["accepted"] for row in expected)}
-            alias = {"Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar", "Precedence": "precedence", "Typed": "typed", "Decisions": "decisions", "Recursion": "recursion"}[name]
+            alias = {"Predicate": "predicate", "NonGreedy": "nongreedy", "Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar", "Precedence": "precedence", "Typed": "typed", "Decisions": "decisions", "Recursion": "recursion"}[name]
             for index, (source, row) in enumerate(zip(cases, expected)):
                 quoted = json.dumps(source, ensure_ascii=False)
                 output += ["///|", f'test "Java oracle {name} {index:03d}" {{', f"  let grammar = @{alias}.grammar()"]
+                parse = "grammar.parse(source)"
+                if name == "Predicate":
+                    value = "true" if index % 2 == 0 else "false"
+                    parse = f"grammar.parse_detailed(source, predicate=(_, _, _) => {value}).context.to_tree()"
                 if row["accepted"]:
-                    output += [f"  let source = {quoted}", f"  assert_eq(grammar.parse(source).to_sexpr(), {json.dumps(row['tree'], ensure_ascii=False)})", "  let actual = grammar.tokenize(source).map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))"]
+                    output += [f"  let source = {quoted}", f"  assert_eq({parse}.to_sexpr(), {json.dumps(row['tree'], ensure_ascii=False)})", "  let actual = grammar.tokenize(source).map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))"]
                     tuples = ", ".join("(" + ", ".join(json.dumps(v, ensure_ascii=False) for v in token) + ")" for token in row["tokens"])
                     output += [f"  @debug.assert_eq(actual, [{tuples}])"]
                 else:

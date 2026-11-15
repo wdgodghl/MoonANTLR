@@ -88,11 +88,12 @@ public final class MoonBitTarget extends JavaTarget {
         block(out, "pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError { { lexer: @runtime.deserialize(lexer_data()), parser: @runtime.deserialize(parser_data()), rules: " + rules + ", vocabulary: " + vocab + " } }");
         block(out, "pub struct " + recognizer + " { grammar : @runtime.Grammar }");
         block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { {grammar: grammar()} }");
+        boolean hasPredicates = !g.getIndexToPredicateMap().isEmpty();
         for (Rule rule : g.rules.values()) {
             String ctx = type(g, rule.name);
             block(out, "pub struct " + ctx + " { node : @runtime.RuleContext }");
             block(out, "pub fn " + ctx + "::raw(self : " + ctx + ") -> @runtime.RuleContext { self.node }");
-            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String) -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + ")} }");
+            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + ")} }");
             Set<String> refs = new TreeSet<>();
             for (GrammarAST ref : rule.ast.getNodesWithType(ANTLRParser.RULE_REF))
                 if (g.getRule(ref.getText()) != null) refs.add(ref.getText());

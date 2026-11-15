@@ -15,6 +15,66 @@ pub fn parser_data() -> Array[Int32]
 // Errors
 
 // Types and methods
+pub struct PredicateDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn PredicateDocumentContext::alternative(Self) -> String?
+pub fn PredicateDocumentContext::get_document(Self) -> Array[Self]
+pub fn PredicateDocumentContext::get_enabled(Self) -> Array[PredicateEnabledContext]
+pub fn PredicateDocumentContext::get_fallback(Self) -> Array[PredicateFallbackContext]
+pub fn PredicateDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn PredicateDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct PredicateEnabledContext {
+  node : @moonantlr.RuleContext
+}
+pub fn PredicateEnabledContext::alternative(Self) -> String?
+pub fn PredicateEnabledContext::get_enabled(Self) -> Array[Self]
+pub fn PredicateEnabledContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn PredicateEnabledContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct PredicateFallbackContext {
+  node : @moonantlr.RuleContext
+}
+pub fn PredicateFallbackContext::alternative(Self) -> String?
+pub fn PredicateFallbackContext::get_fallback(Self) -> Array[Self]
+pub fn PredicateFallbackContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn PredicateFallbackContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct PredicateLexer {
+  atn : @moonantlr.Atn
+}
+pub fn PredicateLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn PredicateLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct PredicateListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (PredicateDocumentContext) -> Unit
+  exit_document : (PredicateDocumentContext) -> Unit
+  enter_enabled : (PredicateEnabledContext) -> Unit
+  exit_enabled : (PredicateEnabledContext) -> Unit
+  enter_fallback : (PredicateFallbackContext) -> Unit
+  exit_fallback : (PredicateFallbackContext) -> Unit
+}
+pub fn PredicateListener::new() -> Self
+pub fn PredicateListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct PredicateParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn PredicateParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn PredicateParser::parse_document(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> PredicateDocumentContext raise @moonantlr.RuntimeError
+pub fn PredicateParser::parse_enabled(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> PredicateEnabledContext raise @moonantlr.RuntimeError
+pub fn PredicateParser::parse_fallback(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> PredicateFallbackContext raise @moonantlr.RuntimeError
+
+pub(all) struct PredicateVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (PredicateDocumentContext, Array[T]) -> T
+  visit_enabled : (PredicateEnabledContext, Array[T]) -> T
+  visit_fallback : (PredicateFallbackContext, Array[T]) -> T
+}
+pub fn[T] PredicateVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] PredicateVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases
 

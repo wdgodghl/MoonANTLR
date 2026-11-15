@@ -18,10 +18,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
       - name: Install pinned MoonBit toolchain
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.18+6c83a7f62
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.20+65efd5b93
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - run: moon version --all
       - run: moon fmt --check
@@ -32,6 +32,8 @@ jobs:
       - run: moon run examples/evaluate --target ${{ matrix.target }} --deny-warn
       - run: moon run examples/csv --target ${{ matrix.target }} --deny-warn
       - run: moon run examples/typed --target ${{ matrix.target }} --deny-warn
+      - if: matrix.target == 'wasm-gc'
+        run: node tools/check_editor.mjs
       - run: moon run cmd/inspect --target ${{ matrix.target }} -- arithmetic '1+2*3'
       - name: Check public interfaces
         run: |
@@ -51,7 +53,7 @@ jobs:
           python-version: "3.12"
       - name: Install pinned MoonBit toolchain
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.18+6c83a7f62
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.20+65efd5b93
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - name: Regenerate upstream artifacts and reference cases
         run: |
@@ -65,7 +67,7 @@ jobs:
           python tools/generate_target.py grammars/Typed.g4 --output generated/typed --jar .local/antlr.jar
           python tools/generate_target.py grammars/Decisions.g4 --output generated/decisions --jar .local/antlr.jar
           python tools/generate.py grammars/NonGreedy.g4 --output generated/nongreedy --jar .local/antlr.jar
-          python tools/generate.py grammars/Predicate.g4 --output generated/predicate --jar .local/antlr.jar
+          python tools/generate_target.py grammars/Predicate.g4 --output generated/predicate --jar .local/antlr.jar
           python tools/generate.py grammars/ModesParser.g4 --lexer grammars/ModesLexer.g4 --output generated/modes --jar .local/antlr.jar
           python tools/oracle.py --jar .local/antlr.jar
           python tools/check_target.py --jar .local/antlr.jar

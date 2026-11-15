@@ -93,7 +93,16 @@ demonstrate evaluation and traversal without parsing tree strings.
 
 This is the first native target implementation. It supports action-free
 grammars, typed direct-child access, element/list labels, alternative labels,
-direct left recursion and generated traversal. Semantic predicates, custom
-actions, rule arguments/return attributes, non-greedy lexer decisions and
-error recovery are outside the supported contract. Full ANTLR target/runtime
-conformance is still under development; see `ARCHITECTURE.md`.
+direct left recursion and generated traversal. Full upstream conformance is
+still under development.
+
+For grammars containing Parser predicates, generated parse methods accept
+`predicate=(rule, index, lookahead) => Bool`. Use `true` to enable that path
+and `false` to reject it. Bind pure MoonBit callbacks and rewrite any host
+language code manually. Calls without a binding fail with `Unsupported`.
+Lexer predicates and context-dependent predicates are outside this contract.
+
+`Grammar::parse_recovering` returns `RecoveryResult` with a context, diagnostics
+and a completion flag. Pass explicit token kinds via `sync_tokens` and cap edits
+via `max_repairs`. Inspect diagnostics even if a repaired parse reaches EOF.
+The editor under `examples/editor` shows how to consume the result.

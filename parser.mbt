@@ -1,4 +1,9 @@
 ///|
+/// A side-effect-free parser semantic predicate. The first two arguments
+/// identify the rule and predicate. The third is the current visible token.
+pub type ParserPredicate = (Int32, Int32, Token) -> Bool
+
+///|
 priv struct Outcome {
   pos : Int32
   context : RuleContext
@@ -15,6 +20,9 @@ priv struct ParseConfig {
 ///|
 priv struct ParseContext {
   mut predicting : Bool
+  predicate : ParserPredicate?
+  partial : Ref[RuleContext?]?
+  mut partial_pos : Int32
   atn : Atn
   rules : Array[String]
   tokens : Array[Token]
@@ -87,6 +95,10 @@ fn parse_rule(
     let cfg = work.pop().unwrap()
     let state = ctx.atn.states[cfg.state]
     let cfg = { ..cfg, context: cfg.context.enter(cfg.state), }
+    if depth == 0 && cfg.pos > ctx.partial_pos && ctx.partial is Some(partial) {
+      ctx.partial_pos = cfg.pos
+      partial.val = Some(cfg.context)
+    }
     if state.kind == 7 {
       results.push({ pos: cfg.pos, context: cfg.context, })
       continue
@@ -109,6 +121,13 @@ fn parse_rule(
       }
       let edge = state.edges[i]
       match edge.kind {
+        4 =>
+          if ctx.predicate is Some(check) {
+            let token = ctx.tokens[cfg.pos.min(ctx.tokens.length() - 1)]
+            if check(edge.a, edge.b, token) {
+              work.push({ ..cfg, state: edge.target, visited, })
+            }
+          }
         1 => {
           let context = if ctx.atn.is_precedence_decision(cfg.state) &&
             ctx.atn.states[edge.target].kind != 12 {
@@ -186,22 +205,37 @@ pub fn Grammar::parse_detailed(
   source : String,
   start_rule~ : Int32 = 0,
   work_limit~ : Int32 = 1_000_000,
+  predicate? : ParserPredicate,
+) -> ParseResult raise RuntimeError {
+  let tokens = TokenStream::new(self.tokenize(source, work_limit~)).visible_tokens()
+  self.parse_tokens(tokens, start_rule, { remaining: work_limit, }, predicate)
+}
+
+///|
+fn Grammar::parse_tokens(
+  self : Grammar,
+  tokens : Array[Token],
+  start_rule : Int32,
+  budget : Budget,
+  predicate : ParserPredicate?,
+  prefix? : Ref[RuleContext?],
 ) -> ParseResult raise RuntimeError {
   if self.parser.kind != 1 {
     raise InvalidAtn("parser ATN expected")
   }
-  self.parser.validate_supported()
+  self.parser.validate_supported(predicates=predicate is Some(_))
   if self.rules.length() != self.parser.starts.length() {
     raise InvalidAtn("rule-name table length mismatch")
   }
   if start_rule < 0 || start_rule >= self.rules.length() {
     raise InvalidAtn("unknown start rule")
   }
-  let tokens = TokenStream::new(self.tokenize(source, work_limit~)).visible_tokens()
-  let budget : Budget = { remaining: work_limit, }
   let predictor = Predictor::new(self.parser, budget)
   let ctx : ParseContext = {
-    predicting: true,
+    predicting: predicate is None,
+    predicate,
+    partial: prefix,
+    partial_pos: 0,
     predictor,
     atn: self.parser,
     rules: self.rules,
@@ -217,11 +251,13 @@ pub fn Grammar::parse_detailed(
   // refer to the furthest syntactic failure, not an earlier prediction exit.
   let outcomes = if outcomes.any(outcome => outcome.pos >= tokens.length() - 1) {
     outcomes
-  } else {
+  } else if ctx.predicting {
     ctx.predicting = false
     ctx.cache.clear()
     ctx.active.clear()
     parse_rule(ctx, start_rule, 0, 0, 0, 0)
+  } else {
+    outcomes
   }
   for outcome in outcomes {
     if outcome.pos == tokens.length() || outcome.pos == tokens.length() - 1 {
@@ -261,6 +297,7 @@ pub fn Grammar::parse_context(
   source : String,
   start_rule~ : Int32 = 0,
   work_limit~ : Int32 = 1_000_000,
+  predicate? : ParserPredicate,
 ) -> RuleContext raise RuntimeError {
-  self.parse_detailed(source, start_rule~, work_limit~).context
+  self.parse_detailed(source, start_rule~, work_limit~, predicate?).context
 }

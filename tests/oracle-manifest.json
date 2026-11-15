@@ -2,6 +2,14 @@
   "upstream": "ANTLR 4.13.2 Java target",
   "seed": 20261105,
   "grammars": {
+    "Predicate": {
+      "cases": 4,
+      "accepted": 4
+    },
+    "NonGreedy": {
+      "cases": 6,
+      "accepted": 4
+    },
     "Recursion": {
       "cases": 80,
       "accepted": 29

@@ -2,11 +2,12 @@
 package "wdgodghl/moonantlr/inspect"
 
 import {
+  "moonbitlang/core/json",
   "wdgodghl/moonantlr",
 }
 
 // Values
-pub fn analyze(@moonantlr.Grammar, String) -> Json
+pub fn analyze(@moonantlr.Grammar, String) -> @json.Json
 
 // Errors
 

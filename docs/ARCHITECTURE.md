@@ -57,12 +57,19 @@ See `GENERATED_API.md` for label and traversal semantics.
 
 ## Execution boundaries
 
-Semantic predicates, embedded parser actions, custom lexer actions, non-greedy
-lexer decisions and lexer EOF remapping are rejected explicitly. The synthetic
-ANTLR left-recursion bookkeeping action is the only parser action accepted.
-The native target does not provide rule parameters/return attributes or error
-recovery. Lexical/syntax failure rejects complete input, rather than accepting
-a valid prefix.
+Parser semantic predicates can be bound to pure MoonBit callbacks. The callback
+receives the rule index, predicate index and current visible Token. Context-dependent
+and lexer predicates remain unsupported. With callbacks, the executor evaluates
+predicates on the real token traversal and avoids structural DFA pruning. Results
+are scoped to a single parse. Lexer non-greedy decisions use ordered NFA closure;
+competing rules still use longest match with rule-order tie breaking.
+
+The default parser entry is strict. The opt-in recovery entry tries single Token
+insertion/deletion and caller-specified synchronization, returning diagnostics
+and an available tree. Inserted Tokens have empty text and zero-width spans.
+Unrecoverable input returns the furthest available root prefix, if any.
+Recovery retries share a work budget, and lexical and resource errors still raise.
+Embedded actions and rule arguments/return attributes remain unsupported.
 
 The lexer has a 64-call fragment limit and parser execution a 128-rule nesting
 limit. Each stage defaults to 1,000,000 worklist operations; parser prediction,
@@ -83,5 +90,4 @@ excluded from parser contexts.
 - `examples/typed`: typed labels, alternative Visitor and Listener consumer.
 
 The generated public `.mbti` files describe the actual exported API. Full
-upstream target/runtime conformance and Mooncakes publication remain future
-milestones.
+upstream target/runtime conformance remains a future milestone.

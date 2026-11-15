@@ -1,8 +1,9 @@
 ///|
+#derive(Debug)
 pub(all) suberror EvaluationError {
   DivisionByZero
   InvalidTree(String)
-} derive(Debug)
+}
 
 ///|
 pub extend EvaluationError with @debug.Debug::{to_repr}

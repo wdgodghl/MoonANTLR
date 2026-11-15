@@ -133,18 +133,6 @@ test "semantic predicates fail explicitly rather than being ignored" {
 }
 
 ///|
-test "non-greedy lexer decisions fail explicitly" {
-  let rejected = try {
-    let _ = @nongreedy.grammar().parse("/* a */")
-    false
-  } catch {
-    @runtime.Unsupported(feature) => feature == "non-greedy lexer decisions"
-    _ => false
-  }
-  assert_true(rejected)
-}
-
-///|
 test "work limits and unknown start rules produce typed failures" {
   let grammar = @json.grammar()
   let limited = try {

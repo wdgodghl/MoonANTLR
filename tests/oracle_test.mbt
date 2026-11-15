@@ -2,6 +2,180 @@
 // Seed: 20261105. No Java is needed to run these tests.
 
 ///|
+test "Java oracle Predicate 000" {
+  let grammar = @predicate.grammar()
+  let source = "123"
+  assert_eq(
+    grammar.parse_detailed(source, predicate=(_, _, _) => true).context
+    .to_tree()
+    .to_sexpr(),
+    "(document (enabled \"123\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "123", 0, 3, 1, 0, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle Predicate 001" {
+  let grammar = @predicate.grammar()
+  let source = "123"
+  assert_eq(
+    grammar.parse_detailed(source, predicate=(_, _, _) => false).context
+    .to_tree()
+    .to_sexpr(),
+    "(document (fallback \"123\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "123", 0, 3, 1, 0, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle Predicate 002" {
+  let grammar = @predicate.grammar()
+  let source = "42"
+  assert_eq(
+    grammar.parse_detailed(source, predicate=(_, _, _) => true).context
+    .to_tree()
+    .to_sexpr(),
+    "(document (enabled \"42\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "42", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Predicate 003" {
+  let grammar = @predicate.grammar()
+  let source = "42"
+  assert_eq(
+    grammar.parse_detailed(source, predicate=(_, _, _) => false).context
+    .to_tree()
+    .to_sexpr(),
+    "(document (fallback \"42\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "42", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle NonGreedy 000" {
+  let grammar = @nongreedy.grammar()
+  let source = "/* a */ /* b */ word"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"/* a */\" \"/* b */\" \"word\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "/* a */", 0, 7, 1, 0, 0),
+    (2, "/* b */", 8, 15, 1, 8, 0),
+    (4, "word", 16, 20, 1, 16, 0),
+    (-1, "<EOF>", 20, 20, 1, 20, 0),
+  ])
+}
+
+///|
+test "Java oracle NonGreedy 001" {
+  let grammar = @nongreedy.grammar()
+  let source = "/*x*/! /*y*/"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"/*x*/!\" \"/*y*/\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "/*x*/!", 0, 6, 1, 0, 0),
+    (2, "/*y*/", 7, 12, 1, 7, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle NonGreedy 002" {
+  let grammar = @nongreedy.grammar()
+  let source = "/**//**/"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"/**/\" \"/**/\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "/**/", 0, 4, 1, 0, 0),
+    (2, "/**/", 4, 8, 1, 4, 0),
+    (-1, "<EOF>", 8, 8, 1, 8, 0),
+  ])
+}
+
+///|
+test "Java oracle NonGreedy 003" {
+  let grammar = @nongreedy.grammar()
+  let rejected = try {
+    let _ = grammar.parse("/* unterminated")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle NonGreedy 004" {
+  let grammar = @nongreedy.grammar()
+  let source = "<ab><cd>word"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document \"<ab>\" \"<cd>\" \"word\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "<ab>", 0, 4, 1, 0, 0),
+    (3, "<cd>", 4, 8, 1, 4, 0),
+    (4, "word", 8, 12, 1, 8, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle NonGreedy 005" {
+  let grammar = @nongreedy.grammar()
+  let rejected = try {
+    let _ = grammar.parse("<>")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
 test "Java oracle Recursion 000" {
   let grammar = @recursion.grammar()
   let source = "1[2]"

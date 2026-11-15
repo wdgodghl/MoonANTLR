@@ -9,10 +9,11 @@ import {
 pub fn evaluate(String) -> Double raise
 
 // Errors
+#derive(@debug.Debug)
 pub(all) suberror EvaluationError {
   DivisionByZero
   InvalidTree(String)
-} derive(@debug.Debug)
+}
 pub fn EvaluationError::to_repr(Self) -> @debug.Repr
 
 // Types and methods

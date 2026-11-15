@@ -1,12 +1,13 @@
 ///|
 /// Stable, serializable diagnostics for editor and CLI consumers.
+#derive(Debug, Eq, ToJson)
 pub(all) struct Diagnostic {
   code : String
   message : String
   line : Int32?
   column : Int32?
   expected : Array[String]
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend Diagnostic with @debug.Debug::{to_repr}
