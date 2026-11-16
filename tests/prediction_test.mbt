@@ -23,13 +23,14 @@ test "SLL conflicts use caller returns and share interned DFA transitions" {
 }
 
 ///|
-test "prediction retains alternatives beyond its lookahead window" {
+test "prediction follows a common prefix beyond 64 tokens" {
   let words : Array[String] = []
   for _ in 0..<90 {
     words.push("foo ")
   }
   let input = "z " + words.join("") + "?;"
   let result = @decisions.grammar().parse_detailed(input)
+  assert_true(result.prediction.max_lookahead > 64)
   assert_eq(
     result.context.rules("item")[0].rules("longChoice")[0]
     .text()
@@ -44,6 +45,32 @@ test "ambiguous complete parses select the first grammar alternative" {
   let either = context.rules("item")[0].rules("either")[0]
   assert_eq(either.rules("first").length(), 1)
   assert_true(either.rules("second").is_empty())
+}
+
+///|
+test "generated Lexer predicates receive an absolute scalar offset and isolate calls" {
+  let lexer = @lexgate.LexGateLexer::new()
+  let enabled = lexer.tokenize("if\nif", lexer_predicate=(_, _, offset, _) => {
+    offset == 2
+  })
+  let disabled = lexer.tokenize("if\nif", lexer_predicate=(_, _, _, _) => false)
+  assert_eq(enabled[0].text, "if")
+  assert_true(enabled[0].kind != disabled[0].kind)
+  assert_eq(enabled[1].kind, disabled[1].kind)
+  assert_eq(enabled[1].line, 2)
+  let rejected = try {
+    let _ = lexer.tokenize("if")
+    false
+  } catch {
+    @runtime.Unsupported("semantic predicates") => true
+    _ => false
+  }
+  assert_true(rejected)
+  let parser = @lexgate.LexGateParser::new()
+  let document = parser.parse_document("if", lexer_predicate=(_, _, _, _) => {
+    true
+  })
+  assert_eq(document.raw().tokens(enabled[0].kind).length(), 1)
 }
 
 ///|

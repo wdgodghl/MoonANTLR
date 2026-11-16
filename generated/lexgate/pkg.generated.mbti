@@ -1,0 +1,57 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/lexgate"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct LexGateDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LexGateDocumentContext::alternative(Self) -> String?
+pub fn LexGateDocumentContext::get_document(Self) -> Array[Self]
+pub fn LexGateDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn LexGateDocumentContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn LexGateDocumentContext::get_token_KEY(Self) -> Array[@moonantlr.Token]
+pub fn LexGateDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct LexGateLexer {
+  atn : @moonantlr.Atn
+}
+pub fn LexGateLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn LexGateLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct LexGateListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (LexGateDocumentContext) -> Unit
+  exit_document : (LexGateDocumentContext) -> Unit
+}
+pub fn LexGateListener::new() -> Self
+pub fn LexGateListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct LexGateParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn LexGateParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn LexGateParser::parse_document(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> LexGateDocumentContext raise @moonantlr.RuntimeError
+
+pub(all) struct LexGateVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (LexGateDocumentContext, Array[T]) -> T
+}
+pub fn[T] LexGateVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] LexGateVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

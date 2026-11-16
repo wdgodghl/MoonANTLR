@@ -206,8 +206,11 @@ pub fn Grammar::parse_detailed(
   start_rule~ : Int32 = 0,
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
+  lexer_predicate? : LexerPredicate,
 ) -> ParseResult raise RuntimeError {
-  let tokens = TokenStream::new(self.tokenize(source, work_limit~)).visible_tokens()
+  let tokens = TokenStream::new(
+    self.tokenize(source, work_limit~, lexer_predicate?),
+  ).visible_tokens()
   self.parse_tokens(tokens, start_rule, { remaining: work_limit, }, predicate)
 }
 
@@ -268,6 +271,7 @@ fn Grammar::parse_tokens(
           full_context_fallbacks: predictor.fallbacks,
           dfa_states: predictor.states.length(),
           dfa_hits: predictor.hits,
+          max_lookahead: predictor.max_lookahead,
         },
       }
     }
@@ -298,6 +302,13 @@ pub fn Grammar::parse_context(
   start_rule~ : Int32 = 0,
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
+  lexer_predicate? : LexerPredicate,
 ) -> RuleContext raise RuntimeError {
-  self.parse_detailed(source, start_rule~, work_limit~, predicate?).context
+  self.parse_detailed(
+    source,
+    start_rule~,
+    work_limit~,
+    predicate?,
+    lexer_predicate?,
+  ).context
 }

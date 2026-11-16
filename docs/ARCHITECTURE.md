@@ -30,9 +30,9 @@ cache-hit counters alongside the concrete context.
 
 This is a bounded implementation of adaptive prediction, not a port of the
 complete ANTLR `ParserATNSimulator`. An exhausted outer prediction context is
-conservative: an accepted alternative stays viable. At 64 lookahead tokens,
-all surviving alternatives remain available to the memoized ATN executor.
-There is no fixed lookahead rejection or guessed winner. If several complete
+conservative: an accepted alternative stays viable. Lookahead follows the DFA until the alternatives resolve, the input ends or
+the work budget is exhausted. Surviving alternatives remain available to the
+memoized executor. If several complete
 parses remain, the first complete grammar-order result is chosen. This does
 not claim exact ANTLR conflict resolution for every ambiguous grammar.
 Rejected input is revisited without pruning under the same shared budget to
@@ -58,8 +58,9 @@ See `GENERATED_API.md` for label and traversal semantics.
 ## Execution boundaries
 
 Parser semantic predicates can be bound to pure MoonBit callbacks. The callback
-receives the rule index, predicate index and current visible Token. Context-dependent
-and lexer predicates remain unsupported. With callbacks, the executor evaluates
+receives the rule index, predicate index and current visible Token. Context-dependent predicates remain unsupported. Lexer predicates can bind a
+separate pure callback receiving rule index, predicate index, current Unicode
+scalar offset and source. A false result removes the current lexer path. With callbacks, the executor evaluates
 predicates on the real token traversal and avoids structural DFA pruning. Results
 are scoped to a single parse. Lexer non-greedy decisions use ordered NFA closure;
 competing rules still use longest match with rule-order tie breaking.

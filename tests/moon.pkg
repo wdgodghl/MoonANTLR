@@ -1,4 +1,5 @@
 import {
+  "wdgodghl/moonantlr/generated/lexgate",
   "wdgodghl/moonantlr/generated/typed",
   "wdgodghl/moonantlr/generated/decisions",
   "wdgodghl/moonantlr/generated/recursion",

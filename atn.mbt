@@ -312,7 +312,7 @@ fn Atn::validate_supported(
 ) -> Unit raise RuntimeError {
   for state in self.states {
     for edge in state.edges {
-      if edge.kind == 4 && (self.kind != 1 || !predicates || edge.c != 0) {
+      if edge.kind == 4 && (!predicates || edge.c != 0) {
         raise Unsupported("semantic predicates")
       }
       if self.kind == 1 &&

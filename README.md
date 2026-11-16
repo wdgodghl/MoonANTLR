@@ -22,7 +22,7 @@ MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` �
 - 畸形 ATN、错误输入和不支持特性的回归测试。
 - 带通道筛选和安全游标操作的 Token 流、可读错误诊断和通用树折叠接口。
 
-预测和代码生成均为首版实现，尚未达到上游 ANTLR 完整兼容性。预测在 64 Token 内未决时保留候选，由带上下文缓存的解析器继续执行；多解时取语法顺序中的第一个完整结果。支持 Parser 谓词回调、Lexer 非贪婪量词，以及可选的 Token 修复与同步恢复。内嵌动作、Lexer 谓词和依赖局部属性的谓词会明确报错。详细边界见[架构说明](docs/ARCHITECTURE.md)。
+预测和代码生成均为首版实现，尚未达到上游 ANTLR 完整兼容性。预测按共享工作预算逐 Token 前瞻；多解时取语法顺序中的第一个完整结果。支持 Parser 与 Lexer 谓词回调、Lexer 非贪婪量词，以及可选的 Token 修复与同步恢复。内嵌动作和依赖局部属性的谓词会明确报错。详细边界见[架构说明](docs/ARCHITECTURE.md)。
 
 ## 安装与运行
 
@@ -111,6 +111,7 @@ moon run examples/typed
 - [生成的类型接口与遍历示例](docs/GENERATED_API.md)
 - [架构与功能边界](docs/ARCHITECTURE.md)
 - [ANTLR4 兼容矩阵与计划交付](docs/ANTLR_COMPATIBILITY.md)
+- [ANTLR 4.13.2 完整兼容目标与验收](docs/ANTLR_CONFORMANCE.md)
 - [验证与测试重现](docs/VERIFICATION.md)
 - [ANTLR 4.13.2](https://github.com/antlr/antlr4/tree/4.13.2)
 - [ANTLR 新语言目标开发指南](https://github.com/antlr/antlr4/blob/dev/doc/creating-a-language-target.md)

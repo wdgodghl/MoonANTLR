@@ -71,14 +71,22 @@ public final class MoonBitTarget extends JavaTarget {
         write(g, "moon.pkg", "import { \"wdgodghl/moonantlr\" @runtime }\n");
     }
 
+    private static boolean hasPredicates(Grammar g) {
+        return g != null && g.atn.states.stream()
+            .filter(Objects::nonNull)
+            .flatMap(state -> Arrays.stream(state.getTransitions()))
+            .anyMatch(PredicateTransition.class::isInstance);
+    }
+
     private void emitRecognizer(Grammar g, StringBuilder out) {
         String data = Arrays.toString(ATNSerializer.getSerialized(g.atn).toArray());
         String recognizer = g.getRecognizerName();
         if (g.isLexer()) {
+            boolean predicates = hasPredicates(g);
             block(out, "pub fn lexer_data() -> Array[Int] { " + data + " }");
             block(out, "pub struct " + recognizer + " { atn : @runtime.Atn }");
             block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { { atn: @runtime.deserialize(lexer_data()) } }");
-            block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String) -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source) }");
+            block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String" + (predicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + ") -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source" + (predicates ? ", lexer_predicate?" : "") + ") }");
             return;
         }
         block(out, "pub fn parser_data() -> Array[Int] { " + data + " }");
@@ -89,15 +97,13 @@ public final class MoonBitTarget extends JavaTarget {
         block(out, "pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError { { lexer: @runtime.deserialize(lexer_data()), parser: @runtime.deserialize(parser_data()), rules: " + rules + ", vocabulary: " + vocab + " } }");
         block(out, "pub struct " + recognizer + " { grammar : @runtime.Grammar }");
         block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { {grammar: grammar()} }");
-        boolean hasPredicates = g.atn.states.stream()
-            .filter(Objects::nonNull)
-            .flatMap(state -> Arrays.stream(state.getTransitions()))
-            .anyMatch(PredicateTransition.class::isInstance);
+        boolean hasPredicates = hasPredicates(g);
+        boolean lexerPredicates = hasPredicates(g.implicitLexer);
         for (Rule rule : g.rules.values()) {
             String ctx = type(g, rule.name);
             block(out, "pub struct " + ctx + " { node : @runtime.RuleContext }");
             block(out, "pub fn " + ctx + "::raw(self : " + ctx + ") -> @runtime.RuleContext { self.node }");
-            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + ")} }");
+            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + ")} }");
             Set<String> refs = new TreeSet<>();
             for (GrammarAST ref : rule.ast.getNodesWithType(ANTLRParser.RULE_REF))
                 if (g.getRule(ref.getText()) != null) refs.add(ref.getText());

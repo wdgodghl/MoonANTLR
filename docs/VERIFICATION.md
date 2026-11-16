@@ -33,6 +33,7 @@ no external package dependency beyond the standard library.
 | Typed labelled grammar | 44 | 38 |
 | Context-sensitive / ambiguous decisions | 26 | 22 |
 | Predicate gating | 4 | 4 |
+| Lexer predicate gating | 4 | 4 |
 | Non-greedy lexer decisions | 6 | 4 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
@@ -42,10 +43,10 @@ ANTLR error-recovery behavior. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 447 independent oracle cases. Accepted cases verify exact trees,
+There are 451 independent oracle cases. Accepted cases verify exact trees,
 not merely acceptance. Decision cases include caller-sensitive short/long
 alternatives, ambiguity order and common prefixes longer than the predictor's
-64-token window. Left-recursion cases exercise nested EBNF stars to prevent
+former 64-token window. Left-recursion cases exercise nested EBNF stars to prevent
 accidental creation of recursive contexts at unrelated loop entries.
 
 Generated API tests check optional/list labels, left/right operand identity,

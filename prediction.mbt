@@ -5,6 +5,7 @@ pub(all) struct PredictionStatistics {
   full_context_fallbacks : Int32
   dfa_states : Int32
   dfa_hits : Int32
+  max_lookahead : Int32
 }
 
 ///|
@@ -49,6 +50,7 @@ priv struct Predictor {
   mut decisions : Int32
   mut fallbacks : Int32
   mut hits : Int32
+  mut max_lookahead : Int32
 }
 
 ///|
@@ -64,6 +66,7 @@ fn Predictor::new(atn : Atn, budget : Budget) -> Predictor {
     decisions: 0,
     fallbacks: 0,
     hits: 0,
+    max_lookahead: 0,
   }
 }
 
@@ -223,9 +226,8 @@ fn DfaState::alternatives(self : DfaState) -> Array[Int32] {
 }
 
 ///|
-/// Adaptive lookahead with conservative bounded fallback. When 64 tokens do
-/// not settle a decision, every surviving alternative remains available to
-/// the memoized parser; no unresolved alternative is silently discarded.
+/// Look ahead until one alternative remains, the ATN stops, or input ends.
+/// Cache hits still spend work budget, so cyclic DFA paths remain bounded.
 fn Predictor::simulate(
   self : Predictor,
   initial : Int32,
@@ -234,7 +236,8 @@ fn Predictor::simulate(
 ) -> Array[Int32] raise RuntimeError {
   let mut id = initial
   let stopped : Array[Int32] = []
-  for offset in 0..<64 {
+  for offset in 0..<(tokens.length() - pos) {
+    self.budget.tick()
     let state = self.states[id]
     for alt in state.accepted {
       if !stopped.contains(alt) {
@@ -252,6 +255,7 @@ fn Predictor::simulate(
       state.configs.is_empty() {
       return alts
     }
+    self.max_lookahead = self.max_lookahead.max(offset + 1)
     id = self.advance(id, tokens[pos + offset].kind)
   }
   let alts = self.states[id].alternatives()

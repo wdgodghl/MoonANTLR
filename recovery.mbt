@@ -38,8 +38,11 @@ pub fn Grammar::parse_recovering(
   max_repairs~ : Int32 = 8,
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
+  lexer_predicate? : LexerPredicate,
 ) -> RecoveryResult raise RuntimeError {
-  let mut tokens = TokenStream::new(self.tokenize(source, work_limit~)).visible_tokens()
+  let mut tokens = TokenStream::new(
+    self.tokenize(source, work_limit~, lexer_predicate?),
+  ).visible_tokens()
   let budget : Budget = { remaining: work_limit, }
   let diagnostics : Array[Diagnostic] = []
   let mut attempt = self.try_tokens(tokens, start_rule, budget, predicate)

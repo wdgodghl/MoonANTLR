@@ -2,6 +2,86 @@
 // Seed: 20261105. No Java is needed to run these tests.
 
 ///|
+test "Java oracle LexGate 000" {
+  let grammar = @lexgate.grammar()
+  let source = "if ifs"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_predicate=(_, _, _, _) => true).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"if\" \"ifs\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_predicate=(_, _, _, _) => true)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "if", 0, 2, 1, 0, 0),
+    (2, "ifs", 3, 6, 1, 3, 0),
+    (-1, "<EOF>", 6, 6, 1, 6, 0),
+  ])
+}
+
+///|
+test "Java oracle LexGate 001" {
+  let grammar = @lexgate.grammar()
+  let source = "if ifs"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_predicate=(_, _, _, _) => false).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"if\" \"ifs\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_predicate=(_, _, _, _) => false)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "if", 0, 2, 1, 0, 0),
+    (2, "ifs", 3, 6, 1, 3, 0),
+    (-1, "<EOF>", 6, 6, 1, 6, 0),
+  ])
+}
+
+///|
+test "Java oracle LexGate 002" {
+  let grammar = @lexgate.grammar()
+  let source = "if\nif"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_predicate=(_, _, _, _) => true).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"if\" \"if\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_predicate=(_, _, _, _) => true)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "if", 0, 2, 1, 0, 0),
+    (1, "if", 3, 5, 2, 0, 0),
+    (-1, "<EOF>", 5, 5, 2, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle LexGate 003" {
+  let grammar = @lexgate.grammar()
+  let source = "if\nif"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_predicate=(_, _, _, _) => false).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"if\" \"if\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_predicate=(_, _, _, _) => false)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "if", 0, 2, 1, 0, 0),
+    (2, "if", 3, 5, 2, 0, 0),
+    (-1, "<EOF>", 5, 5, 2, 2, 0),
+  ])
+}
+
+///|
 test "Java oracle Predicate 000" {
   let grammar = @predicate.grammar()
   let source = "123"

@@ -1,4 +1,8 @@
 ///|
+/// A pure Lexer predicate. Offsets are Unicode scalar indices in source.
+pub type LexerPredicate = (Int32, Int32, Int32, String) -> Bool
+
+///|
 priv struct Budget {
   mut remaining : Int32
 }
@@ -53,6 +57,8 @@ fn lex_match(
   start : Int32,
   mode : Int32,
   budget : Budget,
+  source : String,
+  predicate : LexerPredicate?,
 ) -> LexConfig? raise RuntimeError {
   if mode < 0 || mode >= atn.modes.length() {
     raise InvalidAtn("unknown lexer mode")
@@ -124,6 +130,10 @@ fn lex_match(
     for i = state.edges.length() - 1; i >= 0; i = i - 1 {
       let edge = state.edges[i]
       match edge.kind {
+        4 =>
+          if predicate is Some(check) && check(edge.a, edge.b, cfg.pos, source) {
+            work.push({ ..cfg, state: edge.target, })
+          }
         1 => work.push({ ..cfg, state: edge.target, })
         3 => {
           if cfg.returns.length() >= 64 {
@@ -165,11 +175,12 @@ pub fn Atn::tokenize(
   self : Atn,
   source : String,
   work_limit~ : Int32 = 1_000_000,
+  lexer_predicate? : LexerPredicate,
 ) -> Array[Token] raise RuntimeError {
   if self.kind != 0 {
     raise InvalidAtn("lexer ATN expected")
   }
-  self.validate_supported()
+  self.validate_supported(predicates=lexer_predicate is Some(_))
   let budget = Budget::{ remaining: work_limit, }
   let chars = source.to_array()
   let tokens : Array[Token] = []
@@ -190,7 +201,8 @@ pub fn Atn::tokenize(
       token_column = column
       channel = 0
     }
-    let accepted = match lex_match(self, chars, pos, mode, budget) {
+    let accepted = match
+      lex_match(self, chars, pos, mode, budget, source, lexer_predicate) {
       Some(cfg) => cfg
       None => raise LexicalError(line, column, "no lexer rule matches input")
     }
@@ -289,6 +301,7 @@ pub fn Grammar::tokenize(
   self : Grammar,
   source : String,
   work_limit~ : Int32 = 1_000_000,
+  lexer_predicate? : LexerPredicate,
 ) -> Array[Token] raise RuntimeError {
-  self.lexer.tokenize(source, work_limit~)
+  self.lexer.tokenize(source, work_limit~, lexer_predicate?)
 }

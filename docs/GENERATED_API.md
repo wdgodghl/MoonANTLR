@@ -100,7 +100,11 @@ For grammars containing Parser predicates, generated parse methods accept
 `predicate=(rule, index, lookahead) => Bool`. Use `true` to enable that path
 and `false` to reject it. Bind pure MoonBit callbacks and rewrite any host
 language code manually. Calls without a binding fail with `Unsupported`.
-Lexer predicates and context-dependent predicates are outside this contract.
+For Lexer predicates use `lexer_predicate=(rule, index, offset, source) => Bool`.
+Generated Lexer methods and combined grammar Parser methods expose the binding
+when their lexer ATN contains a predicate. Split Parser grammars can pass the
+binding through `grammar().parse_context`. Offset counts Unicode scalars.
+Context-dependent predicates are outside this contract.
 
 `Grammar::parse_recovering` returns `RecoveryResult` with a context, diagnostics
 and a completion flag. Pass explicit token kinds via `sync_tokens` and cap edits
