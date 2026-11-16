@@ -10235,3 +10235,57 @@ test "Java oracle lexer actions and recovery 011" {
   })
   @debug.assert_eq(tokens, [(-1, "<EOF>", 1, 1, 1, 1, 0)])
 }
+
+///|
+test "Java oracle parser action order 000" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.ParseActionsParser::new().parse_document("ab", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1, 2])
+  assert_eq(
+    result.raw().to_tree().to_sexpr(),
+    "(document (item \"a\" \"b\") <EOF>)",
+  )
+}
+
+///|
+test "Java oracle parser action order 001" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.ParseActionsParser::new().parse_document("ac", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1, 2])
+  assert_eq(
+    result.raw().to_tree().to_sexpr(),
+    "(document (item \"a\" \"c\") <EOF>)",
+  )
+}
+
+///|
+test "Java oracle parser action order 002" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.ParseActionsParser::new().parse_document(
+    "ab ac ab",
+    parser_action=event => offsets.push(event.next_token.start),
+  )
+  @debug.assert_eq(offsets, [0, 1, 4, 7, 8])
+  assert_eq(
+    result.raw().to_tree().to_sexpr(),
+    "(document (item \"a\" \"b\") (item \"a\" \"c\") (item \"a\" \"b\") <EOF>)",
+  )
+}
+
+///|
+test "Java oracle parser action order 003" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.ParseActionsParser::new().parse_document(
+    "expr 1+2+3",
+    parser_action=event => offsets.push(event.next_token.start),
+  )
+  @debug.assert_eq(offsets, [0, 7, 9, 10])
+  assert_eq(
+    result.raw().to_tree().to_sexpr(),
+    "(document (item \"expr\" (expression (expression (expression \"1\") \"+\" \"2\") \"+\" \"3\")) <EOF>)",
+  )
+}

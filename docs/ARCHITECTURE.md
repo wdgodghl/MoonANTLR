@@ -73,7 +73,9 @@ Recovery retries share a work budget. Lexical errors raise by default. The
 opt-in Lexer recovery mode skips the failed token attempt and records its location.
 Resource errors always raise.
 Lexer actions execute only for the winning token path and can change emission.
-Parser actions and rule arguments/return attributes remain unsupported.
+Parser action sites are recorded during traversal and replayed once in selected
+parse order. Rule arguments/return attributes and actions that affect prediction
+remain unsupported.
 
 The lexer has a 64-call fragment limit and parser execution a 128-rule nesting
 limit. Each stage defaults to 1,000,000 worklist operations; parser prediction,

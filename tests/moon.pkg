@@ -1,4 +1,5 @@
 import {
+  "wdgodghl/moonantlr/generated/parseactions",
   "wdgodghl/moonantlr/generated/lexactions",
   "wdgodghl/moonantlr/generated/lexgate",
   "wdgodghl/moonantlr/generated/typed",

@@ -115,6 +115,16 @@ end, and the original action offset. The callback can set `event.text`,
 Built-in lexer mode commands remain available in the grammar. Without a binding,
 the runtime rejects an ATN with custom actions.
 
+For embedded Parser actions, generated methods accept
+`parser_action=event => ...`. The generator attaches the ANTLR action source
+states to the parser ATN and exposes their order through `parser_action_sites()`.
+The callback receives the rule index, action ordinal, next visible Token and
+rule context at the action site. It replays actions in execution order after a
+successful parse, including nested rules and rewritten left recursion. Rejected
+strict parses invoke no callbacks. Actions whose mutations affect later
+predicates or rule attributes require a future execution model. Recovery
+currently has no Parser action replay.
+
 `Grammar::tokenize_recovering` returns tokens and lexical errors. On a failed
 match it reports the token attempt's start and discards the failed prefix and
 offending scalar, capped at EOF. Use `recover_lexer=true` to carry these lexical

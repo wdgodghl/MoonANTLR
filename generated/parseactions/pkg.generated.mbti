@@ -1,0 +1,87 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/parseactions"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct ParseActionsDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ParseActionsDocumentContext::alternative(Self) -> String?
+pub fn ParseActionsDocumentContext::get_document(Self) -> Array[Self]
+pub fn ParseActionsDocumentContext::get_item(Self) -> Array[ParseActionsItemContext]
+pub fn ParseActionsDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn ParseActionsDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ParseActionsExpressionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ParseActionsExpressionContext::alternative(Self) -> String?
+pub fn ParseActionsExpressionContext::get_expression(Self) -> Array[Self]
+pub fn ParseActionsExpressionContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn ParseActionsExpressionContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn ParseActionsExpressionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ParseActionsItemContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ParseActionsItemContext::alternative(Self) -> String?
+pub fn ParseActionsItemContext::get_expression(Self) -> Array[ParseActionsExpressionContext]
+pub fn ParseActionsItemContext::get_item(Self) -> Array[Self]
+pub fn ParseActionsItemContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ParseActionsItemContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ParseActionsItemContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ParseActionsItemContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn ParseActionsItemContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ParseActionsLexer {
+  atn : @moonantlr.Atn
+}
+pub fn ParseActionsLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn ParseActionsLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct ParseActionsListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (ParseActionsDocumentContext) -> Unit
+  exit_document : (ParseActionsDocumentContext) -> Unit
+  enter_item : (ParseActionsItemContext) -> Unit
+  exit_item : (ParseActionsItemContext) -> Unit
+  enter_expression : (ParseActionsExpressionContext) -> Unit
+  exit_expression : (ParseActionsExpressionContext) -> Unit
+}
+pub fn ParseActionsListener::new() -> Self
+pub fn ParseActionsListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct ParseActionsParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn ParseActionsParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn ParseActionsParser::parse_document(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ParseActionsDocumentContext raise @moonantlr.RuntimeError
+pub fn ParseActionsParser::parse_expression(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ParseActionsExpressionContext raise @moonantlr.RuntimeError
+pub fn ParseActionsParser::parse_item(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ParseActionsItemContext raise @moonantlr.RuntimeError
+
+pub(all) struct ParseActionsVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (ParseActionsDocumentContext, Array[T]) -> T
+  visit_item : (ParseActionsItemContext, Array[T]) -> T
+  visit_expression : (ParseActionsExpressionContext, Array[T]) -> T
+}
+pub fn[T] ParseActionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] ParseActionsVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

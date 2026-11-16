@@ -7,6 +7,7 @@ import org.antlr.v4.codegen.CodeGenerator;
 import org.antlr.v4.runtime.atn.ATNSerializer;
 import org.antlr.v4.runtime.atn.PredicateTransition;
 import org.antlr.v4.runtime.atn.LexerCustomAction;
+import org.antlr.v4.runtime.atn.ActionTransition;
 import org.antlr.v4.tool.*;
 import org.antlr.v4.tool.ast.*;
 import org.antlr.v4.parse.ANTLRParser;
@@ -84,6 +85,54 @@ public final class MoonBitTarget extends JavaTarget {
             Arrays.stream(grammar.atn.lexerActions).anyMatch(LexerCustomAction.class::isInstance);
     }
 
+    private record ActionSite(int sourceIndex, int state) {}
+
+    private static List<GrammarAST> atnActions(GrammarAST tree) {
+        return tree.getNodesWithType(ANTLRParser.ACTION).stream()
+            .filter(node -> node.atnState != null &&
+                Arrays.stream(node.atnState.getTransitions()).anyMatch(ActionTransition.class::isInstance))
+            .sorted(Comparator.comparingInt(node -> node.getToken().getTokenIndex()))
+            .toList();
+    }
+
+    private static void collectRewrittenActions(
+        org.antlr.v4.analysis.LeftRecursiveRuleAltInfo alternative, List<ActionSite> sites
+    ) {
+        List<GrammarAST> original = alternative.originalAltAST.getNodesWithType(ANTLRParser.ACTION);
+        if (original.isEmpty()) return;
+        original.sort(Comparator.comparingInt(node -> node.getToken().getTokenIndex()));
+        List<GrammarAST> rewritten = atnActions(alternative.altAST);
+        // Synthetic primary bookkeeping may be attached to the rewritten
+        // alternative before the original actions. Match user actions from the end.
+        int cursor = rewritten.size() - 1;
+        for (int i = original.size() - 1; i >= 0; i--) {
+            GrammarAST action = original.get(i);
+            while (cursor >= 0 && !action.getText().equals(rewritten.get(cursor).getText())) cursor--;
+            if (cursor < 0) {
+                throw new IllegalStateException("Cannot map user actions for rewritten alternative " + alternative.altNum);
+            }
+            sites.add(new ActionSite(action.getToken().getTokenIndex(), rewritten.get(cursor--).atnState.stateNumber));
+        }
+    }
+
+    private static List<Integer> parserActionStates(Grammar grammar) {
+        List<ActionSite> sites = new ArrayList<>();
+        for (Rule rule : grammar.rules.values()) {
+            if (rule instanceof LeftRecursiveRule left) {
+                // Associate original and rewritten alternatives; the synthetic
+                // bookkeeping action sits outside these user alternatives.
+                left.recPrimaryAlts.forEach(alt -> collectRewrittenActions(alt, sites));
+                left.recOpAlts.values().forEach(alt -> collectRewrittenActions(alt, sites));
+            } else {
+                for (GrammarAST node : atnActions(rule.ast)) {
+                    sites.add(new ActionSite(node.getToken().getTokenIndex(), node.atnState.stateNumber));
+                }
+            }
+        }
+        return sites.stream().sorted(Comparator.comparingInt(ActionSite::sourceIndex))
+            .map(ActionSite::state).toList();
+    }
+
     private void emitRecognizer(Grammar g, StringBuilder out) {
         String data = Arrays.toString(ATNSerializer.getSerialized(g.atn).toArray());
         String recognizer = g.getRecognizerName();
@@ -96,12 +145,15 @@ public final class MoonBitTarget extends JavaTarget {
             block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String" + (predicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (actions ? ", lexer_action? : @runtime.LexerAction" : "") + ") -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source" + (predicates ? ", lexer_predicate?" : "") + (actions ? ", lexer_action?" : "") + ") }");
             return;
         }
+        List<Integer> parserActions = parserActionStates(g);
+        String actionBinding = parserActions.isEmpty() ? "" : ".with_parser_action_sites(parser_action_sites())";
+        if (!parserActions.isEmpty()) block(out, "pub fn parser_action_sites() -> Array[Int] { " + parserActions + " }");
         block(out, "pub fn parser_data() -> Array[Int] { " + data + " }");
         List<String> rules = new ArrayList<>();
         for (String name : g.getRuleNames()) rules.add(q(name));
         List<String> vocab = new ArrayList<>();
         for (int i = 0; i <= g.getMaxTokenType(); i++) vocab.add(q(g.getVocabulary().getDisplayName(i)));
-        block(out, "pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError { { lexer: @runtime.deserialize(lexer_data()), parser: @runtime.deserialize(parser_data()), rules: " + rules + ", vocabulary: " + vocab + " } }");
+        block(out, "pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError { { lexer: @runtime.deserialize(lexer_data()), parser: @runtime.deserialize(parser_data())" + actionBinding + ", rules: " + rules + ", vocabulary: " + vocab + " } }");
         block(out, "pub struct " + recognizer + " { grammar : @runtime.Grammar }");
         block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { {grammar: grammar()} }");
         boolean hasPredicates = hasPredicates(g);
@@ -111,7 +163,7 @@ public final class MoonBitTarget extends JavaTarget {
             String ctx = type(g, rule.name);
             block(out, "pub struct " + ctx + " { node : @runtime.RuleContext }");
             block(out, "pub fn " + ctx + "::raw(self : " + ctx + ") -> @runtime.RuleContext { self.node }");
-            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (lexerActions ? ", lexer_action? : @runtime.LexerAction" : "") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + (lexerActions ? ", lexer_action?" : "") + ")} }");
+            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (lexerActions ? ", lexer_action? : @runtime.LexerAction" : "") + (parserActions.isEmpty() ? "" : ", parser_action? : @runtime.ParserAction") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + (lexerActions ? ", lexer_action?" : "") + (parserActions.isEmpty() ? "" : ", parser_action?") + ")} }");
             Set<String> refs = new TreeSet<>();
             for (GrammarAST ref : rule.ast.getNodesWithType(ANTLRParser.RULE_REF))
                 if (g.getRule(ref.getText()) != null) refs.add(ref.getText());

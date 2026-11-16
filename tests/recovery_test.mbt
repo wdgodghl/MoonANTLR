@@ -92,3 +92,20 @@ test "generated parser forwards committed lexer actions" {
   @debug.assert_eq(offsets, [2, 3])
   assert_eq(context.raw().text(), "xyz")
 }
+
+///|
+test "a rejected strict parse cannot call a parser action" {
+  let calls : Array[Int32] = []
+  let parser = @parseactions.ParseActionsParser::new()
+  let rejected = try {
+    let _ = parser.parse_document("a", parser_action=event => {
+      calls.push(event.action)
+    })
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+  assert_true(calls.is_empty())
+}

@@ -100,6 +100,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     modes: [],
     sets: [],
     actions: [],
+    parser_actions: Map([]),
   }
   let nnon_greedy = rd.count()
   for (source_kind, target) in links {
@@ -310,16 +311,22 @@ fn Atn::validate_supported(
   self : Atn,
   predicates~ : Bool = false,
   custom_lexer_actions~ : Bool = false,
+  custom_parser_actions~ : Bool = false,
 ) -> Unit raise RuntimeError {
-  for state in self.states {
+  for index, state in self.states {
     for edge in state.edges {
       if edge.kind == 4 && (!predicates || edge.c != 0) {
         raise Unsupported("semantic predicates")
       }
-      if self.kind == 1 &&
-        edge.kind == 6 &&
-        !(edge.b == -1 && self.states[self.starts[state.rule]].precedence) {
-        raise Unsupported("embedded parser actions")
+      if self.kind == 1 && edge.kind == 6 {
+        if self.parser_actions.contains(index) {
+          if !custom_parser_actions {
+            raise Unsupported("embedded parser actions")
+          }
+        } else if !(edge.b == -1 &&
+          self.states[self.starts[state.rule]].precedence) {
+          raise Unsupported("unmapped parser action")
+        }
       }
     }
   }
@@ -331,4 +338,27 @@ fn Atn::validate_supported(
       raise Unsupported("custom lexer actions")
     }
   }
+}
+
+///|
+/// Attach generated user-action source states in callback ordinal order.
+pub fn Atn::with_parser_action_sites(
+  self : Atn,
+  sites : Array[Int32],
+) -> Atn raise RuntimeError {
+  if self.kind != 1 {
+    raise InvalidAtn("parser ATN expected")
+  }
+  let parser_actions : Map[Int32, Int32] = Map([])
+  for ordinal, state in sites {
+    self.check_state(state)
+    let transitions = self.states[state].edges
+    if parser_actions.contains(state) ||
+      transitions.length() != 1 ||
+      transitions[0].kind != 6 {
+      raise InvalidAtn("invalid or duplicate parser action site")
+    }
+    parser_actions[state] = ordinal
+  }
+  { ..self, parser_actions, }
 }

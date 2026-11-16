@@ -36,6 +36,7 @@ no external package dependency beyond the standard library.
 | Lexer predicate gating | 4 | 4 |
 | Rule prefix entry points | 14 | 9 |
 | Lexer actions, recovery, and explicit EOF | 12 | 4 |
+| Parser actions and left recursion | 4 | 4 |
 | Non-greedy lexer decisions | 6 | 4 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
@@ -46,7 +47,9 @@ offsets even for inputs with lexical errors. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 477 independent oracle cases. Prefix entry cases compare the rule
+There are 481 independent oracle cases. Parser action cases compare the
+selected rule tree and action offset sequence, including left recursion.
+Prefix entry cases compare the rule
 tree and the first unconsumed visible Token, and cover explicit EOF and a
 missing operand after a committed repetition. Accepted cases verify exact trees,
 not merely acceptance. Decision cases include caller-sensitive short/long

@@ -4,9 +4,22 @@
 pub type ParserPredicate = (Int32, Int32, Token) -> Bool
 
 ///|
+pub(all) struct ParserActionEvent {
+  rule : Int32
+  action : Int32
+  next_token : Token
+  context : RuleContext
+}
+
+///|
+/// Runs only for the accepted parse, after prediction and validation.
+pub type ParserAction = (ParserActionEvent) -> Unit
+
+///|
 priv struct Outcome {
   pos : Int32
   context : RuleContext
+  actions : Array[ParserActionEvent]
 }
 
 ///|
@@ -15,6 +28,7 @@ priv struct ParseConfig {
   pos : Int32
   context : RuleContext
   visited : Array[(Int32, Int32)]
+  actions : Array[ParserActionEvent]
 }
 
 ///|
@@ -88,6 +102,7 @@ fn parse_rule(
       pos,
       context: { name: ctx.rules[rule], children: [], sources: [], path: [], },
       visited: [],
+      actions: [],
     },
   ]
   let results : Array[Outcome] = []
@@ -101,7 +116,7 @@ fn parse_rule(
       partial.val = Some(cfg.context)
     }
     if state.kind == 7 {
-      results.push({ pos: cfg.pos, context: cfg.context, })
+      results.push({ pos: cfg.pos, context: cfg.context, actions: cfg.actions, })
       continue
     }
     let stamp = (cfg.state, cfg.pos)
@@ -153,7 +168,21 @@ fn parse_rule(
           }
           work.push({ ..cfg, state: edge.target, context, visited, })
         }
-        6 => work.push({ ..cfg, state: edge.target, visited, })
+        6 => {
+          let actions = if ctx.atn.parser_actions.get(cfg.state) is Some(action) {
+            let actions = cfg.actions.copy()
+            actions.push({
+              rule,
+              action,
+              next_token: ctx.tokens[cfg.pos.min(ctx.tokens.length() - 1)],
+              context: cfg.context,
+            })
+            actions
+          } else {
+            cfg.actions
+          }
+          work.push({ ..cfg, state: edge.target, visited, actions, })
+        }
         10 =>
           if edge.a >= precedence {
             work.push({ ..cfg, state: edge.target, visited, })
@@ -178,6 +207,15 @@ fn parse_rule(
               state: edge.target,
               pos: outcome.pos,
               context,
+              actions: if outcome.actions.is_empty() {
+                cfg.actions
+              } else {
+                let actions = cfg.actions.copy()
+                for event in outcome.actions {
+                  actions.push(event)
+                }
+                actions
+              },
               visited,
             })
           }
@@ -193,6 +231,7 @@ fn parse_rule(
               state: edge.target,
               pos: cfg.pos + 1,
               context,
+              actions: cfg.actions,
               visited: [],
             })
           } else {
@@ -219,11 +258,18 @@ pub fn Grammar::parse_detailed(
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
   lexer_action? : LexerAction,
+  parser_action? : ParserAction,
 ) -> ParseResult raise RuntimeError {
   let tokens = TokenStream::new(
     self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?),
   ).visible_tokens()
-  self.parse_tokens(tokens, start_rule, { remaining: work_limit, }, predicate).parsed
+  self.parse_tokens(
+    tokens,
+    start_rule,
+    { remaining: work_limit, },
+    predicate,
+    parser_action?,
+  ).parsed
 }
 
 ///|
@@ -244,6 +290,7 @@ pub fn Grammar::parse_prefix(
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
   lexer_action? : LexerAction,
+  parser_action? : ParserAction,
 ) -> PrefixResult raise RuntimeError {
   let tokens = TokenStream::new(
     self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?),
@@ -254,6 +301,7 @@ pub fn Grammar::parse_prefix(
     { remaining: work_limit, },
     predicate,
     complete=false,
+    parser_action?,
   )
 }
 
@@ -266,11 +314,15 @@ fn Grammar::parse_tokens(
   predicate : ParserPredicate?,
   prefix? : Ref[RuleContext?],
   complete~ : Bool = true,
+  parser_action? : ParserAction,
 ) -> PrefixResult raise RuntimeError {
   if self.parser.kind != 1 {
     raise InvalidAtn("parser ATN expected")
   }
-  self.parser.validate_supported(predicates=predicate is Some(_))
+  self.parser.validate_supported(
+    predicates=predicate is Some(_),
+    custom_parser_actions=parser_action is Some(_),
+  )
   if self.rules.length() != self.parser.starts.length() {
     raise InvalidAtn("rule-name table length mismatch")
   }
@@ -311,6 +363,11 @@ fn Grammar::parse_tokens(
   }
   for outcome in outcomes {
     if !complete || outcome.pos >= tokens.length() - 1 {
+      if parser_action is Some(execute) {
+        for event in outcome.actions {
+          execute(event)
+        }
+      }
       return {
         next_token: tokens[outcome.pos.min(tokens.length() - 1)],
         parsed: {
@@ -354,6 +411,7 @@ pub fn Grammar::parse_context(
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
   lexer_action? : LexerAction,
+  parser_action? : ParserAction,
 ) -> RuleContext raise RuntimeError {
   self.parse_detailed(
     source,
@@ -362,5 +420,6 @@ pub fn Grammar::parse_context(
     predicate?,
     lexer_predicate?,
     lexer_action?,
+    parser_action?,
   ).context
 }
