@@ -34,6 +34,7 @@ no external package dependency beyond the standard library.
 | Context-sensitive / ambiguous decisions | 26 | 22 |
 | Predicate gating | 4 | 4 |
 | Lexer predicate gating | 4 | 4 |
+| Rule prefix entry points | 14 | 9 |
 | Non-greedy lexer decisions | 6 | 4 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
@@ -43,7 +44,9 @@ ANTLR error-recovery behavior. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 451 independent oracle cases. Accepted cases verify exact trees,
+There are 465 independent oracle cases. Prefix entry cases compare the rule
+tree and the first unconsumed visible Token, and cover explicit EOF and a
+missing operand after a committed repetition. Accepted cases verify exact trees,
 not merely acceptance. Decision cases include caller-sensitive short/long
 alternatives, ambiguity order and common prefixes longer than the predictor's
 former 64-token window. Left-recursion cases exercise nested EBNF stars to prevent

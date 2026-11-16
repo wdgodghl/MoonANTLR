@@ -110,3 +110,13 @@ Context-dependent predicates are outside this contract.
 and a completion flag. Pass explicit token kinds via `sync_tokens` and cap edits
 via `max_repairs`. Inspect diagnostics even if a repaired parse reaches EOF.
 The editor under `examples/editor` shows how to consume the result.
+
+For rule entry points that may leave input behind, call
+`grammar.parse_prefix(source, start_rule=rule_index)`. The result exposes the
+rule context at `parsed.context` and the first unconsumed visible Token at
+`next_token`. An explicit `EOF` in the rule still has to match. A greedy loop
+at the end of an entry rule commits its next iteration when the next Token
+uniquely identifies the loop body. This reports a missing operand for `1+`
+instead of returning `1` as an expression prefix. Generated typed entry points
+still require complete input. Prefix parsing tokenizes the whole source, so a
+lexical error after the prefix can still fail the call.

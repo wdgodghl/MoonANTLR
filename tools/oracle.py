@@ -125,6 +125,36 @@ def main():
                 else:
                     output += [f"  let rejected = try {{ let _ = grammar.parse({quoted}); false }} catch {{ _ => true }}", "  assert_true(rejected)"]
                 output += ["}", ""]
+        prefix_cases = [
+            ("Arithmetic", "arithmetic", "factor", 3, ["1+2", "(1+2)*3", "12 34", "(", ""]),
+            ("Arithmetic", "arithmetic", "expression", 1, ["1+2 3", "1*(2+3) 9", "1+"]),
+            ("Arithmetic", "arithmetic", "document", 0, ["1+2", "1 2"]),
+            ("Json", "json", "value", 1, ["true false", "[1,2] {}", "{", "null"]),
+        ]
+        prefix_count = 0
+        prefix_accepted = 0
+        for name, alias, rule, index, cases in prefix_cases:
+            payload = "".join(base64.b64encode(source.encode()).decode() + "\n" for source in cases)
+            result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar),
+                          "Oracle", name, rule], input=payload, capture_output=True)
+            rows = [json.loads(line) for line in result.stdout.splitlines()]
+            if len(rows) != len(cases):
+                raise RuntimeError("Prefix oracle output count differs from input count")
+            for case_id, (source, row) in enumerate(zip(cases, rows)):
+                prefix_count += 1
+                output += ["///|", f'test "Java oracle prefix {name} {rule} {case_id:03d}" {{']
+                call = f"@{alias}.grammar().parse_prefix({json.dumps(source)}, start_rule={index})"
+                if row["accepted"]:
+                    prefix_accepted += 1
+                    output += [f"  let parsed = {call}",
+                               f"  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), {json.dumps(row['tree'])})",
+                               f"  assert_eq(parsed.next_token.kind, {row['nextKind']})",
+                               f"  assert_eq(parsed.next_token.text, {json.dumps(row['nextText'])})"]
+                else:
+                    output += [f"  let rejected = try {{ let _ = {call}; false }} catch {{ @runtime.SyntaxError(_, _, _) => true; _ => false }}",
+                               "  assert_true(rejected)"]
+                output += ["}", ""]
+        counts["RulePrefix"] = {"cases": prefix_count, "accepted": prefix_accepted}
     (ROOT / "tests" / "oracle_test.mbt").write_text("\n".join(output), encoding="utf-8", newline="\n")
     (ROOT / "tests" / "oracle-manifest.json").write_text(json.dumps({"upstream": "ANTLR 4.13.2 Java target", "seed": 20261105, "grammars": counts}, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(counts))

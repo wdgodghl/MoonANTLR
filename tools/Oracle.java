@@ -41,6 +41,7 @@ public final class Oracle {
 
     public static void main(String[] args) throws Exception {
         String grammar = args[0];
+        String rule = args.length > 1 ? args[1] : "document";
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         String line;
         while ((line = input.readLine()) != null) {
@@ -59,9 +60,10 @@ public final class Oracle {
             Parser parser = (Parser) Class.forName(grammar + "Parser").getConstructor(TokenStream.class).newInstance(stream);
             parser.removeErrorListeners();
             parser.addErrorListener(listener);
-            ParseTree parsed = (ParseTree) parser.getClass().getMethod("document").invoke(parser);
-            boolean accepted = errors[0] == 0 && parser.getCurrentToken().getType() == Token.EOF;
+            ParseTree parsed = (ParseTree) parser.getClass().getMethod(rule).invoke(parser);
+            boolean accepted = errors[0] == 0 && (args.length > 1 || parser.getCurrentToken().getType() == Token.EOF);
             StringBuilder out = new StringBuilder("{\"accepted\":").append(accepted).append(",\"tree\":").append(quote(tree(parsed, parser), false)).append(",\"tokens\":[");
+            Token next = parser.getCurrentToken();
             boolean first = true;
             for (Token t : stream.getTokens()) {
                 if (!first) out.append(',');
@@ -71,7 +73,7 @@ public final class Oracle {
                    .append(',').append(t.getLine()).append(',').append(t.getCharPositionInLine())
                    .append(',').append(t.getChannel()).append(']');
             }
-            System.out.println(out.append("]}").toString());
+            System.out.println(out.append("],\"nextKind\":").append(next.getType()).append(",\"nextText\":").append(quote(next.getText(), false)).append('}').toString());
         }
     }
 }

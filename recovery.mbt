@@ -24,7 +24,7 @@ fn Grammar::try_tokens(
     SyntaxError(_, _, _) as error => return Rejected(error, prefix.val)
     error => raise error
   }
-  Parsed(result.context)
+  Parsed(result.parsed.context)
 }
 
 ///|

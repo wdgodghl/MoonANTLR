@@ -9728,3 +9728,150 @@ test "Java oracle Csv 033" {
     (-1, "<EOF>", 101, 101, 6, 0, 0),
   ])
 }
+
+///|
+test "Java oracle prefix Arithmetic factor 000" {
+  let parsed = @arithmetic.grammar().parse_prefix("1+2", start_rule=3)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(factor \"1\")")
+  assert_eq(parsed.next_token.kind, 1)
+  assert_eq(parsed.next_token.text, "+")
+}
+
+///|
+test "Java oracle prefix Arithmetic factor 001" {
+  let parsed = @arithmetic.grammar().parse_prefix("(1+2)*3", start_rule=3)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(factor \"(\" (expression (term (factor \"1\")) \"+\" (term (factor \"2\"))) \")\")",
+  )
+  assert_eq(parsed.next_token.kind, 3)
+  assert_eq(parsed.next_token.text, "*")
+}
+
+///|
+test "Java oracle prefix Arithmetic factor 002" {
+  let parsed = @arithmetic.grammar().parse_prefix("12 34", start_rule=3)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(factor \"12\")")
+  assert_eq(parsed.next_token.kind, 7)
+  assert_eq(parsed.next_token.text, "34")
+}
+
+///|
+test "Java oracle prefix Arithmetic factor 003" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix("(", start_rule=3)
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle prefix Arithmetic factor 004" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix("", start_rule=3)
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle prefix Arithmetic expression 000" {
+  let parsed = @arithmetic.grammar().parse_prefix("1+2 3", start_rule=1)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(expression (term (factor \"1\")) \"+\" (term (factor \"2\")))",
+  )
+  assert_eq(parsed.next_token.kind, 7)
+  assert_eq(parsed.next_token.text, "3")
+}
+
+///|
+test "Java oracle prefix Arithmetic expression 001" {
+  let parsed = @arithmetic.grammar().parse_prefix("1*(2+3) 9", start_rule=1)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(expression (term (factor \"1\") \"*\" (factor \"(\" (expression (term (factor \"2\")) \"+\" (term (factor \"3\"))) \")\")))",
+  )
+  assert_eq(parsed.next_token.kind, 7)
+  assert_eq(parsed.next_token.text, "9")
+}
+
+///|
+test "Java oracle prefix Arithmetic expression 002" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix("1+", start_rule=1)
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle prefix Arithmetic document 000" {
+  let parsed = @arithmetic.grammar().parse_prefix("1+2", start_rule=0)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(document (expression (term (factor \"1\")) \"+\" (term (factor \"2\"))) <EOF>)",
+  )
+  assert_eq(parsed.next_token.kind, -1)
+  assert_eq(parsed.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle prefix Arithmetic document 001" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix("1 2", start_rule=0)
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle prefix Json value 000" {
+  let parsed = @json.grammar().parse_prefix("true false", start_rule=1)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(value \"true\")")
+  assert_eq(parsed.next_token.kind, 2)
+  assert_eq(parsed.next_token.text, "false")
+}
+
+///|
+test "Java oracle prefix Json value 001" {
+  let parsed = @json.grammar().parse_prefix("[1,2] {}", start_rule=1)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(value (array \"[\" (value \"1\") \",\" (value \"2\") \"]\"))",
+  )
+  assert_eq(parsed.next_token.kind, 4)
+  assert_eq(parsed.next_token.text, "{")
+}
+
+///|
+test "Java oracle prefix Json value 002" {
+  let rejected = try {
+    let _ = @json.grammar().parse_prefix("{", start_rule=1)
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle prefix Json value 003" {
+  let parsed = @json.grammar().parse_prefix("null", start_rule=1)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(value \"null\")")
+  assert_eq(parsed.next_token.kind, -1)
+  assert_eq(parsed.next_token.text, "<EOF>")
+}

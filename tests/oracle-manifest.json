@@ -45,6 +45,10 @@
     "Csv": {
       "cases": 34,
       "accepted": 30
+    },
+    "RulePrefix": {
+      "cases": 14,
+      "accepted": 9
     }
   }
 }

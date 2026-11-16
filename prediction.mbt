@@ -275,9 +275,30 @@ fn Predictor::predict(
   context : Int32,
   tokens : Array[Token],
   pos : Int32,
+  terminal_loop~ : Bool = false,
 ) -> Array[Int32] raise RuntimeError {
   self.decisions += 1
-  let sll = self.simulate(self.start(state, precedence, 0), tokens, pos)
+  let start = self.start(state, precedence, 0)
+  // At a greedy loop at the end of an entry rule, a token belonging
+  // uniquely to the body commits that iteration. A missing operand may
+  // then raise instead of turning the broken iteration into trailing input.
+  if terminal_loop &&
+    pos < tokens.length() &&
+    !self.states[start].accepted.is_empty() {
+    let viable : Array[Int32] = []
+    let token = tokens[pos].kind
+    for cfg in self.states[start].configs {
+      self.budget.tick()
+      if self.atn.matches(self.atn.states[cfg.state].edges[cfg.edge], token) &&
+        !viable.contains(cfg.alt) {
+        viable.push(cfg.alt)
+      }
+    }
+    if viable.length() == 1 && !self.states[start].accepted.contains(viable[0]) {
+      return viable
+    }
+  }
+  let sll = self.simulate(start, tokens, pos)
   if sll.length() <= 1 || context == 0 {
     return sll
   }

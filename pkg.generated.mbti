@@ -62,6 +62,7 @@ pub(all) struct Grammar {
 pub fn Grammar::parse(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseTree raise RuntimeError
 pub fn Grammar::parse_context(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> RuleContext raise RuntimeError
 pub fn Grammar::parse_detailed(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> ParseResult raise RuntimeError
+pub fn Grammar::parse_prefix(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> PrefixResult raise RuntimeError
 pub fn Grammar::parse_recovering(Self, String, start_rule? : Int32, sync_tokens? : Array[Int32], max_repairs? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> RecoveryResult raise RuntimeError
 pub fn Grammar::token_name(Self, Int32) -> String
 pub fn Grammar::tokenize(Self, String, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> Array[Token] raise RuntimeError
@@ -89,6 +90,11 @@ pub(all) struct PredictionStatistics {
   dfa_states : Int32
   dfa_hits : Int32
   max_lookahead : Int32
+}
+
+pub(all) struct PrefixResult {
+  parsed : ParseResult
+  next_token : Token
 }
 
 pub(all) struct RecoveryResult {

@@ -20,6 +20,7 @@ priv struct ParseConfig {
 ///|
 priv struct ParseContext {
   mut predicting : Bool
+  prefix_mode : Bool
   predicate : ParserPredicate?
   partial : Ref[RuleContext?]?
   mut partial_pos : Int32
@@ -110,7 +111,17 @@ fn parse_rule(
     let visited = cfg.visited.copy()
     visited.push(stamp)
     let predicted = if ctx.predicting && state.edges.length() > 1 {
-      ctx.predictor.predict(cfg.state, precedence, outer, ctx.tokens, cfg.pos)
+      ctx.predictor.predict(
+        cfg.state,
+        precedence,
+        outer,
+        ctx.tokens,
+        cfg.pos,
+        terminal_loop=ctx.prefix_mode &&
+          depth == 0 &&
+          !state.non_greedy &&
+          (state.kind == 10 || state.kind == 11),
+      )
     } else {
       []
     }
@@ -211,7 +222,37 @@ pub fn Grammar::parse_detailed(
   let tokens = TokenStream::new(
     self.tokenize(source, work_limit~, lexer_predicate?),
   ).visible_tokens()
-  self.parse_tokens(tokens, start_rule, { remaining: work_limit, }, predicate)
+  self.parse_tokens(tokens, start_rule, { remaining: work_limit, }, predicate).parsed
+}
+
+///|
+pub(all) struct PrefixResult {
+  parsed : ParseResult
+  /// First unconsumed visible token. At end of input this is EOF.
+  next_token : Token
+}
+
+///|
+/// Invoke a rule without implicitly requiring EOF. The source is tokenized
+/// eagerly, so lexical errors anywhere in source are still reported.
+pub fn Grammar::parse_prefix(
+  self : Grammar,
+  source : String,
+  start_rule~ : Int32 = 0,
+  work_limit~ : Int32 = 1_000_000,
+  predicate? : ParserPredicate,
+  lexer_predicate? : LexerPredicate,
+) -> PrefixResult raise RuntimeError {
+  let tokens = TokenStream::new(
+    self.tokenize(source, work_limit~, lexer_predicate?),
+  ).visible_tokens()
+  self.parse_tokens(
+    tokens,
+    start_rule,
+    { remaining: work_limit, },
+    predicate,
+    complete=false,
+  )
 }
 
 ///|
@@ -222,7 +263,8 @@ fn Grammar::parse_tokens(
   budget : Budget,
   predicate : ParserPredicate?,
   prefix? : Ref[RuleContext?],
-) -> ParseResult raise RuntimeError {
+  complete~ : Bool = true,
+) -> PrefixResult raise RuntimeError {
   if self.parser.kind != 1 {
     raise InvalidAtn("parser ATN expected")
   }
@@ -236,6 +278,7 @@ fn Grammar::parse_tokens(
   let predictor = Predictor::new(self.parser, budget)
   let ctx : ParseContext = {
     predicting: predicate is None,
+    prefix_mode: !complete,
     predicate,
     partial: prefix,
     partial_pos: 0,
@@ -252,9 +295,11 @@ fn Grammar::parse_tokens(
   let outcomes = parse_rule(ctx, start_rule, 0, 0, 0, 0)
   // Revisit rejected input without pruning so expected-token diagnostics still
   // refer to the furthest syntactic failure, not an earlier prediction exit.
-  let outcomes = if outcomes.any(outcome => outcome.pos >= tokens.length() - 1) {
+  let outcomes = if outcomes.any(outcome => {
+      !complete || outcome.pos >= tokens.length() - 1
+    }) {
     outcomes
-  } else if ctx.predicting {
+  } else if complete && ctx.predicting {
     ctx.predicting = false
     ctx.cache.clear()
     ctx.active.clear()
@@ -263,15 +308,18 @@ fn Grammar::parse_tokens(
     outcomes
   }
   for outcome in outcomes {
-    if outcome.pos == tokens.length() || outcome.pos == tokens.length() - 1 {
+    if !complete || outcome.pos >= tokens.length() - 1 {
       return {
-        context: outcome.context,
-        prediction: {
-          decisions: predictor.decisions,
-          full_context_fallbacks: predictor.fallbacks,
-          dfa_states: predictor.states.length(),
-          dfa_hits: predictor.hits,
-          max_lookahead: predictor.max_lookahead,
+        next_token: tokens[outcome.pos.min(tokens.length() - 1)],
+        parsed: {
+          context: outcome.context,
+          prediction: {
+            decisions: predictor.decisions,
+            full_context_fallbacks: predictor.fallbacks,
+            dfa_states: predictor.states.length(),
+            dfa_hits: predictor.hits,
+            max_lookahead: predictor.max_lookahead,
+          },
         },
       }
     }
