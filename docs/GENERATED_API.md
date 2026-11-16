@@ -106,8 +106,24 @@ when their lexer ATN contains a predicate. Split Parser grammars can pass the
 binding through `grammar().parse_context`. Offset counts Unicode scalars.
 Context-dependent predicates are outside this contract.
 
+Custom Lexer actions use `lexer_action=(event, source) => ...`. Generated Lexer
+and combined Parser entries expose this parameter when the lexer contains an
+action. The runtime calls it after selecting the winning token path, in source
+action order. The event carries the rule and action indices, the token start and
+end, and the original action offset. The callback can set `event.text`,
+`event.channel` and `event.emission` (`Emit(kind)`, `Skip` or `More`).
+Built-in lexer mode commands remain available in the grammar. Without a binding,
+the runtime rejects an ATN with custom actions.
+
+`Grammar::tokenize_recovering` returns tokens and lexical errors. On a failed
+match it reports the token attempt's start and discards the failed prefix and
+offending scalar, capped at EOF. Use `recover_lexer=true` to carry these lexical
+diagnostics into `Grammar::parse_recovering`.
+
 `Grammar::parse_recovering` returns `RecoveryResult` with a context, diagnostics
-and a completion flag. Pass explicit token kinds via `sync_tokens` and cap edits
+and a completion flag. Its `repairs` field identifies committed insertions,
+deletions and synchronized spans, with original Token locations. Pass explicit
+token kinds via `sync_tokens` and cap edits
 via `max_repairs`. Inspect diagnostics even if a repaired parse reaches EOF.
 The editor under `examples/editor` shows how to consume the result.
 

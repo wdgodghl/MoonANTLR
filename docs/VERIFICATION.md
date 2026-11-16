@@ -35,16 +35,18 @@ no external package dependency beyond the standard library.
 | Predicate gating | 4 | 4 |
 | Lexer predicate gating | 4 | 4 |
 | Rule prefix entry points | 14 | 9 |
+| Lexer actions, recovery, and explicit EOF | 12 | 4 |
 | Non-greedy lexer decisions | 6 | 4 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
-type, text, scalar offsets, line, column and channel. Rejected cases must also
-be rejected by MoonANTLR. Rejection tests do not claim matching error text or
-ANTLR error-recovery behavior. Seeds and counts are recorded in
+type, text, scalar offsets, line, column and channel. For strict entry tests,
+rejected cases must also be rejected by MoonANTLR. Lexer recovery cases
+compare recovered Token sequences, lexical diagnostic positions, and action
+offsets even for inputs with lexical errors. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 465 independent oracle cases. Prefix entry cases compare the rule
+There are 477 independent oracle cases. Prefix entry cases compare the rule
 tree and the first unconsumed visible Token, and cover explicit EOF and a
 missing operand after a committed repetition. Accepted cases verify exact trees,
 not merely acceptance. Decision cases include caller-sensitive short/long

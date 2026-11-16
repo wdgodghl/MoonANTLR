@@ -69,8 +69,11 @@ The default parser entry is strict. The opt-in recovery entry tries single Token
 insertion/deletion and caller-specified synchronization, returning diagnostics
 and an available tree. Inserted Tokens have empty text and zero-width spans.
 Unrecoverable input returns the furthest available root prefix, if any.
-Recovery retries share a work budget, and lexical and resource errors still raise.
-Embedded actions and rule arguments/return attributes remain unsupported.
+Recovery retries share a work budget. Lexical errors raise by default. The
+opt-in Lexer recovery mode skips the failed token attempt and records its location.
+Resource errors always raise.
+Lexer actions execute only for the winning token path and can change emission.
+Parser actions and rule arguments/return attributes remain unsupported.
 
 The lexer has a 64-call fragment limit and parser execution a 128-rule nesting
 limit. Each stage defaults to 1,000,000 worklist operations; parser prediction,

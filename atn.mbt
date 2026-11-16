@@ -309,6 +309,7 @@ fn Atn::matches(self : Atn, edge : Edge, symbol : Int32) -> Bool {
 fn Atn::validate_supported(
   self : Atn,
   predicates~ : Bool = false,
+  custom_lexer_actions~ : Bool = false,
 ) -> Unit raise RuntimeError {
   for state in self.states {
     for edge in state.edges {
@@ -326,7 +327,7 @@ fn Atn::validate_supported(
     if action.0 == 7 && action.1 == -1 {
       raise Unsupported("lexer EOF remapping")
     }
-    if action.0 == 1 {
+    if action.0 == 1 && !custom_lexer_actions {
       raise Unsupported("custom lexer actions")
     }
   }

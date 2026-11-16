@@ -16,13 +16,43 @@ fn Budget::tick(self : Budget) -> Unit raise RuntimeError {
 }
 
 ///|
+pub(all) struct LexerActionEvent {
+  rule : Int32
+  action : Int32
+  token_start : Int32
+  offset : Int32
+  token_end : Int32
+  mut emission : LexerEmission
+  mut channel : Int32
+  mut text : String?
+}
+
+///|
+pub(all) enum LexerEmission {
+  Emit(Int32)
+  Skip
+  More
+}
+
+///|
+/// Executes after the winning path has been selected.
+pub type LexerAction = (LexerActionEvent, String) -> Unit
+
+///|
+pub(all) struct LexResult {
+  tokens : Array[Token]
+  errors : Array[RuntimeError]
+}
+
+///|
 priv struct LexConfig {
   state : Int32
   pos : Int32
   root : Int32
   returns : Array[Int32]
-  actions : Array[Int32]
+  actions : Array[(Int32, Int32)]
   passed_non_greedy : Bool
+  matched_eof : Bool
 }
 
 ///|
@@ -35,6 +65,9 @@ fn LexConfig::key(self : LexConfig) -> String {
     ":" +
     self.root.to_string(),
   )
+  if self.matched_eof {
+    out.write_string("$")
+  }
   if self.passed_non_greedy {
     out.write_string("!")
   }
@@ -43,7 +76,7 @@ fn LexConfig::key(self : LexConfig) -> String {
   }
   out.write_string(":")
   for n in self.actions {
-    out.write_string("/" + n.to_string())
+    out.write_string("/" + n.0.to_string() + "@" + n.1.to_string())
   }
   out.to_string()
 }
@@ -59,7 +92,7 @@ fn lex_match(
   budget : Budget,
   source : String,
   predicate : LexerPredicate?,
-) -> LexConfig? raise RuntimeError {
+) -> (LexConfig?, Int32) raise RuntimeError {
   if mode < 0 || mode >= atn.modes.length() {
     raise InvalidAtn("unknown lexer mode")
   }
@@ -80,10 +113,12 @@ fn lex_match(
       returns: [],
       actions: [],
       passed_non_greedy: false,
+      matched_eof: false,
     })
   }
   let seen : Map[String, Bool] = Map([])
   let mut best : LexConfig? = None
+  let mut farthest = start
   let mut next : Array[LexConfig] = []
   let accepted : Map[Int32, Bool] = Map([])
   while !work.is_empty() || !next.is_empty() {
@@ -97,6 +132,7 @@ fn lex_match(
     }
     budget.tick()
     let cfg = work.pop().unwrap()
+    farthest = farthest.max(cfg.pos)
     let state = atn.states[cfg.state]
     let cfg = {
       ..cfg,
@@ -145,7 +181,9 @@ fn lex_match(
         }
         6 => {
           let actions = cfg.actions.copy()
-          actions.push(edge.b)
+          actions.push(
+            (edge.b, if atn.actions[edge.b].0 == 1 { cfg.pos } else { -1 }),
+          )
           work.push({ ..cfg, state: edge.target, actions, })
         }
         2 | 5 | 7 | 8 | 9 => {
@@ -156,7 +194,7 @@ fn lex_match(
           }
           if atn.matches(edge, symbol) {
             if symbol == -1 {
-              work.push({ ..cfg, state: edge.target, })
+              work.push({ ..cfg, state: edge.target, matched_eof: true, })
             } else {
               next.push({ ..cfg, state: edge.target, pos: cfg.pos + 1, })
             }
@@ -166,7 +204,7 @@ fn lex_match(
       }
     }
   }
-  best
+  (best, farthest)
 }
 
 ///|
@@ -176,14 +214,43 @@ pub fn Atn::tokenize(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
 ) -> Array[Token] raise RuntimeError {
+  self.lex(source, work_limit, lexer_predicate, lexer_action, false).tokens
+}
+
+///|
+/// Recover from an unmatched input segment and continue in the current mode.
+pub fn Atn::tokenize_recovering(
+  self : Atn,
+  source : String,
+  work_limit~ : Int32 = 1_000_000,
+  lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
+) -> LexResult raise RuntimeError {
+  self.lex(source, work_limit, lexer_predicate, lexer_action, true)
+}
+
+///|
+fn Atn::lex(
+  self : Atn,
+  source : String,
+  work_limit : Int32,
+  lexer_predicate : LexerPredicate?,
+  lexer_action : LexerAction?,
+  recover : Bool,
+) -> LexResult raise RuntimeError {
   if self.kind != 0 {
     raise InvalidAtn("lexer ATN expected")
   }
-  self.validate_supported(predicates=lexer_predicate is Some(_))
+  self.validate_supported(
+    predicates=lexer_predicate is Some(_),
+    custom_lexer_actions=lexer_action is Some(_),
+  )
   let budget = Budget::{ remaining: work_limit, }
   let chars = source.to_array()
   let tokens : Array[Token] = []
+  let errors : Array[RuntimeError] = []
   let modes : Array[Int32] = []
   let mut mode = 0
   let mut pos = 0
@@ -194,30 +261,75 @@ pub fn Atn::tokenize(
   let mut token_column = 0
   let mut continuing = false
   let mut channel = 0
-  while pos < chars.length() {
+  let mut text : String? = None
+  let mut first = true
+  while first || pos < chars.length() || continuing {
+    first = false
     if !continuing {
       token_start = pos
       token_line = line
       token_column = column
       channel = 0
+      text = None
     }
-    let accepted = match
-      lex_match(self, chars, pos, mode, budget, source, lexer_predicate) {
+    let (candidate, farthest) = lex_match(
+      self, chars, pos, mode, budget, source, lexer_predicate,
+    )
+    let accepted = match candidate {
       Some(cfg) => cfg
-      None => raise LexicalError(line, column, "no lexer rule matches input")
+      None => {
+        if pos == chars.length() {
+          break
+        }
+        if !recover {
+          raise LexicalError(line, column, "no lexer rule matches input")
+        }
+        errors.push(
+          LexicalError(token_line, token_column, "no lexer rule matches input"),
+        )
+        // ANTLR reports the start of the token attempt and discards the
+        // partial match together with the offending scalar, unless at EOF.
+        let end = (farthest + 1).min(chars.length())
+        for i in pos..<end {
+          if chars[i] == '\n' {
+            line += 1
+            column = 0
+          } else {
+            column += 1
+          }
+        }
+        pos = end
+        continuing = false
+        continue
+      }
     }
-    if accepted.pos == pos {
+    if accepted.pos == pos && !accepted.matched_eof {
       raise Unsupported("zero-width lexer token")
     }
-    let mut kind = self.token_types[accepted.root]
-    let mut skip = false
-    let mut more = false
-    for index in accepted.actions {
-      let (action, argument, _) = self.actions[index]
+    let mut emission = Emit(self.token_types[accepted.root])
+    for (index, offset) in accepted.actions {
+      let (action, argument, action_index) = self.actions[index]
       match action {
         0 => channel = argument
+        1 =>
+          if lexer_action is Some(execute) {
+            let event : LexerActionEvent = {
+              rule: argument,
+              action: action_index,
+              token_start,
+              offset,
+              token_end: accepted.pos,
+              emission,
+              channel,
+              text,
+            }
+            execute(event, source)
+            emission = event.emission
+            channel = event.channel
+            text = event.text
+          }
         2 => mode = argument
-        3 => more = true
+        3 => emission = More
         4 =>
           mode = match modes.pop() {
             Some(previous) => previous
@@ -230,8 +342,8 @@ pub fn Atn::tokenize(
           modes.push(mode)
           mode = argument
         }
-        6 => skip = true
-        7 => kind = argument
+        6 => emission = Skip
+        7 => emission = Emit(argument)
         _ => raise Unsupported("custom lexer action")
       }
     }
@@ -247,14 +359,22 @@ pub fn Atn::tokenize(
     if mode < 0 || mode >= self.modes.length() {
       raise InvalidAtn("lexer action selected unknown mode")
     }
-    continuing = more && !skip
-    if !skip && !more {
+    continuing = emission is More
+    if emission is Emit(kind) {
       if kind <= 0 || kind > self.max_token || channel < 0 {
         raise InvalidAtn("invalid emitted token type or channel")
       }
       tokens.push({
         kind,
-        text: String::from_array(chars[token_start:pos]),
+        text: match text {
+          Some(replacement) => replacement
+          None =>
+            if token_start == chars.length() {
+              "<EOF>"
+            } else {
+              String::from_array(chars[token_start:pos])
+            }
+        },
         start: token_start,
         end: pos,
         line: token_line,
@@ -266,7 +386,10 @@ pub fn Atn::tokenize(
   tokens.push({
     kind: -1,
     text: if continuing {
-      String::from_array(chars[token_start:pos])
+      match text {
+        Some(replacement) => replacement
+        None => String::from_array(chars[token_start:pos])
+      }
     } else {
       "<EOF>"
     },
@@ -292,7 +415,7 @@ pub fn Atn::tokenize(
       0
     },
   })
-  tokens
+  { tokens, errors, }
 }
 
 ///|
@@ -302,6 +425,24 @@ pub fn Grammar::tokenize(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
 ) -> Array[Token] raise RuntimeError {
-  self.lexer.tokenize(source, work_limit~, lexer_predicate?)
+  self.lexer.tokenize(source, work_limit~, lexer_predicate?, lexer_action?)
+}
+
+///|
+/// Tokenize with ANTLR-style recovery and return lexical diagnostics.
+pub fn Grammar::tokenize_recovering(
+  self : Grammar,
+  source : String,
+  work_limit~ : Int32 = 1_000_000,
+  lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
+) -> LexResult raise RuntimeError {
+  self.lexer.tokenize_recovering(
+    source,
+    work_limit~,
+    lexer_predicate?,
+    lexer_action?,
+  )
 }

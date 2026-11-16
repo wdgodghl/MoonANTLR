@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/lexactions"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct LexActionsDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LexActionsDocumentContext::alternative(Self) -> String?
+pub fn LexActionsDocumentContext::get_document(Self) -> Array[Self]
+pub fn LexActionsDocumentContext::get_token_A(Self) -> Array[@moonantlr.Token]
+pub fn LexActionsDocumentContext::get_token_B(Self) -> Array[@moonantlr.Token]
+pub fn LexActionsDocumentContext::get_token_C(Self) -> Array[@moonantlr.Token]
+pub fn LexActionsDocumentContext::get_token_END(Self) -> Array[@moonantlr.Token]
+pub fn LexActionsDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn LexActionsDocumentContext::get_token_LONG(Self) -> Array[@moonantlr.Token]
+pub fn LexActionsDocumentContext::get_token_SHORT(Self) -> Array[@moonantlr.Token]
+pub fn LexActionsDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct LexActionsLexer {
+  atn : @moonantlr.Atn
+}
+pub fn LexActionsLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn LexActionsLexer::tokenize(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct LexActionsListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (LexActionsDocumentContext) -> Unit
+  exit_document : (LexActionsDocumentContext) -> Unit
+}
+pub fn LexActionsListener::new() -> Self
+pub fn LexActionsListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct LexActionsParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn LexActionsParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn LexActionsParser::parse_document(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit) -> LexActionsDocumentContext raise @moonantlr.RuntimeError
+
+pub(all) struct LexActionsVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (LexActionsDocumentContext, Array[T]) -> T
+}
+pub fn[T] LexActionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] LexActionsVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

@@ -47,9 +47,11 @@ public final class Oracle {
         while ((line = input.readLine()) != null) {
             String source = new String(Base64.getDecoder().decode(line), StandardCharsets.UTF_8);
             int[] errors = {0};
+            java.util.List<String> lexerErrors = new java.util.ArrayList<>();
             BaseErrorListener listener = new BaseErrorListener() {
                 @Override public void syntaxError(Recognizer<?, ?> r, Object symbol, int row, int column, String message, RecognitionException e) {
                     errors[0]++;
+                    if (r instanceof Lexer) lexerErrors.add("[" + row + "," + column + "]");
                 }
             };
             Lexer lexer = (Lexer) Class.forName(grammar + "Lexer").getConstructor(CharStream.class).newInstance(CharStreams.fromString(source));
@@ -72,6 +74,14 @@ public final class Oracle {
                    .append(',').append(t.getStartIndex()).append(',').append(t.getStopIndex() + 1)
                    .append(',').append(t.getLine()).append(',').append(t.getCharPositionInLine())
                    .append(',').append(t.getChannel()).append(']');
+            }
+            if (grammar.equals("LexActions")) {
+                @SuppressWarnings("unchecked")
+                java.util.List<Integer> offsets = (java.util.List<Integer>) lexer.getClass().getField("offsets").get(lexer);
+                out.append("],\"lexerErrors\":[").append(String.join(",", lexerErrors))
+                   .append("],\"offsets\":").append(offsets).append('}');
+                System.out.println(out);
+                continue;
             }
             System.out.println(out.append("],\"nextKind\":").append(next.getType()).append(",\"nextText\":").append(quote(next.getText(), false)).append('}').toString());
         }

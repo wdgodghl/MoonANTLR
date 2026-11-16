@@ -91,6 +91,7 @@ def main():
         for name in corpus():
             names = ["ModesLexer", "ModesParser"] if name == "Modes" else [name]
             sources.extend(str(ROOT / "grammars" / (n + ".g4")) for n in names)
+        sources.append(str(ROOT / "grammars" / "LexActions.g4"))
         run([args.java, "-Dfile.encoding=UTF-8", "-jar", str(jar), "-encoding", "UTF-8", "-Dlanguage=Java", "-Xexact-output-dir", "-lib", str(directory), "-o", str(directory)] + sources)
         run([args.javac, "-encoding", "UTF-8", "-cp", str(jar), "-d", str(directory), str(ROOT / "tools" / "Oracle.java")] + [str(p) for p in directory.glob("*.java")])
         for name, cases in corpus().items():
@@ -155,6 +156,26 @@ def main():
                                "  assert_true(rejected)"]
                 output += ["}", ""]
         counts["RulePrefix"] = {"cases": prefix_count, "accepted": prefix_accepted}
+        lex_cases = ["xyz x a", "xya", "xy?b", "xy", "a💥b", "a\n?b", "?xyz", "mn?b", "mn", "", "a", " "]
+        payload = "".join(base64.b64encode(source.encode()).decode() + "\n" for source in lex_cases)
+        result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar),
+                      "Oracle", "LexActions"], input=payload, capture_output=True)
+        rows = [json.loads(line) for line in result.stdout.splitlines()]
+        if len(rows) != len(lex_cases):
+            raise RuntimeError("Lexer recovery oracle output count differs from input count")
+        for index, (source, row) in enumerate(zip(lex_cases, rows)):
+            positions = ", ".join(f"({line}, {column})" for line, column in row["lexerErrors"])
+            tuples = ", ".join("(" + ", ".join(json.dumps(v, ensure_ascii=False) for v in token) + ")" for token in row["tokens"])
+            output += ["///|", f'test "Java oracle lexer actions and recovery {index:03d}" {{',
+                       "  let offsets : Array[Int] = []",
+                       f"  let result = @lexactions.grammar().tokenize_recovering({json.dumps(source, ensure_ascii=False)}, lexer_action=(event, _) => {{ offsets.push(event.offset); if event.rule == 2 {{ event.text = Some(\"A!\"); event.emission = @runtime.Emit(4) }} }})",
+                       f"  @debug.assert_eq(offsets, {row['offsets']})",
+                       "  let locations = result.errors.map(error => match error { @runtime.LexicalError(line, column, _) => (line, column); _ => (-1, -1) })",
+                       f"  @debug.assert_eq(locations, [{positions}])",
+                       "  let tokens = result.tokens.map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))",
+                       f"  @debug.assert_eq(tokens, [{tuples}])",
+                       "}", ""]
+        counts["LexerActionsAndRecovery"] = {"cases": len(rows), "accepted": sum(row["accepted"] for row in rows)}
     (ROOT / "tests" / "oracle_test.mbt").write_text("\n".join(output), encoding="utf-8", newline="\n")
     (ROOT / "tests" / "oracle-manifest.json").write_text(json.dumps({"upstream": "ANTLR 4.13.2 Java target", "seed": 20261105, "grammars": counts}, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(counts))

@@ -218,9 +218,10 @@ pub fn Grammar::parse_detailed(
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
 ) -> ParseResult raise RuntimeError {
   let tokens = TokenStream::new(
-    self.tokenize(source, work_limit~, lexer_predicate?),
+    self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?),
   ).visible_tokens()
   self.parse_tokens(tokens, start_rule, { remaining: work_limit, }, predicate).parsed
 }
@@ -242,9 +243,10 @@ pub fn Grammar::parse_prefix(
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
 ) -> PrefixResult raise RuntimeError {
   let tokens = TokenStream::new(
-    self.tokenize(source, work_limit~, lexer_predicate?),
+    self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?),
   ).visible_tokens()
   self.parse_tokens(
     tokens,
@@ -351,6 +353,7 @@ pub fn Grammar::parse_context(
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
 ) -> RuleContext raise RuntimeError {
   self.parse_detailed(
     source,
@@ -358,5 +361,6 @@ pub fn Grammar::parse_context(
     work_limit~,
     predicate?,
     lexer_predicate?,
+    lexer_action?,
   ).context
 }

@@ -9875,3 +9875,363 @@ test "Java oracle prefix Json value 003" {
   assert_eq(parsed.next_token.kind, -1)
   assert_eq(parsed.next_token.text, "<EOF>")
 }
+
+///|
+test "Java oracle lexer actions and recovery 000" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("xyz x a", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [2, 3, 4, 5, 6, 7])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (1, "xyz", 0, 3, 1, 0, 0),
+    (2, "x", 4, 5, 1, 4, 0),
+    (4, "A!", 6, 7, 1, 6, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 001" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("xya", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [1, 3])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(1, 1)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (2, "x", 0, 1, 1, 0, 0),
+    (4, "A!", 2, 3, 1, 2, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 002" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("xy?b", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [1])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(1, 1), (1, 2)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (2, "x", 0, 1, 1, 0, 0),
+    (4, "b", 3, 4, 1, 3, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 003" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("xy", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [1])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(1, 1)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (2, "x", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 004" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("a💥b", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [1])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(1, 1)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (4, "A!", 0, 1, 1, 0, 0),
+    (4, "b", 2, 3, 1, 2, 0),
+    (-1, "<EOF>", 3, 3, 1, 3, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 005" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("a\n?b", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [1, 2])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(2, 0)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (4, "A!", 0, 1, 1, 0, 0),
+    (4, "b", 3, 4, 2, 1, 0),
+    (-1, "<EOF>", 4, 4, 2, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 006" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("?xyz", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [3, 4])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(1, 0)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (1, "xyz", 1, 4, 1, 1, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 007" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("mn?b", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(1, 0)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (4, "b", 3, 4, 1, 3, 0),
+    (-1, "<EOF>", 4, 4, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 008" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("mn", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [(1, 0)])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [(-1, "<EOF>", 2, 2, 1, 2, 0)])
+}
+
+///|
+test "Java oracle lexer actions and recovery 009" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [0])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (6, "<EOF>", 0, 0, 1, 0, 0),
+    (-1, "<EOF>", 0, 0, 1, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 010" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering("a", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [1])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [
+    (4, "A!", 0, 1, 1, 0, 0),
+    (-1, "<EOF>", 1, 1, 1, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle lexer actions and recovery 011" {
+  let offsets : Array[Int32] = []
+  let result = @lexactions.grammar().tokenize_recovering(" ", lexer_action=(
+    event,
+    _,
+  ) => {
+    offsets.push(event.offset)
+    if event.rule == 2 {
+      event.text = Some("A!")
+      event.emission = @runtime.Emit(4)
+    }
+  })
+  @debug.assert_eq(offsets, [1])
+  let locations = result.errors.map(error => {
+    match error {
+      @runtime.LexicalError(line, column, _) => (line, column)
+      _ => (-1, -1)
+    }
+  })
+  @debug.assert_eq(locations, [])
+  let tokens = result.tokens.map(t => {
+    (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
+  })
+  @debug.assert_eq(tokens, [(-1, "<EOF>", 1, 1, 1, 1, 0)])
+}

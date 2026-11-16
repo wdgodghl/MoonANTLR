@@ -49,6 +49,10 @@
     "RulePrefix": {
       "cases": 14,
       "accepted": 9
+    },
+    "LexerActionsAndRecovery": {
+      "cases": 12,
+      "accepted": 4
     }
   }
 }

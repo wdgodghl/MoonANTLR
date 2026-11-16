@@ -6,6 +6,7 @@ import java.util.*;
 import org.antlr.v4.codegen.CodeGenerator;
 import org.antlr.v4.runtime.atn.ATNSerializer;
 import org.antlr.v4.runtime.atn.PredicateTransition;
+import org.antlr.v4.runtime.atn.LexerCustomAction;
 import org.antlr.v4.tool.*;
 import org.antlr.v4.tool.ast.*;
 import org.antlr.v4.parse.ANTLRParser;
@@ -78,15 +79,21 @@ public final class MoonBitTarget extends JavaTarget {
             .anyMatch(PredicateTransition.class::isInstance);
     }
 
+    private static boolean hasLexerActions(Grammar grammar) {
+        return grammar != null && grammar.atn.lexerActions != null &&
+            Arrays.stream(grammar.atn.lexerActions).anyMatch(LexerCustomAction.class::isInstance);
+    }
+
     private void emitRecognizer(Grammar g, StringBuilder out) {
         String data = Arrays.toString(ATNSerializer.getSerialized(g.atn).toArray());
         String recognizer = g.getRecognizerName();
         if (g.isLexer()) {
             boolean predicates = hasPredicates(g);
+            boolean actions = hasLexerActions(g);
             block(out, "pub fn lexer_data() -> Array[Int] { " + data + " }");
             block(out, "pub struct " + recognizer + " { atn : @runtime.Atn }");
             block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { { atn: @runtime.deserialize(lexer_data()) } }");
-            block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String" + (predicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + ") -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source" + (predicates ? ", lexer_predicate?" : "") + ") }");
+            block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String" + (predicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (actions ? ", lexer_action? : @runtime.LexerAction" : "") + ") -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source" + (predicates ? ", lexer_predicate?" : "") + (actions ? ", lexer_action?" : "") + ") }");
             return;
         }
         block(out, "pub fn parser_data() -> Array[Int] { " + data + " }");
@@ -99,11 +106,12 @@ public final class MoonBitTarget extends JavaTarget {
         block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { {grammar: grammar()} }");
         boolean hasPredicates = hasPredicates(g);
         boolean lexerPredicates = hasPredicates(g.implicitLexer);
+        boolean lexerActions = hasLexerActions(g.implicitLexer);
         for (Rule rule : g.rules.values()) {
             String ctx = type(g, rule.name);
             block(out, "pub struct " + ctx + " { node : @runtime.RuleContext }");
             block(out, "pub fn " + ctx + "::raw(self : " + ctx + ") -> @runtime.RuleContext { self.node }");
-            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + ")} }");
+            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (lexerActions ? ", lexer_action? : @runtime.LexerAction" : "") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + (lexerActions ? ", lexer_action?" : "") + ")} }");
             Set<String> refs = new TreeSet<>();
             for (GrammarAST ref : rule.ast.getNodesWithType(ANTLRParser.RULE_REF))
                 if (g.getRule(ref.getText()) != null) refs.add(ref.getText());
