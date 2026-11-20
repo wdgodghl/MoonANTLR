@@ -1,0 +1,30 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/csharp"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn directives(String) -> Array[Bool] raise @moonantlr.RuntimeError
+
+pub fn parse(String, rule? : String, work_limit? : Int32) -> @moonantlr.ParseResult raise @moonantlr.RuntimeError
+
+pub fn parse_recovering(String, rule? : String, work_limit? : Int32) -> @moonantlr.DefaultParseResult raise @moonantlr.RuntimeError
+
+pub fn preprocess(String) -> PreprocessorResult raise @moonantlr.RuntimeError
+
+pub fn tokenize(String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+// Errors
+
+// Types and methods
+pub(all) struct PreprocessorResult {
+  tokens : Array[@moonantlr.Token]
+  original_tokens : Array[@moonantlr.Token]
+  directives : Array[Bool]
+}
+
+// Type aliases
+
+// Traits

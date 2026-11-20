@@ -1,0 +1,201 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/csharp_preprocessor"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn lexer_rule_names() -> Array[String]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct CSharpLexer {
+  atn : @moonantlr.Atn
+}
+pub fn CSharpLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn CSharpLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub struct CSharpPreprocessorParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn CSharpPreprocessorParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn CSharpPreprocessorParser::parse_directive_new_line_or_sharp(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> CSharpPreprocessorParserDirective_new_line_or_sharpContext raise @moonantlr.RuntimeError
+pub fn CSharpPreprocessorParser::parse_preprocessor_directive(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> CSharpPreprocessorParserPreprocessor_directiveContext raise @moonantlr.RuntimeError
+pub fn CSharpPreprocessorParser::parse_preprocessor_expression(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> CSharpPreprocessorParserPreprocessor_expressionContext raise @moonantlr.RuntimeError
+
+pub struct CSharpPreprocessorParserDirective_new_line_or_sharpContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::alternative(Self) -> String?
+pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::get_directive_new_line_or_sharp(Self) -> Array[Self]
+pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::get_token_DIRECTIVE_NEW_LINE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct CSharpPreprocessorParserListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_preprocessor_directive : (CSharpPreprocessorParserPreprocessor_directiveContext) -> Unit
+  exit_preprocessor_directive : (CSharpPreprocessorParserPreprocessor_directiveContext) -> Unit
+  enter_directive_new_line_or_sharp : (CSharpPreprocessorParserDirective_new_line_or_sharpContext) -> Unit
+  exit_directive_new_line_or_sharp : (CSharpPreprocessorParserDirective_new_line_or_sharpContext) -> Unit
+  enter_preprocessor_expression : (CSharpPreprocessorParserPreprocessor_expressionContext) -> Unit
+  exit_preprocessor_expression : (CSharpPreprocessorParserPreprocessor_expressionContext) -> Unit
+  enter_alt_preprocessorConditional : (CSharpPreprocessorParserPreprocessorConditionalContext) -> Unit
+  exit_alt_preprocessorConditional : (CSharpPreprocessorParserPreprocessorConditionalContext) -> Unit
+  enter_alt_preprocessorDeclaration : (CSharpPreprocessorParserPreprocessorDeclarationContext) -> Unit
+  exit_alt_preprocessorDeclaration : (CSharpPreprocessorParserPreprocessorDeclarationContext) -> Unit
+  enter_alt_preprocessorDiagnostic : (CSharpPreprocessorParserPreprocessorDiagnosticContext) -> Unit
+  exit_alt_preprocessorDiagnostic : (CSharpPreprocessorParserPreprocessorDiagnosticContext) -> Unit
+  enter_alt_preprocessorLine : (CSharpPreprocessorParserPreprocessorLineContext) -> Unit
+  exit_alt_preprocessorLine : (CSharpPreprocessorParserPreprocessorLineContext) -> Unit
+  enter_alt_preprocessorNullable : (CSharpPreprocessorParserPreprocessorNullableContext) -> Unit
+  exit_alt_preprocessorNullable : (CSharpPreprocessorParserPreprocessorNullableContext) -> Unit
+  enter_alt_preprocessorPragma : (CSharpPreprocessorParserPreprocessorPragmaContext) -> Unit
+  exit_alt_preprocessorPragma : (CSharpPreprocessorParserPreprocessorPragmaContext) -> Unit
+  enter_alt_preprocessorRegion : (CSharpPreprocessorParserPreprocessorRegionContext) -> Unit
+  exit_alt_preprocessorRegion : (CSharpPreprocessorParserPreprocessorRegionContext) -> Unit
+}
+pub fn CSharpPreprocessorParserListener::new() -> Self
+pub fn CSharpPreprocessorParserListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct CSharpPreprocessorParserPreprocessorConditionalContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessorConditionalContext::as_rule(Self) -> CSharpPreprocessorParserPreprocessor_directiveContext
+pub fn CSharpPreprocessorParserPreprocessorConditionalContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct CSharpPreprocessorParserPreprocessorDeclarationContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessorDeclarationContext::as_rule(Self) -> CSharpPreprocessorParserPreprocessor_directiveContext
+pub fn CSharpPreprocessorParserPreprocessorDeclarationContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct CSharpPreprocessorParserPreprocessorDiagnosticContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessorDiagnosticContext::as_rule(Self) -> CSharpPreprocessorParserPreprocessor_directiveContext
+pub fn CSharpPreprocessorParserPreprocessorDiagnosticContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct CSharpPreprocessorParserPreprocessorLineContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessorLineContext::as_rule(Self) -> CSharpPreprocessorParserPreprocessor_directiveContext
+pub fn CSharpPreprocessorParserPreprocessorLineContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct CSharpPreprocessorParserPreprocessorNullableContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessorNullableContext::as_rule(Self) -> CSharpPreprocessorParserPreprocessor_directiveContext
+pub fn CSharpPreprocessorParserPreprocessorNullableContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct CSharpPreprocessorParserPreprocessorPragmaContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessorPragmaContext::as_rule(Self) -> CSharpPreprocessorParserPreprocessor_directiveContext
+pub fn CSharpPreprocessorParserPreprocessorPragmaContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct CSharpPreprocessorParserPreprocessorRegionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessorRegionContext::as_rule(Self) -> CSharpPreprocessorParserPreprocessor_directiveContext
+pub fn CSharpPreprocessorParserPreprocessorRegionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct CSharpPreprocessorParserPreprocessor_directiveContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::alternative(Self) -> String?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorConditional(Self) -> CSharpPreprocessorParserPreprocessorConditionalContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorDeclaration(Self) -> CSharpPreprocessorParserPreprocessorDeclarationContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorDiagnostic(Self) -> CSharpPreprocessorParserPreprocessorDiagnosticContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorLine(Self) -> CSharpPreprocessorParserPreprocessorLineContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorNullable(Self) -> CSharpPreprocessorParserPreprocessorNullableContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorPragma(Self) -> CSharpPreprocessorParserPreprocessorPragmaContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorRegion(Self) -> CSharpPreprocessorParserPreprocessorRegionContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_directive_new_line_or_sharp(Self) -> Array[CSharpPreprocessorParserDirective_new_line_or_sharpContext]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_preprocessor_directive(Self) -> Array[Self]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_preprocessor_expression(Self) -> Array[CSharpPreprocessorParserPreprocessor_expressionContext]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_CONDITIONAL_SYMBOL(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_DEFAULT(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_DEFINE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_DIGITS(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_DIRECTIVE_HIDDEN(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_ELIF(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_ELSE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_ENDIF(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_ENDREGION(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_ERROR(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_IF(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_LINE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_NULLABLE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_PRAGMA(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_REGION(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_STRING(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_TEXT(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_UNDEF(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_token_WARNING(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::label_expr(Self) -> Array[CSharpPreprocessorParserPreprocessor_expressionContext]
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct CSharpPreprocessorParserPreprocessor_directiveContextAttributes {
+  attr_value : Bool?
+}
+pub fn CSharpPreprocessorParserPreprocessor_directiveContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct CSharpPreprocessorParserPreprocessor_expressionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::alternative(Self) -> String?
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_preprocessor_expression(Self) -> Array[Self]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_BANG(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_CLOSE_PARENS(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_CONDITIONAL_SYMBOL(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_FALSE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_OPEN_PARENS(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_OP_AND(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_OP_EQ(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_OP_NE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_OP_OR(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_TRUE(Self) -> Array[@moonantlr.Token]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::label_expr(Self) -> Array[Self]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::label_expr1(Self) -> Array[Self]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::label_expr2(Self) -> Array[Self]
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct CSharpPreprocessorParserPreprocessor_expressionContextAttributes {
+  attr_value : String?
+}
+pub fn CSharpPreprocessorParserPreprocessor_expressionContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub(all) struct CSharpPreprocessorParserVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_preprocessor_directive : (CSharpPreprocessorParserPreprocessor_directiveContext, Array[T]) -> T
+  visit_alt_preprocessorConditional : ((CSharpPreprocessorParserPreprocessorConditionalContext, Array[T]) -> T)?
+  visit_alt_preprocessorDeclaration : ((CSharpPreprocessorParserPreprocessorDeclarationContext, Array[T]) -> T)?
+  visit_alt_preprocessorDiagnostic : ((CSharpPreprocessorParserPreprocessorDiagnosticContext, Array[T]) -> T)?
+  visit_alt_preprocessorLine : ((CSharpPreprocessorParserPreprocessorLineContext, Array[T]) -> T)?
+  visit_alt_preprocessorNullable : ((CSharpPreprocessorParserPreprocessorNullableContext, Array[T]) -> T)?
+  visit_alt_preprocessorPragma : ((CSharpPreprocessorParserPreprocessorPragmaContext, Array[T]) -> T)?
+  visit_alt_preprocessorRegion : ((CSharpPreprocessorParserPreprocessorRegionContext, Array[T]) -> T)?
+  visit_directive_new_line_or_sharp : (CSharpPreprocessorParserDirective_new_line_or_sharpContext, Array[T]) -> T
+  visit_preprocessor_expression : (CSharpPreprocessorParserPreprocessor_expressionContext, Array[T]) -> T
+}
+pub fn[T] CSharpPreprocessorParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] CSharpPreprocessorParserVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

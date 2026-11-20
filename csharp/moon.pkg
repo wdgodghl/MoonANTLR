@@ -1,0 +1,10 @@
+import {
+  "wdgodghl/moonantlr" @runtime,
+  "wdgodghl/moonantlr/generated/csharp" @syntax,
+  "wdgodghl/moonantlr/generated/csharp_preprocessor" @preprocessor,
+}
+
+import {
+  "moonbitlang/core/debug",
+  "wdgodghl/moonantlr" @runtime,
+} for "test"

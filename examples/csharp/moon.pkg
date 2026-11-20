@@ -1,0 +1,5 @@
+import {
+  "wdgodghl/moonantlr/csharp" @reader,
+}
+
+pkgtype(kind: "executable")
