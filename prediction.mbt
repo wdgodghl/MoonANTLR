@@ -30,6 +30,10 @@ priv struct PredictionConfig {
   alt : Int32
   context : Int32
   precedence : Int32
+  entry : Int32
+  finished : Bool
+  follow_outer : Bool
+  collect : Bool
 }
 
 ///|
@@ -47,16 +51,29 @@ priv struct Predictor {
   contexts : Map[(Int32, Int32, Int32), Int32]
   states : Array[DfaState]
   interned : Map[String, Int32]
-  starts : Map[(Int32, Int32, Int32), Int32]
+  starts : Map[(Int32, Int32, Int32, Bool, Bool), Int32]
+  mut check : ((Int32, Int32, Bool) -> Bool)?
+  follows : Array[Array[Int32]]
   mut decisions : Int32
   mut fallbacks : Int32
   mut hits : Int32
   mut max_lookahead : Int32
+  mut failure_pos : Int32
 }
 
 ///|
 fn Predictor::new(atn : Atn, budget : Budget) -> Predictor {
+  let follows : Array[Array[Int32]] = Array::makei(atn.starts.length(), _ => [])
+  for state in atn.states {
+    for edge in state.edges {
+      if edge.kind == 3 && !follows[edge.b].contains(edge.target) {
+        follows[edge.b].push(edge.target)
+      }
+    }
+  }
   {
+    follows,
+    check: None,
     atn,
     budget,
     returns: [{ state: -1, precedence: 0, parent: 0, }],
@@ -68,6 +85,7 @@ fn Predictor::new(atn : Atn, budget : Budget) -> Predictor {
     fallbacks: 0,
     hits: 0,
     max_lookahead: 0,
+    failure_pos: 0,
   }
 }
 
@@ -90,7 +108,7 @@ fn Predictor::push(
 
 ///|
 fn PredictionConfig::key(self : PredictionConfig) -> String {
-  "\{self.state}:\{self.edge}:\{self.alt}:\{self.context}:\{self.precedence}"
+  "\{self.state}:\{self.edge}:\{self.alt}:\{self.context}:\{self.precedence}:\{self.entry}:\{self.finished}:\{self.follow_outer}:\{self.collect}"
 }
 
 ///|
@@ -114,9 +132,15 @@ fn Predictor::closure(
     seen[key] = true
     let state = self.atn.states[cfg.state]
     if state.kind == 7 {
+      let cfg = { ..cfg, finished: cfg.finished || cfg.context == cfg.entry, }
       if cfg.context == 0 {
         if !accepted.contains(cfg.alt) {
           accepted.push(cfg.alt)
+        }
+        if cfg.follow_outer {
+          for follow in self.follows[state.rule] {
+            work.push({ ..cfg, state: follow, edge: -1, precedence: 0, })
+          }
         }
       } else {
         let ret = self.returns[cfg.context]
@@ -135,7 +159,16 @@ fn Predictor::closure(
         continue
       }
       match edge.kind {
-        1 | 6 => work.push({ ..cfg, state: edge.target, edge: -1, })
+        1 => work.push({ ..cfg, state: edge.target, edge: -1, })
+        6 => work.push({ ..cfg, state: edge.target, edge: -1, collect: false, })
+        4 => {
+          let visible = cfg.collect && (edge.c == 0 || cfg.context == cfg.entry)
+          if !visible ||
+            self.check is None ||
+            self.check.unwrap()(edge.a, edge.b, edge.c != 0) {
+            work.push({ ..cfg, state: edge.target, edge: -1, })
+          }
+        }
         10 =>
           if edge.a >= cfg.precedence {
             work.push({ ..cfg, state: edge.target, edge: -1, })
@@ -176,15 +209,27 @@ fn Predictor::start(
   state : Int32,
   precedence : Int32,
   context : Int32,
+  follow_outer~ : Bool = false,
+  collect~ : Bool = true,
 ) -> Int32 raise RuntimeError {
-  let key = (state, precedence, context)
+  let key = (state, precedence, context, follow_outer, collect)
   if self.starts.get(key) is Some(id) {
     self.hits += 1
     return id
   }
   let seeds : Array[PredictionConfig] = []
   for i in 0..<self.atn.states[state].edges.length() {
-    seeds.push({ state, edge: i, alt: i, context, precedence, })
+    seeds.push({
+      state,
+      edge: i,
+      alt: i,
+      context,
+      precedence,
+      entry: context,
+      finished: false,
+      follow_outer,
+      collect,
+    })
   }
   let id = self.closure(seeds)
   self.starts[key] = id
@@ -206,7 +251,7 @@ fn Predictor::advance(
   for cfg in state.configs {
     let edge = self.atn.states[cfg.state].edges[cfg.edge]
     if self.atn.matches(edge, token) {
-      seeds.push({ ..cfg, state: edge.target, edge: -1, })
+      seeds.push({ ..cfg, state: edge.target, edge: -1, collect: false, })
     }
   }
   let next = self.closure(seeds)
@@ -227,45 +272,75 @@ fn DfaState::alternatives(self : DfaState) -> Array[Int32] {
 }
 
 ///|
+/// PredictionMode.hasSLLConflictTerminatingPrediction: conflicting subsets
+/// terminate SLL only when no ATN state is associated with a single alt.
+fn DfaState::sll_conflict(self : DfaState) -> Bool {
+  let subsets : Map[(Int32, Int32), Array[Int32]] = Map([])
+  let states : Map[Int32, Array[Int32]] = Map([])
+  for cfg in self.configs {
+    let subset = subsets.get_or_init((cfg.state, cfg.context), () => [])
+    if !subset.contains(cfg.alt) {
+      subset.push(cfg.alt)
+    }
+    let alts = states.get_or_init(cfg.state, () => [])
+    if !alts.contains(cfg.alt) {
+      alts.push(cfg.alt)
+    }
+  }
+  if !self.accepted.is_empty() {
+    subsets[(-1, 0)] = self.accepted
+    states[-1] = self.accepted
+  }
+  subsets.values().any(alts => alts.length() > 1) &&
+  !states.values().any(alts => alts.length() == 1)
+}
+
+///|
 /// Look ahead until one alternative remains, the ATN stops, or input ends.
 /// Cache hits still spend work budget, so cyclic DFA paths remain bounded.
 fn Predictor::simulate(
   self : Predictor,
   initial : Int32,
-  tokens : Array[Token],
+  tokens : ParserInput,
   pos : Int32,
+  sll~ : Bool = false,
 ) -> Array[Int32] raise RuntimeError {
   let mut id = initial
-  let stopped : Array[Int32] = []
-  for offset in 0..<(tokens.length() - pos) {
+  let mut offset = 0
+  while true {
     self.budget.tick()
     let state = self.states[id]
-    for alt in state.accepted {
-      if !stopped.contains(alt) {
-        stopped.push(alt)
-      }
-    }
     let alts = state.alternatives()
-    for alt in stopped {
-      if !alts.contains(alt) {
-        alts.push(alt)
-      }
-    }
     if alts.length() <= 1 ||
-      pos + offset >= tokens.length() ||
-      state.configs.is_empty() {
+      state.configs.is_empty() ||
+      (sll && state.sll_conflict()) {
       return alts
     }
     self.max_lookahead = self.max_lookahead.max(offset + 1)
-    id = self.advance(id, tokens[pos + offset].kind)
-  }
-  let alts = self.states[id].alternatives()
-  for alt in stopped {
-    if !alts.contains(alt) {
-      alts.push(alt)
+    let token = tokens.token(pos + offset)
+    let next = self.advance(id, token.kind)
+    if self.states[next].alternatives().is_empty() {
+      self.failure_pos = pos + offset
+      let finished = state.accepted.copy()
+      for cfg in state.configs {
+        if cfg.finished && !finished.contains(cfg.alt) {
+          finished.push(cfg.alt)
+        }
+      }
+      if !finished.is_empty() {
+        finished.sort()
+        return [finished[0]]
+      }
+      return []
     }
+    id = next
+    if token.kind == -1 {
+      return self.states[id].alternatives()
+    }
+    offset += 1
+  } nobreak {
+    []
   }
-  alts
 }
 
 ///|
@@ -274,32 +349,37 @@ fn Predictor::predict(
   state : Int32,
   precedence : Int32,
   context : Int32,
-  tokens : Array[Token],
+  tokens : ParserInput,
   pos : Int32,
   terminal_loop~ : Bool = false,
 ) -> Array[Int32] raise RuntimeError {
   self.decisions += 1
-  let start = self.start(state, precedence, 0)
+  self.failure_pos = pos
+  let start = self.start(state, precedence, 0, follow_outer=true)
+  let immediate = if terminal_loop {
+    self.start(state, precedence, 0)
+  } else {
+    start
+  }
   // At a greedy loop at the end of an entry rule, a token belonging
   // uniquely to the body commits that iteration. A missing operand may
   // then raise instead of turning the broken iteration into trailing input.
-  if terminal_loop &&
-    pos < tokens.length() &&
-    !self.states[start].accepted.is_empty() {
+  if terminal_loop && !self.states[immediate].accepted.is_empty() {
     let viable : Array[Int32] = []
-    let token = tokens[pos].kind
-    for cfg in self.states[start].configs {
+    let token = tokens.token(pos).kind
+    for cfg in self.states[immediate].configs {
       self.budget.tick()
       if self.atn.matches(self.atn.states[cfg.state].edges[cfg.edge], token) &&
         !viable.contains(cfg.alt) {
         viable.push(cfg.alt)
       }
     }
-    if viable.length() == 1 && !self.states[start].accepted.contains(viable[0]) {
+    if viable.length() == 1 &&
+      !self.states[immediate].accepted.contains(viable[0]) {
       return viable
     }
   }
-  let sll = self.simulate(start, tokens, pos)
+  let sll = self.simulate(start, tokens, pos, sll=true)
   if sll.length() <= 1 || context == 0 {
     return sll
   }

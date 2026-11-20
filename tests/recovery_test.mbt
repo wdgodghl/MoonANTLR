@@ -13,6 +13,30 @@ test "recovery inserts a missing separator and keeps the following value" {
 }
 
 ///|
+test "recovery visitor can ignore error nodes while reducing valid terminals" {
+  let result = @json.grammar().parse_default("[1,,2]")
+  let visitor : @runtime.RecoveryVisitor[Int32] = {
+    rule: (_, children) => {
+      let mut sum = 0
+      for child in children {
+        sum += child
+      }
+      sum
+    },
+    terminal: token => {
+      if token.text == "1" || token.text == "2" {
+        1
+      } else {
+        0
+      }
+    },
+    error: _ => 0,
+  }
+  assert_eq(visitor.visit(result.tree), 2)
+  assert_eq(result.tree.error_tokens().length(), 1)
+}
+
+///|
 test "recovery deletes an extra token and respects the repair limit" {
   let grammar = @json.grammar()
   let repaired = grammar.parse_recovering("[1,,2]")
@@ -108,4 +132,46 @@ test "a rejected strict parse cannot call a parser action" {
   }
   assert_true(rejected)
   assert_true(calls.is_empty())
+}
+
+///|
+fn repair_tokens(
+  tree : @runtime.RecoveryTree,
+) -> Array[(@runtime.Token, String)] {
+  match tree {
+    @runtime.ErrorNode(token, operation) => [(token, operation)]
+    @runtime.TokenNode(_) => []
+    @runtime.RuleNode(_, children) => {
+      let errors = []
+      for child in children {
+        for error in repair_tokens(child) {
+          errors.push(error)
+        }
+      }
+      errors
+    }
+  }
+}
+
+///|
+test "annotated recovery tree keeps original deleted and inserted token locations" {
+  let deleted = @json.grammar().parse_recovering("[1,,2]")
+  let errors = repair_tokens(deleted.tree_with_errors().unwrap())
+  assert_eq(errors.length(), 1)
+  assert_eq(errors[0].0.text, ",")
+  assert_eq(errors[0].0.start, 3)
+  assert_eq(errors[0].1, "deleted")
+  let inserted = @json.grammar().parse_recovering("[1 2]")
+  let errors = repair_tokens(inserted.tree_with_errors().unwrap())
+  assert_eq(errors.length(), 1)
+  assert_eq(errors[0].0.start, errors[0].0.end)
+  assert_eq(errors[0].1, "inserted")
+  assert_true(
+    inserted
+    .tree_with_errors()
+    .unwrap()
+    .to_json()
+    .stringify()
+    .contains("inserted"),
+  )
 }

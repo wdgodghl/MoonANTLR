@@ -4,6 +4,7 @@
 pub(all) struct LexActionsVisitor[T] {
   terminal : (@runtime.Token) -> T
   visit_document : (LexActionsDocumentContext, Array[T]) -> T
+  visit_unit : (LexActionsUnitContext, Array[T]) -> T
 }
 
 ///|
@@ -14,6 +15,7 @@ pub fn[T] LexActionsVisitor::new(
   {
     terminal,
     visit_document: (context, children) => rule(context.raw(), children),
+    visit_unit: (context, children) => rule(context.raw(), children),
   }
 }
 
@@ -32,6 +34,10 @@ pub fn[T] LexActionsVisitor::visit(
     "document" => {
       let context = LexActionsDocumentContext::{ node, }
       (self.visit_document)(context, values)
+    }
+    "unit" => {
+      let context = LexActionsUnitContext::{ node, }
+      (self.visit_unit)(context, values)
     }
     _ => abort("foreign rule context")
   }

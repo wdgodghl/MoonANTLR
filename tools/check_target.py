@@ -31,7 +31,7 @@ def main():
                 lex = lexer or grammar + "Lexer"
                 for name, kind, interp in [(parser, "parser", grammar), (lex, "lexer", lex)]:
                     source = (directory / (name + ".mbt")).read_text(encoding="utf-8")
-                    data = source.split(f"pub fn {kind}_data() -> Array[Int] {{ ", 1)[1].split(" }", 1)[0]
+                    data = source.split(f"pub fn {kind}_data() -> Array[Int] {{ ", 1)[1].split("}", 1)[0].strip()
                     assert ast.literal_eval(data) == read_interp(directory / (interp + ".interp"))[0]
                 for suffix in ["Listener.mbt", "Visitor.mbt"]:
                     assert (directory / (grammar + suffix)).exists() == enabled

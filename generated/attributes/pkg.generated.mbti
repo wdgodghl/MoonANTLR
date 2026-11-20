@@ -16,6 +16,8 @@ pub fn lexer_data() -> Array[Int32]
 
 pub fn parser_action_sites() -> Array[Int32]
 
+pub fn parser_action_sources() -> Array[String]
+
 pub fn parser_data() -> Array[Int32]
 
 // Errors
@@ -31,6 +33,11 @@ pub fn AttributesDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
 pub fn AttributesDocumentContext::label_a(Self) -> Array[AttributesNumberContext]
 pub fn AttributesDocumentContext::label_b(Self) -> Array[AttributesNumberContext]
 pub fn AttributesDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct AttributesDocumentContextAttributes {
+  attr_total : Int32?
+}
+pub fn AttributesDocumentContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
 
 pub struct AttributesLexer {
   atn : @moonantlr.Atn
@@ -55,6 +62,13 @@ pub fn AttributesNumberContext::alternative(Self) -> String?
 pub fn AttributesNumberContext::get_number(Self) -> Array[Self]
 pub fn AttributesNumberContext::get_token_INT(Self) -> Array[@moonantlr.Token]
 pub fn AttributesNumberContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct AttributesNumberContextAttributes {
+  attr_seed : Int32?
+  attr_value : Int32?
+  attr_seen : Int32?
+}
+pub fn AttributesNumberContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
 
 pub struct AttributesParser {
   grammar : @moonantlr.Grammar

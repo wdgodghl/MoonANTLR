@@ -2,6 +2,130 @@
 // Seed: 20261105. No Java is needed to run these tests.
 
 ///|
+test "Java oracle Options 000" {
+  let grammar = @options.grammar()
+  let source = "alpha"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (atom \"alpha\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "alpha", 0, 5, 1, 0, 0),
+    (-1, "<EOF>", 5, 5, 1, 5, 0),
+  ])
+}
+
+///|
+test "Java oracle Options 001" {
+  let grammar = @options.grammar()
+  let source = "Alpha,BETA"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (atom \"Alpha\") \",\" (atom \"BETA\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "Alpha", 0, 5, 1, 0, 0),
+    (1, ",", 5, 6, 1, 5, 0),
+    (2, "BETA", 6, 10, 1, 6, 0),
+    (-1, "<EOF>", 10, 10, 1, 10, 0),
+  ])
+}
+
+///|
+test "Java oracle Options 002" {
+  let grammar = @options.grammar()
+  let source = "a,// note\nB"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (atom \"a\") \",\" (atom \"B\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (2, "a", 0, 1, 1, 0, 0),
+    (1, ",", 1, 2, 1, 1, 0),
+    (3, "// note", 2, 9, 1, 2, 2),
+    (2, "B", 10, 11, 2, 0, 0),
+    (-1, "<EOF>", 11, 11, 2, 1, 0),
+  ])
+}
+
+///|
+test "Java oracle Options 003" {
+  let grammar = @options.grammar()
+  let source = "// first\nA, b\n"
+  assert_eq(
+    grammar.parse(source).to_sexpr(),
+    "(document (atom \"A\") \",\" (atom \"b\") <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source)
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (3, "// first", 0, 8, 1, 0, 2),
+    (2, "A", 9, 10, 2, 0, 0),
+    (1, ",", 10, 11, 2, 1, 0),
+    (2, "b", 12, 13, 2, 3, 0),
+    (-1, "<EOF>", 14, 14, 3, 0, 0),
+  ])
+}
+
+///|
+test "Java oracle Options 004" {
+  let grammar = @options.grammar()
+  let rejected = try {
+    let _ = grammar.parse("")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Options 005" {
+  let grammar = @options.grammar()
+  let rejected = try {
+    let _ = grammar.parse("a b")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Options 006" {
+  let grammar = @options.grammar()
+  let rejected = try {
+    let _ = grammar.parse("a,")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle Options 007" {
+  let grammar = @options.grammar()
+  let rejected = try {
+    let _ = grammar.parse("a,,b")
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
 test "Java oracle Stateful 000" {
   let grammar = @stateful.grammar()
   let source = "\"\""
@@ -10185,6 +10309,9262 @@ test "Java oracle prefix Json value 003" {
 }
 
 ///|
+test "Java oracle lazy prefix Arithmetic factor 000" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy("1+2", start_rule=3)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(factor \"1\")")
+  assert_eq(parsed.next_token.kind, 1)
+  assert_eq(parsed.next_token.text, "+")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic factor 001" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy("(1+2)*3", start_rule=3)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(factor \"(\" (expression (term (factor \"1\")) \"+\" (term (factor \"2\"))) \")\")",
+  )
+  assert_eq(parsed.next_token.kind, 3)
+  assert_eq(parsed.next_token.text, "*")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic factor 002" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy("12 34", start_rule=3)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(factor \"12\")")
+  assert_eq(parsed.next_token.kind, 7)
+  assert_eq(parsed.next_token.text, "34")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic factor 003" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix_lazy("(", start_rule=3)
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic factor 004" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix_lazy("", start_rule=3)
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic factor 005" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy("1+💥", start_rule=3)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(factor \"1\")")
+  assert_eq(parsed.next_token.kind, 1)
+  assert_eq(parsed.next_token.text, "+")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic factor 006" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy("1 2💥", start_rule=3)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(factor \"1\")")
+  assert_eq(parsed.next_token.kind, 7)
+  assert_eq(parsed.next_token.text, "2")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic factor 007" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy(
+    "(1+2)*💥",
+    start_rule=3,
+  )
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(factor \"(\" (expression (term (factor \"1\")) \"+\" (term (factor \"2\"))) \")\")",
+  )
+  assert_eq(parsed.next_token.kind, 3)
+  assert_eq(parsed.next_token.text, "*")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic expression 000" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy("1+2 3", start_rule=1)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(expression (term (factor \"1\")) \"+\" (term (factor \"2\")))",
+  )
+  assert_eq(parsed.next_token.kind, 7)
+  assert_eq(parsed.next_token.text, "3")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic expression 001" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy(
+    "1*(2+3) 9",
+    start_rule=1,
+  )
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(expression (term (factor \"1\") \"*\" (factor \"(\" (expression (term (factor \"2\")) \"+\" (term (factor \"3\"))) \")\")))",
+  )
+  assert_eq(parsed.next_token.kind, 7)
+  assert_eq(parsed.next_token.text, "9")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic expression 002" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix_lazy("1+", start_rule=1)
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic document 000" {
+  let parsed = @arithmetic.grammar().parse_prefix_lazy("1+2", start_rule=0)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(document (expression (term (factor \"1\")) \"+\" (term (factor \"2\"))) <EOF>)",
+  )
+  assert_eq(parsed.next_token.kind, -1)
+  assert_eq(parsed.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle lazy prefix Arithmetic document 001" {
+  let rejected = try {
+    let _ = @arithmetic.grammar().parse_prefix_lazy("1 2", start_rule=0)
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle lazy prefix Json value 000" {
+  let parsed = @json.grammar().parse_prefix_lazy("true false", start_rule=1)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(value \"true\")")
+  assert_eq(parsed.next_token.kind, 2)
+  assert_eq(parsed.next_token.text, "false")
+}
+
+///|
+test "Java oracle lazy prefix Json value 001" {
+  let parsed = @json.grammar().parse_prefix_lazy("[1,2] {}", start_rule=1)
+  assert_eq(
+    parsed.parsed.context.to_tree().to_sexpr(),
+    "(value (array \"[\" (value \"1\") \",\" (value \"2\") \"]\"))",
+  )
+  assert_eq(parsed.next_token.kind, 4)
+  assert_eq(parsed.next_token.text, "{")
+}
+
+///|
+test "Java oracle lazy prefix Json value 002" {
+  let rejected = try {
+    let _ = @json.grammar().parse_prefix_lazy("{", start_rule=1)
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
+}
+
+///|
+test "Java oracle lazy prefix Json value 003" {
+  let parsed = @json.grammar().parse_prefix_lazy("null", start_rule=1)
+  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), "(value \"null\")")
+  assert_eq(parsed.next_token.kind, -1)
+  assert_eq(parsed.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 000" {
+  let result = @json.grammar().parse_default("null")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"null\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:value", "token:null", "exit:value", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Json 001" {
+  let result = @json.grammar().parse_default("[1,2]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"1\") \",\" (value \"2\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:value", "enter:array", "token:[", "enter:value", "token:1",
+    "exit:value", "token:,", "enter:value", "token:2", "exit:value", "token:]", "exit:array",
+    "exit:value", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Json 002" {
+  let result = @json.grammar().parse_default("[1,,2]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"1\") \",\" (value (error \",\") \"2\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(5, ",", 3, 4, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:value", "enter:array", "token:[", "enter:value", "token:1",
+    "exit:value", "token:,", "enter:value", "error:,", "token:2", "exit:value", "token:]",
+    "exit:array", "exit:value", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Json 003" {
+  let result = @json.grammar().parse_default("[1 2]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"1\") (error \"2\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "2", 3, 4, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:value", "enter:array", "token:[", "enter:value", "token:1",
+    "exit:value", "error:2", "token:]", "exit:array", "exit:value", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Json 004" {
+  let result = @json.grammar().parse_default("[1,]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"1\") \",\" (value) \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:value", "enter:array", "token:[", "enter:value", "token:1",
+    "exit:value", "token:,", "enter:value", "exit:value", "token:]", "exit:array",
+    "exit:value", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Json 005" {
+  let result = @json.grammar().parse_default("[")
+  assert_eq(result.tree.to_sexpr(), "(document (value (array \"[\")) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 006" {
+  let result = @json.grammar().parse_default("{\"x\" 1}")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"x\\\"\" (error \"<missing ':'>\") (value \"1\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(7, "<missing ':'>", -1, 0, 1, 5, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 007" {
+  let result = @json.grammar().parse_default("{\"x\":}")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"x\\\"\" \":\" (value)) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 008" {
+  let result = @json.grammar().parse_default("{\"x\":1")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"x\\\"\" \":\" (value \"1\")))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(6)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 009" {
+  let result = @json.grammar().parse_default("[1,,,2,3]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"1\") \",\" (value) \",\" (value (error \",\") \"2\") \",\" (value \"3\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(5, ",", 4, 5, 1, 4, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 010" {
+  let result = @json.grammar().parse_default("true false")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"true\") (error \"false\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "false", 5, 10, 1, 5, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 011" {
+  let result = @json.grammar().parse_default("")
+  assert_eq(result.tree.to_sexpr(), "(document (value) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 012" {
+  let result = @json.grammar().parse_default("{}")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 013" {
+  let result = @json.grammar().parse_default("[]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 014" {
+  let result = @json.grammar().parse_default("true")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"true\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 015" {
+  let result = @json.grammar().parse_default("false")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"false\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 016" {
+  let result = @json.grammar().parse_default("-0")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"-0\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 017" {
+  let result = @json.grammar().parse_default("1e+10")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"1e+10\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 018" {
+  let result = @json.grammar().parse_default("\"😀中\"")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"\\\"😀中\\\"\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 019" {
+  let result = @json.grammar().parse_default("\"\\uD83D\\uDE00\"")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"\\\"\\\\uD83D\\\\uDE00\\\"\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 020" {
+  let result = @json.grammar().parse_default("[1,2,3]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"1\") \",\" (value \"2\") \",\" (value \"3\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 021" {
+  let result = @json.grammar().parse_default("\r\n {\"x\": -1.2E-3} \t")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"x\\\"\" \":\" (value \"-1.2E-3\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 022" {
+  let result = @json.grammar().parse_default("\"line\\n\\ttab\"")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"\\\"line\\\\n\\\\ttab\\\"\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 023" {
+  let result = @json.grammar().parse_default("\"中文😀\"")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"\\\"中文😀\\\"\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 024" {
+  let result = @json.grammar().parse_default(
+    "{\n  \"key0\": [\n    true,\n    null\n  ],\n  \"key1\": -120.9,\n  \"key2\": null\n}",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value (array \"[\" (value \"true\") \",\" (value \"null\") \"]\"))) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"-120.9\")) \",\" (pair \"\\\"key2\\\"\" \":\" (value \"null\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 025" {
+  let result = @json.grammar().parse_default("[\n  \"MoonANTLR\"\n]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"\\\"MoonANTLR\\\"\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 026" {
+  let result = @json.grammar().parse_default("791.3")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"791.3\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 027" {
+  let result = @json.grammar().parse_default(
+    "{\n  \"key0\": {},\n  \"key1\": \"quote\\\"slash\\\\\",\n  \"key2\": \"line\\n\\ttab\"\n}",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value (object \"{\" \"}\"))) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"\\\"quote\\\\\\\"slash\\\\\\\\\\\"\")) \",\" (pair \"\\\"key2\\\"\" \":\" (value \"\\\"line\\\\n\\\\ttab\\\"\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 028" {
+  let result = @json.grammar().parse_default("[true]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"true\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 029" {
+  let result = @json.grammar().parse_default("{\n  \"key0\": []\n}")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value (array \"[\" \"]\"))) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 030" {
+  let result = @json.grammar().parse_default("2918.0")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"2918.0\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 031" {
+  let result = @json.grammar().parse_default("[-161.9, -72.15]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"-161.9\") \",\" (value \"-72.15\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 032" {
+  let result = @json.grammar().parse_default("\"\"")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"\\\"\\\"\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 033" {
+  let result = @json.grammar().parse_default(
+    "{\n  \"key0\": null,\n  \"key1\": null\n}",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"null\")) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"null\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 034" {
+  let result = @json.grammar().parse_default("\"quote\\\"slash\\\\\"")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"\\\"quote\\\\\\\"slash\\\\\\\\\\\"\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 035" {
+  let result = @json.grammar().parse_default(
+    "[\n  -48.77,\n  \"中文😀\",\n  [\n    \"中文😀\",\n    490.8\n  ],\n  \"MoonANTLR\"\n]",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"-48.77\") \",\" (value \"\\\"中文😀\\\"\") \",\" (value (array \"[\" (value \"\\\"中文😀\\\"\") \",\" (value \"490.8\") \"]\")) \",\" (value \"\\\"MoonANTLR\\\"\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 036" {
+  let result = @json.grammar().parse_default("{\"key0\": null, \"key1\": null}")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"null\")) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"null\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 037" {
+  let result = @json.grammar().parse_default("[\n  \"line\\n\\ttab\"\n]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"\\\"line\\\\n\\\\ttab\\\"\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 038" {
+  let result = @json.grammar().parse_default(
+    "[[\"中文😀\", null, {\"key0\": 735.6}, -5520.0], -18.95, 9239.0]",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value (array \"[\" (value \"\\\"中文😀\\\"\") \",\" (value \"null\") \",\" (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"735.6\")) \"}\")) \",\" (value \"-5520.0\") \"]\")) \",\" (value \"-18.95\") \",\" (value \"9239.0\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 039" {
+  let result = @json.grammar().parse_default("186.7")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"186.7\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 040" {
+  let result = @json.grammar().parse_default(
+    "[\n  false,\n  [\n    {\n      \"key0\": \"MoonANTLR\",\n      \"key1\": \"line\\n\\ttab\"\n    },\n    null,\n    [\n      false,\n      false,\n      \"quote\\\"slash\\\\\"\n    ],\n    {\n      \"key0\": 385.3,\n      \"key1\": false,\n      \"key2\": -774.0\n    }\n  ]\n]",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"false\") \",\" (value (array \"[\" (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"\\\"MoonANTLR\\\"\")) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"\\\"line\\\\n\\\\ttab\\\"\")) \"}\")) \",\" (value \"null\") \",\" (value (array \"[\" (value \"false\") \",\" (value \"false\") \",\" (value \"\\\"quote\\\\\\\"slash\\\\\\\\\\\"\") \"]\")) \",\" (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"385.3\")) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"false\")) \",\" (pair \"\\\"key2\\\"\" \":\" (value \"-774.0\")) \"}\")) \"]\")) \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 041" {
+  let result = @json.grammar().parse_default("[null, false, null]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value \"null\") \",\" (value \"false\") \",\" (value \"null\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 042" {
+  let result = @json.grammar().parse_default("8670.0")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"8670.0\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 043" {
+  let result = @json.grammar().parse_default("-65.58")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"-65.58\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 044" {
+  let result = @json.grammar().parse_default("-720.4")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"-720.4\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 045" {
+  let result = @json.grammar().parse_default("94.81")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"94.81\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 046" {
+  let result = @json.grammar().parse_default(
+    "{\"key0\": [[162.5, false, \"MoonANTLR\"]]}",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value (array \"[\" (value (array \"[\" (value \"162.5\") \",\" (value \"false\") \",\" (value \"\\\"MoonANTLR\\\"\") \"]\")) \"]\"))) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 047" {
+  let result = @json.grammar().parse_default("-49.45")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"-49.45\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 048" {
+  let result = @json.grammar().parse_default(
+    "{\n  \"key0\": \"line\\n\\ttab\",\n  \"key1\": true,\n  \"key2\": true\n}",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"\\\"line\\\\n\\\\ttab\\\"\")) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"true\")) \",\" (pair \"\\\"key2\\\"\" \":\" (value \"true\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 049" {
+  let result = @json.grammar().parse_default("\"MoonANTLR\"")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"\\\"MoonANTLR\\\"\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 050" {
+  let result = @json.grammar().parse_default("183.2")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"183.2\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 051" {
+  let result = @json.grammar().parse_default("6171.0")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"6171.0\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 052" {
+  let result = @json.grammar().parse_default(
+    "[\n  {\n    \"key0\": {\n      \"key0\": false\n    },\n    \"key1\": true\n  },\n  8212.0,\n  \"MoonANTLR\"\n]",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (array \"[\" (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"false\")) \"}\"))) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"true\")) \"}\")) \",\" (value \"8212.0\") \",\" (value \"\\\"MoonANTLR\\\"\") \"]\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 053" {
+  let result = @json.grammar().parse_default("{\"key0\": null}")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value \"null\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 054" {
+  let result = @json.grammar().parse_default(
+    "{\n  \"key0\": [\n    [\n      true,\n      null,\n      \"中文😀\",\n      \"MoonANTLR\"\n    ]\n  ],\n  \"key1\": null,\n  \"key2\": true\n}",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (pair \"\\\"key0\\\"\" \":\" (value (array \"[\" (value (array \"[\" (value \"true\") \",\" (value \"null\") \",\" (value \"\\\"中文😀\\\"\") \",\" (value \"\\\"MoonANTLR\\\"\") \"]\")) \"]\"))) \",\" (pair \"\\\"key1\\\"\" \":\" (value \"null\")) \",\" (pair \"\\\"key2\\\"\" \":\" (value \"true\")) \"}\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 055" {
+  let result = @json.grammar().parse_default("{")
+  assert_eq(result.tree.to_sexpr(), "(document (value (object \"{\")) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 056" {
+  let result = @json.grammar().parse_default("01")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value \"0\") (error \"1\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "1", 1, 2, 1, 1, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 057" {
+  let result = @json.grammar().parse_default("\"bad\\x\"")
+  assert_eq(result.tree.to_sexpr(), "(document (value) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+    (Some(1), Some(6)),
+    (Some(1), Some(7)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 058" {
+  let result = @json.grammar().parse_default("\"raw\nnewline\"")
+  assert_eq(result.tree.to_sexpr(), "(document (value) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+    (Some(2), Some(0)),
+    (Some(2), Some(2)),
+    (Some(2), Some(3)),
+    (Some(2), Some(4)),
+    (Some(2), Some(5)),
+    (Some(2), Some(7)),
+    (Some(2), Some(8)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 059" {
+  let result = @json.grammar().parse_default("1.")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"1\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 060" {
+  let result = @json.grammar().parse_default("1e")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"1\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 061" {
+  let result = @json.grammar().parse_default("+1")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"1\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 062" {
+  let result = @json.grammar().parse_default("{x:1}")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (value (object \"{\" (error \":\") (error \"1\") (error \"}\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(7, ":", 2, 3, 1, 2, 0), (11, "1", 3, 4, 1, 3, 0), (6, "}", 4, 5, 1, 4, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 063" {
+  let result = @json.grammar().parse_default("null!")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"null\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 064" {
+  let result = @json.grammar().parse_default("True")
+  assert_eq(result.tree.to_sexpr(), "(document (value) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+    (Some(1), Some(1)),
+    (Some(1), Some(2)),
+    (Some(1), Some(3)),
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Json 065" {
+  let result = @json.grammar().parse_default("--1")
+  assert_eq(result.tree.to_sexpr(), "(document (value \"1\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 000" {
+  let result = @arithmetic.grammar().parse_default("1+2*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\")) \"+\" (term (factor \"2\") \"*\" (factor \"3\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:term", "enter:factor", "token:1",
+    "exit:factor", "exit:term", "token:+", "enter:term", "enter:factor", "token:2",
+    "exit:factor", "token:*", "enter:factor", "token:3", "exit:factor", "exit:term",
+    "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Arithmetic 001" {
+  let result = @arithmetic.grammar().parse_default("1+")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\")) \"+\" (term (factor))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:term", "enter:factor", "token:1",
+    "exit:factor", "exit:term", "token:+", "enter:term", "enter:factor", "exit:factor",
+    "exit:term", "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Arithmetic 002" {
+  let result = @arithmetic.grammar().parse_default("(1+2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"1\")) \"+\" (term (factor \"2\"))) (error \"<missing ')'>\")))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(6, "<missing ')'>", -1, 0, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:term", "enter:factor", "token:(",
+    "enter:expression", "enter:term", "enter:factor", "token:1", "exit:factor", "exit:term",
+    "token:+", "enter:term", "enter:factor", "token:2", "exit:factor", "exit:term",
+    "exit:expression", "error:<missing ')'>", "exit:factor", "exit:term", "exit:expression",
+    "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Arithmetic 003" {
+  let result = @arithmetic.grammar().parse_default("1 2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\"))) (error \"2\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(7, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:term", "enter:factor", "token:1",
+    "exit:factor", "exit:term", "exit:expression", "error:2", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Arithmetic 004" {
+  let result = @arithmetic.grammar().parse_default("1+*2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\")) \"+\" (term (factor (error \"*\") \"2\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(3, "*", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:term", "enter:factor", "token:1",
+    "exit:factor", "exit:term", "token:+", "enter:term", "enter:factor", "error:*",
+    "token:2", "exit:factor", "exit:term", "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Arithmetic 005" {
+  let result = @arithmetic.grammar().parse_default("((1)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"1\"))) \")\"))) (error \"<missing ')'>\")))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(6, "<missing ')'>", -1, 0, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 006" {
+  let result = @arithmetic.grammar().parse_default("(1))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"1\"))) \")\"))) (error \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(6, ")", 3, 4, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 007" {
+  let result = @arithmetic.grammar().parse_default("")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 008" {
+  let result = @arithmetic.grammar().parse_default("(1+2)*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"1\")) \"+\" (term (factor \"2\"))) \")\") \"*\" (factor \"3\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 009" {
+  let result = @arithmetic.grammar().parse_default(" 12 / 3 - 2\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"12\") \"/\" (factor \"3\")) \"-\" (term (factor \"2\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 010" {
+  let result = @arithmetic.grammar().parse_default("1-2-3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\")) \"-\" (term (factor \"2\")) \"-\" (term (factor \"3\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 011" {
+  let result = @arithmetic.grammar().parse_default("1/(2+3)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\") \"/\" (factor \"(\" (expression (term (factor \"2\")) \"+\" (term (factor \"3\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 012" {
+  let result = @arithmetic.grammar().parse_default("5")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"5\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 013" {
+  let result = @arithmetic.grammar().parse_default("((51-(16-13))+71)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"51\")) \"-\" (term (factor \"(\" (expression (term (factor \"16\")) \"-\" (term (factor \"13\"))) \")\"))) \")\")) \"+\" (term (factor \"71\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 014" {
+  let result = @arithmetic.grammar().parse_default("(((79-93)+95)*62)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"79\")) \"-\" (term (factor \"93\"))) \")\")) \"+\" (term (factor \"95\"))) \")\") \"*\" (factor \"62\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 015" {
+  let result = @arithmetic.grammar().parse_default("(((54-80)+(90*69))/92)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"54\")) \"-\" (term (factor \"80\"))) \")\")) \"+\" (term (factor \"(\" (expression (term (factor \"90\") \"*\" (factor \"69\"))) \")\"))) \")\") \"/\" (factor \"92\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 016" {
+  let result = @arithmetic.grammar().parse_default("(((13*74)/(5/51))-(31+85))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"13\") \"*\" (factor \"74\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"5\") \"/\" (factor \"51\"))) \")\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"31\")) \"+\" (term (factor \"85\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 017" {
+  let result = @arithmetic.grammar().parse_default("(((9-95)*(84+58))/28)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"9\")) \"-\" (term (factor \"95\"))) \")\") \"*\" (factor \"(\" (expression (term (factor \"84\")) \"+\" (term (factor \"58\"))) \")\"))) \")\") \"/\" (factor \"28\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 018" {
+  let result = @arithmetic.grammar().parse_default("2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"2\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 019" {
+  let result = @arithmetic.grammar().parse_default("16")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"16\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 020" {
+  let result = @arithmetic.grammar().parse_default("31")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"31\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 021" {
+  let result = @arithmetic.grammar().parse_default("(((77-80)-55)-53)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"77\")) \"-\" (term (factor \"80\"))) \")\")) \"-\" (term (factor \"55\"))) \")\")) \"-\" (term (factor \"53\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 022" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((61*44)-(87-98))-((79+14)+43))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"61\") \"*\" (factor \"44\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"87\")) \"-\" (term (factor \"98\"))) \")\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"79\")) \"+\" (term (factor \"14\"))) \")\")) \"+\" (term (factor \"43\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 023" {
+  let result = @arithmetic.grammar().parse_default("(47/7)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"47\") \"/\" (factor \"7\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 024" {
+  let result = @arithmetic.grammar().parse_default("((15+(40*84))/22)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"15\")) \"+\" (term (factor \"(\" (expression (term (factor \"40\") \"*\" (factor \"84\"))) \")\"))) \")\") \"/\" (factor \"22\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 025" {
+  let result = @arithmetic.grammar().parse_default("(89/(8-(20/39)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"89\") \"/\" (factor \"(\" (expression (term (factor \"8\")) \"-\" (term (factor \"(\" (expression (term (factor \"20\") \"/\" (factor \"39\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 026" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((38-72)*(71-1))-((42/49)*4))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"38\")) \"-\" (term (factor \"72\"))) \")\") \"*\" (factor \"(\" (expression (term (factor \"71\")) \"-\" (term (factor \"1\"))) \")\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"42\") \"/\" (factor \"49\"))) \")\") \"*\" (factor \"4\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 027" {
+  let result = @arithmetic.grammar().parse_default("8")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"8\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 028" {
+  let result = @arithmetic.grammar().parse_default("(((46-77)/63)/(98/(51-3)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"46\")) \"-\" (term (factor \"77\"))) \")\") \"/\" (factor \"63\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"98\") \"/\" (factor \"(\" (expression (term (factor \"51\")) \"-\" (term (factor \"3\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 029" {
+  let result = @arithmetic.grammar().parse_default("43")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"43\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 030" {
+  let result = @arithmetic.grammar().parse_default("((48-72)-13)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"48\")) \"-\" (term (factor \"72\"))) \")\")) \"-\" (term (factor \"13\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 031" {
+  let result = @arithmetic.grammar().parse_default("((59*(95/87))-96)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"59\") \"*\" (factor \"(\" (expression (term (factor \"95\") \"/\" (factor \"87\"))) \")\"))) \")\")) \"-\" (term (factor \"96\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 032" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((86*34)+(27+2))+((26-3)/(97/97)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"86\") \"*\" (factor \"34\"))) \")\")) \"+\" (term (factor \"(\" (expression (term (factor \"27\")) \"+\" (term (factor \"2\"))) \")\"))) \")\")) \"+\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"26\")) \"-\" (term (factor \"3\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"97\") \"/\" (factor \"97\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 033" {
+  let result = @arithmetic.grammar().parse_default("41")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"41\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 034" {
+  let result = @arithmetic.grammar().parse_default("((26+69)-46)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"26\")) \"+\" (term (factor \"69\"))) \")\")) \"-\" (term (factor \"46\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 035" {
+  let result = @arithmetic.grammar().parse_default("(((61/61)*50)+21)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"61\") \"/\" (factor \"61\"))) \")\") \"*\" (factor \"50\"))) \")\")) \"+\" (term (factor \"21\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 036" {
+  let result = @arithmetic.grammar().parse_default("6")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"6\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 037" {
+  let result = @arithmetic.grammar().parse_default("((58+8)/68)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"58\")) \"+\" (term (factor \"8\"))) \")\") \"/\" (factor \"68\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 038" {
+  let result = @arithmetic.grammar().parse_default(
+    "((62-(87-93))*((50*34)-38))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"62\")) \"-\" (term (factor \"(\" (expression (term (factor \"87\")) \"-\" (term (factor \"93\"))) \")\"))) \")\") \"*\" (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"50\") \"*\" (factor \"34\"))) \")\")) \"-\" (term (factor \"38\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 039" {
+  let result = @arithmetic.grammar().parse_default("13")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"13\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 040" {
+  let result = @arithmetic.grammar().parse_default("56")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"56\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 041" {
+  let result = @arithmetic.grammar().parse_default("(65+(81+(44-88)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"65\")) \"+\" (term (factor \"(\" (expression (term (factor \"81\")) \"+\" (term (factor \"(\" (expression (term (factor \"44\")) \"-\" (term (factor \"88\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 042" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((54+54)-44)/(85*(42*14)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"54\")) \"+\" (term (factor \"54\"))) \")\")) \"-\" (term (factor \"44\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"85\") \"*\" (factor \"(\" (expression (term (factor \"42\") \"*\" (factor \"14\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 043" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((30-4)/86)-((25*40)-(82*31)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"30\")) \"-\" (term (factor \"4\"))) \")\") \"/\" (factor \"86\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"25\") \"*\" (factor \"40\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"82\") \"*\" (factor \"31\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 044" {
+  let result = @arithmetic.grammar().parse_default(
+    "((86+(98-69))-((93+28)*(8/68)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"86\")) \"+\" (term (factor \"(\" (expression (term (factor \"98\")) \"-\" (term (factor \"69\"))) \")\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"93\")) \"+\" (term (factor \"28\"))) \")\") \"*\" (factor \"(\" (expression (term (factor \"8\") \"/\" (factor \"68\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 045" {
+  let result = @arithmetic.grammar().parse_default("(6/((33/77)*(51-93)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"6\") \"/\" (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"33\") \"/\" (factor \"77\"))) \")\") \"*\" (factor \"(\" (expression (term (factor \"51\")) \"-\" (term (factor \"93\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 046" {
+  let result = @arithmetic.grammar().parse_default("95")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"95\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 047" {
+  let result = @arithmetic.grammar().parse_default("10")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"10\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 048" {
+  let result = @arithmetic.grammar().parse_default("(28-85)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"28\")) \"-\" (term (factor \"85\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 049" {
+  let result = @arithmetic.grammar().parse_default("20")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"20\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 050" {
+  let result = @arithmetic.grammar().parse_default("90")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"90\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 051" {
+  let result = @arithmetic.grammar().parse_default("61")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"61\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 052" {
+  let result = @arithmetic.grammar().parse_default("(5*((77+17)/(50/14)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"5\") \"*\" (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"77\")) \"+\" (term (factor \"17\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"50\") \"/\" (factor \"14\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 053" {
+  let result = @arithmetic.grammar().parse_default("(32-((4-80)/(3/91)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"32\")) \"-\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"4\")) \"-\" (term (factor \"80\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"3\") \"/\" (factor \"91\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 054" {
+  let result = @arithmetic.grammar().parse_default("(24/(30/57))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"24\") \"/\" (factor \"(\" (expression (term (factor \"30\") \"/\" (factor \"57\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 055" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((32-95)-(13/47))+((28*64)/(3+48)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"32\")) \"-\" (term (factor \"95\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"13\") \"/\" (factor \"47\"))) \")\"))) \")\")) \"+\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"28\") \"*\" (factor \"64\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"3\")) \"+\" (term (factor \"48\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 056" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((92+51)-(84*60))/(26/(72+68)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"92\")) \"+\" (term (factor \"51\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"84\") \"*\" (factor \"60\"))) \")\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"26\") \"/\" (factor \"(\" (expression (term (factor \"72\")) \"+\" (term (factor \"68\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 057" {
+  let result = @arithmetic.grammar().parse_default("28")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"28\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 058" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((89*46)/(65-93))-((29+94)+(78*37)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"89\") \"*\" (factor \"46\"))) \")\") \"/\" (factor \"(\" (expression (term (factor \"65\")) \"-\" (term (factor \"93\"))) \")\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"29\")) \"+\" (term (factor \"94\"))) \")\")) \"+\" (term (factor \"(\" (expression (term (factor \"78\") \"*\" (factor \"37\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 059" {
+  let result = @arithmetic.grammar().parse_default(
+    "(((36*80)+(19-80))-((99-62)-(57/76)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"36\") \"*\" (factor \"80\"))) \")\")) \"+\" (term (factor \"(\" (expression (term (factor \"19\")) \"-\" (term (factor \"80\"))) \")\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"(\" (expression (term (factor \"99\")) \"-\" (term (factor \"62\"))) \")\")) \"-\" (term (factor \"(\" (expression (term (factor \"57\") \"/\" (factor \"76\"))) \")\"))) \")\"))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 060" {
+  let result = @arithmetic.grammar().parse_default("30")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"30\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 061" {
+  let result = @arithmetic.grammar().parse_default("+1")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor (error \"+\") \"1\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, "+", 0, 1, 1, 0, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 062" {
+  let result = @arithmetic.grammar().parse_default("1.2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\"))) (error \"2\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(7, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 063" {
+  let result = @arithmetic.grammar().parse_default("a")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 064" {
+  let result = @arithmetic.grammar().parse_default("1)2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"1\"))) (error \")\") (error \"2\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(6, ")", 1, 2, 1, 1, 0), (7, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Arithmetic 065" {
+  let result = @arithmetic.grammar().parse_default("()")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (term (factor \"(\" (expression (term (factor))) \")\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 000" {
+  let result = @typed.grammar().parse_default("x=1;y=2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"1\")) \";\" (entry \"y\" \"=\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:entry", "token:x", "token:=", "enter:expression", "token:1",
+    "exit:expression", "exit:entry", "token:;", "enter:entry", "token:y", "token:=",
+    "enter:expression", "token:2", "exit:expression", "exit:entry", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Typed 001" {
+  let result = @typed.grammar().parse_default("x=;y=2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression)) \";\" (entry \"y\" \"=\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:entry", "token:x", "token:=", "enter:expression", "exit:expression",
+    "exit:entry", "token:;", "enter:entry", "token:y", "token:=", "enter:expression",
+    "token:2", "exit:expression", "exit:entry", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Typed 002" {
+  let result = @typed.grammar().parse_default("x=1; = = ; y=2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"1\")) (error \";\") (error \"=\") (error \"=\") (error \";\") (error \"y\") (error \"=\") (error \"2\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (1, ";", 3, 4, 1, 3, 0),
+      (2, "=", 5, 6, 1, 5, 0),
+      (2, "=", 7, 8, 1, 7, 0),
+      (1, ";", 9, 10, 1, 9, 0),
+      (10, "y", 11, 12, 1, 11, 0),
+      (2, "=", 12, 13, 1, 12, 0),
+      (11, "2", 13, 14, 1, 13, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:entry", "token:x", "token:=", "enter:expression", "token:1",
+    "exit:expression", "exit:entry", "error:;", "error:=", "error:=", "error:;",
+    "error:y", "error:=", "error:2", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Typed 003" {
+  let result = @typed.grammar().parse_default("x=(1;y=2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression \"1\") (error \"<missing ')'>\"))) \";\" (entry \"y\" \"=\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(9, "<missing ')'>", -1, 0, 1, 4, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:entry", "token:x", "token:=", "enter:expression", "token:(",
+    "enter:expression", "token:1", "exit:expression", "error:<missing ')'>", "exit:expression",
+    "exit:entry", "token:;", "enter:entry", "token:y", "token:=", "enter:expression",
+    "token:2", "exit:expression", "exit:entry", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Typed 004" {
+  let result = @typed.grammar().parse_default("x=1;;y=2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"1\")) (error \";\") (error \";\") (error \"y\") (error \"=\") (error \"2\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (1, ";", 3, 4, 1, 3, 0),
+      (1, ";", 4, 5, 1, 4, 0),
+      (10, "y", 5, 6, 1, 5, 0),
+      (2, "=", 6, 7, 1, 6, 0),
+      (11, "2", 7, 8, 1, 7, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:entry", "token:x", "token:=", "enter:expression", "token:1",
+    "exit:expression", "exit:entry", "error:;", "error:;", "error:y", "error:=",
+    "error:2", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Typed 005" {
+  let result = @typed.grammar().parse_default("x=1+;y=2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression (expression \"1\") \"+\" (expression))) \";\" (entry \"y\" \"=\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 006" {
+  let result = @typed.grammar().parse_default("x=1")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"1\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 007" {
+  let result = @typed.grammar().parse_default("x=1+2*3; y=2^3^4 note;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\")))) \";\" (entry \"y\" \"=\" (expression (expression \"2\") \"^\" (expression (expression \"3\") \"^\" (expression \"4\"))) \"note\") \";\" <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 008" {
+  let result = @typed.grammar().parse_default("x=(1+2)*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) \")\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 009" {
+  let result = @typed.grammar().parse_default("x=1+")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression (expression \"1\") \"+\" (expression))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 010" {
+  let result = @typed.grammar().parse_default("x=")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 011" {
+  let result = @typed.grammar().parse_default("x=1;;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"1\")) (error \";\") (error \";\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, ";", 3, 4, 1, 3, 0), (1, ";", 4, 5, 1, 4, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 012" {
+  let result = @typed.grammar().parse_default("=1")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry (error \"<missing ID>\") \"=\" (expression \"1\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(10, "<missing ID>", -1, 0, 1, 0, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 013" {
+  let result = @typed.grammar().parse_default("x=1 note extra")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"1\") \"note\") (error \"extra\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(9)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(10, "extra", 9, 14, 1, 9, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 014" {
+  let result = @typed.grammar().parse_default("")
+  assert_eq(result.tree.to_sexpr(), "(document (entry) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 015" {
+  let result = @typed.grammar().parse_default("x=39")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"39\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 016" {
+  let result = @typed.grammar().parse_default("x=29")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"29\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 017" {
+  let result = @typed.grammar().parse_default("x=(((71*9)-22)*1)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"71\") \"*\" (expression \"9\")) \")\") \"-\" (expression \"22\")) \")\") \"*\" (expression \"1\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 018" {
+  let result = @typed.grammar().parse_default("x=(2*(3/56))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"2\") \"*\" (expression \"(\" (expression (expression \"3\") \"/\" (expression \"56\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 019" {
+  let result = @typed.grammar().parse_default("x=(((11/36)-27)*((72-47)-46))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"11\") \"/\" (expression \"36\")) \")\") \"-\" (expression \"27\")) \")\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"72\") \"-\" (expression \"47\")) \")\") \"-\" (expression \"46\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 020" {
+  let result = @typed.grammar().parse_default("x=(((1*71)+2)-19)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"1\") \"*\" (expression \"71\")) \")\") \"+\" (expression \"2\")) \")\") \"-\" (expression \"19\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 021" {
+  let result = @typed.grammar().parse_default("x=(16/((24-61)*(42+91)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"16\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"24\") \"-\" (expression \"61\")) \")\") \"*\" (expression \"(\" (expression (expression \"42\") \"+\" (expression \"91\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 022" {
+  let result = @typed.grammar().parse_default("x=(52+((36+52)/80))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"52\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"36\") \"+\" (expression \"52\")) \")\") \"/\" (expression \"80\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 023" {
+  let result = @typed.grammar().parse_default("x=(((77+12)*32)*35)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"77\") \"+\" (expression \"12\")) \")\") \"*\" (expression \"32\")) \")\") \"*\" (expression \"35\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 024" {
+  let result = @typed.grammar().parse_default("x=35")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"35\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 025" {
+  let result = @typed.grammar().parse_default("x=26")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"26\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 026" {
+  let result = @typed.grammar().parse_default("x=(90*((13*76)/(53/17)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"90\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"13\") \"*\" (expression \"76\")) \")\") \"/\" (expression \"(\" (expression (expression \"53\") \"/\" (expression \"17\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 027" {
+  let result = @typed.grammar().parse_default(
+    "x=(((20/47)*65)*((29/42)-(27*95)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"20\") \"/\" (expression \"47\")) \")\") \"*\" (expression \"65\")) \")\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"29\") \"/\" (expression \"42\")) \")\") \"-\" (expression \"(\" (expression (expression \"27\") \"*\" (expression \"95\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 028" {
+  let result = @typed.grammar().parse_default(
+    "x=(((79+40)*(89-56))-((78+61)/(2*99)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"79\") \"+\" (expression \"40\")) \")\") \"*\" (expression \"(\" (expression (expression \"89\") \"-\" (expression \"56\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"78\") \"+\" (expression \"61\")) \")\") \"/\" (expression \"(\" (expression (expression \"2\") \"*\" (expression \"99\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 029" {
+  let result = @typed.grammar().parse_default("x=80")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"80\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 030" {
+  let result = @typed.grammar().parse_default("x=((53*(69+37))+(43/(84*5)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"53\") \"*\" (expression \"(\" (expression (expression \"69\") \"+\" (expression \"37\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"43\") \"/\" (expression \"(\" (expression (expression \"84\") \"*\" (expression \"5\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 031" {
+  let result = @typed.grammar().parse_default(
+    "x=(((91*51)/(56+4))/((74+50)-(40*64)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"91\") \"*\" (expression \"51\")) \")\") \"/\" (expression \"(\" (expression (expression \"56\") \"+\" (expression \"4\")) \")\")) \")\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"74\") \"+\" (expression \"50\")) \")\") \"-\" (expression \"(\" (expression (expression \"40\") \"*\" (expression \"64\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 032" {
+  let result = @typed.grammar().parse_default("x=94")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"94\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 033" {
+  let result = @typed.grammar().parse_default("x=((30*61)/37)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"30\") \"*\" (expression \"61\")) \")\") \"/\" (expression \"37\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 034" {
+  let result = @typed.grammar().parse_default("x=(71+2)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"71\") \"+\" (expression \"2\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 035" {
+  let result = @typed.grammar().parse_default("x=2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 036" {
+  let result = @typed.grammar().parse_default("x=(98+(32*(19*72)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"98\") \"+\" (expression \"(\" (expression (expression \"32\") \"*\" (expression \"(\" (expression (expression \"19\") \"*\" (expression \"72\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 037" {
+  let result = @typed.grammar().parse_default("x=16")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"16\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 038" {
+  let result = @typed.grammar().parse_default("x=73")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"73\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 039" {
+  let result = @typed.grammar().parse_default("x=(75/(28-48))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"75\") \"/\" (expression \"(\" (expression (expression \"28\") \"-\" (expression \"48\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 040" {
+  let result = @typed.grammar().parse_default("x=(((89-74)/17)*39)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"89\") \"-\" (expression \"74\")) \")\") \"/\" (expression \"17\")) \")\") \"*\" (expression \"39\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 041" {
+  let result = @typed.grammar().parse_default("x=((76-(31-16))+((32+69)*82))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"76\") \"-\" (expression \"(\" (expression (expression \"31\") \"-\" (expression \"16\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"32\") \"+\" (expression \"69\")) \")\") \"*\" (expression \"82\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 042" {
+  let result = @typed.grammar().parse_default("x=((5-(34/49))/72)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"5\") \"-\" (expression \"(\" (expression (expression \"34\") \"/\" (expression \"49\")) \")\")) \")\") \"/\" (expression \"72\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 043" {
+  let result = @typed.grammar().parse_default("x=90")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"90\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 044" {
+  let result = @typed.grammar().parse_default("x=(((4-56)+(5-61))-83)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"4\") \"-\" (expression \"56\")) \")\") \"+\" (expression \"(\" (expression (expression \"5\") \"-\" (expression \"61\")) \")\")) \")\") \"-\" (expression \"83\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 045" {
+  let result = @typed.grammar().parse_default("x=(25+((38*20)/(3+5)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"25\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"38\") \"*\" (expression \"20\")) \")\") \"/\" (expression \"(\" (expression (expression \"3\") \"+\" (expression \"5\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 046" {
+  let result = @typed.grammar().parse_default("x=(75/((20-96)+(49-78)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"75\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"20\") \"-\" (expression \"96\")) \")\") \"+\" (expression \"(\" (expression (expression \"49\") \"-\" (expression \"78\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 047" {
+  let result = @typed.grammar().parse_default("x=(53*((43-58)/11))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"53\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"43\") \"-\" (expression \"58\")) \")\") \"/\" (expression \"11\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Typed 048" {
+  let result = @typed.grammar().parse_default(
+    "x=(((11+70)+(88-40))-((27+62)-(78*83)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (entry \"x\" \"=\" (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"11\") \"+\" (expression \"70\")) \")\") \"+\" (expression \"(\" (expression (expression \"88\") \"-\" (expression \"40\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"27\") \"+\" (expression \"62\")) \")\") \"-\" (expression \"(\" (expression (expression \"78\") \"*\" (expression \"83\")) \")\")) \")\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery ParseActions 000" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("ab", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1, 2])
+  assert_eq(result.tree.to_sexpr(), "(document (item \"a\" \"b\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:a", "token:b", "exit:item", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery ParseActions 001" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("ac", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1, 2])
+  assert_eq(result.tree.to_sexpr(), "(document (item \"a\" \"c\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:a", "token:c", "exit:item", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery ParseActions 002" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("ab ac ab", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1, 4, 7, 8])
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"a\" \"b\") (item \"a\" \"c\") (item \"a\" \"b\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:a", "token:b", "exit:item", "enter:item",
+    "token:a", "token:c", "exit:item", "enter:item", "token:a", "token:b", "exit:item",
+    "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery ParseActions 003" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("expr 1+2+3", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 7, 9, 10])
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"expr\" (expression (expression (expression \"1\") \"+\" \"2\") \"+\" \"3\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:expr", "enter:expression", "enter:expression",
+    "enter:expression", "token:1", "exit:expression", "token:+", "token:2", "exit:expression",
+    "token:+", "token:3", "exit:expression", "exit:item", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery ParseActions 004" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("a", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1])
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item) (item (error \"a\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, "a", 0, 1, 1, 0, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "exit:item", "enter:item", "error:a", "exit:item",
+    "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery ParseActions 005" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("ab a ac", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1, 6, 7])
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"a\" \"b\") (item) (item (error \"a\")) (item \"a\" \"c\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, "a", 3, 4, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery ParseActions 006" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("expr 1+", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 7, 7])
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"expr\" (expression (expression \"1\") \"+\" (error \"<missing INT>\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(7)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(6, "<missing INT>", -1, 0, 1, 6, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery ParseActions 007" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("expr 1+ ab", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 8, 9, 10])
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"expr\" (expression (expression \"1\") \"+\" (error \"<missing INT>\"))) (item \"a\" \"b\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(8)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(6, "<missing INT>", -1, 0, 1, 8, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery ParseActions 008" {
+  let offsets : Array[Int32] = []
+  let result = @parseactions.grammar().parse_default("ab ac a", parser_action=event => {
+    offsets.push(event.next_token.start)
+  })
+  @debug.assert_eq(offsets, [0, 1, 4, 7])
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"a\" \"b\") (item \"a\" \"c\") (item) (item (error \"a\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(7)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, "a", 6, 7, 1, 6, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 000" {
+  let result = @decisions.grammar().parse_default("")
+  assert_eq(result.tree.to_sexpr(), "(document <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, ["enter:document", "token:<EOF>", "exit:document"])
+}
+
+///|
+test "Java oracle default recovery Decisions 001" {
+  let result = @decisions.grammar().parse_default("p a x;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:p", "enter:choice", "token:a", "exit:choice",
+    "token:x", "token:;", "exit:item", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Decisions 002" {
+  let result = @decisions.grammar().parse_default("p a x x;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\" \"x\") \"x\" \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:p", "enter:choice", "token:a", "token:x",
+    "exit:choice", "token:x", "token:;", "exit:item", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Decisions 003" {
+  let result = @decisions.grammar().parse_default("q a y;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"q\" (choice \"a\") \"y\" \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:q", "enter:choice", "token:a", "exit:choice",
+    "token:y", "token:;", "exit:item", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Decisions 004" {
+  let result = @decisions.grammar().parse_default("q a x y;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:item", "token:q", "enter:choice", "token:a", "token:x",
+    "exit:choice", "token:y", "token:;", "exit:item", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Decisions 005" {
+  let result = @decisions.grammar().parse_default("p a y;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\") (error \"y\") (error \";\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(5, "y", 4, 5, 1, 4, 0), (3, ";", 5, 6, 1, 5, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 006" {
+  let result = @decisions.grammar().parse_default("q a x;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"q\" (choice \"a\") (error \"x\") (error \";\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "x", 4, 5, 1, 4, 0), (3, ";", 5, 6, 1, 5, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 007" {
+  let result = @decisions.grammar().parse_default("u;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (either (first \"u\")) \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 008" {
+  let result = @decisions.grammar().parse_default("foo;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (sequence \"foo\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 009" {
+  let result = @decisions.grammar().parse_default("foo bar baz;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (sequence \"foo\" \"bar\" \"baz\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 010" {
+  let result = @decisions.grammar().parse_default("z foo !;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 011" {
+  let result = @decisions.grammar().parse_default("z foo bar ?;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"bar\" \"?\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 012" {
+  let result = @decisions.grammar().parse_default("z !;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" (error \"!\")) \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(8, "!", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 013" {
+  let result = @decisions.grammar().parse_default("p a x x x;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\" \"x\") \"x\" (error \"x\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(8)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "x", 8, 9, 1, 8, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 014" {
+  let result = @decisions.grammar().parse_default("p a x; q a x y; p a x x; u;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\" \"x\") \"x\" \";\") (item (either (first \"u\")) \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 015" {
+  let result = @decisions.grammar().parse_default("z foo foo !;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 016" {
+  let result = @decisions.grammar().parse_default("z foo foo ?;")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 017" {
+  let result = @decisions.grammar().parse_default(
+    "z foo foo foo foo foo foo foo foo foo foo !;",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 018" {
+  let result = @decisions.grammar().parse_default(
+    "z foo foo foo foo foo foo foo foo foo foo ?;",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 019" {
+  let result = @decisions.grammar().parse_default(
+    "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo !;",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 020" {
+  let result = @decisions.grammar().parse_default(
+    "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo ?;",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 021" {
+  let result = @decisions.grammar().parse_default(
+    "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo !;",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"!\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 022" {
+  let result = @decisions.grammar().parse_default(
+    "z foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo foo ?;",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item (longChoice \"z\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"foo\" \"?\") \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 023" {
+  let result = @decisions.grammar().parse_default(
+    "p a x; q a x y; p a x; q a x y; ",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 024" {
+  let result = @decisions.grammar().parse_default(
+    "p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; ",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Decisions 025" {
+  let result = @decisions.grammar().parse_default(
+    "p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; p a x; q a x y; ",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") (item \"p\" (choice \"a\") \"x\" \";\") (item \"q\" (choice \"a\" \"x\") \"y\" \";\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 000" {
+  let result = @recursion.grammar().parse_default("1[2]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\" \"[\" (expression \"2\") \"]\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "token:1", "token:[", "enter:expression",
+    "token:2", "exit:expression", "token:]", "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Recursion 001" {
+  let result = @recursion.grammar().parse_default("1[2][3]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\" \"[\" (expression \"2\") \"]\" \"[\" (expression \"3\") \"]\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "token:1", "token:[", "enter:expression",
+    "token:2", "exit:expression", "token:]", "token:[", "enter:expression", "token:3",
+    "exit:expression", "token:]", "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Recursion 002" {
+  let result = @recursion.grammar().parse_default("1[2+3]*4")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\" \"[\" (expression (expression \"2\") \"+\" (expression \"3\")) \"]\") \"*\" (expression \"4\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "token:1", "token:[",
+    "enter:expression", "enter:expression", "token:2", "exit:expression", "token:+",
+    "enter:expression", "token:3", "exit:expression", "exit:expression", "token:]",
+    "exit:expression", "token:*", "enter:expression", "token:4", "exit:expression",
+    "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Recursion 003" {
+  let result = @recursion.grammar().parse_default("1[2[3]]+4!")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\" \"[\" (expression \"2\" \"[\" (expression \"3\") \"]\") \"]\") \"+\" (expression (expression \"4\") \"!\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "token:1", "token:[",
+    "enter:expression", "token:2", "token:[", "enter:expression", "token:3", "exit:expression",
+    "token:]", "exit:expression", "token:]", "exit:expression", "token:+", "enter:expression",
+    "enter:expression", "token:4", "exit:expression", "token:!", "exit:expression",
+    "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Recursion 004" {
+  let result = @recursion.grammar().parse_default("1!!")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"!\") \"!\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "enter:expression",
+    "token:1", "exit:expression", "token:!", "exit:expression", "token:!", "exit:expression",
+    "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Recursion 005" {
+  let result = @recursion.grammar().parse_default("-1!")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"-\" (expression (expression \"1\") \"!\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 006" {
+  let result = @recursion.grammar().parse_default("1?2:3?4:5")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"?\" (expression \"2\") \":\" (expression (expression \"3\") \"?\" (expression \"4\") \":\" (expression \"5\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 007" {
+  let result = @recursion.grammar().parse_default("1?2?3:4:5")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"?\" (expression (expression \"2\") \"?\" (expression \"3\") \":\" (expression \"4\")) \":\" (expression \"5\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 008" {
+  let result = @recursion.grammar().parse_default("1+2?3:4*5")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"+\" (expression \"2\")) \"?\" (expression \"3\") \":\" (expression (expression \"4\") \"*\" (expression \"5\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 009" {
+  let result = @recursion.grammar().parse_default("(1+2)![3]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) \")\") \"!\") (error \"[\") (error \"3\") (error \"]\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(6)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(7, "[", 6, 7, 1, 6, 0), (11, "3", 7, 8, 1, 7, 0), (8, "]", 8, 9, 1, 8, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 010" {
+  let result = @recursion.grammar().parse_default("1[")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\" \"[\" (expression) (error \"<missing ']'>\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(8, "<missing ']'>", -1, 0, 1, 1, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 011" {
+  let result = @recursion.grammar().parse_default("1?2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"?\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 012" {
+  let result = @recursion.grammar().parse_default("1?2:")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"?\" (expression \"2\") \":\" (expression)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 013" {
+  let result = @recursion.grammar().parse_default("1[2]]")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\" \"[\" (expression \"2\") \"]\") (error \"]\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(8, "]", 4, 5, 1, 4, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 014" {
+  let result = @recursion.grammar().parse_default("!1")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (error \"!\") \"1\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, "!", 0, 1, 1, 0, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 015" {
+  let result = @recursion.grammar().parse_default("1+2*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 016" {
+  let result = @recursion.grammar().parse_default("(1+2)*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) \")\") \"*\" (expression \"3\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 017" {
+  let result = @recursion.grammar().parse_default(" 12 / 3 - 2\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"12\") (error \"3\") (error \"-\") (error \"2\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+    (Some(1), Some(6)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (11, "3", 6, 7, 1, 6, 0),
+      (6, "-", 8, 9, 1, 8, 0),
+      (11, "2", 10, 11, 1, 10, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 018" {
+  let result = @recursion.grammar().parse_default("1-2-3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \"-\") (error \"2\") (error \"-\") (error \"3\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 1, 2, 1, 1, 0),
+      (11, "2", 2, 3, 1, 2, 0),
+      (6, "-", 3, 4, 1, 3, 0),
+      (11, "3", 4, 5, 1, 4, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 019" {
+  let result = @recursion.grammar().parse_default("1/(2+3)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \"(\") (error \"2\") (error \"+\") (error \"3\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (9, "(", 2, 3, 1, 2, 0),
+      (11, "2", 3, 4, 1, 3, 0),
+      (3, "+", 4, 5, 1, 4, 0),
+      (11, "3", 5, 6, 1, 5, 0),
+      (10, ")", 6, 7, 1, 6, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 020" {
+  let result = @recursion.grammar().parse_default("5")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"5\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 021" {
+  let result = @recursion.grammar().parse_default("((51-(16-13))+71)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"51\") (error \"-\") (error \"(\") (error \"16\") (error \"-\") (error \"13\")) \")\") (error \")\") (error \"+\") (error \"71\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+    (Some(1), Some(12)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 4, 5, 1, 4, 0),
+      (9, "(", 5, 6, 1, 5, 0),
+      (11, "16", 6, 8, 1, 6, 0),
+      (6, "-", 8, 9, 1, 8, 0),
+      (11, "13", 9, 11, 1, 9, 0),
+      (10, ")", 12, 13, 1, 12, 0),
+      (3, "+", 13, 14, 1, 13, 0),
+      (11, "71", 14, 16, 1, 14, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 022" {
+  let result = @recursion.grammar().parse_default("(((79-93)+95)*62)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"(\" (expression (expression \"(\" (expression \"(\" (expression \"79\") (error \"-\") (error \"93\")) \")\") \"+\" (expression \"95\")) \")\") \"*\" (expression \"62\")) (error \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(16)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 5, 6, 1, 5, 0),
+      (11, "93", 6, 8, 1, 6, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 023" {
+  let result = @recursion.grammar().parse_default("(((54-80)+(90*69))/92)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression \"(\" (expression \"54\") (error \"-\") (error \"80\")) \")\") \"+\" (expression \"(\" (expression (expression \"90\") \"*\" (expression \"69\")) \")\")) \")\") (error \"92\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(18)),
+    (Some(1), Some(19)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 5, 6, 1, 5, 0),
+      (11, "80", 6, 8, 1, 6, 0),
+      (11, "92", 19, 21, 1, 19, 0),
+      (10, ")", 21, 22, 1, 21, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 024" {
+  let result = @recursion.grammar().parse_default("(((13*74)/(5/51))-(31+85))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression (expression \"13\") \"*\" (expression \"74\")) \")\") (error \"(\") (error \"5\") (error \"51\")) \")\") (error \")\") (error \"-\") (error \"(\") (error \"31\") (error \"+\") (error \"85\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(9)),
+    (Some(1), Some(10)),
+    (Some(1), Some(12)),
+    (Some(1), Some(16)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (9, "(", 10, 11, 1, 10, 0),
+      (11, "5", 11, 12, 1, 11, 0),
+      (11, "51", 13, 15, 1, 13, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+      (6, "-", 17, 18, 1, 17, 0),
+      (9, "(", 18, 19, 1, 18, 0),
+      (11, "31", 19, 21, 1, 19, 0),
+      (3, "+", 21, 22, 1, 21, 0),
+      (11, "85", 22, 24, 1, 22, 0),
+      (10, ")", 24, 25, 1, 24, 0),
+      (10, ")", 25, 26, 1, 25, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 025" {
+  let result = @recursion.grammar().parse_default("(((9-95)*(84+58))/28)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression \"(\" (expression \"9\") (error \"-\") (error \"95\")) \")\") \"*\" (expression \"(\" (expression (expression \"84\") \"+\" (expression \"58\")) \")\")) \")\") (error \"28\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+    (Some(1), Some(17)),
+    (Some(1), Some(18)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 4, 5, 1, 4, 0),
+      (11, "95", 5, 7, 1, 5, 0),
+      (11, "28", 18, 20, 1, 18, 0),
+      (10, ")", 20, 21, 1, 20, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 026" {
+  let result = @recursion.grammar().parse_default("2")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"2\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 027" {
+  let result = @recursion.grammar().parse_default("16")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"16\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 028" {
+  let result = @recursion.grammar().parse_default("31")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"31\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 029" {
+  let result = @recursion.grammar().parse_default("(((77-80)-55)-53)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression \"77\") (error \"-\") (error \"80\")) \")\") (error \"-\") (error \"55\") (error \")\") (error \"-\") (error \"53\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(9)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 5, 6, 1, 5, 0),
+      (11, "80", 6, 8, 1, 6, 0),
+      (6, "-", 9, 10, 1, 9, 0),
+      (11, "55", 10, 12, 1, 10, 0),
+      (10, ")", 12, 13, 1, 12, 0),
+      (6, "-", 13, 14, 1, 13, 0),
+      (11, "53", 14, 16, 1, 14, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 030" {
+  let result = @recursion.grammar().parse_default(
+    "(((61*44)-(87-98))-((79+14)+43))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression (expression \"61\") \"*\" (expression \"44\")) \")\") (error \"-\") (error \"(\") (error \"87\") (error \"-\") (error \"98\")) \")\") (error \")\") (error \"-\") (error \"(\") (error \"(\") (error \"79\") (error \"+\") (error \"14\") (error \")\") (error \"+\") (error \"43\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(9)),
+    (Some(1), Some(17)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 9, 10, 1, 9, 0),
+      (9, "(", 10, 11, 1, 10, 0),
+      (11, "87", 11, 13, 1, 11, 0),
+      (6, "-", 13, 14, 1, 13, 0),
+      (11, "98", 14, 16, 1, 14, 0),
+      (10, ")", 17, 18, 1, 17, 0),
+      (6, "-", 18, 19, 1, 18, 0),
+      (9, "(", 19, 20, 1, 19, 0),
+      (9, "(", 20, 21, 1, 20, 0),
+      (11, "79", 21, 23, 1, 21, 0),
+      (3, "+", 23, 24, 1, 23, 0),
+      (11, "14", 24, 26, 1, 24, 0),
+      (10, ")", 26, 27, 1, 26, 0),
+      (3, "+", 27, 28, 1, 27, 0),
+      (11, "43", 28, 30, 1, 28, 0),
+      (10, ")", 30, 31, 1, 30, 0),
+      (10, ")", 31, 32, 1, 31, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 031" {
+  let result = @recursion.grammar().parse_default("(47/7)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"47\") (error \"7\") \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "7", 4, 5, 1, 4, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 032" {
+  let result = @recursion.grammar().parse_default("5")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"5\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 033" {
+  let result = @recursion.grammar().parse_default("((15+(40*84))/22)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression (expression \"15\") \"+\" (expression \"(\" (expression (expression \"40\") \"*\" (expression \"84\")) \")\")) \")\") (error \"22\") \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(13)),
+    (Some(1), Some(14)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "22", 14, 16, 1, 14, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 034" {
+  let result = @recursion.grammar().parse_default("(89/(8-(20/39)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"89\") (error \"(\") (error \"8\") (error \"-\") (error \"(\") (error \"20\") (error \"39\") (error \")\") (error \")\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+    (Some(1), Some(4)),
+    (Some(1), Some(10)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (9, "(", 4, 5, 1, 4, 0),
+      (11, "8", 5, 6, 1, 5, 0),
+      (6, "-", 6, 7, 1, 6, 0),
+      (9, "(", 7, 8, 1, 7, 0),
+      (11, "20", 8, 10, 1, 8, 0),
+      (11, "39", 11, 13, 1, 11, 0),
+      (10, ")", 13, 14, 1, 13, 0),
+      (10, ")", 14, 15, 1, 14, 0),
+      (10, ")", 15, 16, 1, 15, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 035" {
+  let result = @recursion.grammar().parse_default(
+    "(((38-72)*(71-1))-((42/49)*4))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression \"(\" (expression \"38\") (error \"-\") (error \"72\")) \")\") \"*\" (expression \"(\" (expression \"71\") (error \"-\") (error \"1\"))) \")\") (error \")\") (error \"-\") (error \"(\") (error \"(\") (error \"42\") (error \"49\") (error \")\") (error \"*\") (error \"4\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(13)),
+    (Some(1), Some(16)),
+    (Some(1), Some(22)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 5, 6, 1, 5, 0),
+      (11, "72", 6, 8, 1, 6, 0),
+      (6, "-", 13, 14, 1, 13, 0),
+      (11, "1", 14, 15, 1, 14, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+      (6, "-", 17, 18, 1, 17, 0),
+      (9, "(", 18, 19, 1, 18, 0),
+      (9, "(", 19, 20, 1, 19, 0),
+      (11, "42", 20, 22, 1, 20, 0),
+      (11, "49", 23, 25, 1, 23, 0),
+      (10, ")", 25, 26, 1, 25, 0),
+      (2, "*", 26, 27, 1, 26, 0),
+      (11, "4", 27, 28, 1, 27, 0),
+      (10, ")", 28, 29, 1, 28, 0),
+      (10, ")", 29, 30, 1, 29, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 036" {
+  let result = @recursion.grammar().parse_default("8")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"8\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 037" {
+  let result = @recursion.grammar().parse_default("(((46-77)/63)/(98/(51-3)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression \"46\") (error \"-\") (error \"77\")) \")\") (error \"63\") \")\") (error \"(\") (error \"98\") (error \"(\") (error \"51\") (error \"-\") (error \"3\") (error \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(9)),
+    (Some(1), Some(10)),
+    (Some(1), Some(13)),
+    (Some(1), Some(14)),
+    (Some(1), Some(17)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 5, 6, 1, 5, 0),
+      (11, "77", 6, 8, 1, 6, 0),
+      (11, "63", 10, 12, 1, 10, 0),
+      (9, "(", 14, 15, 1, 14, 0),
+      (11, "98", 15, 17, 1, 15, 0),
+      (9, "(", 18, 19, 1, 18, 0),
+      (11, "51", 19, 21, 1, 19, 0),
+      (6, "-", 21, 22, 1, 21, 0),
+      (11, "3", 22, 23, 1, 22, 0),
+      (10, ")", 23, 24, 1, 23, 0),
+      (10, ")", 24, 25, 1, 24, 0),
+      (10, ")", 25, 26, 1, 25, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 038" {
+  let result = @recursion.grammar().parse_default("43")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"43\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 039" {
+  let result = @recursion.grammar().parse_default("((48-72)-13)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"48\") (error \"-\") (error \"72\")) \")\") (error \"-\") (error \"13\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+    (Some(1), Some(8)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 4, 5, 1, 4, 0),
+      (11, "72", 5, 7, 1, 5, 0),
+      (6, "-", 8, 9, 1, 8, 0),
+      (11, "13", 9, 11, 1, 9, 0),
+      (10, ")", 11, 12, 1, 11, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 040" {
+  let result = @recursion.grammar().parse_default("((59*(95/87))-96)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression (expression \"59\") \"*\" (expression \"(\" (expression \"95\") (error \"87\") \")\")) \")\") (error \"-\") (error \"96\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(8)),
+    (Some(1), Some(9)),
+    (Some(1), Some(13)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (11, "87", 9, 11, 1, 9, 0),
+      (6, "-", 13, 14, 1, 13, 0),
+      (11, "96", 14, 16, 1, 14, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 041" {
+  let result = @recursion.grammar().parse_default(
+    "(((86*34)+(27+2))+((26-3)/(97/97)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"86\") \"*\" (expression \"34\")) \")\") \"+\" (expression \"(\" (expression (expression \"27\") \"+\" (expression \"2\")) \")\")) \")\") \"+\" (expression \"(\" (expression \"(\" (expression \"26\") (error \"-\") (error \"3\")) \")\")) (error \"(\") (error \"97\") (error \"97\") (error \")\") (error \")\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(22)),
+    (Some(1), Some(25)),
+    (Some(1), Some(26)),
+    (Some(1), Some(29)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 22, 23, 1, 22, 0),
+      (11, "3", 23, 24, 1, 23, 0),
+      (9, "(", 26, 27, 1, 26, 0),
+      (11, "97", 27, 29, 1, 27, 0),
+      (11, "97", 30, 32, 1, 30, 0),
+      (10, ")", 32, 33, 1, 32, 0),
+      (10, ")", 33, 34, 1, 33, 0),
+      (10, ")", 34, 35, 1, 34, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 042" {
+  let result = @recursion.grammar().parse_default("41")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"41\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 043" {
+  let result = @recursion.grammar().parse_default("((26+69)-46)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression (expression \"26\") \"+\" (expression \"69\")) \")\") (error \"-\") (error \"46\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(8)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 8, 9, 1, 8, 0),
+      (11, "46", 9, 11, 1, 9, 0),
+      (10, ")", 11, 12, 1, 11, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 044" {
+  let result = @recursion.grammar().parse_default("(((61/61)*50)+21)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression \"61\") (error \"61\") \")\") \"*\" (expression \"50\")) \")\") \"+\" (expression \"21\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(6)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "61", 6, 8, 1, 6, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 045" {
+  let result = @recursion.grammar().parse_default("6")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"6\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 046" {
+  let result = @recursion.grammar().parse_default("((58+8)/68)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression (expression \"58\") \"+\" (expression \"8\")) \")\") (error \"68\") \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(7)),
+    (Some(1), Some(8)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "68", 8, 10, 1, 8, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 047" {
+  let result = @recursion.grammar().parse_default("((62-(87-93))*((50*34)-38))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"62\") (error \"-\") (error \"(\") (error \"87\") (error \"-\") (error \"93\")) \")\") (error \")\") (error \"*\") (error \"(\") (error \"(\") (error \"50\") (error \"*\") (error \"34\") (error \")\") (error \"-\") (error \"38\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+    (Some(1), Some(12)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 4, 5, 1, 4, 0),
+      (9, "(", 5, 6, 1, 5, 0),
+      (11, "87", 6, 8, 1, 6, 0),
+      (6, "-", 8, 9, 1, 8, 0),
+      (11, "93", 9, 11, 1, 9, 0),
+      (10, ")", 12, 13, 1, 12, 0),
+      (2, "*", 13, 14, 1, 13, 0),
+      (9, "(", 14, 15, 1, 14, 0),
+      (9, "(", 15, 16, 1, 15, 0),
+      (11, "50", 16, 18, 1, 16, 0),
+      (2, "*", 18, 19, 1, 18, 0),
+      (11, "34", 19, 21, 1, 19, 0),
+      (10, ")", 21, 22, 1, 21, 0),
+      (6, "-", 22, 23, 1, 22, 0),
+      (11, "38", 23, 25, 1, 23, 0),
+      (10, ")", 25, 26, 1, 25, 0),
+      (10, ")", 26, 27, 1, 26, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 048" {
+  let result = @recursion.grammar().parse_default("13")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"13\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 049" {
+  let result = @recursion.grammar().parse_default("56")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"56\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 050" {
+  let result = @recursion.grammar().parse_default("(65+(81+(44-88)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"65\") \"+\" (expression \"(\" (expression (expression \"81\") \"+\" (expression \"(\" (expression \"44\") (error \"-\") (error \"88\"))) \")\")) \")\") (error \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(11)),
+    (Some(1), Some(16)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 11, 12, 1, 11, 0),
+      (11, "88", 12, 14, 1, 12, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 051" {
+  let result = @recursion.grammar().parse_default("(((54+54)-44)/(85*(42*14)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression (expression \"54\") \"+\" (expression \"54\")) \")\") (error \"-\") (error \"44\")) \")\") (error \"(\") (error \"85\") (error \"*\") (error \"(\") (error \"42\") (error \"*\") (error \"14\") (error \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(9)),
+    (Some(1), Some(13)),
+    (Some(1), Some(14)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 9, 10, 1, 9, 0),
+      (11, "44", 10, 12, 1, 10, 0),
+      (9, "(", 14, 15, 1, 14, 0),
+      (11, "85", 15, 17, 1, 15, 0),
+      (2, "*", 17, 18, 1, 17, 0),
+      (9, "(", 18, 19, 1, 18, 0),
+      (11, "42", 19, 21, 1, 19, 0),
+      (2, "*", 21, 22, 1, 21, 0),
+      (11, "14", 22, 24, 1, 22, 0),
+      (10, ")", 24, 25, 1, 24, 0),
+      (10, ")", 25, 26, 1, 25, 0),
+      (10, ")", 26, 27, 1, 26, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 052" {
+  let result = @recursion.grammar().parse_default(
+    "(((30-4)/86)-((25*40)-(82*31)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression \"30\") (error \"-\") (error \"4\")) \")\") (error \"86\") \")\") (error \"-\") (error \"(\") (error \"(\") (error \"25\") (error \"*\") (error \"40\") (error \")\") (error \"-\") (error \"(\") (error \"82\") (error \"*\") (error \"31\") (error \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(8)),
+    (Some(1), Some(9)),
+    (Some(1), Some(12)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 5, 6, 1, 5, 0),
+      (11, "4", 6, 7, 1, 6, 0),
+      (11, "86", 9, 11, 1, 9, 0),
+      (6, "-", 12, 13, 1, 12, 0),
+      (9, "(", 13, 14, 1, 13, 0),
+      (9, "(", 14, 15, 1, 14, 0),
+      (11, "25", 15, 17, 1, 15, 0),
+      (2, "*", 17, 18, 1, 17, 0),
+      (11, "40", 18, 20, 1, 18, 0),
+      (10, ")", 20, 21, 1, 20, 0),
+      (6, "-", 21, 22, 1, 21, 0),
+      (9, "(", 22, 23, 1, 22, 0),
+      (11, "82", 23, 25, 1, 23, 0),
+      (2, "*", 25, 26, 1, 25, 0),
+      (11, "31", 26, 28, 1, 26, 0),
+      (10, ")", 28, 29, 1, 28, 0),
+      (10, ")", 29, 30, 1, 29, 0),
+      (10, ")", 30, 31, 1, 30, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 053" {
+  let result = @recursion.grammar().parse_default(
+    "((86+(98-69))-((93+28)*(8/68)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression (expression \"86\") \"+\" (expression \"(\" (expression \"98\") (error \"-\") (error \"69\"))) \")\") \")\") (error \"-\") (error \"(\") (error \"(\") (error \"93\") (error \"+\") (error \"28\") (error \")\") (error \"*\") (error \"(\") (error \"8\") (error \"68\") (error \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(8)),
+    (Some(1), Some(13)),
+    (Some(1), Some(25)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 8, 9, 1, 8, 0),
+      (11, "69", 9, 11, 1, 9, 0),
+      (6, "-", 13, 14, 1, 13, 0),
+      (9, "(", 14, 15, 1, 14, 0),
+      (9, "(", 15, 16, 1, 15, 0),
+      (11, "93", 16, 18, 1, 16, 0),
+      (3, "+", 18, 19, 1, 18, 0),
+      (11, "28", 19, 21, 1, 19, 0),
+      (10, ")", 21, 22, 1, 21, 0),
+      (2, "*", 22, 23, 1, 22, 0),
+      (9, "(", 23, 24, 1, 23, 0),
+      (11, "8", 24, 25, 1, 24, 0),
+      (11, "68", 26, 28, 1, 26, 0),
+      (10, ")", 28, 29, 1, 28, 0),
+      (10, ")", 29, 30, 1, 29, 0),
+      (10, ")", 30, 31, 1, 30, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 054" {
+  let result = @recursion.grammar().parse_default("(6/((33/77)*(51-93)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"6\") (error \"(\") (error \"(\") (error \"33\") (error \"77\") (error \")\") (error \"*\") (error \"(\") (error \"51\") (error \"-\") (error \"93\") (error \")\") (error \")\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+    (Some(1), Some(3)),
+    (Some(1), Some(7)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (9, "(", 3, 4, 1, 3, 0),
+      (9, "(", 4, 5, 1, 4, 0),
+      (11, "33", 5, 7, 1, 5, 0),
+      (11, "77", 8, 10, 1, 8, 0),
+      (10, ")", 10, 11, 1, 10, 0),
+      (2, "*", 11, 12, 1, 11, 0),
+      (9, "(", 12, 13, 1, 12, 0),
+      (11, "51", 13, 15, 1, 13, 0),
+      (6, "-", 15, 16, 1, 15, 0),
+      (11, "93", 16, 18, 1, 16, 0),
+      (10, ")", 18, 19, 1, 18, 0),
+      (10, ")", 19, 20, 1, 19, 0),
+      (10, ")", 20, 21, 1, 20, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 055" {
+  let result = @recursion.grammar().parse_default("95")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"95\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 056" {
+  let result = @recursion.grammar().parse_default("10")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"10\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 057" {
+  let result = @recursion.grammar().parse_default("(28-85)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"28\") (error \"-\") (error \"85\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 3, 4, 1, 3, 0),
+      (11, "85", 4, 6, 1, 4, 0),
+      (10, ")", 6, 7, 1, 6, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 058" {
+  let result = @recursion.grammar().parse_default("20")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"20\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 059" {
+  let result = @recursion.grammar().parse_default("90")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"90\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 060" {
+  let result = @recursion.grammar().parse_default("61")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"61\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 061" {
+  let result = @recursion.grammar().parse_default("(5*((77+17)/(50/14)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"5\") \"*\" (expression \"(\" (expression \"(\" (expression (expression \"77\") \"+\" (expression \"17\")) \")\") (error \"(\") (error \"50\") (error \"14\"))) \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(11)),
+    (Some(1), Some(12)),
+    (Some(1), Some(15)),
+    (Some(1), Some(19)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (9, "(", 12, 13, 1, 12, 0),
+      (11, "50", 13, 15, 1, 13, 0),
+      (11, "14", 16, 18, 1, 16, 0),
+      (10, ")", 19, 20, 1, 19, 0),
+      (10, ")", 20, 21, 1, 20, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 062" {
+  let result = @recursion.grammar().parse_default("(32-((4-80)/(3/91)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"32\") (error \"-\") (error \"(\") (error \"(\") (error \"4\") (error \"-\") (error \"80\") (error \")\") (error \"(\") (error \"3\") (error \"91\") (error \")\") (error \")\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+    (Some(1), Some(11)),
+    (Some(1), Some(14)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 3, 4, 1, 3, 0),
+      (9, "(", 4, 5, 1, 4, 0),
+      (9, "(", 5, 6, 1, 5, 0),
+      (11, "4", 6, 7, 1, 6, 0),
+      (6, "-", 7, 8, 1, 7, 0),
+      (11, "80", 8, 10, 1, 8, 0),
+      (10, ")", 10, 11, 1, 10, 0),
+      (9, "(", 12, 13, 1, 12, 0),
+      (11, "3", 13, 14, 1, 13, 0),
+      (11, "91", 15, 17, 1, 15, 0),
+      (10, ")", 17, 18, 1, 17, 0),
+      (10, ")", 18, 19, 1, 18, 0),
+      (10, ")", 19, 20, 1, 19, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 063" {
+  let result = @recursion.grammar().parse_default("(24/(30/57))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"24\") (error \"(\") (error \"30\") (error \"57\") (error \")\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+    (Some(1), Some(4)),
+    (Some(1), Some(7)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (9, "(", 4, 5, 1, 4, 0),
+      (11, "30", 5, 7, 1, 5, 0),
+      (11, "57", 8, 10, 1, 8, 0),
+      (10, ")", 10, 11, 1, 10, 0),
+      (10, ")", 11, 12, 1, 11, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 064" {
+  let result = @recursion.grammar().parse_default(
+    "(((32-95)-(13/47))+((28*64)/(3+48)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression \"32\") (error \"-\") (error \"95\")) \")\") (error \"-\") (error \"(\") (error \"13\") (error \"47\") (error \")\") (error \")\") (error \"+\") (error \"(\") (error \"(\") (error \"28\") (error \"*\") (error \"64\") (error \")\") (error \"(\") (error \"3\") (error \"+\") (error \"48\") (error \")\") (error \")\") (error \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+    (Some(1), Some(9)),
+    (Some(1), Some(13)),
+    (Some(1), Some(27)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 5, 6, 1, 5, 0),
+      (11, "95", 6, 8, 1, 6, 0),
+      (6, "-", 9, 10, 1, 9, 0),
+      (9, "(", 10, 11, 1, 10, 0),
+      (11, "13", 11, 13, 1, 11, 0),
+      (11, "47", 14, 16, 1, 14, 0),
+      (10, ")", 16, 17, 1, 16, 0),
+      (10, ")", 17, 18, 1, 17, 0),
+      (3, "+", 18, 19, 1, 18, 0),
+      (9, "(", 19, 20, 1, 19, 0),
+      (9, "(", 20, 21, 1, 20, 0),
+      (11, "28", 21, 23, 1, 21, 0),
+      (2, "*", 23, 24, 1, 23, 0),
+      (11, "64", 24, 26, 1, 24, 0),
+      (10, ")", 26, 27, 1, 26, 0),
+      (9, "(", 28, 29, 1, 28, 0),
+      (11, "3", 29, 30, 1, 29, 0),
+      (3, "+", 30, 31, 1, 30, 0),
+      (11, "48", 31, 33, 1, 31, 0),
+      (10, ")", 33, 34, 1, 33, 0),
+      (10, ")", 34, 35, 1, 34, 0),
+      (10, ")", 35, 36, 1, 35, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 065" {
+  let result = @recursion.grammar().parse_default(
+    "(((92+51)-(84*60))/(26/(72+68)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression (expression \"92\") \"+\" (expression \"51\")) \")\") (error \"-\") (error \"(\") (error \"84\") (error \"*\") (error \"60\")) \")\") (error \")\") (error \"(\") (error \"26\") (error \"(\") (error \"72\") (error \"+\") (error \"68\") (error \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(9)),
+    (Some(1), Some(18)),
+    (Some(1), Some(17)),
+    (Some(1), Some(22)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 9, 10, 1, 9, 0),
+      (9, "(", 10, 11, 1, 10, 0),
+      (11, "84", 11, 13, 1, 11, 0),
+      (2, "*", 13, 14, 1, 13, 0),
+      (11, "60", 14, 16, 1, 14, 0),
+      (10, ")", 17, 18, 1, 17, 0),
+      (9, "(", 19, 20, 1, 19, 0),
+      (11, "26", 20, 22, 1, 20, 0),
+      (9, "(", 23, 24, 1, 23, 0),
+      (11, "72", 24, 26, 1, 24, 0),
+      (3, "+", 26, 27, 1, 26, 0),
+      (11, "68", 27, 29, 1, 27, 0),
+      (10, ")", 29, 30, 1, 29, 0),
+      (10, ")", 30, 31, 1, 30, 0),
+      (10, ")", 31, 32, 1, 31, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 066" {
+  let result = @recursion.grammar().parse_default("28")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"28\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 067" {
+  let result = @recursion.grammar().parse_default(
+    "(((89*46)/(65-93))-((29+94)+(78*37)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression \"(\" (expression (expression \"89\") \"*\" (expression \"46\")) \")\") (error \"(\") (error \"65\") (error \"-\") (error \"93\")) \")\") (error \")\") (error \"-\") (error \"(\") (error \"(\") (error \"29\") (error \"+\") (error \"94\") (error \")\") (error \"+\") (error \"(\") (error \"78\") (error \"*\") (error \"37\") (error \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(9)),
+    (Some(1), Some(10)),
+    (Some(1), Some(17)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (9, "(", 10, 11, 1, 10, 0),
+      (11, "65", 11, 13, 1, 11, 0),
+      (6, "-", 13, 14, 1, 13, 0),
+      (11, "93", 14, 16, 1, 14, 0),
+      (10, ")", 17, 18, 1, 17, 0),
+      (6, "-", 18, 19, 1, 18, 0),
+      (9, "(", 19, 20, 1, 19, 0),
+      (9, "(", 20, 21, 1, 20, 0),
+      (11, "29", 21, 23, 1, 21, 0),
+      (3, "+", 23, 24, 1, 23, 0),
+      (11, "94", 24, 26, 1, 24, 0),
+      (10, ")", 26, 27, 1, 26, 0),
+      (3, "+", 27, 28, 1, 27, 0),
+      (9, "(", 28, 29, 1, 28, 0),
+      (11, "78", 29, 31, 1, 29, 0),
+      (2, "*", 31, 32, 1, 31, 0),
+      (11, "37", 32, 34, 1, 32, 0),
+      (10, ")", 34, 35, 1, 34, 0),
+      (10, ")", 35, 36, 1, 35, 0),
+      (10, ")", 36, 37, 1, 36, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 068" {
+  let result = @recursion.grammar().parse_default(
+    "(((36*80)+(19-80))-((99-62)-(57/76)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression \"(\" (expression (expression \"(\" (expression (expression \"36\") \"*\" (expression \"80\")) \")\") \"+\" (expression \"(\" (expression \"19\") (error \"-\") (error \"80\"))) \")\") \")\") (error \"-\") (error \"(\") (error \"(\") (error \"99\") (error \"-\") (error \"62\") (error \")\") (error \"-\") (error \"(\") (error \"57\") (error \"76\") (error \")\") (error \")\") (error \")\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(13)),
+    (Some(1), Some(18)),
+    (Some(1), Some(31)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (6, "-", 13, 14, 1, 13, 0),
+      (11, "80", 14, 16, 1, 14, 0),
+      (6, "-", 18, 19, 1, 18, 0),
+      (9, "(", 19, 20, 1, 19, 0),
+      (9, "(", 20, 21, 1, 20, 0),
+      (11, "99", 21, 23, 1, 21, 0),
+      (6, "-", 23, 24, 1, 23, 0),
+      (11, "62", 24, 26, 1, 24, 0),
+      (10, ")", 26, 27, 1, 26, 0),
+      (6, "-", 27, 28, 1, 27, 0),
+      (9, "(", 28, 29, 1, 28, 0),
+      (11, "57", 29, 31, 1, 29, 0),
+      (11, "76", 32, 34, 1, 32, 0),
+      (10, ")", 34, 35, 1, 34, 0),
+      (10, ")", 35, 36, 1, 35, 0),
+      (10, ")", 36, 37, 1, 36, 0),
+    ],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 069" {
+  let result = @recursion.grammar().parse_default("30")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"30\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 070" {
+  let result = @recursion.grammar().parse_default("")
+  assert_eq(result.tree.to_sexpr(), "(document (expression) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 071" {
+  let result = @recursion.grammar().parse_default("1+")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 072" {
+  let result = @recursion.grammar().parse_default("+1")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (error \"+\") \"1\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(3, "+", 0, 1, 1, 0, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 073" {
+  let result = @recursion.grammar().parse_default("1+*2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (error \"*\") \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "*", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 074" {
+  let result = @recursion.grammar().parse_default("(1+2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) (error \"<missing ')'>\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(10, "<missing ')'>", -1, 0, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 075" {
+  let result = @recursion.grammar().parse_default("1 2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \"2\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 076" {
+  let result = @recursion.grammar().parse_default("1.2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \"2\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(11, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 077" {
+  let result = @recursion.grammar().parse_default("a")
+  assert_eq(result.tree.to_sexpr(), "(document (expression) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 078" {
+  let result = @recursion.grammar().parse_default("1)2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \")\") (error \"2\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(10, ")", 1, 2, 1, 1, 0), (11, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Recursion 079" {
+  let result = @recursion.grammar().parse_default("()")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 000" {
+  let result = @precedence.grammar().parse_default("1+2*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "token:1", "exit:expression",
+    "token:+", "enter:expression", "enter:expression", "token:2", "exit:expression",
+    "token:*", "enter:expression", "token:3", "exit:expression", "exit:expression",
+    "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Precedence 001" {
+  let result = @precedence.grammar().parse_default("(1+2)*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) \")\") \"*\" (expression \"3\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "token:(", "enter:expression",
+    "enter:expression", "token:1", "exit:expression", "token:+", "enter:expression",
+    "token:2", "exit:expression", "exit:expression", "token:)", "exit:expression",
+    "token:*", "enter:expression", "token:3", "exit:expression", "exit:expression",
+    "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Precedence 002" {
+  let result = @precedence.grammar().parse_default(" 12 / 3 - 2\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression (expression \"12\") \"/\" (expression \"3\")) \"-\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "enter:expression",
+    "token:12", "exit:expression", "token:/", "enter:expression", "token:3", "exit:expression",
+    "exit:expression", "token:-", "enter:expression", "token:2", "exit:expression",
+    "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Precedence 003" {
+  let result = @precedence.grammar().parse_default("1-2-3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"-\" (expression \"2\")) \"-\" (expression \"3\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "enter:expression",
+    "token:1", "exit:expression", "token:-", "enter:expression", "token:2", "exit:expression",
+    "exit:expression", "token:-", "enter:expression", "token:3", "exit:expression",
+    "exit:expression", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Precedence 004" {
+  let result = @precedence.grammar().parse_default("1/(2+3)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"/\" (expression \"(\" (expression (expression \"2\") \"+\" (expression \"3\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:expression", "enter:expression", "token:1", "exit:expression",
+    "token:/", "enter:expression", "token:(", "enter:expression", "enter:expression",
+    "token:2", "exit:expression", "token:+", "enter:expression", "token:3", "exit:expression",
+    "exit:expression", "token:)", "exit:expression", "exit:expression", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Precedence 005" {
+  let result = @precedence.grammar().parse_default("5")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"5\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 006" {
+  let result = @precedence.grammar().parse_default("((51-(16-13))+71)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"51\") \"-\" (expression \"(\" (expression (expression \"16\") \"-\" (expression \"13\")) \")\")) \")\") \"+\" (expression \"71\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 007" {
+  let result = @precedence.grammar().parse_default("(((79-93)+95)*62)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"79\") \"-\" (expression \"93\")) \")\") \"+\" (expression \"95\")) \")\") \"*\" (expression \"62\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 008" {
+  let result = @precedence.grammar().parse_default("(((54-80)+(90*69))/92)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"54\") \"-\" (expression \"80\")) \")\") \"+\" (expression \"(\" (expression (expression \"90\") \"*\" (expression \"69\")) \")\")) \")\") \"/\" (expression \"92\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 009" {
+  let result = @precedence.grammar().parse_default("(((13*74)/(5/51))-(31+85))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"13\") \"*\" (expression \"74\")) \")\") \"/\" (expression \"(\" (expression (expression \"5\") \"/\" (expression \"51\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"31\") \"+\" (expression \"85\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 010" {
+  let result = @precedence.grammar().parse_default("(((9-95)*(84+58))/28)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"9\") \"-\" (expression \"95\")) \")\") \"*\" (expression \"(\" (expression (expression \"84\") \"+\" (expression \"58\")) \")\")) \")\") \"/\" (expression \"28\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 011" {
+  let result = @precedence.grammar().parse_default("2")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"2\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 012" {
+  let result = @precedence.grammar().parse_default("16")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"16\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 013" {
+  let result = @precedence.grammar().parse_default("31")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"31\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 014" {
+  let result = @precedence.grammar().parse_default("(((77-80)-55)-53)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"77\") \"-\" (expression \"80\")) \")\") \"-\" (expression \"55\")) \")\") \"-\" (expression \"53\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 015" {
+  let result = @precedence.grammar().parse_default(
+    "(((61*44)-(87-98))-((79+14)+43))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"61\") \"*\" (expression \"44\")) \")\") \"-\" (expression \"(\" (expression (expression \"87\") \"-\" (expression \"98\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"79\") \"+\" (expression \"14\")) \")\") \"+\" (expression \"43\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 016" {
+  let result = @precedence.grammar().parse_default("(47/7)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"47\") \"/\" (expression \"7\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 017" {
+  let result = @precedence.grammar().parse_default("5")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"5\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 018" {
+  let result = @precedence.grammar().parse_default("((15+(40*84))/22)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"15\") \"+\" (expression \"(\" (expression (expression \"40\") \"*\" (expression \"84\")) \")\")) \")\") \"/\" (expression \"22\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 019" {
+  let result = @precedence.grammar().parse_default("(89/(8-(20/39)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"89\") \"/\" (expression \"(\" (expression (expression \"8\") \"-\" (expression \"(\" (expression (expression \"20\") \"/\" (expression \"39\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 020" {
+  let result = @precedence.grammar().parse_default(
+    "(((38-72)*(71-1))-((42/49)*4))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"38\") \"-\" (expression \"72\")) \")\") \"*\" (expression \"(\" (expression (expression \"71\") \"-\" (expression \"1\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"42\") \"/\" (expression \"49\")) \")\") \"*\" (expression \"4\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 021" {
+  let result = @precedence.grammar().parse_default("8")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"8\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 022" {
+  let result = @precedence.grammar().parse_default("(((46-77)/63)/(98/(51-3)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"46\") \"-\" (expression \"77\")) \")\") \"/\" (expression \"63\")) \")\") \"/\" (expression \"(\" (expression (expression \"98\") \"/\" (expression \"(\" (expression (expression \"51\") \"-\" (expression \"3\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 023" {
+  let result = @precedence.grammar().parse_default("43")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"43\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 024" {
+  let result = @precedence.grammar().parse_default("((48-72)-13)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"48\") \"-\" (expression \"72\")) \")\") \"-\" (expression \"13\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 025" {
+  let result = @precedence.grammar().parse_default("((59*(95/87))-96)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"59\") \"*\" (expression \"(\" (expression (expression \"95\") \"/\" (expression \"87\")) \")\")) \")\") \"-\" (expression \"96\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 026" {
+  let result = @precedence.grammar().parse_default(
+    "(((86*34)+(27+2))+((26-3)/(97/97)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"86\") \"*\" (expression \"34\")) \")\") \"+\" (expression \"(\" (expression (expression \"27\") \"+\" (expression \"2\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"26\") \"-\" (expression \"3\")) \")\") \"/\" (expression \"(\" (expression (expression \"97\") \"/\" (expression \"97\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 027" {
+  let result = @precedence.grammar().parse_default("41")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"41\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 028" {
+  let result = @precedence.grammar().parse_default("((26+69)-46)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"26\") \"+\" (expression \"69\")) \")\") \"-\" (expression \"46\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 029" {
+  let result = @precedence.grammar().parse_default("(((61/61)*50)+21)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"61\") \"/\" (expression \"61\")) \")\") \"*\" (expression \"50\")) \")\") \"+\" (expression \"21\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 030" {
+  let result = @precedence.grammar().parse_default("6")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"6\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 031" {
+  let result = @precedence.grammar().parse_default("((58+8)/68)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"58\") \"+\" (expression \"8\")) \")\") \"/\" (expression \"68\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 032" {
+  let result = @precedence.grammar().parse_default(
+    "((62-(87-93))*((50*34)-38))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"62\") \"-\" (expression \"(\" (expression (expression \"87\") \"-\" (expression \"93\")) \")\")) \")\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"50\") \"*\" (expression \"34\")) \")\") \"-\" (expression \"38\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 033" {
+  let result = @precedence.grammar().parse_default("13")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"13\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 034" {
+  let result = @precedence.grammar().parse_default("56")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"56\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 035" {
+  let result = @precedence.grammar().parse_default("(65+(81+(44-88)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"65\") \"+\" (expression \"(\" (expression (expression \"81\") \"+\" (expression \"(\" (expression (expression \"44\") \"-\" (expression \"88\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 036" {
+  let result = @precedence.grammar().parse_default(
+    "(((54+54)-44)/(85*(42*14)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"54\") \"+\" (expression \"54\")) \")\") \"-\" (expression \"44\")) \")\") \"/\" (expression \"(\" (expression (expression \"85\") \"*\" (expression \"(\" (expression (expression \"42\") \"*\" (expression \"14\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 037" {
+  let result = @precedence.grammar().parse_default(
+    "(((30-4)/86)-((25*40)-(82*31)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"30\") \"-\" (expression \"4\")) \")\") \"/\" (expression \"86\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"25\") \"*\" (expression \"40\")) \")\") \"-\" (expression \"(\" (expression (expression \"82\") \"*\" (expression \"31\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 038" {
+  let result = @precedence.grammar().parse_default(
+    "((86+(98-69))-((93+28)*(8/68)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"86\") \"+\" (expression \"(\" (expression (expression \"98\") \"-\" (expression \"69\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"93\") \"+\" (expression \"28\")) \")\") \"*\" (expression \"(\" (expression (expression \"8\") \"/\" (expression \"68\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 039" {
+  let result = @precedence.grammar().parse_default("(6/((33/77)*(51-93)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"6\") \"/\" (expression \"(\" (expression (expression \"(\" (expression (expression \"33\") \"/\" (expression \"77\")) \")\") \"*\" (expression \"(\" (expression (expression \"51\") \"-\" (expression \"93\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 040" {
+  let result = @precedence.grammar().parse_default("95")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"95\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 041" {
+  let result = @precedence.grammar().parse_default("10")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"10\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 042" {
+  let result = @precedence.grammar().parse_default("(28-85)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"28\") \"-\" (expression \"85\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 043" {
+  let result = @precedence.grammar().parse_default("20")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"20\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 044" {
+  let result = @precedence.grammar().parse_default("90")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"90\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 045" {
+  let result = @precedence.grammar().parse_default("61")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"61\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 046" {
+  let result = @precedence.grammar().parse_default("(5*((77+17)/(50/14)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"5\") \"*\" (expression \"(\" (expression (expression \"(\" (expression (expression \"77\") \"+\" (expression \"17\")) \")\") \"/\" (expression \"(\" (expression (expression \"50\") \"/\" (expression \"14\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 047" {
+  let result = @precedence.grammar().parse_default("(32-((4-80)/(3/91)))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"32\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"4\") \"-\" (expression \"80\")) \")\") \"/\" (expression \"(\" (expression (expression \"3\") \"/\" (expression \"91\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 048" {
+  let result = @precedence.grammar().parse_default("(24/(30/57))")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"24\") \"/\" (expression \"(\" (expression (expression \"30\") \"/\" (expression \"57\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 049" {
+  let result = @precedence.grammar().parse_default(
+    "(((32-95)-(13/47))+((28*64)/(3+48)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"32\") \"-\" (expression \"95\")) \")\") \"-\" (expression \"(\" (expression (expression \"13\") \"/\" (expression \"47\")) \")\")) \")\") \"+\" (expression \"(\" (expression (expression \"(\" (expression (expression \"28\") \"*\" (expression \"64\")) \")\") \"/\" (expression \"(\" (expression (expression \"3\") \"+\" (expression \"48\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 050" {
+  let result = @precedence.grammar().parse_default(
+    "(((92+51)-(84*60))/(26/(72+68)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"92\") \"+\" (expression \"51\")) \")\") \"-\" (expression \"(\" (expression (expression \"84\") \"*\" (expression \"60\")) \")\")) \")\") \"/\" (expression \"(\" (expression (expression \"26\") \"/\" (expression \"(\" (expression (expression \"72\") \"+\" (expression \"68\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 051" {
+  let result = @precedence.grammar().parse_default("28")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"28\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 052" {
+  let result = @precedence.grammar().parse_default(
+    "(((89*46)/(65-93))-((29+94)+(78*37)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"89\") \"*\" (expression \"46\")) \")\") \"/\" (expression \"(\" (expression (expression \"65\") \"-\" (expression \"93\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"29\") \"+\" (expression \"94\")) \")\") \"+\" (expression \"(\" (expression (expression \"78\") \"*\" (expression \"37\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 053" {
+  let result = @precedence.grammar().parse_default(
+    "(((36*80)+(19-80))-((99-62)-(57/76)))",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"(\" (expression (expression \"(\" (expression (expression \"36\") \"*\" (expression \"80\")) \")\") \"+\" (expression \"(\" (expression (expression \"19\") \"-\" (expression \"80\")) \")\")) \")\") \"-\" (expression \"(\" (expression (expression \"(\" (expression (expression \"99\") \"-\" (expression \"62\")) \")\") \"-\" (expression \"(\" (expression (expression \"57\") \"/\" (expression \"76\")) \")\")) \")\")) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 054" {
+  let result = @precedence.grammar().parse_default("30")
+  assert_eq(result.tree.to_sexpr(), "(document (expression \"30\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 055" {
+  let result = @precedence.grammar().parse_default("")
+  assert_eq(result.tree.to_sexpr(), "(document (expression) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 056" {
+  let result = @precedence.grammar().parse_default("1+")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 057" {
+  let result = @precedence.grammar().parse_default("+1")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (error \"+\") \"1\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(4, "+", 0, 1, 1, 0, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 058" {
+  let result = @precedence.grammar().parse_default("1+*2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (error \"*\") \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "*", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 059" {
+  let result = @precedence.grammar().parse_default("(1+2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression (expression \"1\") \"+\" (expression \"2\")) (error \"<missing ')'>\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(4)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(7, "<missing ')'>", -1, 0, 1, 3, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 060" {
+  let result = @precedence.grammar().parse_default("1 2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \"2\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(8, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 061" {
+  let result = @precedence.grammar().parse_default("1.2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \"2\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(8, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 062" {
+  let result = @precedence.grammar().parse_default("a")
+  assert_eq(result.tree.to_sexpr(), "(document (expression) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 063" {
+  let result = @precedence.grammar().parse_default("1)2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"1\") (error \")\") (error \"2\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(7, ")", 1, 2, 1, 1, 0), (8, "2", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 064" {
+  let result = @precedence.grammar().parse_default("()")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"(\" (expression) \")\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 065" {
+  let result = @precedence.grammar().parse_default("1+2*3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"+\" (expression (expression \"2\") \"*\" (expression \"3\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 066" {
+  let result = @precedence.grammar().parse_default("1*2+3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"*\" (expression \"2\")) \"+\" (expression \"3\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 067" {
+  let result = @precedence.grammar().parse_default("1-2-3")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression (expression \"1\") \"-\" (expression \"2\")) \"-\" (expression \"3\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 068" {
+  let result = @precedence.grammar().parse_default("2^3^4")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"2\") \"^\" (expression (expression \"3\") \"^\" (expression \"4\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 069" {
+  let result = @precedence.grammar().parse_default("2^3*4+5")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression (expression (expression \"2\") \"^\" (expression \"3\")) \"*\" (expression \"4\")) \"+\" (expression \"5\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 070" {
+  let result = @precedence.grammar().parse_default("-1^2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression \"-\" (expression (expression \"1\") \"^\" (expression \"2\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 071" {
+  let result = @precedence.grammar().parse_default("(-1)^2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"(\" (expression \"-\" (expression \"1\")) \")\") \"^\" (expression \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 072" {
+  let result = @precedence.grammar().parse_default("1*-2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"*\" (expression \"-\" (expression \"2\"))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 073" {
+  let result = @precedence.grammar().parse_default("1^(2+3)")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"^\" (expression \"(\" (expression (expression \"2\") \"+\" (expression \"3\")) \")\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Precedence 074" {
+  let result = @precedence.grammar().parse_default("1^^2")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (expression (expression \"1\") \"^\" (expression (error \"^\") \"2\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, "^", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 000" {
+  let result = @csv_grammar.grammar().parse_default("")
+  assert_eq(result.tree.to_sexpr(), "(document (row (field)) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:row", "enter:field", "exit:field", "exit:row", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Csv 001" {
+  let result = @csv_grammar.grammar().parse_default("a,b")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"a\") \",\" (field \"b\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:row", "enter:field", "token:a", "exit:field", "token:,",
+    "enter:field", "token:b", "exit:field", "exit:row", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Csv 002" {
+  let result = @csv_grammar.grammar().parse_default("a,b\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"a\") \",\" (field \"b\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:row", "enter:field", "token:a", "exit:field", "token:,",
+    "enter:field", "token:b", "exit:field", "exit:row", "token:\n", "enter:row",
+    "enter:field", "exit:field", "exit:row", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Csv 003" {
+  let result = @csv_grammar.grammar().parse_default(",")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field) \",\" (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:row", "enter:field", "exit:field", "token:,", "enter:field",
+    "exit:field", "exit:row", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Csv 004" {
+  let result = @csv_grammar.grammar().parse_default(",,")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field) \",\" (field) \",\" (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:row", "enter:field", "exit:field", "token:,", "enter:field",
+    "exit:field", "token:,", "enter:field", "exit:field", "exit:row", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Csv 005" {
+  let result = @csv_grammar.grammar().parse_default("\"a,b\",c")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"a,b\\\"\") \",\" (field \"c\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 006" {
+  let result = @csv_grammar.grammar().parse_default("\"a\"\"b\",x")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"x\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 007" {
+  let result = @csv_grammar.grammar().parse_default("\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field)) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 008" {
+  let result = @csv_grammar.grammar().parse_default("\r\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 009" {
+  let result = @csv_grammar.grammar().parse_default("a,b\r\n1,2\r\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"a\") \",\" (field \"b\")) \"\\r\\n\" (row (field \"1\") \",\" (field \"2\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 010" {
+  let result = @csv_grammar.grammar().parse_default("\"unfinished")
+  assert_eq(result.tree.to_sexpr(), "(document (row (field)) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 011" {
+  let result = @csv_grammar.grammar().parse_default("a,\"b\"x")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"a\") \",\" (field \"\\\"b\\\"\")) (error \"x\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(5)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(4, "x", 5, 6, 1, 5, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 012" {
+  let result = @csv_grammar.grammar().parse_default("a\rb")
+  assert_eq(result.tree.to_sexpr(), "(document (row (field \"a\")) <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(1)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 013" {
+  let result = @csv_grammar.grammar().parse_default("\"a\" \"b\"")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\")) (error \" \") (error \"\\\"b\\\"\"))",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(4, " ", 3, 4, 1, 3, 0), (3, "\"b\"", 4, 7, 1, 4, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 014" {
+  let result = @csv_grammar.grammar().parse_default(
+    ",\"line\nbreak\",中文😀,\"a\"\"b\"\n中文😀,中文😀\n,,alpha,中文😀\n\"a\"\"b\",\"line\nbreak\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field) \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"中文😀\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"中文😀\") \",\" (field \"中文😀\")) \"\\n\" (row (field) \",\" (field) \",\" (field \"alpha\") \",\" (field \"中文😀\")) \"\\n\" (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 015" {
+  let result = @csv_grammar.grammar().parse_default(
+    "alpha\r\n\"with,comma\",,\"a\"\"b\",\r\nalpha\r\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"alpha\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field)) \"\\r\\n\" (row (field \"alpha\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 016" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"with,comma\",\"with,comma\",中文😀\r\n,\"a\"\"b\",中文😀\r\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 017" {
+  let result = @csv_grammar.grammar().parse_default(
+    ",\"a\"\"b\",alpha\n中文😀,,,\"with,comma\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"alpha\")) \"\\n\" (row (field \"中文😀\") \",\" (field) \",\" (field) \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 018" {
+  let result = @csv_grammar.grammar().parse_default(
+    "中文😀,\n\"line\nbreak\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"中文😀\") \",\" (field)) \"\\n\" (row (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 019" {
+  let result = @csv_grammar.grammar().parse_default(
+    ",,\"line\nbreak\",\"a\"\"b\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field) \",\" (field) \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 020" {
+  let result = @csv_grammar.grammar().parse_default("\"line\nbreak\"\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 021" {
+  let result = @csv_grammar.grammar().parse_default("alpha,\r\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"alpha\") \",\" (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 022" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"line\nbreak\",\"with,comma\",中文😀,\r\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 023" {
+  let result = @csv_grammar.grammar().parse_default(
+    "中文😀,,alpha\nalpha,\"a\"\"b\"\n\"with,comma\",\"with,comma\",中文😀,\"with,comma\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"中文😀\") \",\" (field) \",\" (field \"alpha\")) \"\\n\" (row (field \"alpha\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 024" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"with,comma\",\"with,comma\",\"a\"\"b\",\r\n中文😀,,\"a\"\"b\",中文😀\r\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field)) \"\\r\\n\" (row (field \"中文😀\") \",\" (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 025" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"a\"\"b\",alpha,alpha,alpha\nalpha,alpha,alpha\nalpha\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"alpha\") \",\" (field \"alpha\") \",\" (field \"alpha\")) \"\\n\" (row (field \"alpha\") \",\" (field \"alpha\") \",\" (field \"alpha\")) \"\\n\" (row (field \"alpha\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 026" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"a\"\"b\"\n\"with,comma\",\"with,comma\"\nalpha,中文😀,\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field \"alpha\") \",\" (field \"中文😀\") \",\" (field)) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 027" {
+  let result = @csv_grammar.grammar().parse_default(
+    ",\"with,comma\",中文😀,alpha\n,\"with,comma\",,\"a\"\"b\"\n\"line\nbreak\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field) \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field \"alpha\")) \"\\n\" (row (field) \",\" (field \"\\\"with,comma\\\"\") \",\" (field) \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\n\" (row (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 028" {
+  let result = @csv_grammar.grammar().parse_default(
+    "alpha,\"a\"\"b\",alpha\n,\"with,comma\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"alpha\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"alpha\")) \"\\n\" (row (field) \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 029" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"with,comma\",\"line\nbreak\"\n\"\"\n\"with,comma\",\"a\"\"b\",中文😀,\n中文😀,\"line\nbreak\",中文😀\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field \"\\\"\\\"\")) \"\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\") \",\" (field)) \"\\n\" (row (field \"中文😀\") \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"中文😀\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 030" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"with,comma\",alpha,中文😀,\"line\nbreak\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"alpha\") \",\" (field \"中文😀\") \",\" (field \"\\\"line\\nbreak\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 031" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"with,comma\",中文😀,\"a\"\"b\"\r\n\"line\nbreak\"\r\n\"with,comma\",\"line\nbreak\",\"a\"\"b\",\r\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\") \",\" (field \"中文😀\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\r\\n\" (row (field \"\\\"line\\nbreak\\\"\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field)) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 032" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"with,comma\"\n,中文😀,\"with,comma\",\"with,comma\"\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field) \",\" (field \"中文😀\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\")) \"\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Csv 033" {
+  let result = @csv_grammar.grammar().parse_default(
+    "\"a\"\"b\",中文😀\r\n\"with,comma\",\"with,comma\"\r\n\"with,comma\",\"with,comma\",\r\nalpha,\"line\nbreak\",\"a\"\"b\",\"a\"\"b\"\r\n",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (row (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"中文😀\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\")) \"\\r\\n\" (row (field \"\\\"with,comma\\\"\") \",\" (field \"\\\"with,comma\\\"\") \",\" (field)) \"\\r\\n\" (row (field \"alpha\") \",\" (field \"\\\"line\\nbreak\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\") \",\" (field \"\\\"a\\\"\\\"b\\\"\")) \"\\r\\n\" (row (field)) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 000" {
+  let result = @modes.grammar().parse_default("")
+  assert_eq(result.tree.to_sexpr(), "(document <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, ["enter:document", "token:<EOF>", "exit:document"])
+}
+
+///|
+test "Java oracle default recovery Modes 001" {
+  let result = @modes.grammar().parse_default("alpha")
+  assert_eq(result.tree.to_sexpr(), "(document \"alpha\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:alpha", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Modes 002" {
+  let result = @modes.grammar().parse_default("alpha beta")
+  assert_eq(result.tree.to_sexpr(), "(document \"alpha\" \"beta\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:alpha", "token:beta", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Modes 003" {
+  let result = @modes.grammar().parse_default("#hash")
+  assert_eq(result.tree.to_sexpr(), "(document \"#hash\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:#hash", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Modes 004" {
+  let result = @modes.grammar().parse_default("\"hello\"")
+  assert_eq(result.tree.to_sexpr(), "(document \"\\\"hello\\\"\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:\"hello\"", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Modes 005" {
+  let result = @modes.grammar().parse_default("@\"hidden\" visible")
+  assert_eq(result.tree.to_sexpr(), "(document \"visible\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 006" {
+  let result = @modes.grammar().parse_default("//comment\nword")
+  assert_eq(result.tree.to_sexpr(), "(document \"word\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 007" {
+  let result = @modes.grammar().parse_default("\"😀中文\"")
+  assert_eq(result.tree.to_sexpr(), "(document \"\\\"😀中文\\\"\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 008" {
+  let result = @modes.grammar().parse_default("\"a\\\"b\"")
+  assert_eq(result.tree.to_sexpr(), "(document \"\\\"a\\\\\\\"b\\\"\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 009" {
+  let result = @modes.grammar().parse_default("@\"\" #abc")
+  assert_eq(result.tree.to_sexpr(), "(document \"#abc\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 010" {
+  let result = @modes.grammar().parse_default("\"line\ntext\"")
+  assert_eq(result.tree.to_sexpr(), "(document \"\\\"line\\ntext\\\"\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 011" {
+  let result = @modes.grammar().parse_default("\"unterminated")
+  assert_eq(result.tree.to_sexpr(), "(document <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "\"unterminated")
+}
+
+///|
+test "Java oracle default recovery Modes 012" {
+  let result = @modes.grammar().parse_default("\"bad\\")
+  assert_eq(result.tree.to_sexpr(), "(document <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 013" {
+  let result = @modes.grammar().parse_default("#123")
+  assert_eq(result.tree.to_sexpr(), "(document <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+    (Some(1), Some(2)),
+    (Some(1), Some(3)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Modes 014" {
+  let result = @modes.grammar().parse_default("@word")
+  assert_eq(result.tree.to_sexpr(), "(document \"ord\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery NonGreedy 000" {
+  let result = @nongreedy.grammar().parse_default("/* a */ /* b */ word")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document \"/* a */\" \"/* b */\" \"word\" <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:/* a */", "token:/* b */", "token:word", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery NonGreedy 001" {
+  let result = @nongreedy.grammar().parse_default("/*x*/! /*y*/")
+  assert_eq(result.tree.to_sexpr(), "(document \"/*x*/!\" \"/*y*/\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:/*x*/!", "token:/*y*/", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery NonGreedy 002" {
+  let result = @nongreedy.grammar().parse_default("/**//**/")
+  assert_eq(result.tree.to_sexpr(), "(document \"/**/\" \"/**/\" <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:/**/", "token:/**/", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery NonGreedy 003" {
+  let result = @nongreedy.grammar().parse_default("/* unterminated")
+  assert_eq(result.tree.to_sexpr(), "(document <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, ["enter:document", "token:<EOF>", "exit:document"])
+}
+
+///|
+test "Java oracle default recovery NonGreedy 004" {
+  let result = @nongreedy.grammar().parse_default("<ab><cd>word")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document \"<ab>\" \"<cd>\" \"word\" <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "token:<ab>", "token:<cd>", "token:word", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery NonGreedy 005" {
+  let result = @nongreedy.grammar().parse_default("<>")
+  assert_eq(result.tree.to_sexpr(), "(document <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Options 000" {
+  let result = @options.grammar().parse_default("alpha")
+  assert_eq(result.tree.to_sexpr(), "(document (atom \"alpha\") <EOF>)")
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:atom", "token:alpha", "exit:atom", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Options 001" {
+  let result = @options.grammar().parse_default("Alpha,BETA")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (atom \"Alpha\") \",\" (atom \"BETA\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:atom", "token:Alpha", "exit:atom", "token:,", "enter:atom",
+    "token:BETA", "exit:atom", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Options 002" {
+  let result = @options.grammar().parse_default("a,// note\nB")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (atom \"a\") \",\" (atom \"B\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:atom", "token:a", "exit:atom", "token:,", "enter:atom",
+    "token:B", "exit:atom", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Options 003" {
+  let result = @options.grammar().parse_default("// first\nA, b\n")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (atom \"A\") \",\" (atom \"b\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:atom", "token:A", "exit:atom", "token:,", "enter:atom",
+    "token:b", "exit:atom", "token:<EOF>", "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Options 004" {
+  let result = @options.grammar().parse_default("")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (atom (error \"<missing WORD>\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(0)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "<missing WORD>", -1, 0, 1, 0, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+  let events : Array[String] = []
+  let listener : @runtime.RecoveryListener = {
+    enter_rule: name => events.push("enter:" + name),
+    exit_rule: name => events.push("exit:" + name),
+    terminal: token => events.push("token:" + token.text),
+    error: token => events.push("error:" + token.text),
+  }
+  listener.walk(result.tree)
+  @debug.assert_eq(events, [
+    "enter:document", "enter:atom", "error:<missing WORD>", "exit:atom", "token:<EOF>",
+    "exit:document",
+  ])
+}
+
+///|
+test "Java oracle default recovery Options 005" {
+  let result = @options.grammar().parse_default("a b")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (atom \"a\") (error \"b\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "b", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Options 006" {
+  let result = @options.grammar().parse_default("a,")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (atom \"a\") \",\" (atom (error \"<missing WORD>\")) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "<missing WORD>", -1, 0, 1, 1, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
+test "Java oracle default recovery Options 007" {
+  let result = @options.grammar().parse_default("a,,b")
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(document (atom \"a\") \",\" (atom (error \",\") \"b\") <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(2)),
+  ])
+  @debug.assert_eq(
+    result.tree
+    .error_tokens()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(1, ",", 2, 3, 1, 2, 0)],
+  )
+  assert_eq(result.next_token.kind, -1)
+  assert_eq(result.next_token.text, "<EOF>")
+}
+
+///|
 test "Java oracle lexer actions and recovery 000" {
   let offsets : Array[Int32] = []
   let result = @lexactions.grammar().tokenize_recovering("xyz x a", lexer_action=(
@@ -10608,6 +19988,16 @@ test "Java oracle attributes 000" {
   )
   assert_eq(attribute_int(result.frame.unwrap().children[0], "seen"), 1)
   assert_eq(attribute_int(result.frame.unwrap().children[1], "seen"), 1)
+  let committed = @attributes.grammar().parse_default(
+    "2 3",
+    semantics=attribute_bindings(),
+  )
+  assert_true(committed.diagnostics.is_empty())
+  assert_eq(attribute_int(committed.frame.unwrap(), "total"), 16)
+  assert_eq(
+    committed.context.to_tree().to_sexpr(),
+    "(document (number \"2\") (number \"3\") <EOF>)",
+  )
 }
 
 ///|
@@ -10620,6 +20010,16 @@ test "Java oracle attributes 001" {
   )
   assert_eq(attribute_int(result.frame.unwrap().children[0], "seen"), 1)
   assert_eq(attribute_int(result.frame.unwrap().children[1], "seen"), 1)
+  let committed = @attributes.grammar().parse_default(
+    "0 0",
+    semantics=attribute_bindings(),
+  )
+  assert_true(committed.diagnostics.is_empty())
+  assert_eq(attribute_int(committed.frame.unwrap(), "total"), 11)
+  assert_eq(
+    committed.context.to_tree().to_sexpr(),
+    "(document (number \"0\") (number \"0\") <EOF>)",
+  )
 }
 
 ///|
@@ -10635,4 +20035,14 @@ test "Java oracle attributes 002" {
   )
   assert_eq(attribute_int(result.frame.unwrap().children[0], "seen"), 1)
   assert_eq(attribute_int(result.frame.unwrap().children[1], "seen"), 1)
+  let committed = @attributes.grammar().parse_default(
+    "10 20",
+    semantics=attribute_bindings(),
+  )
+  assert_true(committed.diagnostics.is_empty())
+  assert_eq(attribute_int(committed.frame.unwrap(), "total"), 41)
+  assert_eq(
+    committed.context.to_tree().to_sexpr(),
+    "(document (number \"10\") (number \"20\") <EOF>)",
+  )
 }

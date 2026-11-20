@@ -1,7 +1,7 @@
 ///|
 test "SLL conflicts use caller returns and share interned DFA transitions" {
   let report = @decisions.grammar().parse_detailed(
-    "p a x; q a x y; p a x x; p a x; q a y;",
+    "p a x; q a x y; p a x x; p a x; q a y; u;",
   )
   assert_true(report.prediction.decisions > 0)
   assert_true(report.prediction.full_context_fallbacks > 0)

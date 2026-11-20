@@ -12,6 +12,8 @@ pub fn lexer_data() -> Array[Int32]
 
 pub fn parser_action_sites() -> Array[Int32]
 
+pub fn parser_action_sources() -> Array[String]
+
 pub fn parser_data() -> Array[Int32]
 
 // Errors

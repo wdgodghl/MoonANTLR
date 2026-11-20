@@ -5,11 +5,19 @@ pub(all) struct LexActionsListener {
   terminal : (@runtime.Token) -> Unit
   enter_document : (LexActionsDocumentContext) -> Unit
   exit_document : (LexActionsDocumentContext) -> Unit
+  enter_unit : (LexActionsUnitContext) -> Unit
+  exit_unit : (LexActionsUnitContext) -> Unit
 }
 
 ///|
 pub fn LexActionsListener::new() -> LexActionsListener {
-  { terminal: _ => (), enter_document: _ => (), exit_document: _ => (), }
+  {
+    terminal: _ => (),
+    enter_document: _ => (),
+    exit_document: _ => (),
+    enter_unit: _ => (),
+    exit_unit: _ => (),
+  }
 }
 
 ///|
@@ -19,6 +27,7 @@ pub fn LexActionsListener::walk(
 ) -> Unit {
   match node.name {
     "document" => (self.enter_document)(LexActionsDocumentContext::{ node, })
+    "unit" => (self.enter_unit)(LexActionsUnitContext::{ node, })
     _ => ()
   }
   for child in node.children {
@@ -29,6 +38,7 @@ pub fn LexActionsListener::walk(
   }
   match node.name {
     "document" => (self.exit_document)(LexActionsDocumentContext::{ node, })
+    "unit" => (self.exit_unit)(LexActionsUnitContext::{ node, })
     _ => ()
   }
 }

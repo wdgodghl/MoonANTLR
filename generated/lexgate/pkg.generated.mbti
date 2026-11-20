@@ -10,6 +10,8 @@ pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
 
 pub fn lexer_data() -> Array[Int32]
 
+pub fn lexer_rule_names() -> Array[String]
+
 pub fn parser_data() -> Array[Int32]
 
 // Errors

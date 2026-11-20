@@ -108,3 +108,30 @@ test "generated attribute declarations retain arguments returns and locals" {
   assert_eq(declarations[1], (1, "argument", "seed", "int", ""))
   assert_eq(declarations[3], (1, "local", "seen", "int", ""))
 }
+
+///|
+test "generated typed attribute records check the runtime value type" {
+  let parsed = @attributes.grammar().parse_semantic("2 3", attribute_bindings())
+  let root = parsed.frame.unwrap()
+  let result = @attributes.AttributesDocumentContextAttributes::from_frame(root)
+  assert_eq(result.attr_total, Some(16))
+  let first = @attributes.AttributesNumberContextAttributes::from_frame(
+    root.children[0],
+  )
+  assert_eq(first.attr_seed, Some(1))
+  assert_eq(first.attr_value, Some(3))
+  assert_eq(first.attr_seen, Some(1))
+  let invalid : @runtime.RuleFrame = {
+    values: Map([("total", Json::string("bad"))]),
+    shared: Map([]),
+    children: [],
+  }
+  let rejected = try {
+    let _ = @attributes.AttributesDocumentContextAttributes::from_frame(invalid)
+    false
+  } catch {
+    @runtime.InvalidArgument(_) => true
+    _ => false
+  }
+  assert_true(rejected)
+}

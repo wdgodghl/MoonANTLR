@@ -65,7 +65,7 @@ def corpus():
     decisions += ["p a x; q a x y; " * length for length in [2, 4, 8]]
     recursion = ["1[2]", "1[2][3]", "1[2+3]*4", "1[2[3]]+4!", "1!!", "-1!", "1?2:3?4:5", "1?2?3:4:5", "1+2?3:4*5", "(1+2)![3]", "1[", "1?2", "1?2:", "1[2]]", "!1"]
     recursion += arithmetic
-    return {"Stateful": ['""', '"hello" word', '"😀" "x"', "#ignored", "word#tail", "", '"unfinished'], "LexGate": ["if ifs", "if ifs", "if\nif", "if\nif"], "Predicate": ["123", "123", "42", "42"], "NonGreedy": ["/* a */ /* b */ word", "/*x*/! /*y*/", "/**//**/", "/* unterminated", "<ab><cd>word", "<>"], "Recursion": recursion, "Typed": typed, "Decisions": decisions, "Precedence": precedence, "Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
+    return {"Options": ["alpha", "Alpha,BETA", "a,// note\nB", "// first\nA, b\n", "", "a b", "a,", "a,,b"], "Stateful": ['""', '"hello" word', '"😀" "x"', "#ignored", "word#tail", "", '"unfinished'], "LexGate": ["if ifs", "if ifs", "if\nif", "if\nif"], "Predicate": ["123", "123", "42", "42"], "NonGreedy": ["/* a */ /* b */ word", "/*x*/! /*y*/", "/**//**/", "/* unterminated", "<ab><cd>word", "<>"], "Recursion": recursion, "Typed": typed, "Decisions": decisions, "Precedence": precedence, "Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
 
 
 def run(args, **kwargs):
@@ -89,7 +89,7 @@ def main():
         directory = Path(temp)
         sources = []
         for name in corpus():
-            names = [name + "Lexer", name + "Parser"] if name in {"Modes", "Stateful"} else [name]
+            names = [name + "Lexer", name + "Parser"] if name in {"Modes", "Stateful", "Options"} else [name]
             sources.extend(str(ROOT / "grammars" / (n + ".g4")) for n in names)
         sources.extend(str(ROOT / "grammars" / (name + ".g4")) for name in ["LexActions", "ParseActions", "Attributes"])
         run([args.java, "-Dfile.encoding=UTF-8", "-jar", str(jar), "-encoding", "UTF-8", "-Dlanguage=Java", "-Xexact-output-dir", "-lib", str(directory), "-o", str(directory)] + sources)
@@ -105,7 +105,7 @@ def main():
             if len(expected) != len(cases):
                 raise RuntimeError("Oracle output count differs from input count")
             counts[name] = {"cases": len(cases), "accepted": sum(row["accepted"] for row in expected)}
-            alias = {"Stateful": "stateful", "LexGate": "lexgate", "Predicate": "predicate", "NonGreedy": "nongreedy", "Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar", "Precedence": "precedence", "Typed": "typed", "Decisions": "decisions", "Recursion": "recursion"}[name]
+            alias = {"Options": "options", "Stateful": "stateful", "LexGate": "lexgate", "Predicate": "predicate", "NonGreedy": "nongreedy", "Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar", "Precedence": "precedence", "Typed": "typed", "Decisions": "decisions", "Recursion": "recursion"}[name]
             for index, (source, row) in enumerate(zip(cases, expected)):
                 quoted = json.dumps(source, ensure_ascii=False)
                 output += ["///|", f'test "Java oracle {name} {index:03d}" {{', f"  let grammar = @{alias}.grammar()"]
@@ -160,6 +160,75 @@ def main():
                                "  assert_true(rejected)"]
                 output += ["}", ""]
         counts["RulePrefix"] = {"cases": prefix_count, "accepted": prefix_accepted}
+        lazy_count = 0
+        lazy_accepted = 0
+        for name, alias, rule, index, cases in prefix_cases:
+            if rule == "factor":
+                cases = cases + ["1+💥", "1 2💥", "(1+2)*💥"]
+            payload = "".join(base64.b64encode(source.encode()).decode() + "\n" for source in cases)
+            result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar),
+                          "Oracle", name, rule, "lazy"], input=payload, capture_output=True)
+            rows = [json.loads(line) for line in result.stdout.splitlines()]
+            assert len(rows) == len(cases)
+            for case_id, (source, row) in enumerate(zip(cases, rows)):
+                lazy_count += 1
+                output += ["///|", f'test "Java oracle lazy prefix {name} {rule} {case_id:03d}" {{']
+                call = f"@{alias}.grammar().parse_prefix_lazy({json.dumps(source, ensure_ascii=False)}, start_rule={index})"
+                if row["accepted"]:
+                    lazy_accepted += 1
+                    output += [f"  let parsed = {call}",
+                               f"  assert_eq(parsed.parsed.context.to_tree().to_sexpr(), {json.dumps(row['tree'])})",
+                               f"  assert_eq(parsed.next_token.kind, {row['nextKind']})",
+                               f"  assert_eq(parsed.next_token.text, {json.dumps(row['nextText'])})"]
+                else:
+                    output += [f"  let rejected = try {{ let _ = {call}; false }} catch {{ _ => true }}", "  assert_true(rejected)"]
+                output += ["}", ""]
+        counts["LazyRulePrefix"] = {"cases": lazy_count, "accepted": lazy_accepted}
+        default_cases = [
+            ("Json", "json", ["null", "[1,2]", "[1,,2]", "[1 2]", "[1,]", "[", "{\"x\" 1}", "{\"x\":}", "{\"x\":1", "[1,,,2,3]", "true false", ""]),
+            ("Arithmetic", "arithmetic", ["1+2*3", "1+", "(1+2", "1 2", "1+*2", "((1)", "(1))", ""]),
+            ("Typed", "typed", ["x=1;y=2", "x=;y=2", "x=1; = = ; y=2", "x=(1;y=2", "x=1;;y=2", "x=1+;y=2"]),
+            ("ParseActions", "parseactions", ["ab", "ac", "ab ac ab", "expr 1+2+3", "a", "ab a ac", "expr 1+", "expr 1+ ab", "ab ac a"]),
+        ]
+        for name, alias in [("Json", "json"), ("Arithmetic", "arithmetic"), ("Typed", "typed"),
+                            ("Decisions", "decisions"), ("Recursion", "recursion"),
+                            ("Precedence", "precedence"), ("Csv", "csv_grammar"), ("Modes", "modes"), ("NonGreedy", "nongreedy"), ("Options", "options")]:
+            previous = next((cases for grammar, _, cases in default_cases if grammar == name), None)
+            if previous is None:
+                default_cases.append((name, alias, corpus()[name]))
+            else:
+                previous.extend(source for source in corpus()[name] if source not in previous)
+        default_count = 0
+        for name, alias, cases in default_cases:
+            payload = "".join(base64.b64encode(source.encode()).decode() + "\n" for source in cases)
+            result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar),
+                          "Oracle", name, "document", "default"], input=payload, capture_output=True)
+            rows = [json.loads(line) for line in result.stdout.splitlines()]
+            assert len(rows) == len(cases)
+            for index, (source, row) in enumerate(zip(cases, rows)):
+                default_count += 1
+                positions = ", ".join(f"(Some({line}), Some({column}))" for line, column in row["parserErrors"])
+                errors = ", ".join("(" + ", ".join(json.dumps(v, ensure_ascii=False) for v in token) + ")" for token in row["errorTokens"])
+                output += ["///|", f'test "Java oracle default recovery {name} {index:03d}" {{']
+                if name == "ParseActions":
+                    output += ["  let offsets : Array[Int] = []",
+                               f"  let result = @{alias}.grammar().parse_default({json.dumps(source, ensure_ascii=False)}, parser_action=event => offsets.push(event.next_token.start))",
+                               f"  @debug.assert_eq(offsets, {row['offsets']})"]
+                else:
+                    output += [f"  let result = @{alias}.grammar().parse_default({json.dumps(source, ensure_ascii=False)})"]
+                output += [
+                           f"  assert_eq(result.tree.to_sexpr(), {json.dumps(row['tree'], ensure_ascii=False)})",
+                           f"  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [{positions}])",
+                           f"  @debug.assert_eq(result.tree.error_tokens().map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)), [{errors}])",
+                           f"  assert_eq(result.next_token.kind, {row['nextKind']})",
+                           f"  assert_eq(result.next_token.text, {json.dumps(row['nextText'], ensure_ascii=False)})"]
+                if index < 5:
+                    output += ["  let events : Array[String] = []",
+                               '  let listener : @runtime.RecoveryListener = { enter_rule: name => events.push("enter:" + name), exit_rule: name => events.push("exit:" + name), terminal: token => events.push("token:" + token.text), error: token => events.push("error:" + token.text) }',
+                               "  listener.walk(result.tree)",
+                               f"  @debug.assert_eq(events, {json.dumps(row['events'], ensure_ascii=False)})"]
+                output += ["}", ""]
+        counts["DefaultRecovery"] = {"cases": default_count}
         lex_cases = ["xyz x a", "xya", "xy?b", "xy", "a💥b", "a\n?b", "?xyz", "mn?b", "mn", "", "a", " "]
         payload = "".join(base64.b64encode(source.encode()).decode() + "\n" for source in lex_cases)
         result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar),
@@ -209,6 +278,10 @@ def main():
                        f"  assert_eq(result.context.to_tree().to_sexpr(), {json.dumps(row['tree'])})",
                        "  assert_eq(attribute_int(result.frame.unwrap().children[0], \"seen\"), 1)",
                        "  assert_eq(attribute_int(result.frame.unwrap().children[1], \"seen\"), 1)",
+                       f"  let committed = @attributes.grammar().parse_default({json.dumps(source)}, semantics=attribute_bindings())",
+                       "  assert_true(committed.diagnostics.is_empty())",
+                       f"  assert_eq(attribute_int(committed.frame.unwrap(), \"total\"), {row['total']})",
+                       f"  assert_eq(committed.context.to_tree().to_sexpr(), {json.dumps(row['tree'])})",
                        "}", ""]
         counts["Attributes"] = {"cases": len(rows), "accepted": len(rows)}
     (ROOT / "tests" / "oracle_test.mbt").write_text("\n".join(output), encoding="utf-8", newline="\n")

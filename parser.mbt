@@ -43,7 +43,8 @@ priv struct ParseContext {
   mut partial_pos : Int32
   atn : Atn
   rules : Array[String]
-  tokens : Array[Token]
+  tokens : ParserInput
+  source_tokens : Array[Token]
   predictor : Predictor
   budget : Budget
   cache : Map[(Int32, Int32, Int32, Int32), Array[Outcome]]
@@ -88,9 +89,7 @@ fn parse_rule(
   outer : Int32,
   seed? : RuleFrame,
 ) -> Array[Outcome] raise RuntimeError {
-  if depth > 128 {
-    raise LimitExceeded("parser rule nesting exceeds 128")
-  }
+  ctx.budget.tick()
   let key = (rule, pos, precedence, outer)
   if ctx.semantics is None {
     match ctx.cache.get(key) {
@@ -134,6 +133,10 @@ fn parse_rule(
         frame: cfg.frame,
         actions: cfg.actions,
       })
+      if ctx.tokens.lexer is Some(_) {
+        ctx.active[key] = false
+        return results
+      }
       continue
     }
     let stamp = (cfg.state, cfg.pos)
@@ -142,12 +145,14 @@ fn parse_rule(
     }
     let visited = cfg.visited.copy()
     visited.push(stamp)
+    let next_token = ctx.tokens.token(cfg.pos)
     let semantic_event = cfg.frame.map(frame => SemanticEvent::{
       rule,
       site: cfg.state,
       context: cfg.context,
-      next_token: ctx.tokens[cfg.pos.min(ctx.tokens.length() - 1)],
+      next_token,
       frame: frame.snapshot(),
+      tokens: ctx.source_tokens,
     })
     let predicted = if ctx.predicting && state.edges.length() > 1 {
       ctx.predictor.predict(
@@ -177,14 +182,15 @@ fn parse_rule(
               work.push({ ..cfg, state: edge.target, visited, })
             }
           } else if ctx.predicate is Some(check) {
-            let token = ctx.tokens[cfg.pos.min(ctx.tokens.length() - 1)]
+            let token = ctx.tokens.token(cfg.pos)
             if check(edge.a, edge.b, token) {
               work.push({ ..cfg, state: edge.target, visited, })
             }
           }
         1 => {
-          let context = if ctx.atn.is_precedence_decision(cfg.state) &&
-            ctx.atn.states[edge.target].kind != 12 {
+          let recursive_iteration = ctx.atn.is_precedence_decision(cfg.state) &&
+            ctx.atn.states[edge.target].kind != 12
+          let context = if recursive_iteration {
             {
               name: ctx.rules[rule],
               children: [RuleChild(cfg.context)],
@@ -194,7 +200,15 @@ fn parse_rule(
           } else {
             cfg.context
           }
-          work.push({ ..cfg, state: edge.target, context, visited, })
+          let frame = if recursive_iteration {
+            cfg.frame.map(frame => {
+              ..frame.snapshot(),
+              children: [frame.snapshot()],
+            })
+          } else {
+            cfg.frame
+          }
+          work.push({ ..cfg, state: edge.target, context, visited, frame, })
         }
         6 => {
           let frame = match
@@ -212,7 +226,7 @@ fn parse_rule(
             actions.push({
               rule,
               action,
-              next_token: ctx.tokens[cfg.pos.min(ctx.tokens.length() - 1)],
+              next_token: ctx.tokens.token(cfg.pos),
               context: cfg.context,
             })
             actions
@@ -277,10 +291,9 @@ fn parse_rule(
           }
         }
         2 | 5 | 7 | 8 | 9 =>
-          if cfg.pos < ctx.tokens.length() &&
-            ctx.atn.matches(edge, ctx.tokens[cfg.pos].kind) {
+          if ctx.atn.matches(edge, ctx.tokens.token(cfg.pos).kind) {
             let context = cfg.context.append(
-              TokenChild(ctx.tokens[cfg.pos]),
+              TokenChild(ctx.tokens.token(cfg.pos)),
               cfg.state,
             )
             work.push({
@@ -376,6 +389,8 @@ fn Grammar::parse_tokens(
   parser_action? : ParserAction,
   semantics? : RuleSemantics,
   initial_frame? : RuleFrame,
+  source_tokens? : Array[Token],
+  cursor? : LexerCursor,
 ) -> PrefixResult raise RuntimeError {
   if self.parser.kind != 1 {
     raise InvalidAtn("parser ATN expected")
@@ -391,6 +406,15 @@ fn Grammar::parse_tokens(
   if start_rule < 0 || start_rule >= self.rules.length() {
     raise InvalidAtn("unknown start rule")
   }
+  let input : ParserInput = {
+    visible: tokens,
+    original: if cursor is Some(_) {
+      []
+    } else {
+      source_tokens.unwrap_or(tokens)
+    },
+    lexer: cursor,
+  }
   let predictor = Predictor::new(self.parser, budget)
   let ctx : ParseContext = {
     predicting: predicate is None && semantics is None,
@@ -402,7 +426,8 @@ fn Grammar::parse_tokens(
     predictor,
     atn: self.parser,
     rules: self.rules,
-    tokens,
+    tokens: input,
+    source_tokens: input.original,
     budget,
     cache: Map([]),
     active: Map([]),
@@ -412,9 +437,14 @@ fn Grammar::parse_tokens(
   let outcomes = parse_rule(ctx, start_rule, 0, 0, 0, 0, seed?=initial_frame)
   // Revisit rejected input without pruning so expected-token diagnostics still
   // refer to the furthest syntactic failure, not an earlier prediction exit.
-  let outcomes = if outcomes.any(outcome => {
-      !complete || outcome.pos >= tokens.length() - 1
-    }) {
+  let mut has_accepted = false
+  for outcome in outcomes {
+    if !complete || input.token(outcome.pos).kind == -1 {
+      has_accepted = true
+      break
+    }
+  }
+  let outcomes = if has_accepted {
     outcomes
   } else if complete && ctx.predicting {
     ctx.predicting = false
@@ -425,14 +455,14 @@ fn Grammar::parse_tokens(
     outcomes
   }
   for outcome in outcomes {
-    if !complete || outcome.pos >= tokens.length() - 1 {
+    if !complete || input.token(outcome.pos).kind == -1 {
       if parser_action is Some(execute) {
         for event in outcome.actions {
           execute(event)
         }
       }
       return {
-        next_token: tokens[outcome.pos.min(tokens.length() - 1)],
+        next_token: input.token(outcome.pos),
         parsed: {
           context: outcome.context,
           frame: outcome.frame,
@@ -450,8 +480,8 @@ fn Grammar::parse_tokens(
   }
   let expected : Array[Int32] = ctx.expected.keys().collect()
   expected.sort()
-  let index = ctx.furthest.min(tokens.length() - 1)
-  raise SyntaxError(tokens[index].line, tokens[index].column, expected)
+  let token = input.token(ctx.furthest)
+  raise SyntaxError(token.line, token.column, expected)
 }
 
 ///|

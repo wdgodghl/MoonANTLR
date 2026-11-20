@@ -133,10 +133,39 @@ public final class MoonBitTarget extends JavaTarget {
             .map(ActionSite::state).toList();
     }
 
+    private void emitTypedAttributes(Grammar grammar, Rule rule, StringBuilder out) {
+        List<Attribute> attributes = new ArrayList<>();
+        for (AttributeDict dict : new AttributeDict[]{rule.args, rule.retvals, rule.locals})
+            if (dict != null) attributes.addAll(dict.attributes.values());
+        if (attributes.isEmpty()) return;
+        String name = type(grammar, rule.name) + "Attributes";
+        StringBuilder fields = new StringBuilder(), reads = new StringBuilder();
+        for (Attribute attribute : attributes) {
+            String original = attribute.type == null ? "" : attribute.type;
+            String target = "Json", getter = null;
+            switch (original) {
+                case "int", "Integer", "Int", "Int32": target = "Int"; getter = "int_value"; break;
+                case "boolean", "Boolean", "Bool": target = "Bool"; getter = "bool_value"; break;
+                case "String", "string": target = "String"; getter = "string_value"; break;
+                case "double", "Double", "float": target = "Double"; getter = "double_value"; break;
+            }
+            fields.append("attr_").append(attribute.name).append(" : ").append(target).append("?\n");
+            reads.append("attr_").append(attribute.name).append(": frame.")
+                .append(getter == null ? "values.get" : getter).append('(').append(q(attribute.name)).append("),\n");
+        }
+        block(out, "pub(all) struct " + name + " { " + fields + " }");
+        boolean checked = attributes.stream().anyMatch(attribute -> Set.of(
+            "int", "Integer", "Int", "Int32", "boolean", "Boolean", "Bool", "String", "string",
+            "double", "Double", "float").contains(attribute.type == null ? "" : attribute.type));
+        block(out, "pub fn " + name + "::from_frame(frame : @runtime.RuleFrame) -> " + name +
+            (checked ? " raise @runtime.RuntimeError" : "") + " { {" + reads + "} }");
+    }
+
     private void emitAttributeMetadata(Grammar grammar, StringBuilder out) {
         List<String> declarations = new ArrayList<>();
         List<String> calls = new ArrayList<>();
         for (Rule rule : grammar.rules.values()) {
+            emitTypedAttributes(grammar, rule, out);
             AttributeDict[] dictionaries = {rule.args, rule.retvals, rule.locals};
             String[] roles = {"argument", "return", "local"};
             for (int i = 0; i < dictionaries.length; i++) {
@@ -165,12 +194,26 @@ public final class MoonBitTarget extends JavaTarget {
         }
     }
 
+    private static String atnData(Grammar grammar) {
+        int[] data = ATNSerializer.getSerialized(grammar.atn).toArray();
+        StringBuilder result = new StringBuilder("[\n");
+        for (int i = 0; i < data.length; i++) {
+            result.append(data[i]).append(',');
+            result.append((i + 1) % 32 == 0 ? "\n" : " ");
+        }
+        return result.append("\n]").toString();
+    }
+
     private void emitRecognizer(Grammar g, StringBuilder out) {
-        String data = Arrays.toString(ATNSerializer.getSerialized(g.atn).toArray());
+        String data = atnData(g);
         String recognizer = g.getRecognizerName();
         if (g.isLexer()) {
             boolean predicates = hasPredicates(g);
             boolean actions = hasLexerActions(g);
+            if (actions || predicates) {
+                List<String> lexerRules = Arrays.stream(g.getRuleNames()).map(MoonBitTarget::q).toList();
+                block(out, "pub fn lexer_rule_names() -> Array[String] { " + lexerRules + " }");
+            }
             block(out, "pub fn lexer_data() -> Array[Int] { " + data + " }");
             block(out, "pub struct " + recognizer + " { atn : @runtime.Atn }");
             block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { { atn: @runtime.deserialize(lexer_data()) } }");
@@ -179,6 +222,13 @@ public final class MoonBitTarget extends JavaTarget {
         }
         emitAttributeMetadata(g, out);
         List<Integer> parserActions = parserActionStates(g);
+        if (!parserActions.isEmpty()) {
+            Map<Integer,String> sources = new HashMap<>();
+            for (Rule rule : g.rules.values()) for (GrammarAST action : atnActions(rule.ast))
+                sources.put(action.atnState.stateNumber, action.getText());
+            List<String> bodies = parserActions.stream().map(site -> q(sources.getOrDefault(site, ""))).toList();
+            block(out, "pub fn parser_action_sources() -> Array[String] { " + bodies + " }");
+        }
         String actionBinding = parserActions.isEmpty() ? "" : ".with_parser_action_sites(parser_action_sites())";
         if (!parserActions.isEmpty()) block(out, "pub fn parser_action_sites() -> Array[Int] { " + parserActions + " }");
         block(out, "pub fn parser_data() -> Array[Int] { " + data + " }");

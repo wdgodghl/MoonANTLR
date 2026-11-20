@@ -2,6 +2,10 @@
   "upstream": "ANTLR 4.13.2 Java target",
   "seed": 20261105,
   "grammars": {
+    "Options": {
+      "cases": 8,
+      "accepted": 4
+    },
     "Stateful": {
       "cases": 7,
       "accepted": 7
@@ -53,6 +57,13 @@
     "RulePrefix": {
       "cases": 14,
       "accepted": 9
+    },
+    "LazyRulePrefix": {
+      "cases": 17,
+      "accepted": 12
+    },
+    "DefaultRecovery": {
+      "cases": 434
     },
     "LexerActionsAndRecovery": {
       "cases": 12,

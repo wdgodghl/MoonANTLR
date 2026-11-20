@@ -1,4 +1,5 @@
 import {
+  "wdgodghl/moonantlr/generated/options",
   "wdgodghl/moonantlr/generated/attributes",
   "wdgodghl/moonantlr/generated/stateful",
   "wdgodghl/moonantlr/generated/parseactions",

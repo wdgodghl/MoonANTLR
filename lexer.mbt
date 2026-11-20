@@ -3,7 +3,7 @@
 pub type LexerPredicate = (Int32, Int32, Int32, String) -> Bool
 
 ///|
-priv struct Budget {
+struct Budget {
   mut remaining : Int32
 }
 
@@ -202,9 +202,6 @@ fn lex_match(
           }
         1 => work.push({ ..cfg, state: edge.target, })
         3 => {
-          if cfg.returns.length() >= 64 {
-            raise LimitExceeded("lexer rule nesting exceeds 64")
-          }
           let returns = cfg.returns.copy()
           returns.push(edge.target)
           work.push({ ..cfg, state: edge.a, returns, })
@@ -262,6 +259,306 @@ pub fn Atn::tokenize_recovering(
 }
 
 ///|
+/// A demand-driven Lexer. Actions and diagnostics occur only when requested.
+pub struct LexerCursor {
+  atn : Atn
+  source : String
+  chars : Array[Char]
+  budget : Budget
+  lexer_predicate : LexerPredicate?
+  lexer_action : LexerAction?
+  recover : Bool
+  errors : Array[RuntimeError]
+  modes : Array[Int32]
+  mut mode : Int32
+  mut pos : Int32
+  mut line : Int32
+  mut column : Int32
+  mut token_start : Int32
+  mut token_line : Int32
+  mut token_column : Int32
+  mut continuing : Bool
+  mut channel : Int32
+  mut text : String?
+  mut first : Bool
+  mut done : Bool
+  mut eof : Token?
+}
+
+///|
+pub fn Atn::lexer_cursor(
+  self : Atn,
+  source : String,
+  work_limit~ : Int32 = 1_000_000,
+  lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
+  recover~ : Bool = false,
+) -> LexerCursor raise RuntimeError {
+  if self.kind != 0 {
+    raise InvalidAtn("lexer ATN expected")
+  }
+  self.validate_supported(
+    predicates=lexer_predicate is Some(_),
+    custom_lexer_actions=lexer_action is Some(_),
+  )
+  {
+    atn: self,
+    source,
+    chars: source.to_array(),
+    budget: { remaining: work_limit, },
+    lexer_predicate,
+    lexer_action,
+    recover,
+    errors: [],
+    modes: [],
+    mode: 0,
+    pos: 0,
+    line: 1,
+    column: 0,
+    token_start: 0,
+    token_line: 1,
+    token_column: 0,
+    continuing: false,
+    channel: 0,
+    text: None,
+    first: true,
+    done: false,
+    eof: None,
+  }
+}
+
+///|
+pub fn Grammar::lexer_cursor(
+  self : Grammar,
+  source : String,
+  work_limit~ : Int32 = 1_000_000,
+  lexer_predicate? : LexerPredicate,
+  lexer_action? : LexerAction,
+  recover~ : Bool = false,
+) -> LexerCursor raise RuntimeError {
+  self.lexer.lexer_cursor(
+    source,
+    work_limit~,
+    lexer_predicate?,
+    lexer_action?,
+    recover~,
+  )
+}
+
+///|
+/// Diagnostics accumulated by tokens requested so far.
+pub fn LexerCursor::diagnostics(self : LexerCursor) -> Array[RuntimeError] {
+  self.errors.copy()
+}
+
+///|
+/// Repeated EOF requests return the same Token without executing actions again.
+pub fn LexerCursor::next_token(self : LexerCursor) -> Token raise RuntimeError {
+  if self.eof is Some(token) {
+    return token
+  }
+  let token = self.advance()
+  if self.done {
+    self.eof = Some(token)
+  }
+  token
+}
+
+///|
+fn LexerCursor::advance(self : LexerCursor) -> Token raise RuntimeError {
+  while self.first || self.pos < self.chars.length() || self.continuing {
+    self.first = false
+    if !self.continuing {
+      self.token_start = self.pos
+      self.token_line = self.line
+      self.token_column = self.column
+      self.channel = 0
+      self.text = None
+    }
+    let (candidate, farthest) = lex_match(
+      self.atn,
+      self.chars,
+      self.pos,
+      self.mode,
+      self.budget,
+      self.source,
+      self.lexer_predicate,
+    )
+    let accepted = match candidate {
+      Some(cfg) => cfg
+      None => {
+        if self.pos == self.chars.length() {
+          break
+        }
+        if !self.recover {
+          raise LexicalError(
+            self.line,
+            self.column,
+            "no lexer rule matches input",
+          )
+        }
+        self.errors.push(
+          LexicalError(
+            self.token_line,
+            self.token_column,
+            "no lexer rule matches input",
+          ),
+        )
+        // ANTLR reports the start of the token attempt and discards the
+        // partial match together with the offending scalar, unless at EOF.
+        let end = (farthest + 1).min(self.chars.length())
+        for i in self.pos..<end {
+          if self.chars[i] == '\n' {
+            self.line += 1
+            self.column = 0
+          } else {
+            self.column += 1
+          }
+        }
+        self.pos = end
+        self.continuing = false
+        continue
+      }
+    }
+    if accepted.pos == self.pos && !accepted.matched_eof {
+      raise Unsupported("zero-width lexer token")
+    }
+    let mut emission = Emit(self.atn.token_types[accepted.root])
+    for (index, offset) in accepted.actions {
+      let (action, argument, action_index) = self.atn.actions[index]
+      match action {
+        0 => self.channel = argument
+        1 =>
+          if self.lexer_action is Some(execute) {
+            let event : LexerActionEvent = {
+              rule: argument,
+              action: action_index,
+              token_start: self.token_start,
+              offset,
+              token_end: accepted.pos,
+              emission,
+              channel: self.channel,
+              text: self.text,
+              mode: self.mode,
+              mode_stack: self.modes.copy(),
+            }
+            execute(event, self.source)
+            emission = event.emission
+            self.channel = event.channel
+            self.text = event.text
+            if event.mode < 0 ||
+              event.mode >= self.atn.modes.length() ||
+              event.mode_stack.any(value => {
+                value < 0 || value >= self.atn.modes.length()
+              }) {
+              raise InvalidArgument("custom lexer action selected unknown mode")
+            }
+            self.mode = event.mode
+            self.modes.clear()
+            for value in event.mode_stack {
+              self.modes.push(value)
+            }
+          }
+        2 => self.mode = argument
+        3 => emission = More
+        4 =>
+          self.mode = match self.modes.pop() {
+            Some(previous) => previous
+            None =>
+              raise LexicalError(
+                self.token_line,
+                self.token_column,
+                "lexer mode stack underflow",
+              )
+          }
+        5 => {
+          self.modes.push(self.mode)
+          self.mode = argument
+        }
+        6 => emission = Skip
+        7 => emission = Emit(argument)
+        _ => raise Unsupported("custom lexer action")
+      }
+    }
+    for i in self.pos..<accepted.pos {
+      if self.chars[i] == '\n' {
+        self.line += 1
+        self.column = 0
+      } else {
+        self.column += 1
+      }
+    }
+    self.pos = accepted.pos
+    if self.mode < 0 || self.mode >= self.atn.modes.length() {
+      raise InvalidAtn("lexer action selected unknown mode")
+    }
+    self.continuing = emission is More
+    if emission is Emit(kind) {
+      if (kind <= 0 && kind != -1) ||
+        kind > self.atn.max_token ||
+        self.channel < 0 {
+        raise InvalidAtn("invalid emitted token type or channel")
+      }
+      let token : Token = {
+        kind,
+        text: match self.text {
+          Some(replacement) => replacement
+          None =>
+            if self.token_start == self.chars.length() {
+              "<EOF>"
+            } else {
+              String::from_array(self.chars[self.token_start:self.pos])
+            }
+        },
+        start: self.token_start,
+        end: self.pos,
+        line: self.token_line,
+        column: self.token_column,
+        channel: self.channel,
+      }
+      if kind == -1 {
+        self.done = true
+      }
+      return token
+    }
+  }
+  let token : Token = {
+    kind: -1,
+    text: if self.continuing {
+      match self.text {
+        Some(replacement) => replacement
+        None => String::from_array(self.chars[self.token_start:self.pos])
+      }
+    } else {
+      "<EOF>"
+    },
+    start: if self.continuing {
+      self.token_start
+    } else {
+      self.pos
+    },
+    end: self.pos,
+    line: if self.continuing {
+      self.token_line
+    } else {
+      self.line
+    },
+    column: if self.continuing {
+      self.token_column
+    } else {
+      self.column
+    },
+    channel: if self.continuing {
+      self.channel
+    } else {
+      0
+    },
+  }
+  self.done = true
+  token
+}
+
+///|
 fn Atn::lex(
   self : Atn,
   source : String,
@@ -270,199 +567,22 @@ fn Atn::lex(
   lexer_action : LexerAction?,
   recover : Bool,
 ) -> LexResult raise RuntimeError {
-  if self.kind != 0 {
-    raise InvalidAtn("lexer ATN expected")
-  }
-  self.validate_supported(
-    predicates=lexer_predicate is Some(_),
-    custom_lexer_actions=lexer_action is Some(_),
+  let cursor = self.lexer_cursor(
+    source,
+    work_limit~,
+    lexer_predicate?,
+    lexer_action?,
+    recover~,
   )
-  let budget = Budget::{ remaining: work_limit, }
-  let chars = source.to_array()
   let tokens : Array[Token] = []
-  let errors : Array[RuntimeError] = []
-  let modes : Array[Int32] = []
-  let mut mode = 0
-  let mut pos = 0
-  let mut line = 1
-  let mut column = 0
-  let mut token_start = 0
-  let mut token_line = 1
-  let mut token_column = 0
-  let mut continuing = false
-  let mut channel = 0
-  let mut text : String? = None
-  let mut first = true
-  while first || pos < chars.length() || continuing {
-    first = false
-    if !continuing {
-      token_start = pos
-      token_line = line
-      token_column = column
-      channel = 0
-      text = None
-    }
-    let (candidate, farthest) = lex_match(
-      self, chars, pos, mode, budget, source, lexer_predicate,
-    )
-    let accepted = match candidate {
-      Some(cfg) => cfg
-      None => {
-        if pos == chars.length() {
-          break
-        }
-        if !recover {
-          raise LexicalError(line, column, "no lexer rule matches input")
-        }
-        errors.push(
-          LexicalError(token_line, token_column, "no lexer rule matches input"),
-        )
-        // ANTLR reports the start of the token attempt and discards the
-        // partial match together with the offending scalar, unless at EOF.
-        let end = (farthest + 1).min(chars.length())
-        for i in pos..<end {
-          if chars[i] == '\n' {
-            line += 1
-            column = 0
-          } else {
-            column += 1
-          }
-        }
-        pos = end
-        continuing = false
-        continue
-      }
-    }
-    if accepted.pos == pos && !accepted.matched_eof {
-      raise Unsupported("zero-width lexer token")
-    }
-    let mut emission = Emit(self.token_types[accepted.root])
-    for (index, offset) in accepted.actions {
-      let (action, argument, action_index) = self.actions[index]
-      match action {
-        0 => channel = argument
-        1 =>
-          if lexer_action is Some(execute) {
-            let event : LexerActionEvent = {
-              rule: argument,
-              action: action_index,
-              token_start,
-              offset,
-              token_end: accepted.pos,
-              emission,
-              channel,
-              text,
-              mode,
-              mode_stack: modes.copy(),
-            }
-            execute(event, source)
-            emission = event.emission
-            channel = event.channel
-            text = event.text
-            if event.mode < 0 ||
-              event.mode >= self.modes.length() ||
-              event.mode_stack.any(value => {
-                value < 0 || value >= self.modes.length()
-              }) {
-              raise InvalidArgument("custom lexer action selected unknown mode")
-            }
-            mode = event.mode
-            modes.clear()
-            for value in event.mode_stack {
-              modes.push(value)
-            }
-          }
-        2 => mode = argument
-        3 => emission = More
-        4 =>
-          mode = match modes.pop() {
-            Some(previous) => previous
-            None =>
-              raise LexicalError(
-                token_line, token_column, "lexer mode stack underflow",
-              )
-          }
-        5 => {
-          modes.push(mode)
-          mode = argument
-        }
-        6 => emission = Skip
-        7 => emission = Emit(argument)
-        _ => raise Unsupported("custom lexer action")
-      }
-    }
-    for i in pos..<accepted.pos {
-      if chars[i] == '\n' {
-        line += 1
-        column = 0
-      } else {
-        column += 1
-      }
-    }
-    pos = accepted.pos
-    if mode < 0 || mode >= self.modes.length() {
-      raise InvalidAtn("lexer action selected unknown mode")
-    }
-    continuing = emission is More
-    if emission is Emit(kind) {
-      if (kind <= 0 && kind != -1) || kind > self.max_token || channel < 0 {
-        raise InvalidAtn("invalid emitted token type or channel")
-      }
-      tokens.push({
-        kind,
-        text: match text {
-          Some(replacement) => replacement
-          None =>
-            if token_start == chars.length() {
-              "<EOF>"
-            } else {
-              String::from_array(chars[token_start:pos])
-            }
-        },
-        start: token_start,
-        end: pos,
-        line: token_line,
-        column: token_column,
-        channel,
-      })
-      if kind == -1 {
-        return { tokens, errors, }
-      }
+  while true {
+    let token = cursor.next_token()
+    tokens.push(token)
+    if token.kind == -1 {
+      break
     }
   }
-  tokens.push({
-    kind: -1,
-    text: if continuing {
-      match text {
-        Some(replacement) => replacement
-        None => String::from_array(chars[token_start:pos])
-      }
-    } else {
-      "<EOF>"
-    },
-    start: if continuing {
-      token_start
-    } else {
-      pos
-    },
-    end: pos,
-    line: if continuing {
-      token_line
-    } else {
-      line
-    },
-    column: if continuing {
-      token_column
-    } else {
-      column
-    },
-    channel: if continuing {
-      channel
-    } else {
-      0
-    },
-  })
-  { tokens, errors, }
+  { tokens, errors: cursor.diagnostics(), }
 }
 
 ///|

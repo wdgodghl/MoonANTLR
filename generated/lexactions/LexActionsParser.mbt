@@ -3,10 +3,12 @@
 ///|
 pub fn parser_data() -> Array[Int32] {
   [
-    4, 1, 7, 11, 2, 0, 7, 0, 1, 0, 5, 0, 4, 8, 0, 10, 0, 12, 0, 7, 9, 0, 1, 0, 1,
-    0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 6, 10, 0, 5, 1, 0, 0, 0, 2, 4, 7, 0, 0, 0,
-    3, 2, 1, 0, 0, 0, 4, 7, 1, 0, 0, 0, 5, 3, 1, 0, 0, 0, 5, 6, 1, 0, 0, 0, 6, 8,
-    1, 0, 0, 0, 7, 5, 1, 0, 0, 0, 8, 9, 5, 0, 0, 1, 9, 1, 1, 0, 0, 0, 1, 5,
+    4, 1, 7, 15, 2, 0, 7, 0, 2, 1, 7, 1, 1, 0, 5, 0, 6, 8, 0, 10, 0, 12, 0, 9, 9,
+    0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 2, 0, 1, 1, 0, 1, 6, 13, 0, 7, 1,
+    0, 0, 0, 2, 12, 1, 0, 0, 0, 4, 6, 7, 0, 0, 0, 5, 4, 1, 0, 0, 0, 6, 9, 1, 0, 0,
+    0, 7, 5, 1, 0, 0, 0, 7, 8, 1, 0, 0, 0, 8, 10, 1, 0, 0, 0, 9, 7, 1, 0, 0, 0, 10,
+    11, 5, 0, 0, 1, 11, 1, 1, 0, 0, 0, 12, 13, 5, 1, 0, 0, 13, 3, 1, 0, 0, 0, 1,
+    7,
   ]
 }
 
@@ -15,7 +17,7 @@ pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
   {
     lexer: @runtime.deserialize(lexer_data()),
     parser: @runtime.deserialize(parser_data()),
-    rules: ["document"],
+    rules: ["document", "unit"],
     vocabulary: ["0", "LONG", "'x'", "'a'", "'b'", "C", "END", "WS"],
   }
 }
@@ -110,6 +112,49 @@ pub fn LexActionsDocumentContext::get_token_SHORT(
 ///|
 pub fn LexActionsDocumentContext::alternative(
   self : LexActionsDocumentContext,
+) -> String? {
+  ignore(self)
+  None
+}
+
+///|
+pub struct LexActionsUnitContext {
+  node : @runtime.RuleContext
+}
+
+///|
+pub fn LexActionsUnitContext::raw(
+  self : LexActionsUnitContext,
+) -> @runtime.RuleContext {
+  self.node
+}
+
+///|
+pub fn LexActionsParser::parse_unit(
+  self : LexActionsParser,
+  source : String,
+  lexer_action? : @runtime.LexerAction,
+) -> LexActionsUnitContext raise @runtime.RuntimeError {
+  { node: self.grammar.parse_context(source, start_rule=1, lexer_action?), }
+}
+
+///|
+pub fn LexActionsUnitContext::get_unit(
+  self : LexActionsUnitContext,
+) -> Array[LexActionsUnitContext] {
+  self.node.rules("unit").map(node => LexActionsUnitContext::{ node, })
+}
+
+///|
+pub fn LexActionsUnitContext::get_token_LONG(
+  self : LexActionsUnitContext,
+) -> Array[@runtime.Token] {
+  self.node.tokens(1)
+}
+
+///|
+pub fn LexActionsUnitContext::alternative(
+  self : LexActionsUnitContext,
 ) -> String? {
   ignore(self)
   None

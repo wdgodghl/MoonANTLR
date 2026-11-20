@@ -48,17 +48,21 @@ public final class Oracle {
             String source = new String(Base64.getDecoder().decode(line), StandardCharsets.UTF_8);
             int[] errors = {0};
             java.util.List<String> lexerErrors = new java.util.ArrayList<>();
+            java.util.List<String> parserErrors = new java.util.ArrayList<>();
+            java.util.List<String> allErrors = new java.util.ArrayList<>();
             BaseErrorListener listener = new BaseErrorListener() {
                 @Override public void syntaxError(Recognizer<?, ?> r, Object symbol, int row, int column, String message, RecognitionException e) {
                     errors[0]++;
+                    allErrors.add("[" + row + "," + column + "]");
                     if (r instanceof Lexer) lexerErrors.add("[" + row + "," + column + "]");
+                    else parserErrors.add("[" + row + "," + column + "]");
                 }
             };
             Lexer lexer = (Lexer) Class.forName(grammar + "Lexer").getConstructor(CharStream.class).newInstance(CharStreams.fromString(source));
             lexer.removeErrorListeners();
             lexer.addErrorListener(listener);
             CommonTokenStream stream = new CommonTokenStream(lexer);
-            stream.fill();
+            if (args.length < 3) stream.fill();
             Parser parser = (Parser) Class.forName(grammar + "Parser").getConstructor(TokenStream.class).newInstance(stream);
             parser.removeErrorListeners();
             parser.addErrorListener(listener);
@@ -66,6 +70,22 @@ public final class Oracle {
             boolean accepted = errors[0] == 0 && (args.length > 1 || parser.getCurrentToken().getType() == Token.EOF);
             StringBuilder out = new StringBuilder("{\"accepted\":").append(accepted).append(",\"tree\":").append(quote(tree(parsed, parser), false)).append(",\"tokens\":[");
             Token next = parser.getCurrentToken();
+            if (args.length > 2 && args[2].equals("default")) {
+                Object offsets = grammar.equals("ParseActions") ? parser.getClass().getField("offsets").get(parser) : "[]";
+                java.util.List<String> errorTokens = new java.util.ArrayList<>();
+                errorTokens(parsed, errorTokens);
+                java.util.List<String> events = new java.util.ArrayList<>();
+                ParseTreeWalker.DEFAULT.walk(new ParseTreeListener() {
+                    public void enterEveryRule(ParserRuleContext ctx) { events.add(quote("enter:" + parser.getRuleNames()[ctx.getRuleIndex()],false)); }
+                    public void exitEveryRule(ParserRuleContext ctx) { events.add(quote("exit:" + parser.getRuleNames()[ctx.getRuleIndex()],false)); }
+                    public void visitTerminal(TerminalNode node) { events.add(quote("token:" + node.getText(),false)); }
+                    public void visitErrorNode(ErrorNode node) { events.add(quote("error:" + node.getText(),false)); }
+                }, parsed);
+                System.out.println("{\"tree\":" + quote(errorTree(parsed, parser), false)
+                    + ",\"parserErrors\":[" + String.join(",", allErrors)
+                    + "],\"events\":[" + String.join(",", events) + "],\"errorTokens\":[" + String.join(",", errorTokens) + "],\"offsets\":" + offsets + ",\"nextKind\":" + next.getType() + ",\"nextText\":" + quote(next.getText(), false) + "}");
+                continue;
+            }
             boolean first = true;
             for (Token t : stream.getTokens()) {
                 if (!first) out.append(',');
@@ -95,5 +115,26 @@ public final class Oracle {
             }
             System.out.println(out.append("],\"nextKind\":").append(next.getType()).append(",\"nextText\":").append(quote(next.getText(), false)).append('}').toString());
         }
+    }
+
+    private static String errorTree(ParseTree node, Parser parser) {
+        if (node instanceof ErrorNode) return "(error " + quote(node.getText(), true) + ")";
+        if (node instanceof TerminalNode) {
+            Token token = ((TerminalNode) node).getSymbol();
+            return token.getType() == Token.EOF ? "<EOF>" : quote(token.getText(), true);
+        }
+        ParserRuleContext rule = (ParserRuleContext) node;
+        StringBuilder out = new StringBuilder("(").append(parser.getRuleNames()[rule.getRuleIndex()]);
+        for (int i = 0; i < rule.getChildCount(); i++) out.append(' ').append(errorTree(rule.getChild(i), parser));
+        return out.append(')').toString();
+    }
+
+    private static void errorTokens(ParseTree node, java.util.List<String> tokens) {
+        if (node instanceof ErrorNode) {
+            Token t = ((ErrorNode) node).getSymbol();
+            tokens.add("[" + t.getType() + "," + quote(t.getText(),false) + "," + t.getStartIndex()
+                + "," + (t.getStopIndex()+1) + "," + t.getLine() + "," + t.getCharPositionInLine() + "," + t.getChannel() + "]");
+        }
+        for (int i = 0; i < node.getChildCount(); i++) errorTokens(node.getChild(i), tokens);
     }
 }
