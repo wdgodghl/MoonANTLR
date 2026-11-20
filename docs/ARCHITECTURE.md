@@ -21,7 +21,9 @@ uses MoonBit alone, with no Java, Python or upstream runtime bindings.
 At multi-edge decisions the predictor performs epsilon closure, internal rule
 calls and precedence checks over ATN configurations. Return contexts are
 interned nodes `(follow state, previous precedence, parent)`, sharing tails.
-SLL starts with an empty external context. If multiple alternatives survive,
+SLL starts with an empty external context and follows grammar call sites after
+leaving the decision rule. Conflicting subsets terminate SLL when no ATN
+state is associated with a single alternative. If multiple alternatives survive,
 the predictor retries with the actual caller return chain. DFA states intern
 configuration sets, and token-labelled edges cache subsequent lookahead steps.
 Caches belong to one parse and cannot retain another input's tokens or trees.
@@ -29,8 +31,7 @@ Caches belong to one parse and cannot retain another input's tokens or trees.
 cache-hit counters alongside the concrete context.
 
 This is a bounded implementation of adaptive prediction, not a port of the
-complete ANTLR `ParserATNSimulator`. An exhausted outer prediction context is
-conservative: an accepted alternative stays viable. Lookahead follows the DFA until the alternatives resolve, the input ends or
+complete ANTLR `ParserATNSimulator`. Completed entry-rule alternatives are retained for local failure fallback. Lookahead follows the DFA until the alternatives resolve, the input ends or
 the work budget is exhausted. Surviving alternatives remain available to the
 memoized executor. If several complete
 parses remain, the first complete grammar-order result is chosen. This does
@@ -58,7 +59,7 @@ See `GENERATED_API.md` for label and traversal semantics.
 ## Execution boundaries
 
 Parser semantic predicates can be bound to pure MoonBit callbacks. The callback
-receives the rule index, predicate index and current visible Token. Context-dependent predicates remain unsupported. Lexer predicates can bind a
+receives the rule index, predicate index and current visible Token. Semantic bindings also expose the current context and attribute frame. Lexer predicates can bind a
 separate pure callback receiving rule index, predicate index, current Unicode
 scalar offset and source. A false result removes the current lexer path. With callbacks, the executor evaluates
 predicates on the real token traversal and avoids structural DFA pruning. Results
@@ -74,11 +75,22 @@ opt-in Lexer recovery mode skips the failed token attempt and records its locati
 Resource errors always raise.
 Lexer actions execute only for the winning token path and can change emission.
 Parser action sites are recorded during traversal and replayed once in selected
-parse order. Rule arguments/return attributes and actions that affect prediction
-remain unsupported.
+parse order. The semantic snapshot entry binds rule arguments, return values and local
+attributes without external side effects. The committed `parse_default` entry
+executes one selected path with immediate actions and contextual predicates,
+local insertion/deletion, context FOLLOW synchronization and error suppression.
+It returns an explicit error-node tree and preserves synthetic Token metadata.
+Its Listener and Visitor distinguish error nodes from ordinary terminals.
+`parse_default_tokens` accepts prepared channels and physical Token indices; the
+C# migration uses it for both preprocessing and syntax.
 
-The lexer has a 64-call fragment limit and parser execution a 128-rule nesting
-limit. Each stage defaults to 1,000,000 worklist operations; parser prediction,
+`LexerCursor` produces tokens only on demand, retaining modes and MORE state.
+`parse_prefix_lazy` and `parse_default` request Tokens through a parse-local
+channel buffer. Prediction can request lookahead; unread source does not
+execute Lexer actions or produce lexical diagnostics.
+
+The former fixed fragment and parser nesting cutoffs have been removed.
+Each stage defaults to 1,000,000 worklist operations; parser prediction,
 execution and diagnostic retry share the parser budget. These limits are
 resource safeguards, not a general linear-time performance claim.
 

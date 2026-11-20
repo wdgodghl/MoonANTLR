@@ -15,13 +15,13 @@ import {
   "moonbitlang/x@0.5.7",
 }
 
-version = "0.1.3"
+version = "0.1.4"
 
 readme = "README.md"
 
 repository = "https://github.com/wdgodghl/MoonANTLR"
 
-license = "BSD-3-Clause"
+license = "BSD-3-Clause AND EPL-1.0"
 
 keywords = [ "antlr4", "parser", "lexer", "atn" ]
 

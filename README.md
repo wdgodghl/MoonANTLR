@@ -68,6 +68,14 @@ moon test --target native --deny-warn
 
 JS 目标需要 Node.js；native 目标需要对应平台的 C 工具链。
 
+## C# 真实语法迁移
+
+`wdgodghl/moonantlr/csharp` 提供原版 C# Lexer、Parser 和预处理语法的
+MoonBit 宿主实现。支持条件编译过滤、插值字符串状态、上下文谓词与
+包含隐藏通道的 Token 索引判断。运行 `moon run examples/csharp`。
+37 个 Java 对照输入及 17 个恢复对照比较 Token、预处理返回值、解析树和错误位置，详见
+[C# 迁移记录](docs/CSHARP_MIGRATION.md)。这些派生组件采用 EPL-1.0。
+
 ## 浏览器示例
 
 在仓库根目录运行 `moon build examples/editor --target wasm-gc` 和
@@ -104,7 +112,7 @@ moon run examples/typed
 
 ## 后续方向
 
-继续扩大真实语法兼容性，完善与上游一致的冲突处理、语义谓词、词法决策和结构化错误恢复；继续完善规则属性的类型化生成及真实 C# 迁移。
+继续扩大真实语法兼容性，完善与上游一致的冲突处理、语义谓词、词法决策和结构化错误恢复；扩大规则属性类型、真实 C# 输入及上游运行时分类用例覆盖。
 
 ## 文档与来源
 
@@ -119,4 +127,4 @@ moon run examples/typed
 
 ## 许可证
 
-BSD-3-Clause。项目代码版权归 `wdgodghl`，上游代码与参考来源保留其原有版权。详见 [LICENSE](LICENSE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+核心组件采用 BSD-3-Clause，C# 派生组件采用 EPL-1.0。项目代码版权归 `wdgodghl`，上游代码与参考来源保留其原有版权。详见 [LICENSE](LICENSE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

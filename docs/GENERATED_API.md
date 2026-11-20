@@ -135,8 +135,11 @@ uses isolated snapshots while exploring alternatives, so semantic hooks must
 avoid external side effects and mutations of nested JSON containers. Observable
 results are the accepted `ParseResult.frame`. This entry disables rule-result
 memoization and structural DFA pruning because attributes can affect decisions.
-It currently supplies generic JSON frames rather than generated typed attribute
-fields, and does not implement ANTLR's complete predictive semantic model.
+Generated attribute records expose checked Int, Bool, String and Double fields
+through `from_frame`. Other host types retain JSON representations and need
+manual binding. Arguments and initializers remain manually implemented host
+expressions. The entry does not implement ANTLR's complete predictive semantic
+model.
 See `tests/semantic_test.mbt` for the binding implementation used by Java
 attribute comparisons, including an action followed by a contextual predicate.
 
@@ -147,8 +150,8 @@ The callback receives the rule index, action ordinal, next visible Token and
 rule context at the action site. It replays actions in execution order after a
 successful parse, including nested rules and rewritten left recursion. Rejected
 strict parses invoke no callbacks. Actions whose mutations affect later
-predicates or rule attributes require a future execution model. Recovery
-currently has no Parser action replay.
+predicates or rule attributes can use `parse_default` with semantic bindings.
+Its callbacks run on the committed path, including recovered paths.
 
 `Grammar::tokenize_recovering` returns tokens and lexical errors. On a failed
 match it reports the token attempt's start and discards the failed prefix and
@@ -161,6 +164,9 @@ deletions and synchronized spans, with original Token locations. Pass explicit
 token kinds via `sync_tokens` and cap edits
 via `max_repairs`. Inspect diagnostics even if a repaired parse reaches EOF.
 The editor under `examples/editor` shows how to consume the result.
+`RecoveryResult::tree_with_errors()` adds inserted, deleted and synchronized
+Tokens as error nodes with original coordinates. This is a separate tree view;
+the existing RuleContext and ParseTree representations retain their APIs.
 
 For rule entry points that may leave input behind, call
 `grammar.parse_prefix(source, start_rule=rule_index)`. The result exposes the
@@ -171,3 +177,33 @@ uniquely identifies the loop body. This reports a missing operand for `1+`
 instead of returning `1` as an expression prefix. Generated typed entry points
 still require complete input. Prefix parsing tokenizes the whole source, so a
 lexical error after the prefix can still fail the call.
+
+
+`Grammar::lexer_cursor(source)` creates a demand-driven Lexer. Each
+`next_token()` executes only the winning actions needed for that Token,
+retaining mode/MORE state. Repeated EOF requests do not replay actions.
+`recover=true` accumulates lexical errors visible through `diagnostics()`.
+`parse_prefix_lazy` buffers Tokens only as consumed or requested by prediction,
+including the first unconsumed Token. The eager prefix entry remains available.
+
+`Grammar::parse_default(source)` invokes one rule with default local recovery,
+without imposing an implicit EOF. Its result contains the rule context, semantic
+frame, prediction counters, first unconsumed Token, ordered diagnostics and an
+error-node tree. `parser_action` runs at the action site, after any previous
+Token consumption. `semantics` supplies rule arguments, locals, returns,
+actions and contextual predicates. These committed action hooks may update
+external state; predicates must remain side-effect-free. The older
+`parse_semantic` entry explores snapshots and retains its purity requirement.
+
+`parse_default_tokens(tokens, original_tokens=all_tokens)` uses a prepared
+channel buffer, preserving physical Token indices for host predicates.
+`RecoveryTree::to_sexpr` distinguishes `(error ...)` nodes, and
+`error_tokens()` enumerates their exact metadata in traversal order. Synthetic
+Tokens use upstream start=-1/end=0 metadata; ordinary source spans remain scalar
+indices with exclusive ends. Compatibility applies to the tested cases; the
+complete upstream semantic/prediction corpus is still being expanded.
+
+`RecoveryListener::walk` visits rules, terminals and errors in ParseTreeWalker
+order. `RecoveryVisitor[T]` reduces a recovered tree with separate ordinary
+and error Token callbacks. The default recovery oracle compares Listener traces
+as well as the complete tree and Token metadata.

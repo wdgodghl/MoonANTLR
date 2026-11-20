@@ -24,6 +24,7 @@ no external package dependency beyond the standard library.
 
 | Grammar | Cases | Accepted by the reference |
 | --- | ---: | ---: |
+| Imports, case-insensitive Lexer, custom channels and token types | 8 | 4 |
 | JSON | 98 | 81 |
 | Arithmetic | 65 | 55 |
 | Split lexer/parser with modes | 15 | 12 |
@@ -35,6 +36,8 @@ no external package dependency beyond the standard library.
 | Predicate gating | 4 | 4 |
 | Lexer predicate gating | 4 | 4 |
 | Rule prefix entry points | 14 | 9 |
+| Demand-driven rule prefix entry points | 17 | 12 |
+| Default recovery and committed actions | 434 | Compared even when recovered |
 | Lexer actions, recovery, and explicit EOF | 12 | 4 |
 | Parser actions and left recursion | 4 | 4 |
 | Stateful custom Lexer actions | 7 | 7 |
@@ -49,7 +52,9 @@ offsets even for inputs with lexical errors. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 491 independent oracle cases. Stateful Lexer cases compare custom
+There are 950 core oracle comparisons, plus 37 original C# input cases
+and 17 C# recovery comparisons
+in `csharp/oracle-manifest.json`. Stateful Lexer cases compare custom
 mode changes, MORE, EOF remapping, supplementary Unicode, and final EOF metadata.
 Attribute cases compare Java results and trees after call-site argument
 binding, per-invocation local updates, and contextual predicates.
@@ -62,6 +67,12 @@ not merely acceptance. Decision cases include caller-sensitive short/long
 alternatives, ambiguity order and common prefixes longer than the predictor's
 former 64-token window. Left-recursion cases exercise nested EBNF stars to prevent
 accidental creation of recursive contexts at unrelated loop entries.
+
+Default recovery comparisons check the complete error-node tree, ordered
+lexical and syntax diagnostic positions, all error Token metadata (including
+synthetic intervals), remaining Token, and committed action offsets.
+
+C# comparisons regenerate with `python tools/csharp_oracle.py --jar /path/to/antlr-4.13.2-complete.jar`.
 
 Generated API tests check optional/list labels, left/right operand identity,
 alternative narrowing, spans, Visitor results and Listener event order.
