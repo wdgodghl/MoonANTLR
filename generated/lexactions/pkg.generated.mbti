@@ -33,7 +33,7 @@ pub struct LexActionsLexer {
   atn : @moonantlr.Atn
 }
 pub fn LexActionsLexer::new() -> Self raise @moonantlr.RuntimeError
-pub fn LexActionsLexer::tokenize(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+pub fn LexActionsLexer::tokenize(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct LexActionsListener {
   terminal : (@moonantlr.Token) -> Unit
@@ -47,7 +47,7 @@ pub struct LexActionsParser {
   grammar : @moonantlr.Grammar
 }
 pub fn LexActionsParser::new() -> Self raise @moonantlr.RuntimeError
-pub fn LexActionsParser::parse_document(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit) -> LexActionsDocumentContext raise @moonantlr.RuntimeError
+pub fn LexActionsParser::parse_document(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> LexActionsDocumentContext raise @moonantlr.RuntimeError
 
 pub(all) struct LexActionsVisitor[T] {
   terminal : (@moonantlr.Token) -> T

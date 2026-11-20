@@ -1,0 +1,57 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/stateful"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct StatefulLexer {
+  atn : @moonantlr.Atn
+}
+pub fn StatefulLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn StatefulLexer::tokenize(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub struct StatefulParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn StatefulParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn StatefulParser::parse_document(Self, String) -> StatefulParserDocumentContext raise @moonantlr.RuntimeError
+
+pub struct StatefulParserDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn StatefulParserDocumentContext::alternative(Self) -> String?
+pub fn StatefulParserDocumentContext::get_document(Self) -> Array[Self]
+pub fn StatefulParserDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn StatefulParserDocumentContext::get_token_STRING(Self) -> Array[@moonantlr.Token]
+pub fn StatefulParserDocumentContext::get_token_WORD(Self) -> Array[@moonantlr.Token]
+pub fn StatefulParserDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct StatefulParserListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (StatefulParserDocumentContext) -> Unit
+  exit_document : (StatefulParserDocumentContext) -> Unit
+}
+pub fn StatefulParserListener::new() -> Self
+pub fn StatefulParserListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub(all) struct StatefulParserVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (StatefulParserDocumentContext, Array[T]) -> T
+}
+pub fn[T] StatefulParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] StatefulParserVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

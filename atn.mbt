@@ -312,10 +312,12 @@ fn Atn::validate_supported(
   predicates~ : Bool = false,
   custom_lexer_actions~ : Bool = false,
   custom_parser_actions~ : Bool = false,
+  contextual_predicates~ : Bool = false,
 ) -> Unit raise RuntimeError {
   for index, state in self.states {
     for edge in state.edges {
-      if edge.kind == 4 && (!predicates || edge.c != 0) {
+      if edge.kind == 4 &&
+        (!predicates || (edge.c != 0 && !contextual_predicates)) {
         raise Unsupported("semantic predicates")
       }
       if self.kind == 1 && edge.kind == 6 {
@@ -331,9 +333,6 @@ fn Atn::validate_supported(
     }
   }
   for action in self.actions {
-    if action.0 == 7 && action.1 == -1 {
-      raise Unsupported("lexer EOF remapping")
-    }
     if action.0 == 1 && !custom_lexer_actions {
       raise Unsupported("custom lexer actions")
     }

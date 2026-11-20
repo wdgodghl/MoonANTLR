@@ -19,6 +19,7 @@ pub type ParserAction = (ParserActionEvent) -> Unit
 priv struct Outcome {
   pos : Int32
   context : RuleContext
+  frame : RuleFrame?
   actions : Array[ParserActionEvent]
 }
 
@@ -28,12 +29,14 @@ priv struct ParseConfig {
   pos : Int32
   context : RuleContext
   visited : Array[(Int32, Int32)]
+  frame : RuleFrame?
   actions : Array[ParserActionEvent]
 }
 
 ///|
 priv struct ParseContext {
   mut predicting : Bool
+  semantics : RuleSemantics?
   prefix_mode : Bool
   predicate : ParserPredicate?
   partial : Ref[RuleContext?]?
@@ -83,19 +86,27 @@ fn parse_rule(
   depth : Int32,
   precedence : Int32,
   outer : Int32,
+  seed? : RuleFrame,
 ) -> Array[Outcome] raise RuntimeError {
   if depth > 128 {
     raise LimitExceeded("parser rule nesting exceeds 128")
   }
   let key = (rule, pos, precedence, outer)
-  match ctx.cache.get(key) {
-    Some(cached) => return cached
-    None => ()
+  if ctx.semantics is None {
+    match ctx.cache.get(key) {
+      Some(cached) => return cached
+      None => ()
+    }
   }
   if ctx.active.get(key).unwrap_or(false) {
     raise Unsupported("left-recursive rule invocation")
   }
   ctx.active[key] = true
+  let frame = match (ctx.semantics, seed) {
+    (Some(bindings), Some(frame)) =>
+      Some((bindings.enter)(rule, frame.snapshot()))
+    _ => None
+  }
   let work : Array[ParseConfig] = [
     {
       state: ctx.atn.starts[rule],
@@ -103,6 +114,7 @@ fn parse_rule(
       context: { name: ctx.rules[rule], children: [], sources: [], path: [], },
       visited: [],
       actions: [],
+      frame,
     },
   ]
   let results : Array[Outcome] = []
@@ -116,7 +128,12 @@ fn parse_rule(
       partial.val = Some(cfg.context)
     }
     if state.kind == 7 {
-      results.push({ pos: cfg.pos, context: cfg.context, actions: cfg.actions, })
+      results.push({
+        pos: cfg.pos,
+        context: cfg.context,
+        frame: cfg.frame,
+        actions: cfg.actions,
+      })
       continue
     }
     let stamp = (cfg.state, cfg.pos)
@@ -125,6 +142,13 @@ fn parse_rule(
     }
     let visited = cfg.visited.copy()
     visited.push(stamp)
+    let semantic_event = cfg.frame.map(frame => SemanticEvent::{
+      rule,
+      site: cfg.state,
+      context: cfg.context,
+      next_token: ctx.tokens[cfg.pos.min(ctx.tokens.length() - 1)],
+      frame: frame.snapshot(),
+    })
     let predicted = if ctx.predicting && state.edges.length() > 1 {
       ctx.predictor.predict(
         cfg.state,
@@ -148,7 +172,11 @@ fn parse_rule(
       let edge = state.edges[i]
       match edge.kind {
         4 =>
-          if ctx.predicate is Some(check) {
+          if ctx.semantics is Some(bindings) && semantic_event is Some(event) {
+            if (bindings.predicate)(event, edge.b) {
+              work.push({ ..cfg, state: edge.target, visited, })
+            }
+          } else if ctx.predicate is Some(check) {
             let token = ctx.tokens[cfg.pos.min(ctx.tokens.length() - 1)]
             if check(edge.a, edge.b, token) {
               work.push({ ..cfg, state: edge.target, visited, })
@@ -169,6 +197,16 @@ fn parse_rule(
           work.push({ ..cfg, state: edge.target, context, visited, })
         }
         6 => {
+          let frame = match
+            (
+              ctx.semantics,
+              semantic_event,
+              ctx.atn.parser_actions.get(cfg.state),
+            ) {
+            (Some(bindings), Some(event), Some(action)) =>
+              Some((bindings.action)(event, action))
+            _ => cfg.frame
+          }
           let actions = if ctx.atn.parser_actions.get(cfg.state) is Some(action) {
             let actions = cfg.actions.copy()
             actions.push({
@@ -181,7 +219,7 @@ fn parse_rule(
           } else {
             cfg.actions
           }
-          work.push({ ..cfg, state: edge.target, visited, actions, })
+          work.push({ ..cfg, state: edge.target, visited, actions, frame, })
         }
         10 =>
           if edge.a >= precedence {
@@ -189,6 +227,15 @@ fn parse_rule(
           }
         3 => {
           let outer = ctx.predictor.push(edge.target, precedence, outer)
+          let seed = match (ctx.semantics, semantic_event) {
+            (Some(bindings), Some(event)) =>
+              Some(RuleFrame::{
+                values: (bindings.arguments)(event, edge.b),
+                shared: event.frame.shared.copy(),
+                children: [],
+              })
+            _ => None
+          }
           let outcomes = parse_rule(
             ctx,
             edge.b,
@@ -196,6 +243,7 @@ fn parse_rule(
             depth + 1,
             edge.c,
             outer,
+            seed?,
           )
           for j = outcomes.length() - 1; j >= 0; j = j - 1 {
             let outcome = outcomes[j]
@@ -207,6 +255,14 @@ fn parse_rule(
               state: edge.target,
               pos: outcome.pos,
               context,
+              frame: match (cfg.frame, outcome.frame) {
+                (Some(parent), Some(child)) => {
+                  let children = parent.children.copy()
+                  children.push(child)
+                  Some({ ..parent, shared: child.shared.copy(), children, })
+                }
+                _ => cfg.frame
+              },
               actions: if outcome.actions.is_empty() {
                 cfg.actions
               } else {
@@ -231,6 +287,7 @@ fn parse_rule(
               state: edge.target,
               pos: cfg.pos + 1,
               context,
+              frame: cfg.frame,
               actions: cfg.actions,
               visited: [],
             })
@@ -242,7 +299,9 @@ fn parse_rule(
     }
   }
   ctx.active[key] = false
-  ctx.cache[key] = results
+  if ctx.semantics is None {
+    ctx.cache[key] = results
+  }
   results
 }
 
@@ -315,13 +374,16 @@ fn Grammar::parse_tokens(
   prefix? : Ref[RuleContext?],
   complete~ : Bool = true,
   parser_action? : ParserAction,
+  semantics? : RuleSemantics,
+  initial_frame? : RuleFrame,
 ) -> PrefixResult raise RuntimeError {
   if self.parser.kind != 1 {
     raise InvalidAtn("parser ATN expected")
   }
   self.parser.validate_supported(
-    predicates=predicate is Some(_),
-    custom_parser_actions=parser_action is Some(_),
+    predicates=predicate is Some(_) || semantics is Some(_),
+    contextual_predicates=semantics is Some(_),
+    custom_parser_actions=parser_action is Some(_) || semantics is Some(_),
   )
   if self.rules.length() != self.parser.starts.length() {
     raise InvalidAtn("rule-name table length mismatch")
@@ -331,7 +393,8 @@ fn Grammar::parse_tokens(
   }
   let predictor = Predictor::new(self.parser, budget)
   let ctx : ParseContext = {
-    predicting: predicate is None,
+    predicting: predicate is None && semantics is None,
+    semantics,
     prefix_mode: !complete,
     predicate,
     partial: prefix,
@@ -346,7 +409,7 @@ fn Grammar::parse_tokens(
     furthest: 0,
     expected: Map([]),
   }
-  let outcomes = parse_rule(ctx, start_rule, 0, 0, 0, 0)
+  let outcomes = parse_rule(ctx, start_rule, 0, 0, 0, 0, seed?=initial_frame)
   // Revisit rejected input without pruning so expected-token diagnostics still
   // refer to the furthest syntactic failure, not an earlier prediction exit.
   let outcomes = if outcomes.any(outcome => {
@@ -357,7 +420,7 @@ fn Grammar::parse_tokens(
     ctx.predicting = false
     ctx.cache.clear()
     ctx.active.clear()
-    parse_rule(ctx, start_rule, 0, 0, 0, 0)
+    parse_rule(ctx, start_rule, 0, 0, 0, 0, seed?=initial_frame)
   } else {
     outcomes
   }
@@ -372,6 +435,7 @@ fn Grammar::parse_tokens(
         next_token: tokens[outcome.pos.min(tokens.length() - 1)],
         parsed: {
           context: outcome.context,
+          frame: outcome.frame,
           prediction: {
             decisions: predictor.decisions,
             full_context_fallbacks: predictor.fallbacks,

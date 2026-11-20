@@ -115,6 +115,31 @@ end, and the original action offset. The callback can set `event.text`,
 Built-in lexer mode commands remain available in the grammar. Without a binding,
 the runtime rejects an ATN with custom actions.
 
+Lexer events now expose `mode` and `mode_stack`. Use `set_mode`,
+`push_mode` and `pop_mode` for equivalent host actions. A selected action
+with an invalid mode raises a RuntimeError. `Emit(-1)` emits EOF and stops the
+token stream. The callback type can raise RuntimeError, including mode-stack
+underflow from `pop_mode`.
+
+`Grammar::parse_semantic(source, bindings)` supports rule-local values and
+context-dependent predicates. Each `RuleFrame` has named JSON `values`,
+flowing `shared` values, and completed child frames. `RuleSemantics` provides
+entry initialization, call-argument mapping, actions, and predicates.
+Actions return updated frames during traversal, so the following predicate sees
+the update. Generated packages preserve rule attributes in
+`attribute_declarations()` and call-site expressions in
+`argument_expressions()`, where applicable.
+
+These bindings implement the original host expressions in MoonBit. The runtime
+uses isolated snapshots while exploring alternatives, so semantic hooks must
+avoid external side effects and mutations of nested JSON containers. Observable
+results are the accepted `ParseResult.frame`. This entry disables rule-result
+memoization and structural DFA pruning because attributes can affect decisions.
+It currently supplies generic JSON frames rather than generated typed attribute
+fields, and does not implement ANTLR's complete predictive semantic model.
+See `tests/semantic_test.mbt` for the binding implementation used by Java
+attribute comparisons, including an action followed by a contextual predicate.
+
 For embedded Parser actions, generated methods accept
 `parser_action=event => ...`. The generator attaches the ANTLR action source
 states to the parser ATN and exposes their order through `parser_action_sites()`.

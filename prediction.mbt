@@ -11,6 +11,7 @@ pub(all) struct PredictionStatistics {
 ///|
 pub(all) struct ParseResult {
   context : RuleContext
+  frame : RuleFrame?
   prediction : PredictionStatistics
 }
 

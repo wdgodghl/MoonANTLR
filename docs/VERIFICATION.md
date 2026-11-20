@@ -37,6 +37,8 @@ no external package dependency beyond the standard library.
 | Rule prefix entry points | 14 | 9 |
 | Lexer actions, recovery, and explicit EOF | 12 | 4 |
 | Parser actions and left recursion | 4 | 4 |
+| Stateful custom Lexer actions | 7 | 7 |
+| Rule arguments, returns and local values | 3 | 3 |
 | Non-greedy lexer decisions | 6 | 4 |
 
 Accepted cases compare the complete rule-labelled tree and every emitted token's
@@ -47,7 +49,11 @@ offsets even for inputs with lexical errors. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 481 independent oracle cases. Parser action cases compare the
+There are 491 independent oracle cases. Stateful Lexer cases compare custom
+mode changes, MORE, EOF remapping, supplementary Unicode, and final EOF metadata.
+Attribute cases compare Java results and trees after call-site argument
+binding, per-invocation local updates, and contextual predicates.
+Parser action cases compare the
 selected rule tree and action offset sequence, including left recursion.
 Prefix entry cases compare the rule
 tree and the first unconsumed visible Token, and cover explicit EOF and a

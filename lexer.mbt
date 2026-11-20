@@ -25,6 +25,36 @@ pub(all) struct LexerActionEvent {
   mut emission : LexerEmission
   mut channel : Int32
   mut text : String?
+  mut mode : Int32
+  mut mode_stack : Array[Int32]
+}
+
+///|
+/// Switch the current mode, preserving the return-mode stack.
+pub fn LexerActionEvent::set_mode(
+  self : LexerActionEvent,
+  mode : Int32,
+) -> Unit {
+  self.mode = mode
+}
+
+///|
+pub fn LexerActionEvent::push_mode(
+  self : LexerActionEvent,
+  mode : Int32,
+) -> Unit {
+  self.mode_stack.push(self.mode)
+  self.mode = mode
+}
+
+///|
+pub fn LexerActionEvent::pop_mode(
+  self : LexerActionEvent,
+) -> Unit raise RuntimeError {
+  self.mode = match self.mode_stack.pop() {
+    Some(mode) => mode
+    None => raise InvalidArgument("lexer mode stack underflow")
+  }
 }
 
 ///|
@@ -36,7 +66,7 @@ pub(all) enum LexerEmission {
 
 ///|
 /// Executes after the winning path has been selected.
-pub type LexerAction = (LexerActionEvent, String) -> Unit
+pub type LexerAction = (LexerActionEvent, String) -> Unit raise RuntimeError
 
 ///|
 pub(all) struct LexResult {
@@ -322,11 +352,25 @@ fn Atn::lex(
               emission,
               channel,
               text,
+              mode,
+              mode_stack: modes.copy(),
             }
             execute(event, source)
             emission = event.emission
             channel = event.channel
             text = event.text
+            if event.mode < 0 ||
+              event.mode >= self.modes.length() ||
+              event.mode_stack.any(value => {
+                value < 0 || value >= self.modes.length()
+              }) {
+              raise InvalidArgument("custom lexer action selected unknown mode")
+            }
+            mode = event.mode
+            modes.clear()
+            for value in event.mode_stack {
+              modes.push(value)
+            }
           }
         2 => mode = argument
         3 => emission = More
@@ -361,7 +405,7 @@ fn Atn::lex(
     }
     continuing = emission is More
     if emission is Emit(kind) {
-      if kind <= 0 || kind > self.max_token || channel < 0 {
+      if (kind <= 0 && kind != -1) || kind > self.max_token || channel < 0 {
         raise InvalidAtn("invalid emitted token type or channel")
       }
       tokens.push({
@@ -381,6 +425,9 @@ fn Atn::lex(
         column: token_column,
         channel,
       })
+      if kind == -1 {
+        return { tokens, errors, }
+      }
     }
   }
   tokens.push({

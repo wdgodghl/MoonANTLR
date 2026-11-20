@@ -75,6 +75,11 @@ public final class Oracle {
                    .append(',').append(t.getLine()).append(',').append(t.getCharPositionInLine())
                    .append(',').append(t.getChannel()).append(']');
             }
+            if (grammar.equals("Attributes")) {
+                Object total = parsed.getClass().getField("total").get(parsed);
+                System.out.println(out.append("],\"total\":").append(total).append('}'));
+                continue;
+            }
             if (grammar.equals("ParseActions")) {
                 Object offsets = parser.getClass().getField("offsets").get(parser);
                 System.out.println(out.append("],\"offsets\":").append(offsets).append('}'));

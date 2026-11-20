@@ -65,7 +65,7 @@ def corpus():
     decisions += ["p a x; q a x y; " * length for length in [2, 4, 8]]
     recursion = ["1[2]", "1[2][3]", "1[2+3]*4", "1[2[3]]+4!", "1!!", "-1!", "1?2:3?4:5", "1?2?3:4:5", "1+2?3:4*5", "(1+2)![3]", "1[", "1?2", "1?2:", "1[2]]", "!1"]
     recursion += arithmetic
-    return {"LexGate": ["if ifs", "if ifs", "if\nif", "if\nif"], "Predicate": ["123", "123", "42", "42"], "NonGreedy": ["/* a */ /* b */ word", "/*x*/! /*y*/", "/**//**/", "/* unterminated", "<ab><cd>word", "<>"], "Recursion": recursion, "Typed": typed, "Decisions": decisions, "Precedence": precedence, "Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
+    return {"Stateful": ['""', '"hello" word', '"😀" "x"', "#ignored", "word#tail", "", '"unfinished'], "LexGate": ["if ifs", "if ifs", "if\nif", "if\nif"], "Predicate": ["123", "123", "42", "42"], "NonGreedy": ["/* a */ /* b */ word", "/*x*/! /*y*/", "/**//**/", "/* unterminated", "<ab><cd>word", "<>"], "Recursion": recursion, "Typed": typed, "Decisions": decisions, "Precedence": precedence, "Json": json_cases, "Arithmetic": arithmetic, "Modes": modes, "Csv": csv_cases}
 
 
 def run(args, **kwargs):
@@ -89,9 +89,9 @@ def main():
         directory = Path(temp)
         sources = []
         for name in corpus():
-            names = ["ModesLexer", "ModesParser"] if name == "Modes" else [name]
+            names = [name + "Lexer", name + "Parser"] if name in {"Modes", "Stateful"} else [name]
             sources.extend(str(ROOT / "grammars" / (n + ".g4")) for n in names)
-        sources.extend(str(ROOT / "grammars" / (name + ".g4")) for name in ["LexActions", "ParseActions"])
+        sources.extend(str(ROOT / "grammars" / (name + ".g4")) for name in ["LexActions", "ParseActions", "Attributes"])
         run([args.java, "-Dfile.encoding=UTF-8", "-jar", str(jar), "-encoding", "UTF-8", "-Dlanguage=Java", "-Xexact-output-dir", "-lib", str(directory), "-o", str(directory)] + sources)
         run([args.javac, "-encoding", "UTF-8", "-cp", str(jar), "-d", str(directory), str(ROOT / "tools" / "Oracle.java")] + [str(p) for p in directory.glob("*.java")])
         for name, cases in corpus().items():
@@ -105,7 +105,7 @@ def main():
             if len(expected) != len(cases):
                 raise RuntimeError("Oracle output count differs from input count")
             counts[name] = {"cases": len(cases), "accepted": sum(row["accepted"] for row in expected)}
-            alias = {"LexGate": "lexgate", "Predicate": "predicate", "NonGreedy": "nongreedy", "Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar", "Precedence": "precedence", "Typed": "typed", "Decisions": "decisions", "Recursion": "recursion"}[name]
+            alias = {"Stateful": "stateful", "LexGate": "lexgate", "Predicate": "predicate", "NonGreedy": "nongreedy", "Json": "json", "Arithmetic": "arithmetic", "Modes": "modes", "Csv": "csv_grammar", "Precedence": "precedence", "Typed": "typed", "Decisions": "decisions", "Recursion": "recursion"}[name]
             for index, (source, row) in enumerate(zip(cases, expected)):
                 quoted = json.dumps(source, ensure_ascii=False)
                 output += ["///|", f'test "Java oracle {name} {index:03d}" {{', f"  let grammar = @{alias}.grammar()"]
@@ -119,6 +119,10 @@ def main():
                     callback = f"lexer_predicate=(_, _, _, _) => {value}"
                     parse = f"grammar.parse_detailed(source, {callback}).context.to_tree()"
                     tokenize = f"grammar.tokenize(source, {callback})"
+                if name == "Stateful":
+                    action = "lexer_action=(event, _) => match event.rule { 0 => { event.emission = @runtime.More; event.push_mode(1) }; 1 => event.emission = @runtime.Emit(-1); 4 => { event.pop_mode(); event.emission = @runtime.Emit(1) }; _ => () }"
+                    parse = f"grammar.parse_detailed(source, {action}).context.to_tree()"
+                    tokenize = f"grammar.tokenize(source, {action})"
                 if row["accepted"]:
                     output += [f"  let source = {quoted}", f"  assert_eq({parse}.to_sexpr(), {json.dumps(row['tree'], ensure_ascii=False)})", f"  let actual = {tokenize}.map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))"]
                     tuples = ", ".join("(" + ", ".join(json.dumps(v, ensure_ascii=False) for v in token) + ")" for token in row["tokens"])
@@ -191,6 +195,22 @@ def main():
                        f"  assert_eq(result.raw().to_tree().to_sexpr(), {json.dumps(row['tree'])})",
                        "}", ""]
         counts["ParserActions"] = {"cases": len(rows), "accepted": len(rows)}
+        attribute_cases = ["2 3", "0 0", "10 20"]
+        payload = "".join(base64.b64encode(source.encode()).decode() + "\n" for source in attribute_cases)
+        result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar),
+                      "Oracle", "Attributes"], input=payload, capture_output=True)
+        rows = [json.loads(line) for line in result.stdout.splitlines()]
+        if len(rows) != len(attribute_cases) or not all(row["accepted"] for row in rows):
+            raise RuntimeError("Attribute oracle must accept every input")
+        for index, (source, row) in enumerate(zip(attribute_cases, rows)):
+            output += ["///|", f'test "Java oracle attributes {index:03d}" {{',
+                       f"  let result = @attributes.grammar().parse_semantic({json.dumps(source)}, attribute_bindings())",
+                       f"  assert_eq(attribute_int(result.frame.unwrap(), \"total\"), {row['total']})",
+                       f"  assert_eq(result.context.to_tree().to_sexpr(), {json.dumps(row['tree'])})",
+                       "  assert_eq(attribute_int(result.frame.unwrap().children[0], \"seen\"), 1)",
+                       "  assert_eq(attribute_int(result.frame.unwrap().children[1], \"seen\"), 1)",
+                       "}", ""]
+        counts["Attributes"] = {"cases": len(rows), "accepted": len(rows)}
     (ROOT / "tests" / "oracle_test.mbt").write_text("\n".join(output), encoding="utf-8", newline="\n")
     (ROOT / "tests" / "oracle-manifest.json").write_text(json.dumps({"upstream": "ANTLR 4.13.2 Java target", "seed": 20261105, "grammars": counts}, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(counts))

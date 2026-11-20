@@ -2,6 +2,314 @@
 // Seed: 20261105. No Java is needed to run these tests.
 
 ///|
+test "Java oracle Stateful 000" {
+  let grammar = @stateful.grammar()
+  let source = "\"\""
+  assert_eq(
+    grammar.parse_detailed(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    }).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"\\\"\\\"\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    })
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "\"\"", 0, 2, 1, 0, 0),
+    (-1, "<EOF>", 2, 2, 1, 2, 0),
+  ])
+}
+
+///|
+test "Java oracle Stateful 001" {
+  let grammar = @stateful.grammar()
+  let source = "\"hello\" word"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    }).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"\\\"hello\\\"\" \"word\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    })
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "\"hello\"", 0, 7, 1, 0, 0),
+    (4, "word", 8, 12, 1, 8, 0),
+    (-1, "<EOF>", 12, 12, 1, 12, 0),
+  ])
+}
+
+///|
+test "Java oracle Stateful 002" {
+  let grammar = @stateful.grammar()
+  let source = "\"😀\" \"x\""
+  assert_eq(
+    grammar.parse_detailed(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    }).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"\\\"😀\\\"\" \"\\\"x\\\"\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    })
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (1, "\"😀\"", 0, 3, 1, 0, 0),
+    (1, "\"x\"", 4, 7, 1, 4, 0),
+    (-1, "<EOF>", 7, 7, 1, 7, 0),
+  ])
+}
+
+///|
+test "Java oracle Stateful 003" {
+  let grammar = @stateful.grammar()
+  let source = "#ignored"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    }).context
+    .to_tree()
+    .to_sexpr(),
+    "(document <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    })
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [(-1, "#", 0, 1, 1, 0, 0)])
+}
+
+///|
+test "Java oracle Stateful 004" {
+  let grammar = @stateful.grammar()
+  let source = "word#tail"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    }).context
+    .to_tree()
+    .to_sexpr(),
+    "(document \"word\" <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    })
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [
+    (4, "word", 0, 4, 1, 0, 0),
+    (-1, "#", 4, 5, 1, 4, 0),
+  ])
+}
+
+///|
+test "Java oracle Stateful 005" {
+  let grammar = @stateful.grammar()
+  let source = ""
+  assert_eq(
+    grammar.parse_detailed(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    }).context
+    .to_tree()
+    .to_sexpr(),
+    "(document <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    })
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [(-1, "<EOF>", 0, 0, 1, 0, 0)])
+}
+
+///|
+test "Java oracle Stateful 006" {
+  let grammar = @stateful.grammar()
+  let source = "\"unfinished"
+  assert_eq(
+    grammar.parse_detailed(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    }).context
+    .to_tree()
+    .to_sexpr(),
+    "(document <EOF>)",
+  )
+  let actual = grammar
+    .tokenize(source, lexer_action=(event, _) => {
+      match event.rule {
+        0 => {
+          event.emission = @runtime.More
+          event.push_mode(1)
+        }
+        1 => event.emission = @runtime.Emit(-1)
+        4 => {
+          event.pop_mode()
+          event.emission = @runtime.Emit(1)
+        }
+        _ => ()
+      }
+    })
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))
+  @debug.assert_eq(actual, [(-1, "\"unfinished", 0, 11, 1, 0, 0)])
+}
+
+///|
 test "Java oracle LexGate 000" {
   let grammar = @lexgate.grammar()
   let source = "if ifs"
@@ -10288,4 +10596,43 @@ test "Java oracle parser action order 003" {
     result.raw().to_tree().to_sexpr(),
     "(document (item \"expr\" (expression (expression (expression \"1\") \"+\" \"2\") \"+\" \"3\")) <EOF>)",
   )
+}
+
+///|
+test "Java oracle attributes 000" {
+  let result = @attributes.grammar().parse_semantic("2 3", attribute_bindings())
+  assert_eq(attribute_int(result.frame.unwrap(), "total"), 16)
+  assert_eq(
+    result.context.to_tree().to_sexpr(),
+    "(document (number \"2\") (number \"3\") <EOF>)",
+  )
+  assert_eq(attribute_int(result.frame.unwrap().children[0], "seen"), 1)
+  assert_eq(attribute_int(result.frame.unwrap().children[1], "seen"), 1)
+}
+
+///|
+test "Java oracle attributes 001" {
+  let result = @attributes.grammar().parse_semantic("0 0", attribute_bindings())
+  assert_eq(attribute_int(result.frame.unwrap(), "total"), 11)
+  assert_eq(
+    result.context.to_tree().to_sexpr(),
+    "(document (number \"0\") (number \"0\") <EOF>)",
+  )
+  assert_eq(attribute_int(result.frame.unwrap().children[0], "seen"), 1)
+  assert_eq(attribute_int(result.frame.unwrap().children[1], "seen"), 1)
+}
+
+///|
+test "Java oracle attributes 002" {
+  let result = @attributes.grammar().parse_semantic(
+    "10 20",
+    attribute_bindings(),
+  )
+  assert_eq(attribute_int(result.frame.unwrap(), "total"), 41)
+  assert_eq(
+    result.context.to_tree().to_sexpr(),
+    "(document (number \"10\") (number \"20\") <EOF>)",
+  )
+  assert_eq(attribute_int(result.frame.unwrap().children[0], "seen"), 1)
+  assert_eq(attribute_int(result.frame.unwrap().children[1], "seen"), 1)
 }

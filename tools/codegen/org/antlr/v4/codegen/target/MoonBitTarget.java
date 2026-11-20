@@ -133,6 +133,38 @@ public final class MoonBitTarget extends JavaTarget {
             .map(ActionSite::state).toList();
     }
 
+    private void emitAttributeMetadata(Grammar grammar, StringBuilder out) {
+        List<String> declarations = new ArrayList<>();
+        List<String> calls = new ArrayList<>();
+        for (Rule rule : grammar.rules.values()) {
+            AttributeDict[] dictionaries = {rule.args, rule.retvals, rule.locals};
+            String[] roles = {"argument", "return", "local"};
+            for (int i = 0; i < dictionaries.length; i++) {
+                if (dictionaries[i] == null) continue;
+                for (Attribute attribute : dictionaries[i].attributes.values()) {
+                    declarations.add("(" + rule.index + ", " + q(roles[i]) + ", " +
+                        q(attribute.name) + ", " + q(attribute.type == null ? "" : attribute.type) + ", " +
+                        q(attribute.initValue == null ? "" : attribute.initValue) + ")");
+                }
+            }
+            for (GrammarAST reference : rule.ast.getNodesWithType(ANTLRParser.RULE_REF)) {
+                if (reference.atnState == null) continue;
+                for (int i = 0; i < reference.getChildCount(); i++) {
+                    GrammarAST child = (GrammarAST)reference.getChild(i);
+                    if (child.getType() == ANTLRParser.ARG_ACTION) {
+                        calls.add("(" + reference.atnState.stateNumber + ", " + q(child.getText()) + ")");
+                    }
+                }
+            }
+        }
+        if (!declarations.isEmpty()) {
+            block(out, "pub fn attribute_declarations() -> Array[(Int, String, String, String, String)] { " + declarations + " }");
+        }
+        if (!calls.isEmpty()) {
+            block(out, "pub fn argument_expressions() -> Array[(Int, String)] { " + calls + " }");
+        }
+    }
+
     private void emitRecognizer(Grammar g, StringBuilder out) {
         String data = Arrays.toString(ATNSerializer.getSerialized(g.atn).toArray());
         String recognizer = g.getRecognizerName();
@@ -145,6 +177,7 @@ public final class MoonBitTarget extends JavaTarget {
             block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String" + (predicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (actions ? ", lexer_action? : @runtime.LexerAction" : "") + ") -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source" + (predicates ? ", lexer_predicate?" : "") + (actions ? ", lexer_action?" : "") + ") }");
             return;
         }
+        emitAttributeMetadata(g, out);
         List<Integer> parserActions = parserActionStates(g);
         String actionBinding = parserActions.isEmpty() ? "" : ".with_parser_action_sites(parser_action_sites())";
         if (!parserActions.isEmpty()) block(out, "pub fn parser_action_sites() -> Array[Int] { " + parserActions + " }");

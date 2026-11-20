@@ -1,0 +1,76 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/attributes"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn argument_expressions() -> Array[(Int32, String)]
+
+pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct AttributesDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn AttributesDocumentContext::alternative(Self) -> String?
+pub fn AttributesDocumentContext::get_document(Self) -> Array[Self]
+pub fn AttributesDocumentContext::get_number(Self) -> Array[AttributesNumberContext]
+pub fn AttributesDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn AttributesDocumentContext::label_a(Self) -> Array[AttributesNumberContext]
+pub fn AttributesDocumentContext::label_b(Self) -> Array[AttributesNumberContext]
+pub fn AttributesDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct AttributesLexer {
+  atn : @moonantlr.Atn
+}
+pub fn AttributesLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn AttributesLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct AttributesListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (AttributesDocumentContext) -> Unit
+  exit_document : (AttributesDocumentContext) -> Unit
+  enter_number : (AttributesNumberContext) -> Unit
+  exit_number : (AttributesNumberContext) -> Unit
+}
+pub fn AttributesListener::new() -> Self
+pub fn AttributesListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct AttributesNumberContext {
+  node : @moonantlr.RuleContext
+}
+pub fn AttributesNumberContext::alternative(Self) -> String?
+pub fn AttributesNumberContext::get_number(Self) -> Array[Self]
+pub fn AttributesNumberContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn AttributesNumberContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct AttributesParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn AttributesParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn AttributesParser::parse_document(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> AttributesDocumentContext raise @moonantlr.RuntimeError
+pub fn AttributesParser::parse_number(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> AttributesNumberContext raise @moonantlr.RuntimeError
+
+pub(all) struct AttributesVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (AttributesDocumentContext, Array[T]) -> T
+  visit_number : (AttributesNumberContext, Array[T]) -> T
+}
+pub fn[T] AttributesVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] AttributesVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits
