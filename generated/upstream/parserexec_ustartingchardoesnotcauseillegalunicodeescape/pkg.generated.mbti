@@ -1,0 +1,60 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_ustartingchardoesnotcauseillegalunicodeescape"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct MoonuLexer {
+  atn : @moonantlr.Atn
+}
+pub fn MoonuLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn MoonuLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct MoonuListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_u : (MoonuUContext) -> Unit
+  exit_u : (MoonuUContext) -> Unit
+}
+pub fn MoonuListener::new() -> Self
+pub fn MoonuListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct MoonuParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn MoonuParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn MoonuParser::parse_u(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> MoonuUContext raise @moonantlr.RuntimeError
+
+pub struct MoonuUContext {
+  node : @moonantlr.RuleContext
+}
+pub fn MoonuUContext::alternative(Self) -> String?
+pub fn MoonuUContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn MoonuUContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn MoonuUContext::get_u(Self) -> Array[Self]
+pub fn MoonuUContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct MoonuVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_u : (MoonuUContext, Array[T]) -> T
+}
+pub fn[T] MoonuVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] MoonuVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

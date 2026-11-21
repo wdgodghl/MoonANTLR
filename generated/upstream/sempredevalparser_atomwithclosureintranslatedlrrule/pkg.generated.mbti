@@ -1,0 +1,75 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/sempredevalparser_atomwithclosureintranslatedlrrule"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn argument_expressions() -> Array[(Int32, String)]
+
+pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
+// Errors
+
+// Types and methods
+pub struct TEContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TEContext::alternative(Self) -> String?
+pub fn TEContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TEContext::get_e(Self) -> Array[Self]
+pub fn TEContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct TEContextAttributes {
+  attr__p : Int32?
+}
+pub fn TEContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_start : (TStartContext) -> Unit
+  exit_start : (TStartContext) -> Unit
+  enter_e : (TEContext) -> Unit
+  exit_e : (TEContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_e(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> TEContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_start(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> TStartContext raise @moonantlr.RuntimeError
+
+pub struct TStartContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TStartContext::alternative(Self) -> String?
+pub fn TStartContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TStartContext::get_e(Self) -> Array[TEContext]
+pub fn TStartContext::get_start(Self) -> Array[Self]
+pub fn TStartContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TStartContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

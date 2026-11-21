@@ -1,0 +1,155 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/leftrecursion_ambiglr_1"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct ExprAddSubContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprAddSubContext::as_rule(Self) -> ExprExprContext
+pub fn ExprAddSubContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprAssignContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprAssignContext::as_rule(Self) -> ExprStatContext
+pub fn ExprAssignContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprBlankContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprBlankContext::as_rule(Self) -> ExprStatContext
+pub fn ExprBlankContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprExprContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprExprContext::alternative(Self) -> String?
+pub fn ExprExprContext::as_AddSub(Self) -> ExprAddSubContext?
+pub fn ExprExprContext::as_MulDiv(Self) -> ExprMulDivContext?
+pub fn ExprExprContext::as_id(Self) -> ExprIdContext?
+pub fn ExprExprContext::as_int(Self) -> ExprIntContext?
+pub fn ExprExprContext::as_parens(Self) -> ExprParensContext?
+pub fn ExprExprContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExprExprContext::get_expr(Self) -> Array[Self]
+pub fn ExprExprContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
+pub fn ExprExprContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprIdContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprIdContext::as_rule(Self) -> ExprExprContext
+pub fn ExprIdContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprIntContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprIntContext::as_rule(Self) -> ExprExprContext
+pub fn ExprIntContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprLexer {
+  atn : @moonantlr.Atn
+}
+pub fn ExprLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn ExprLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct ExprListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_prog : (ExprProgContext) -> Unit
+  exit_prog : (ExprProgContext) -> Unit
+  enter_stat : (ExprStatContext) -> Unit
+  exit_stat : (ExprStatContext) -> Unit
+  enter_expr : (ExprExprContext) -> Unit
+  exit_expr : (ExprExprContext) -> Unit
+  enter_alt_assign : (ExprAssignContext) -> Unit
+  exit_alt_assign : (ExprAssignContext) -> Unit
+  enter_alt_blank : (ExprBlankContext) -> Unit
+  exit_alt_blank : (ExprBlankContext) -> Unit
+  enter_alt_printExpr : (ExprPrintExprContext) -> Unit
+  exit_alt_printExpr : (ExprPrintExprContext) -> Unit
+  enter_alt_AddSub : (ExprAddSubContext) -> Unit
+  exit_alt_AddSub : (ExprAddSubContext) -> Unit
+  enter_alt_MulDiv : (ExprMulDivContext) -> Unit
+  exit_alt_MulDiv : (ExprMulDivContext) -> Unit
+  enter_alt_id : (ExprIdContext) -> Unit
+  exit_alt_id : (ExprIdContext) -> Unit
+  enter_alt_int : (ExprIntContext) -> Unit
+  exit_alt_int : (ExprIntContext) -> Unit
+  enter_alt_parens : (ExprParensContext) -> Unit
+  exit_alt_parens : (ExprParensContext) -> Unit
+}
+pub fn ExprListener::new() -> Self
+pub fn ExprListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct ExprMulDivContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprMulDivContext::as_rule(Self) -> ExprExprContext
+pub fn ExprMulDivContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprParensContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprParensContext::as_rule(Self) -> ExprExprContext
+pub fn ExprParensContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn ExprParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn ExprParser::parse_expr(Self, String) -> ExprExprContext raise @moonantlr.RuntimeError
+pub fn ExprParser::parse_prog(Self, String) -> ExprProgContext raise @moonantlr.RuntimeError
+pub fn ExprParser::parse_stat(Self, String) -> ExprStatContext raise @moonantlr.RuntimeError
+
+pub struct ExprPrintExprContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprPrintExprContext::as_rule(Self) -> ExprStatContext
+pub fn ExprPrintExprContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprProgContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprProgContext::alternative(Self) -> String?
+pub fn ExprProgContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExprProgContext::get_prog(Self) -> Array[Self]
+pub fn ExprProgContext::get_stat(Self) -> Array[ExprStatContext]
+pub fn ExprProgContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprStatContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprStatContext::alternative(Self) -> String?
+pub fn ExprStatContext::as_assign(Self) -> ExprAssignContext?
+pub fn ExprStatContext::as_blank(Self) -> ExprBlankContext?
+pub fn ExprStatContext::as_printExpr(Self) -> ExprPrintExprContext?
+pub fn ExprStatContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExprStatContext::get_expr(Self) -> Array[ExprExprContext]
+pub fn ExprStatContext::get_stat(Self) -> Array[Self]
+pub fn ExprStatContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn ExprStatContext::get_token_NEWLINE(Self) -> Array[@moonantlr.Token]
+pub fn ExprStatContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ExprStatContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,68 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_predictionissue334"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct TFile_Context {
+  node : @moonantlr.RuleContext
+}
+pub fn TFile_Context::alternative(Self) -> String?
+pub fn TFile_Context::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TFile_Context::get_file_(Self) -> Array[Self]
+pub fn TFile_Context::get_item(Self) -> Array[TItemContext]
+pub fn TFile_Context::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TFile_Context::get_token_SEMICOLON(Self) -> Array[@moonantlr.Token]
+pub fn TFile_Context::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TItemContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TItemContext::alternative(Self) -> String?
+pub fn TItemContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TItemContext::get_item(Self) -> Array[Self]
+pub fn TItemContext::get_token_A(Self) -> Array[@moonantlr.Token]
+pub fn TItemContext::get_token_B(Self) -> Array[@moonantlr.Token]
+pub fn TItemContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_file_ : (TFile_Context) -> Unit
+  exit_file_ : (TFile_Context) -> Unit
+  enter_item : (TItemContext) -> Unit
+  exit_item : (TItemContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_file_(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TFile_Context raise @moonantlr.RuntimeError
+pub fn TParser::parse_item(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TItemContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

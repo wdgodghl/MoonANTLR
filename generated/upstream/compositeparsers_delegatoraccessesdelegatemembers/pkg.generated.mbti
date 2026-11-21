@@ -1,0 +1,65 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/compositeparsers_delegatoraccessesdelegatemembers"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct MAContext {
+  node : @moonantlr.RuleContext
+}
+pub fn MAContext::alternative(Self) -> String?
+pub fn MAContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn MAContext::get_a(Self) -> Array[Self]
+pub fn MAContext::get_token_B(Self) -> Array[@moonantlr.Token]
+pub fn MAContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct MLexer {
+  atn : @moonantlr.Atn
+}
+pub fn MLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn MLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct MListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_s : (MSContext) -> Unit
+  exit_s : (MSContext) -> Unit
+  enter_a : (MAContext) -> Unit
+  exit_a : (MAContext) -> Unit
+}
+pub fn MListener::new() -> Self
+pub fn MListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct MParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn MParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn MParser::parse_a(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> MAContext raise @moonantlr.RuntimeError
+pub fn MParser::parse_s(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> MSContext raise @moonantlr.RuntimeError
+
+pub struct MSContext {
+  node : @moonantlr.RuleContext
+}
+pub fn MSContext::alternative(Self) -> String?
+pub fn MSContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn MSContext::get_s(Self) -> Array[Self]
+pub fn MSContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn MSContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

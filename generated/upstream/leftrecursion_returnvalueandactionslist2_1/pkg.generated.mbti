@@ -1,0 +1,108 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/leftrecursion_returnvalueandactionslist2_1"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct TCommaContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TCommaContext::as_rule(Self) -> TExprContext
+pub fn TCommaContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TExprContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TExprContext::alternative(Self) -> String?
+pub fn TExprContext::as_Comma(Self) -> TCommaContext?
+pub fn TExprContext::as_Factor(Self) -> TFactorContext?
+pub fn TExprContext::as_JustId(Self) -> TJustIdContext?
+pub fn TExprContext::as_Send(Self) -> TSendContext?
+pub fn TExprContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TExprContext::get_expr(Self) -> Array[Self]
+pub fn TExprContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn TExprContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TExprContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TExprContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn TExprContext::label_a(Self) -> Array[Self]
+pub fn TExprContext::label_b(Self) -> Array[Self]
+pub fn TExprContext::label_c(Self) -> Array[Self]
+pub fn TExprContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TFactorContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TFactorContext::as_rule(Self) -> TExprContext
+pub fn TFactorContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TJustIdContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TJustIdContext::as_rule(Self) -> TExprContext
+pub fn TJustIdContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_s : (TSContext) -> Unit
+  exit_s : (TSContext) -> Unit
+  enter_expr : (TExprContext) -> Unit
+  exit_expr : (TExprContext) -> Unit
+  enter_alt_Comma : (TCommaContext) -> Unit
+  exit_alt_Comma : (TCommaContext) -> Unit
+  enter_alt_Factor : (TFactorContext) -> Unit
+  exit_alt_Factor : (TFactorContext) -> Unit
+  enter_alt_JustId : (TJustIdContext) -> Unit
+  exit_alt_JustId : (TJustIdContext) -> Unit
+  enter_alt_Send : (TSendContext) -> Unit
+  exit_alt_Send : (TSendContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_expr(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TExprContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_s(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TSContext raise @moonantlr.RuntimeError
+
+pub struct TSContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TSContext::alternative(Self) -> String?
+pub fn TSContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TSContext::get_expr(Self) -> Array[TExprContext]
+pub fn TSContext::get_s(Self) -> Array[Self]
+pub fn TSContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TSContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TSendContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TSendContext::as_rule(Self) -> TExprContext
+pub fn TSendContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

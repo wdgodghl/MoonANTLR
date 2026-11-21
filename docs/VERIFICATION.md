@@ -52,8 +52,8 @@ offsets even for inputs with lexical errors. Seeds and counts are recorded in
 `tests/oracle-manifest.json`; the expected outputs are committed so running
 the tests does not require Java.
 
-There are 950 core oracle comparisons, plus 37 original C# input cases
-and 17 C# recovery comparisons
+There are 963 core oracle comparisons, plus 39 original C# input cases,
+19 C# recovery comparisons and 39 internal helper snapshots
 in `csharp/oracle-manifest.json`. Stateful Lexer cases compare custom
 mode changes, MORE, EOF remapping, supplementary Unicode, and final EOF metadata.
 Attribute cases compare Java results and trees after call-site argument
@@ -109,3 +109,16 @@ generated source comments contain grammar basenames and hashes, not local paths.
 CI checks, builds, tests and runs the example on wasm, wasm-gc, JS and Linux
 native. A separate job regenerates the grammar artifacts and Java-reference
 tests, then rejects any difference from the committed outputs.
+
+## Official functional descriptors
+
+The 350 static functional descriptors in all 13 ANTLR 4.13.2 categories are
+preserved and executed against both targets. See
+[corpus provenance and exact assertions](../conformance/README.md).
+`tools/upstream_oracle.py` also compares every declared attribute in every rule
+frame and observable Parser member state; action offsets come from an
+instrumented Java reference. The migration reports every generation failure.
+JVM debug output and internal Java runtime API tests are outside this functional
+corpus. The 13 lifecycle/label cases additionally check init/after/finally and
+synthetic repeated-label capture order. C# snapshots cover all 8 Lexer and 22
+preprocessor mutating helper entrances, including their stacks and return values.

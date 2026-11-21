@@ -1,0 +1,147 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/leftrecursion_returnvalueandactionsandlabels_1"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct TAddContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TAddContext::as_rule(Self) -> TEContext
+pub fn TAddContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TAnIDContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TAnIDContext::as_rule(Self) -> TEContext
+pub fn TAnIDContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TAnIntContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TAnIntContext::as_rule(Self) -> TEContext
+pub fn TAnIntContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TDecContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TDecContext::as_rule(Self) -> TEContext
+pub fn TDecContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TEContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TEContext::alternative(Self) -> String?
+pub fn TEContext::as_add(Self) -> TAddContext?
+pub fn TEContext::as_anID(Self) -> TAnIDContext?
+pub fn TEContext::as_anInt(Self) -> TAnIntContext?
+pub fn TEContext::as_dec(Self) -> TDecContext?
+pub fn TEContext::as_inc(Self) -> TIncContext?
+pub fn TEContext::as_mult(Self) -> TMultContext?
+pub fn TEContext::as_parens(Self) -> TParensContext?
+pub fn TEContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TEContext::get_e(Self) -> Array[Self]
+pub fn TEContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::label_a(Self) -> Array[Self]
+pub fn TEContext::label_b(Self) -> Array[Self]
+pub fn TEContext::label_op(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::label_x(Self) -> Array[Self]
+pub fn TEContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct TEContextAttributes {
+  attr_v : Int32?
+}
+pub fn TEContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct TIncContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TIncContext::as_rule(Self) -> TEContext
+pub fn TIncContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_s : (TSContext) -> Unit
+  exit_s : (TSContext) -> Unit
+  enter_e : (TEContext) -> Unit
+  exit_e : (TEContext) -> Unit
+  enter_alt_add : (TAddContext) -> Unit
+  exit_alt_add : (TAddContext) -> Unit
+  enter_alt_anID : (TAnIDContext) -> Unit
+  exit_alt_anID : (TAnIDContext) -> Unit
+  enter_alt_anInt : (TAnIntContext) -> Unit
+  exit_alt_anInt : (TAnIntContext) -> Unit
+  enter_alt_dec : (TDecContext) -> Unit
+  exit_alt_dec : (TDecContext) -> Unit
+  enter_alt_inc : (TIncContext) -> Unit
+  exit_alt_inc : (TIncContext) -> Unit
+  enter_alt_mult : (TMultContext) -> Unit
+  exit_alt_mult : (TMultContext) -> Unit
+  enter_alt_parens : (TParensContext) -> Unit
+  exit_alt_parens : (TParensContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TMultContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TMultContext::as_rule(Self) -> TEContext
+pub fn TMultContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TParensContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TParensContext::as_rule(Self) -> TEContext
+pub fn TParensContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_e(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TEContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_s(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TSContext raise @moonantlr.RuntimeError
+
+pub struct TSContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TSContext::alternative(Self) -> String?
+pub fn TSContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TSContext::get_e(Self) -> Array[TEContext]
+pub fn TSContext::get_s(Self) -> Array[Self]
+pub fn TSContext::label_q(Self) -> Array[TEContext]
+pub fn TSContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

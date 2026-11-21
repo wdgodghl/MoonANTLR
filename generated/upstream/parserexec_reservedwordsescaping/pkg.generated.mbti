@@ -1,0 +1,136 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_reservedwordsescaping"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
+// Errors
+
+// Types and methods
+pub struct GArgsContext {
+  node : @moonantlr.RuleContext
+}
+pub fn GArgsContext::alternative(Self) -> String?
+pub fn GArgsContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn GArgsContext::get_args(Self) -> Array[Self]
+pub fn GArgsContext::get_for(Self) -> Array[GForContext]
+pub fn GArgsContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct GArgsContextAttributes {
+  attr_else : Int32?
+  attr_return : Int32?
+}
+pub fn GArgsContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct GClassContext {
+  node : @moonantlr.RuleContext
+}
+pub fn GClassContext::as_rule(Self) -> GContinueContext
+pub fn GClassContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct GContinueContext {
+  node : @moonantlr.RuleContext
+}
+pub fn GContinueContext::alternative(Self) -> String?
+pub fn GContinueContext::as_class(Self) -> GClassContext?
+pub fn GContinueContext::as_else(Self) -> GElseContext?
+pub fn GContinueContext::as_int(Self) -> GIntContext?
+pub fn GContinueContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn GContinueContext::get_continue(Self) -> Array[Self]
+pub fn GContinueContext::get_for(Self) -> Array[GForContext]
+pub fn GContinueContext::get_token_BREAK(Self) -> Array[@moonantlr.Token]
+pub fn GContinueContext::get_token_CONTINUE_(Self) -> Array[@moonantlr.Token]
+pub fn GContinueContext::get_token_IF(Self) -> Array[@moonantlr.Token]
+pub fn GContinueContext::label_break(Self) -> Array[@moonantlr.Token]
+pub fn GContinueContext::label_if(Self) -> Array[@moonantlr.Token]
+pub fn GContinueContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct GContinueContextAttributes {
+  attr_return : Int32?
+}
+pub fn GContinueContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct GElseContext {
+  node : @moonantlr.RuleContext
+}
+pub fn GElseContext::as_rule(Self) -> GContinueContext
+pub fn GElseContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct GForContext {
+  node : @moonantlr.RuleContext
+}
+pub fn GForContext::alternative(Self) -> String?
+pub fn GForContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn GForContext::get_for(Self) -> Array[Self]
+pub fn GForContext::get_token_FOR(Self) -> Array[@moonantlr.Token]
+pub fn GForContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct GIntContext {
+  node : @moonantlr.RuleContext
+}
+pub fn GIntContext::as_rule(Self) -> GContinueContext
+pub fn GIntContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct GLexer {
+  atn : @moonantlr.Atn
+}
+pub fn GLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn GLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct GListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_root : (GRootContext) -> Unit
+  exit_root : (GRootContext) -> Unit
+  enter_continue : (GContinueContext) -> Unit
+  exit_continue : (GContinueContext) -> Unit
+  enter_args : (GArgsContext) -> Unit
+  exit_args : (GArgsContext) -> Unit
+  enter_for : (GForContext) -> Unit
+  exit_for : (GForContext) -> Unit
+  enter_alt_class : (GClassContext) -> Unit
+  exit_alt_class : (GClassContext) -> Unit
+  enter_alt_else : (GElseContext) -> Unit
+  exit_alt_else : (GElseContext) -> Unit
+  enter_alt_int : (GIntContext) -> Unit
+  exit_alt_int : (GIntContext) -> Unit
+}
+pub fn GListener::new() -> Self
+pub fn GListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct GParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn GParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn GParser::parse_args(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> GArgsContext raise @moonantlr.RuntimeError
+pub fn GParser::parse_continue(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> GContinueContext raise @moonantlr.RuntimeError
+pub fn GParser::parse_for(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> GForContext raise @moonantlr.RuntimeError
+pub fn GParser::parse_root(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> GRootContext raise @moonantlr.RuntimeError
+
+pub struct GRootContext {
+  node : @moonantlr.RuleContext
+}
+pub fn GRootContext::alternative(Self) -> String?
+pub fn GRootContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn GRootContext::get_continue(Self) -> Array[GContinueContext]
+pub fn GRootContext::get_root(Self) -> Array[Self]
+pub fn GRootContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,86 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parsetrees_extratokensandaltlabels"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct TAltAContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TAltAContext::as_rule(Self) -> TVContext
+pub fn TAltAContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TAltBContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TAltBContext::as_rule(Self) -> TVContext
+pub fn TAltBContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_s : (TSContext) -> Unit
+  exit_s : (TSContext) -> Unit
+  enter_v : (TVContext) -> Unit
+  exit_v : (TVContext) -> Unit
+  enter_alt_altA : (TAltAContext) -> Unit
+  exit_alt_altA : (TAltAContext) -> Unit
+  enter_alt_altB : (TAltBContext) -> Unit
+  exit_alt_altB : (TAltBContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_s(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TSContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_v(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TVContext raise @moonantlr.RuntimeError
+
+pub struct TSContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TSContext::alternative(Self) -> String?
+pub fn TSContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TSContext::get_s(Self) -> Array[Self]
+pub fn TSContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TSContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TSContext::get_v(Self) -> Array[TVContext]
+pub fn TSContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TVContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TVContext::alternative(Self) -> String?
+pub fn TVContext::as_altA(Self) -> TAltAContext?
+pub fn TVContext::as_altB(Self) -> TAltBContext?
+pub fn TVContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TVContext::get_token_A(Self) -> Array[@moonantlr.Token]
+pub fn TVContext::get_token_B(Self) -> Array[@moonantlr.Token]
+pub fn TVContext::get_v(Self) -> Array[Self]
+pub fn TVContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

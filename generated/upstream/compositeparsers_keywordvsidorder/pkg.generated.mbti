@@ -1,0 +1,55 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/compositeparsers_keywordvsidorder"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn lexer_rule_names() -> Array[String]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct MAContext {
+  node : @moonantlr.RuleContext
+}
+pub fn MAContext::alternative(Self) -> String?
+pub fn MAContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn MAContext::get_a(Self) -> Array[Self]
+pub fn MAContext::get_token_A(Self) -> Array[@moonantlr.Token]
+pub fn MAContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct MLexer {
+  atn : @moonantlr.Atn
+}
+pub fn MLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn MLexer::tokenize(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct MListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_a : (MAContext) -> Unit
+  exit_a : (MAContext) -> Unit
+}
+pub fn MListener::new() -> Self
+pub fn MListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct MParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn MParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn MParser::parse_a(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> MAContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

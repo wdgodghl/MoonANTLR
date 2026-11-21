@@ -1,0 +1,58 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_listlabelsonrulerefstartofalt"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct TestExpressionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TestExpressionContext::alternative(Self) -> String?
+pub fn TestExpressionContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TestExpressionContext::get_expression(Self) -> Array[Self]
+pub fn TestExpressionContext::get_token_AND(Self) -> Array[@moonantlr.Token]
+pub fn TestExpressionContext::get_token_IDENTIFIER(Self) -> Array[@moonantlr.Token]
+pub fn TestExpressionContext::get_token_NOT(Self) -> Array[@moonantlr.Token]
+pub fn TestExpressionContext::get_token_OR(Self) -> Array[@moonantlr.Token]
+pub fn TestExpressionContext::label_args(Self) -> Array[Self]
+pub fn TestExpressionContext::label_op(Self) -> Array[@moonantlr.Token]
+pub fn TestExpressionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TestLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TestLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TestLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TestListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_expression : (TestExpressionContext) -> Unit
+  exit_expression : (TestExpressionContext) -> Unit
+}
+pub fn TestListener::new() -> Self
+pub fn TestListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TestParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TestParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TestParser::parse_expression(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TestExpressionContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

@@ -207,3 +207,20 @@ complete upstream semantic/prediction corpus is still being expanded.
 order. `RecoveryVisitor[T]` reduces a recovered tree with separate ordinary
 and error Token callbacks. The default recovery oracle compares Listener traces
 as well as the complete tree and Token metadata.
+
+## Lifecycle, recovery labels and contextual lookahead
+
+`parser_action_sources()` includes rule lifecycle bodies after inline actions.
+`rule_action_sites()` identifies `(rule, phase, ordinal)` for `init`, `after`
+and `finally`; bind these with the same Parser action/semantic hooks. Named
+rule actions are retained rather than executed as source-language code.
+
+Each base rule context exposes `from_raw(node)`, returning `None` for a different
+rule name. Label selectors preserve inserted set Tokens in parse order even
+where Java's generated set recovery omits a tree error node.
+
+`RuleSemantics.wrap` constructs a fresh left-recursive attribute frame; override
+it to retain arguments and initialize declared return/local defaults. The previous
+context is its first child. `LexerContextPredicate` and
+`SemanticEvent.lookahead(one_based_offset)` support text, position and dynamic
+lookahead-dependent host predicates. Prediction bindings must remain pure.

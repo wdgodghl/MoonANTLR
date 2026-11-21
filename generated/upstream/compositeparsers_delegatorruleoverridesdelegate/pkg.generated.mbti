@@ -1,0 +1,66 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/compositeparsers_delegatorruleoverridesdelegate"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct MAContext {
+  node : @moonantlr.RuleContext
+}
+pub fn MAContext::alternative(Self) -> String?
+pub fn MAContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn MAContext::get_a(Self) -> Array[Self]
+pub fn MAContext::get_b(Self) -> Array[MBContext]
+pub fn MAContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct MBContext {
+  node : @moonantlr.RuleContext
+}
+pub fn MBContext::alternative(Self) -> String?
+pub fn MBContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn MBContext::get_b(Self) -> Array[Self]
+pub fn MBContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn MBContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn MBContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct MLexer {
+  atn : @moonantlr.Atn
+}
+pub fn MLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn MLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct MListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_b : (MBContext) -> Unit
+  exit_b : (MBContext) -> Unit
+  enter_a : (MAContext) -> Unit
+  exit_a : (MAContext) -> Unit
+}
+pub fn MListener::new() -> Self
+pub fn MListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct MParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn MParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn MParser::parse_a(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> MAContext raise @moonantlr.RuntimeError
+pub fn MParser::parse_b(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> MBContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,76 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/sempredevalparser_disabledalternative"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
+// Errors
+
+// Types and methods
+pub struct TAnythingContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TAnythingContext::alternative(Self) -> String?
+pub fn TAnythingContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TAnythingContext::get_anything(Self) -> Array[Self]
+pub fn TAnythingContext::get_token_ANY_CHAR(Self) -> Array[@moonantlr.Token]
+pub fn TAnythingContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TContentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TContentContext::alternative(Self) -> String?
+pub fn TContentContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TContentContext::get_anything(Self) -> Array[TAnythingContext]
+pub fn TContentContext::get_content(Self) -> Array[Self]
+pub fn TContentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TCppCompilationUnitContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TCppCompilationUnitContext::alternative(Self) -> String?
+pub fn TCppCompilationUnitContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TCppCompilationUnitContext::get_content(Self) -> Array[TContentContext]
+pub fn TCppCompilationUnitContext::get_cppCompilationUnit(Self) -> Array[Self]
+pub fn TCppCompilationUnitContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TCppCompilationUnitContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_cppCompilationUnit : (TCppCompilationUnitContext) -> Unit
+  exit_cppCompilationUnit : (TCppCompilationUnitContext) -> Unit
+  enter_content : (TContentContext) -> Unit
+  exit_content : (TContentContext) -> Unit
+  enter_anything : (TAnythingContext) -> Unit
+  exit_anything : (TAnythingContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_anything(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> TAnythingContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_content(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> TContentContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_cppCompilationUnit(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> TCppCompilationUnitContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

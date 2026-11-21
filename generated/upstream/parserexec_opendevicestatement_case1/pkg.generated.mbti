@@ -1,0 +1,70 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_opendevicestatement_case1"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct OpenDeviceStatementLexer {
+  atn : @moonantlr.Atn
+}
+pub fn OpenDeviceStatementLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn OpenDeviceStatementLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct OpenDeviceStatementListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_program : (OpenDeviceStatementProgramContext) -> Unit
+  exit_program : (OpenDeviceStatementProgramContext) -> Unit
+  enter_statement : (OpenDeviceStatementStatementContext) -> Unit
+  exit_statement : (OpenDeviceStatementStatementContext) -> Unit
+}
+pub fn OpenDeviceStatementListener::new() -> Self
+pub fn OpenDeviceStatementListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct OpenDeviceStatementParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn OpenDeviceStatementParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn OpenDeviceStatementParser::parse_program(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> OpenDeviceStatementProgramContext raise @moonantlr.RuntimeError
+pub fn OpenDeviceStatementParser::parse_statement(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> OpenDeviceStatementStatementContext raise @moonantlr.RuntimeError
+
+pub struct OpenDeviceStatementProgramContext {
+  node : @moonantlr.RuleContext
+}
+pub fn OpenDeviceStatementProgramContext::alternative(Self) -> String?
+pub fn OpenDeviceStatementProgramContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn OpenDeviceStatementProgramContext::get_program(Self) -> Array[Self]
+pub fn OpenDeviceStatementProgramContext::get_statement(Self) -> Array[OpenDeviceStatementStatementContext]
+pub fn OpenDeviceStatementProgramContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn OpenDeviceStatementProgramContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct OpenDeviceStatementStatementContext {
+  node : @moonantlr.RuleContext
+}
+pub fn OpenDeviceStatementStatementContext::alternative(Self) -> String?
+pub fn OpenDeviceStatementStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn OpenDeviceStatementStatementContext::get_statement(Self) -> Array[Self]
+pub fn OpenDeviceStatementStatementContext::get_token_OPT1(Self) -> Array[@moonantlr.Token]
+pub fn OpenDeviceStatementStatementContext::get_token_OPT2(Self) -> Array[@moonantlr.Token]
+pub fn OpenDeviceStatementStatementContext::get_token_OPT3(Self) -> Array[@moonantlr.Token]
+pub fn OpenDeviceStatementStatementContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn OpenDeviceStatementStatementContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn OpenDeviceStatementStatementContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

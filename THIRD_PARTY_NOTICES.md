@@ -35,3 +35,16 @@ test driver is original MoonANTLR verification code.
 
 The port maps host runtime methods to MoonBit state and semantic-frame bindings.
 The tests and source mapping are documented in `docs/CSHARP_MIGRATION.md`.
+
+## ANTLR runtime test descriptors
+
+`conformance/upstream` contains the original static functional descriptors and
+Java target template from ANTLR 4.13.2's `runtime-testsuite/resources`.
+They retain the upstream BSD-3-Clause license in `conformance/upstream/LICENSE`.
+`conformance/position_adjusting_test.mbt` adapts the descriptor's Java
+PositionAdjustingLexer operations. Generated fixture packages under
+`generated/upstream` derive from those descriptor grammars. Source paths,
+reproduction and comparison boundaries are recorded in `conformance/README.md`.
+`tools/Upstream*.java`, `tools/upstream_oracle.py` and the CSharpTraceOracle
+test driver are MoonANTLR verification code; they do not replace the original
+reference helper sources.

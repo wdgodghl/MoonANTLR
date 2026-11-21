@@ -1,0 +1,65 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_orderingpredicates"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct Issue2301ConstantContext {
+  node : @moonantlr.RuleContext
+}
+pub fn Issue2301ConstantContext::alternative(Self) -> String?
+pub fn Issue2301ConstantContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn Issue2301ConstantContext::get_constant(Self) -> Array[Self]
+pub fn Issue2301ConstantContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn Issue2301ConstantContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct Issue2301ExprContext {
+  node : @moonantlr.RuleContext
+}
+pub fn Issue2301ExprContext::alternative(Self) -> String?
+pub fn Issue2301ExprContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn Issue2301ExprContext::get_constant(Self) -> Array[Issue2301ConstantContext]
+pub fn Issue2301ExprContext::get_expr(Self) -> Array[Self]
+pub fn Issue2301ExprContext::get_token_AT(Self) -> Array[@moonantlr.Token]
+pub fn Issue2301ExprContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn Issue2301ExprContext::get_token_X(Self) -> Array[@moonantlr.Token]
+pub fn Issue2301ExprContext::get_token_Y(Self) -> Array[@moonantlr.Token]
+pub fn Issue2301ExprContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct Issue2301Lexer {
+  atn : @moonantlr.Atn
+}
+pub fn Issue2301Lexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn Issue2301Lexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct Issue2301Listener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_constant : (Issue2301ConstantContext) -> Unit
+  exit_constant : (Issue2301ConstantContext) -> Unit
+  enter_expr : (Issue2301ExprContext) -> Unit
+  exit_expr : (Issue2301ExprContext) -> Unit
+}
+pub fn Issue2301Listener::new() -> Self
+pub fn Issue2301Listener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct Issue2301Parser {
+  grammar : @moonantlr.Grammar
+}
+pub fn Issue2301Parser::new() -> Self raise @moonantlr.RuntimeError
+pub fn Issue2301Parser::parse_constant(Self, String) -> Issue2301ConstantContext raise @moonantlr.RuntimeError
+pub fn Issue2301Parser::parse_expr(Self, String) -> Issue2301ExprContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

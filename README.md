@@ -22,7 +22,7 @@ MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` �
 - 畸形 ATN、错误输入和不支持特性的回归测试。
 - 带通道筛选和安全游标操作的 Token 流、可读错误诊断和通用树折叠接口。
 
-预测和代码生成均为首版实现，尚未达到上游 ANTLR 完整兼容性。预测按共享工作预算逐 Token 前瞻；多解时取语法顺序中的第一个完整结果。支持 Parser 与 Lexer 谓词回调、Lexer 非贪婪量词，以及可选的 Token 修复与同步恢复。Lexer 和 Parser 动作可绑定回调，词法错误可选择恢复。语义入口支持属性帧、动作更新与后续上下文谓词，完整上游预测语义仍在扩展。详细边界见[架构说明](docs/ARCHITECTURE.md)。
+预测按共享工作预算逐 Token 前瞻，支持 SLL／LL 冲突选择、上下文谓词、左递归属性帧、即时动作、规则生命周期和默认错误恢复。已迁移 ANTLR 4.13.2 的 13 类、350 个官方静态功能描述用例，逐项比较 Java 的 Token、树、诊断、动作及属性。宿主语言正文仍需绑定等义 MoonBit 实现。验证范围见[上游对照说明](conformance/README.md)和[架构说明](docs/ARCHITECTURE.md)。
 
 ## 安装与运行
 
@@ -73,7 +73,7 @@ JS 目标需要 Node.js；native 目标需要对应平台的 C 工具链。
 `wdgodghl/moonantlr/csharp` 提供原版 C# Lexer、Parser 和预处理语法的
 MoonBit 宿主实现。支持条件编译过滤、插值字符串状态、上下文谓词与
 包含隐藏通道的 Token 索引判断。运行 `moon run examples/csharp`。
-37 个 Java 对照输入及 17 个恢复对照比较 Token、预处理返回值、解析树和错误位置，详见
+39 个 Java 对照输入、19 个恢复对照及 39 个内部状态快照比较 Token、预处理返回值、解析树、错误位置和辅助方法状态，详见
 [C# 迁移记录](docs/CSHARP_MIGRATION.md)。这些派生组件采用 EPL-1.0。
 
 ## 浏览器示例

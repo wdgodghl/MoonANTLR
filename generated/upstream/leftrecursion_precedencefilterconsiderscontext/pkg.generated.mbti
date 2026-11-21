@@ -1,0 +1,81 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/leftrecursion_precedencefilterconsiderscontext"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct TLetterAContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TLetterAContext::alternative(Self) -> String?
+pub fn TLetterAContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TLetterAContext::get_letterA(Self) -> Array[Self]
+pub fn TLetterAContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TLetterAContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_prog : (TProgContext) -> Unit
+  exit_prog : (TProgContext) -> Unit
+  enter_statement : (TStatementContext) -> Unit
+  exit_statement : (TStatementContext) -> Unit
+  enter_letterA : (TLetterAContext) -> Unit
+  exit_letterA : (TLetterAContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_letterA(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TLetterAContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_prog(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TProgContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_statement(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TStatementContext raise @moonantlr.RuntimeError
+
+pub struct TProgContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TProgContext::alternative(Self) -> String?
+pub fn TProgContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TProgContext::get_prog(Self) -> Array[Self]
+pub fn TProgContext::get_statement(Self) -> Array[TStatementContext]
+pub fn TProgContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TProgContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TStatementContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TStatementContext::alternative(Self) -> String?
+pub fn TStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TStatementContext::get_letterA(Self) -> Array[TLetterAContext]
+pub fn TStatementContext::get_statement(Self) -> Array[Self]
+pub fn TStatementContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TStatementContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

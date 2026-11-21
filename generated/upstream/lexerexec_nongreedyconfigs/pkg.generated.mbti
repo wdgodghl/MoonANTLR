@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/lexerexec_nongreedyconfigs"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn lexer_data() -> Array[Int32]
+
+pub fn lexer_rule_names() -> Array[String]
+
+// Errors
+
+// Types and methods
+pub struct L {
+  atn : @moonantlr.Atn
+}
+pub fn L::new() -> Self raise @moonantlr.RuntimeError
+pub fn L::tokenize(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

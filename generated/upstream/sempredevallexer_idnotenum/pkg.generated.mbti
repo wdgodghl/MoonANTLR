@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/sempredevallexer_idnotenum"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn lexer_data() -> Array[Int32]
+
+pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)]
+
+pub fn lexer_rule_names() -> Array[String]
+
+// Errors
+
+// Types and methods
+pub struct L {
+  atn : @moonantlr.Atn
+}
+pub fn L::new() -> Self raise @moonantlr.RuntimeError
+pub fn L::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (@moonantlr.LexerPredicateEvent) -> Bool) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

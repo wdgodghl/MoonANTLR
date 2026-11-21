@@ -1,0 +1,62 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parsererrors_duplicatedleftrecursivecall_4"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct TExprContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TExprContext::alternative(Self) -> String?
+pub fn TExprContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TExprContext::get_expr(Self) -> Array[Self]
+pub fn TExprContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TExprContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_start : (TStartContext) -> Unit
+  exit_start : (TStartContext) -> Unit
+  enter_expr : (TExprContext) -> Unit
+  exit_expr : (TExprContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_expr(Self, String) -> TExprContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_start(Self, String) -> TStartContext raise @moonantlr.RuntimeError
+
+pub struct TStartContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TStartContext::alternative(Self) -> String?
+pub fn TStartContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TStartContext::get_expr(Self) -> Array[TExprContext]
+pub fn TStartContext::get_start(Self) -> Array[Self]
+pub fn TStartContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TStartContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

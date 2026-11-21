@@ -1,0 +1,51 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_multipleeofhandling"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_prog : (TProgContext) -> Unit
+  exit_prog : (TProgContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_prog(Self, String) -> TProgContext raise @moonantlr.RuntimeError
+
+pub struct TProgContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TProgContext::alternative(Self) -> String?
+pub fn TProgContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TProgContext::get_prog(Self) -> Array[Self]
+pub fn TProgContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TProgContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TProgContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TProgContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

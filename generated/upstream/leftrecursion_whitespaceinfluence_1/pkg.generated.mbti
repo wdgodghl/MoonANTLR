@@ -1,0 +1,343 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/leftrecursion_whitespaceinfluence_1"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct ExprDoAndContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoAndContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoAndContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoDivideContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoDivideContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoDivideContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoEqualContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoEqualContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoEqualContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoFunctionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoFunctionContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoFunctionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoGreatherContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoGreatherContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoGreatherContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoGreatherEqualContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoGreatherEqualContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoGreatherEqualContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoInContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoInContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoInContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoLesserContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoLesserContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoLesserContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoLesserEqualContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoLesserEqualContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoLesserEqualContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoMinusContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoMinusContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoMinusContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoModuloContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoModuloContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoModuloContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoMultipyContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoMultipyContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoMultipyContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoNegateContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoNegateContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoNegateContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoNotContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoNotContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoNotContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoNotEqualContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoNotEqualContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoNotEqualContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoOrContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoOrContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoOrContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoParenthesisContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoParenthesisContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoParenthesisContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoPlusContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoPlusContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoPlusContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoPositivContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoPositivContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoPositivContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprDoPowerContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprDoPowerContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprDoPowerContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprExpressionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprExpressionContext::alternative(Self) -> String?
+pub fn ExprExpressionContext::as_doAnd(Self) -> ExprDoAndContext?
+pub fn ExprExpressionContext::as_doDivide(Self) -> ExprDoDivideContext?
+pub fn ExprExpressionContext::as_doEqual(Self) -> ExprDoEqualContext?
+pub fn ExprExpressionContext::as_doFunction(Self) -> ExprDoFunctionContext?
+pub fn ExprExpressionContext::as_doGreather(Self) -> ExprDoGreatherContext?
+pub fn ExprExpressionContext::as_doGreatherEqual(Self) -> ExprDoGreatherEqualContext?
+pub fn ExprExpressionContext::as_doIn(Self) -> ExprDoInContext?
+pub fn ExprExpressionContext::as_doLesser(Self) -> ExprDoLesserContext?
+pub fn ExprExpressionContext::as_doLesserEqual(Self) -> ExprDoLesserEqualContext?
+pub fn ExprExpressionContext::as_doMinus(Self) -> ExprDoMinusContext?
+pub fn ExprExpressionContext::as_doModulo(Self) -> ExprDoModuloContext?
+pub fn ExprExpressionContext::as_doMultipy(Self) -> ExprDoMultipyContext?
+pub fn ExprExpressionContext::as_doNegate(Self) -> ExprDoNegateContext?
+pub fn ExprExpressionContext::as_doNot(Self) -> ExprDoNotContext?
+pub fn ExprExpressionContext::as_doNotEqual(Self) -> ExprDoNotEqualContext?
+pub fn ExprExpressionContext::as_doOr(Self) -> ExprDoOrContext?
+pub fn ExprExpressionContext::as_doParenthesis(Self) -> ExprDoParenthesisContext?
+pub fn ExprExpressionContext::as_doPlus(Self) -> ExprDoPlusContext?
+pub fn ExprExpressionContext::as_doPositiv(Self) -> ExprDoPositivContext?
+pub fn ExprExpressionContext::as_doPower(Self) -> ExprDoPowerContext?
+pub fn ExprExpressionContext::as_newArray(Self) -> ExprNewArrayContext?
+pub fn ExprExpressionContext::as_newDateTime(Self) -> ExprNewDateTimeContext?
+pub fn ExprExpressionContext::as_newFalseBoolean(Self) -> ExprNewFalseBooleanContext?
+pub fn ExprExpressionContext::as_newIdentifier(Self) -> ExprNewIdentifierContext?
+pub fn ExprExpressionContext::as_newNull(Self) -> ExprNewNullContext?
+pub fn ExprExpressionContext::as_newNumber(Self) -> ExprNewNumberContext?
+pub fn ExprExpressionContext::as_newString(Self) -> ExprNewStringContext?
+pub fn ExprExpressionContext::as_newTrueBoolean(Self) -> ExprNewTrueBooleanContext?
+pub fn ExprExpressionContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExprExpressionContext::get_expression(Self) -> Array[Self]
+pub fn ExprExpressionContext::get_token_DATE(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_K_AND(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_K_FALSE(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_K_IN(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_K_NULL(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_K_OR(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_K_TRUE(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_NUMBER(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_SQ_STRING(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_11(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_12(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_13(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_14(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_15(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_16(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_17(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_18(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_19(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_20(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn ExprExpressionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprLexer {
+  atn : @moonantlr.Atn
+}
+pub fn ExprLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn ExprLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct ExprListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_prog : (ExprProgContext) -> Unit
+  exit_prog : (ExprProgContext) -> Unit
+  enter_expression : (ExprExpressionContext) -> Unit
+  exit_expression : (ExprExpressionContext) -> Unit
+  enter_alt_doAnd : (ExprDoAndContext) -> Unit
+  exit_alt_doAnd : (ExprDoAndContext) -> Unit
+  enter_alt_doDivide : (ExprDoDivideContext) -> Unit
+  exit_alt_doDivide : (ExprDoDivideContext) -> Unit
+  enter_alt_doEqual : (ExprDoEqualContext) -> Unit
+  exit_alt_doEqual : (ExprDoEqualContext) -> Unit
+  enter_alt_doFunction : (ExprDoFunctionContext) -> Unit
+  exit_alt_doFunction : (ExprDoFunctionContext) -> Unit
+  enter_alt_doGreather : (ExprDoGreatherContext) -> Unit
+  exit_alt_doGreather : (ExprDoGreatherContext) -> Unit
+  enter_alt_doGreatherEqual : (ExprDoGreatherEqualContext) -> Unit
+  exit_alt_doGreatherEqual : (ExprDoGreatherEqualContext) -> Unit
+  enter_alt_doIn : (ExprDoInContext) -> Unit
+  exit_alt_doIn : (ExprDoInContext) -> Unit
+  enter_alt_doLesser : (ExprDoLesserContext) -> Unit
+  exit_alt_doLesser : (ExprDoLesserContext) -> Unit
+  enter_alt_doLesserEqual : (ExprDoLesserEqualContext) -> Unit
+  exit_alt_doLesserEqual : (ExprDoLesserEqualContext) -> Unit
+  enter_alt_doMinus : (ExprDoMinusContext) -> Unit
+  exit_alt_doMinus : (ExprDoMinusContext) -> Unit
+  enter_alt_doModulo : (ExprDoModuloContext) -> Unit
+  exit_alt_doModulo : (ExprDoModuloContext) -> Unit
+  enter_alt_doMultipy : (ExprDoMultipyContext) -> Unit
+  exit_alt_doMultipy : (ExprDoMultipyContext) -> Unit
+  enter_alt_doNegate : (ExprDoNegateContext) -> Unit
+  exit_alt_doNegate : (ExprDoNegateContext) -> Unit
+  enter_alt_doNot : (ExprDoNotContext) -> Unit
+  exit_alt_doNot : (ExprDoNotContext) -> Unit
+  enter_alt_doNotEqual : (ExprDoNotEqualContext) -> Unit
+  exit_alt_doNotEqual : (ExprDoNotEqualContext) -> Unit
+  enter_alt_doOr : (ExprDoOrContext) -> Unit
+  exit_alt_doOr : (ExprDoOrContext) -> Unit
+  enter_alt_doParenthesis : (ExprDoParenthesisContext) -> Unit
+  exit_alt_doParenthesis : (ExprDoParenthesisContext) -> Unit
+  enter_alt_doPlus : (ExprDoPlusContext) -> Unit
+  exit_alt_doPlus : (ExprDoPlusContext) -> Unit
+  enter_alt_doPositiv : (ExprDoPositivContext) -> Unit
+  exit_alt_doPositiv : (ExprDoPositivContext) -> Unit
+  enter_alt_doPower : (ExprDoPowerContext) -> Unit
+  exit_alt_doPower : (ExprDoPowerContext) -> Unit
+  enter_alt_newArray : (ExprNewArrayContext) -> Unit
+  exit_alt_newArray : (ExprNewArrayContext) -> Unit
+  enter_alt_newDateTime : (ExprNewDateTimeContext) -> Unit
+  exit_alt_newDateTime : (ExprNewDateTimeContext) -> Unit
+  enter_alt_newFalseBoolean : (ExprNewFalseBooleanContext) -> Unit
+  exit_alt_newFalseBoolean : (ExprNewFalseBooleanContext) -> Unit
+  enter_alt_newIdentifier : (ExprNewIdentifierContext) -> Unit
+  exit_alt_newIdentifier : (ExprNewIdentifierContext) -> Unit
+  enter_alt_newNull : (ExprNewNullContext) -> Unit
+  exit_alt_newNull : (ExprNewNullContext) -> Unit
+  enter_alt_newNumber : (ExprNewNumberContext) -> Unit
+  exit_alt_newNumber : (ExprNewNumberContext) -> Unit
+  enter_alt_newString : (ExprNewStringContext) -> Unit
+  exit_alt_newString : (ExprNewStringContext) -> Unit
+  enter_alt_newTrueBoolean : (ExprNewTrueBooleanContext) -> Unit
+  exit_alt_newTrueBoolean : (ExprNewTrueBooleanContext) -> Unit
+}
+pub fn ExprListener::new() -> Self
+pub fn ExprListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct ExprNewArrayContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewArrayContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewArrayContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprNewDateTimeContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewDateTimeContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewDateTimeContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprNewFalseBooleanContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewFalseBooleanContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewFalseBooleanContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprNewIdentifierContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewIdentifierContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewIdentifierContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprNewNullContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewNullContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewNullContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprNewNumberContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewNumberContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewNumberContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprNewStringContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewStringContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewStringContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprNewTrueBooleanContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprNewTrueBooleanContext::as_rule(Self) -> ExprExpressionContext
+pub fn ExprNewTrueBooleanContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExprParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn ExprParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn ExprParser::parse_expression(Self, String) -> ExprExpressionContext raise @moonantlr.RuntimeError
+pub fn ExprParser::parse_prog(Self, String) -> ExprProgContext raise @moonantlr.RuntimeError
+
+pub struct ExprProgContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExprProgContext::alternative(Self) -> String?
+pub fn ExprProgContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExprProgContext::get_expression(Self) -> Array[ExprExpressionContext]
+pub fn ExprProgContext::get_prog(Self) -> Array[Self]
+pub fn ExprProgContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn ExprProgContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

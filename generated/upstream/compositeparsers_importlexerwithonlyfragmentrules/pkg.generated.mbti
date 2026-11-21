@@ -1,0 +1,49 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/compositeparsers_importlexerwithonlyfragmentrules"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct TestLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TestLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TestLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TestListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_program : (TestProgramContext) -> Unit
+  exit_program : (TestProgramContext) -> Unit
+}
+pub fn TestListener::new() -> Self
+pub fn TestListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TestParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TestParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TestParser::parse_program(Self, String) -> TestProgramContext raise @moonantlr.RuntimeError
+
+pub struct TestProgramContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TestProgramContext::alternative(Self) -> String?
+pub fn TestProgramContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TestProgramContext::get_program(Self) -> Array[Self]
+pub fn TestProgramContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TestProgramContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

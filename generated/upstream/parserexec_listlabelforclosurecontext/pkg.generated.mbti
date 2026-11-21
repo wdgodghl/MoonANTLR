@@ -1,0 +1,111 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_listlabelforclosurecontext"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct TElseIfStatementContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TElseIfStatementContext::alternative(Self) -> String?
+pub fn TElseIfStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TElseIfStatementContext::get_elseIfStatement(Self) -> Array[Self]
+pub fn TElseIfStatementContext::get_executableStatement(Self) -> Array[TExecutableStatementContext]
+pub fn TElseIfStatementContext::get_expression(Self) -> Array[TExpressionContext]
+pub fn TElseIfStatementContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TElseIfStatementContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TElseIfStatementContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn TElseIfStatementContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TElseStatementContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TElseStatementContext::alternative(Self) -> String?
+pub fn TElseStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TElseStatementContext::get_elseStatement(Self) -> Array[Self]
+pub fn TElseStatementContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn TElseStatementContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TExecutableStatementContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TExecutableStatementContext::alternative(Self) -> String?
+pub fn TExecutableStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TExecutableStatementContext::get_executableStatement(Self) -> Array[Self]
+pub fn TExecutableStatementContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn TExecutableStatementContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TExpressionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TExpressionContext::alternative(Self) -> String?
+pub fn TExpressionContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TExpressionContext::get_expression(Self) -> Array[Self]
+pub fn TExpressionContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn TExpressionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TIfStatementContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TIfStatementContext::alternative(Self) -> String?
+pub fn TIfStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TIfStatementContext::get_elseIfStatement(Self) -> Array[TElseIfStatementContext]
+pub fn TIfStatementContext::get_elseStatement(Self) -> Array[TElseStatementContext]
+pub fn TIfStatementContext::get_executableStatement(Self) -> Array[TExecutableStatementContext]
+pub fn TIfStatementContext::get_expression(Self) -> Array[TExpressionContext]
+pub fn TIfStatementContext::get_ifStatement(Self) -> Array[Self]
+pub fn TIfStatementContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TIfStatementContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TIfStatementContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn TIfStatementContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_ifStatement : (TIfStatementContext) -> Unit
+  exit_ifStatement : (TIfStatementContext) -> Unit
+  enter_elseIfStatement : (TElseIfStatementContext) -> Unit
+  exit_elseIfStatement : (TElseIfStatementContext) -> Unit
+  enter_expression : (TExpressionContext) -> Unit
+  exit_expression : (TExpressionContext) -> Unit
+  enter_executableStatement : (TExecutableStatementContext) -> Unit
+  exit_executableStatement : (TExecutableStatementContext) -> Unit
+  enter_elseStatement : (TElseStatementContext) -> Unit
+  exit_elseStatement : (TElseStatementContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_elseIfStatement(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TElseIfStatementContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_elseStatement(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TElseStatementContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_executableStatement(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TExecutableStatementContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_expression(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TExpressionContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_ifStatement(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TIfStatementContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,81 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/sempredevalparser_actionshidepredsinglobalfollow"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
+// Errors
+
+// Types and methods
+pub struct TEContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TEContext::alternative(Self) -> String?
+pub fn TEContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TEContext::get_e(Self) -> Array[Self]
+pub fn TEContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn TEContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_s : (TSContext) -> Unit
+  exit_s : (TSContext) -> Unit
+  enter_t : (TTContext) -> Unit
+  exit_t : (TTContext) -> Unit
+  enter_e : (TEContext) -> Unit
+  exit_e : (TEContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_e(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TEContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_s(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TSContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_t(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TTContext raise @moonantlr.RuntimeError
+
+pub struct TSContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TSContext::alternative(Self) -> String?
+pub fn TSContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TSContext::get_e(Self) -> Array[TEContext]
+pub fn TSContext::get_s(Self) -> Array[Self]
+pub fn TSContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TSContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TTContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TTContext::alternative(Self) -> String?
+pub fn TTContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TTContext::get_e(Self) -> Array[TEContext]
+pub fn TTContext::get_t(Self) -> Array[Self]
+pub fn TTContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn TTContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

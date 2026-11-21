@@ -107,5 +107,18 @@ excluded from parser contexts.
 - `evaluate`, `csv`, `inspect`: arithmetic, CSV and structured report consumers.
 - `examples/typed`: typed labels, alternative Visitor and Listener consumer.
 
-The generated public `.mbti` files describe the actual exported API. Full
-upstream target/runtime conformance remains a future milestone.
+The generated public `.mbti` files describe the actual exported API. The migrated upstream functional corpus and its comparison boundaries are
+documented in [conformance/README.md](../conformance/README.md).
+
+## Lifecycle and attribute scopes
+
+The emitter retains inline actions and `@init`, `@after` and `finally` sites.
+Committed parsing runs init once at rule entry, after on successful completion,
+and finally on normal or recovered exit. Snapshot parsing uses pure bindings
+and replays only the accepted path. `RuleSemantics.wrap` creates the fresh
+attribute scope for each left-recursive context; bindings initialize defaults
+and preserve formal arguments explicitly. Hidden set-insertion captures retain
+synthetic labels without adding a tree error node, matching generated Java.
+
+`LexerContextPredicate` exposes matched text, token-start and current positions.
+`SemanticEvent.lookahead` requests one-based visible lookahead on demand.

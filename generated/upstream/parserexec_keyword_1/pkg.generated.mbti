@@ -1,0 +1,68 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_keyword_1"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_program : (TProgramContext) -> Unit
+  exit_program : (TProgramContext) -> Unit
+  enter_state : (TStateContext) -> Unit
+  exit_state : (TStateContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_program(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TProgramContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_state(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TStateContext raise @moonantlr.RuntimeError
+
+pub struct TProgramContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TProgramContext::alternative(Self) -> String?
+pub fn TProgramContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TProgramContext::get_program(Self) -> Array[Self]
+pub fn TProgramContext::get_state(Self) -> Array[TStateContext]
+pub fn TProgramContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TProgramContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TStateContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TStateContext::alternative(Self) -> String?
+pub fn TStateContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TStateContext::get_state(Self) -> Array[Self]
+pub fn TStateContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TStateContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn TStateContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn TStateContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

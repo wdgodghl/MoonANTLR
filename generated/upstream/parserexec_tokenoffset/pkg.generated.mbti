@@ -1,0 +1,118 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/parserexec_tokenoffset"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct LAContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LAContext::alternative(Self) -> String?
+pub fn LAContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LAContext::get_a(Self) -> Array[Self]
+pub fn LAContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_11(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_12(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_13(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_14(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_15(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_16(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_17(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_18(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_19(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_20(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_21(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_22(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_23(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_24(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_25(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_26(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_27(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_28(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_29(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_30(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_31(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_32(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_33(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_34(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_35(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_36(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_37(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_38(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_39(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_40(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_41(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_42(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_43(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_44(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_45(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_46(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_47(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_48(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_49(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_50(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_51(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_52(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_53(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_54(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_55(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_56(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_57(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_58(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_59(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_60(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_61(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_62(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_63(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_64(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_65(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_66(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn LAContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct LLexer {
+  atn : @moonantlr.Atn
+}
+pub fn LLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn LLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct LListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_a : (LAContext) -> Unit
+  exit_a : (LAContext) -> Unit
+}
+pub fn LListener::new() -> Self
+pub fn LListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct LParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn LParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn LParser::parse_a(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LAContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

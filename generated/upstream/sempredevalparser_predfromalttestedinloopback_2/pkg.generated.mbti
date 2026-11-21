@@ -1,0 +1,95 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/sempredevalparser_predfromalttestedinloopback_2"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct TFile_Context {
+  node : @moonantlr.RuleContext
+}
+pub fn TFile_Context::alternative(Self) -> String?
+pub fn TFile_Context::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TFile_Context::get_file_(Self) -> Array[Self]
+pub fn TFile_Context::get_para(Self) -> Array[TParaContext]
+pub fn TFile_Context::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn TFile_Context::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_file_ : (TFile_Context) -> Unit
+  exit_file_ : (TFile_Context) -> Unit
+  enter_para : (TParaContext) -> Unit
+  exit_para : (TParaContext) -> Unit
+  enter_paraContent : (TParaContentContext) -> Unit
+  exit_paraContent : (TParaContentContext) -> Unit
+  enter_s : (TSContext) -> Unit
+  exit_s : (TSContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParaContentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TParaContentContext::alternative(Self) -> String?
+pub fn TParaContentContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TParaContentContext::get_paraContent(Self) -> Array[Self]
+pub fn TParaContentContext::get_token_NL(Self) -> Array[@moonantlr.Token]
+pub fn TParaContentContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TParaContentContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn TParaContentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TParaContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TParaContext::alternative(Self) -> String?
+pub fn TParaContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TParaContext::get_para(Self) -> Array[Self]
+pub fn TParaContext::get_paraContent(Self) -> Array[TParaContentContext]
+pub fn TParaContext::get_token_NL(Self) -> Array[@moonantlr.Token]
+pub fn TParaContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_file_(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TFile_Context raise @moonantlr.RuntimeError
+pub fn TParser::parse_para(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TParaContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_paraContent(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TParaContentContext raise @moonantlr.RuntimeError
+pub fn TParser::parse_s(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TSContext raise @moonantlr.RuntimeError
+
+pub struct TSContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TSContext::alternative(Self) -> String?
+pub fn TSContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TSContext::get_s(Self) -> Array[Self]
+pub fn TSContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn TSContext::raw(Self) -> @moonantlr.RuleContext
+
+// Type aliases
+
+// Traits

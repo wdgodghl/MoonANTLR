@@ -1,0 +1,53 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/upstream/sets_unicodenegatedbmpsetincludessmpcodepoints"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct TAContext {
+  node : @moonantlr.RuleContext
+}
+pub fn TAContext::alternative(Self) -> String?
+pub fn TAContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn TAContext::get_a(Self) -> Array[Self]
+pub fn TAContext::get_token_LETTERS(Self) -> Array[@moonantlr.Token]
+pub fn TAContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct TLexer {
+  atn : @moonantlr.Atn
+}
+pub fn TLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn TLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct TListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_a : (TAContext) -> Unit
+  exit_a : (TAContext) -> Unit
+}
+pub fn TListener::new() -> Self
+pub fn TListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct TParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn TParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn TParser::parse_a(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> TAContext raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits
