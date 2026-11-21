@@ -39,6 +39,11 @@ def package_key(key):
     # Bound it so native tests work in ordinary Windows checkout directories.
     return key if len(key)<=60 else key[:40]+'_'+hashlib.sha256(key.encode()).hexdigest()[:8]
 
+def descriptor_order(path):
+    # Path ordering itself is case-insensitive on Windows and case-sensitive
+    # on Unix. Case-fold explicitly to keep aliases and manifests identical.
+    return path.parent.name.casefold(),path.name.casefold()
+
 def label_sites(source):
     result={}
     # A block ends at the next MoonBit block marker, not a formatted closing
@@ -191,7 +196,7 @@ def main():
     scratch=ROOT/'.local/upstream-reference';scratch.mkdir(parents=True,exist_ok=True)
     plugin=build(jar,ROOT/'.local/moonbit-target.jar',args.javac)
     run([args.javac,'-encoding','UTF-8','-cp',jar,'-d',scratch,ROOT/'tools/UpstreamRenderer.java',ROOT/'tools/UpstreamLexerOracle.java',ROOT/'tools/UpstreamAttributes.java',ROOT/'tools/Oracle.java'])
-    paths=sorted(path for group in (ROOT/'conformance/upstream').iterdir() if group.is_dir() for path in group.glob('*.txt'))
+    paths=sorted((path for group in (ROOT/'conformance/upstream').iterdir() if group.is_dir() for path in group.glob('*.txt')),key=descriptor_order)
     if dict(Counter(path.parent.name for path in paths))!=EXPECTED_CATEGORIES:
         cli.error('Pinned functional descriptor inventory differs from the 350-case corpus')
     def process(pair):

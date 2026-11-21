@@ -2,12 +2,12 @@
 import argparse
 import ast
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import subprocess
 import tempfile
 from build_target import build, ROOT
 from generate import read_interp
-from upstream_oracle import label_sites
+from upstream_oracle import label_sites, descriptor_order
 
 
 def main():
@@ -33,6 +33,13 @@ pub fn C::label_op(self : C) -> Array[@runtime.Token] {
     expected = {"left": {(-1, 21)}, "op": {(20,)}}
     assert label_sites(inline) == expected
     assert label_sites(formatted) == expected, "Label metadata must not depend on moon fmt"
+    paths = ["SemPredEvalParser/PredTestedEvenWhenUnAmbig_1.txt",
+             "SemPredEvalParser/PredicateDependentOnArg.txt",
+             "ParserExec/uStartingCharDoesNotCauseIllegalUnicodeEscape.txt",
+             "ParserExec/Wildcard.txt"]
+    posix = [path.as_posix() for path in sorted(map(PurePosixPath, paths), key=descriptor_order)]
+    windows = [path.as_posix() for path in sorted(map(PureWindowsPath, reversed(paths)), key=descriptor_order)]
+    assert posix == windows == [paths[2], paths[3], paths[1], paths[0]], "Descriptor order must be platform-independent"
     plugin = build(args.jar, ROOT / ".local" / "moonbit-target.jar", args.javac)
     for grammar, lexer in [("Typed", None), ("ModesParser", "ModesLexer")]:
         for enabled in [False, True]:
