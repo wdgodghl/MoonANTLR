@@ -33,6 +33,11 @@ def sections(path):
     return data
 
 def quoted(value):return json.dumps(value,ensure_ascii=False)
+
+def package_key(key):
+    # MSVC repeats the package basename in object and executable paths.
+    # Bound it so native tests work in ordinary Windows checkout directories.
+    return key if len(key)<=60 else key[:40]+'_'+hashlib.sha256(key.encode()).hexdigest()[:8]
 def tuples(tokens):return ', '.join('('+', '.join(quoted(value) for value in token)+')' for token in tokens)
 
 def exported(path,name):
@@ -185,7 +190,8 @@ def main():
         index,path=pair;data=sections(path);key=path.parent.name.lower()+'_'+path.stem.lower();directory=scratch/key;directory.mkdir(exist_ok=True)
         name=re.search(r'\bgrammar\s+(\w+)\s*;',data['grammar']).group(1)
         grammar=directory/(name+'.g4')
-        generated=ROOT/'generated/upstream'/key
+        package=package_key(key)
+        generated=ROOT/'generated/upstream'/package
         native_parser=generated/(name+'Parser.mbt')
         class_file=directory/((name if data['type']=='Lexer' else name+'Parser')+'.class')
         if args.reuse and class_file.exists() and (generated/'moon.pkg').exists():
@@ -202,7 +208,7 @@ def main():
                 slave=directory/(slave_name+'.g4')
                 run([args.java,'-cp',str(scratch)+os.pathsep+str(jar),'UpstreamRenderer',ROOT/'conformance/upstream/Java.test.stg',slave_raw,slave])
                 slaves.append(slave)
-            generated=ROOT/'generated/upstream'/key;generated.mkdir(parents=True,exist_ok=True)
+            generated=ROOT/'generated/upstream'/package;generated.mkdir(parents=True,exist_ok=True)
             run([args.java,'-cp',str(plugin)+os.pathsep+str(jar),'org.antlr.v4.Tool','-Dlanguage=MoonBit','-encoding','UTF-8','-Xexact-output-dir','-lib',directory,'-o',generated,grammar])
             original=grammar.read_text(encoding='utf8')
             if data['type']=='Parser':
@@ -266,7 +272,7 @@ def main():
         positions=', '.join(f'({line}, {col})' for line,col in lex['errors'])
         out += [f'  @debug.assert_eq(lexed.tokens.map(t => (t.kind,t.text,t.start,t.end,t.line,t.column,t.channel)), [{tuples(lex["tokens"])}])',
             f'  @debug.assert_eq(lexed.errors.map(e => match e {{ @runtime.LexicalError(line,col,_) => (line,col); _ => (-1,-1) }}), [{positions}])','}','']
-        return index,key,out,{'group':path.parent.name,'name':path.stem,'descriptor_sha256':hashlib.sha256(path.read_text(encoding="utf8").encode("utf8")).hexdigest(),'mode':'Java tokens, trees, diagnostics, actions and attribute frames'}
+        return index,package,out,{'group':path.parent.name,'name':path.stem,'descriptor_sha256':hashlib.sha256(path.read_text(encoding="utf8").encode("utf8")).hexdigest(),'mode':'Java tokens, trees, diagnostics, actions and attribute frames'}
     rows=[];failures=[]
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
         pending={pool.submit(process,pair):pair[1] for pair in enumerate(paths)}

@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "wdgodghl/moonantlr/generated/upstream/sempredevalparser_independentprednotpassedouterctxtoavoidcastexception"
+package "wdgodghl/moonantlr/generated/upstream/sempredevalparser_independentprednotpass_ac405b0f"
 
 import {
   "wdgodghl/moonantlr",
