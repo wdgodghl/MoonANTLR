@@ -38,6 +38,17 @@ def package_key(key):
     # MSVC repeats the package basename in object and executable paths.
     # Bound it so native tests work in ordinary Windows checkout directories.
     return key if len(key)<=60 else key[:40]+'_'+hashlib.sha256(key.encode()).hexdigest()[:8]
+
+def label_sites(source):
+    result={}
+    # A block ends at the next MoonBit block marker, not a formatted closing
+    # brace: the emitter initially writes these methods on a single line.
+    for label,body in re.findall(r'::label_(\w+)\([^{}]*\{(.*?)(?=\n///\||\Z)',source,re.S):
+        match=re.search(r'(?:states\s*=\s*|select_tokens\(\s*)\[([^]]*)\]',body)
+        if match:
+            states=tuple(int(value.strip()) for value in match[1].split(',') if value.strip())
+            result.setdefault(label,set()).add(states)
+    return result
 def tuples(tokens):return ', '.join('('+', '.join(quoted(value) for value in token)+')' for token in tokens)
 
 def exported(path,name):
@@ -115,10 +126,7 @@ def parser_bindings(parser,grammar,tokens):
             lines.append(f'      {index} => {predicate_expression(expression,tokens)}')
         lines+=['      _ => false','    } },']
     effects=[]
-    label_states={}
-    for label,body in re.findall(r'::label_(\w+)\([^{}]*\{(.*?)\n\}',parser.read_text(encoding='utf8'),re.S):
-        match=re.search(r'(?:states=|select_tokens\()\[([^]]*)\]',body)
-        if match:label_states.setdefault(label,set()).add(match[1])
+    label_states=label_sites(parser.read_text(encoding='utf8'))
     def expression_value(expression,kind):
         accessor='bound_text' if kind=='String' else 'bound_int'
         expression=re.sub(r'\(\(\w+Context\)\$ctx\)\.(\w+)\((\d+)\)\.(\w+)',lambda m:f'{accessor}(bound_rule(event, {quoted(m[1])}, {m[2]}).values, {quoted(m[3])})',expression)
@@ -131,7 +139,7 @@ def parser_bindings(parser,grammar,tokens):
             if name in label_states:
                 states=label_states[name]
                 if len(states)!=1:raise ValueError('Ambiguous label states: '+name)
-                frame='bound_label(event, ['+next(iter(states))+'])'
+                frame='bound_label(event, ['+', '.join(map(str,next(iter(states))))+'])'
             else:frame=f'bound_rule(event, {quoted(name)}, -1)'
             return f'{accessor}({frame}.values, {quoted(field)})'
         return re.sub(r'\$(\w+)\.(\w+)',attribute,expression)

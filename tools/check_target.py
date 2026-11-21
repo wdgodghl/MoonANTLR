@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 from build_target import build, ROOT
 from generate import read_interp
+from upstream_oracle import label_sites
 
 
 def main():
@@ -15,6 +16,23 @@ def main():
     cli.add_argument("--java", default=os.environ.get("JAVA", "java"))
     cli.add_argument("--javac", default=os.environ.get("JAVAC", "javac"))
     args = cli.parse_args()
+    inline = '''pub fn C::label_left(self : C) -> Array[C] { self.node.rules("e", states=[-1, 21]).map(node => C::{node}) }
+///|
+pub fn C::label_op(self : C) -> Array[@runtime.Token] { self.node.select_tokens([20]) }
+'''
+    formatted = '''pub fn C::label_left(self : C) -> Array[C] {
+  self.node.rules("e", states=[
+    -1, 21,
+  ]).map(node => C::{ node, })
+}
+///|
+pub fn C::label_op(self : C) -> Array[@runtime.Token] {
+  self.node.select_tokens([20])
+}
+'''
+    expected = {"left": {(-1, 21)}, "op": {(20,)}}
+    assert label_sites(inline) == expected
+    assert label_sites(formatted) == expected, "Label metadata must not depend on moon fmt"
     plugin = build(args.jar, ROOT / ".local" / "moonbit-target.jar", args.javac)
     for grammar, lexer in [("Typed", None), ("ModesParser", "ModesLexer")]:
         for enabled in [False, True]:
