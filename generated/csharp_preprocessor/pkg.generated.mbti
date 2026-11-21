@@ -12,6 +12,8 @@ pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
 
 pub fn lexer_data() -> Array[Int32]
 
+pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)]
+
 pub fn lexer_rule_names() -> Array[String]
 
 pub fn parser_action_sites() -> Array[Int32]
@@ -27,7 +29,7 @@ pub struct CSharpLexer {
   atn : @moonantlr.Atn
 }
 pub fn CSharpLexer::new() -> Self raise @moonantlr.RuntimeError
-pub fn CSharpLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+pub fn CSharpLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (@moonantlr.LexerPredicateEvent) -> Bool, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub struct CSharpPreprocessorParser {
   grammar : @moonantlr.Grammar
@@ -41,6 +43,7 @@ pub struct CSharpPreprocessorParserDirective_new_line_or_sharpContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::alternative(Self) -> String?
+pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::get_directive_new_line_or_sharp(Self) -> Array[Self]
 pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::get_token_DIRECTIVE_NEW_LINE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
@@ -125,6 +128,7 @@ pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorLin
 pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorNullable(Self) -> CSharpPreprocessorParserPreprocessorNullableContext?
 pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorPragma(Self) -> CSharpPreprocessorParserPreprocessorPragmaContext?
 pub fn CSharpPreprocessorParserPreprocessor_directiveContext::as_preprocessorRegion(Self) -> CSharpPreprocessorParserPreprocessorRegionContext?
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_directive_new_line_or_sharp(Self) -> Array[CSharpPreprocessorParserDirective_new_line_or_sharpContext]
 pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_preprocessor_directive(Self) -> Array[Self]
 pub fn CSharpPreprocessorParserPreprocessor_directiveContext::get_preprocessor_expression(Self) -> Array[CSharpPreprocessorParserPreprocessor_expressionContext]
@@ -159,6 +163,7 @@ pub struct CSharpPreprocessorParserPreprocessor_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpPreprocessorParserPreprocessor_expressionContext::alternative(Self) -> String?
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_preprocessor_expression(Self) -> Array[Self]
 pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_BANG(Self) -> Array[@moonantlr.Token]
 pub fn CSharpPreprocessorParserPreprocessor_expressionContext::get_token_CLOSE_PARENS(Self) -> Array[@moonantlr.Token]

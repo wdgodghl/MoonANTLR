@@ -19,6 +19,7 @@ pub struct TypedDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn TypedDocumentContext::alternative(Self) -> String?
+pub fn TypedDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn TypedDocumentContext::get_document(Self) -> Array[Self]
 pub fn TypedDocumentContext::get_entry(Self) -> Array[TypedEntryContext]
 pub fn TypedDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
@@ -30,6 +31,7 @@ pub struct TypedEntryContext {
   node : @moonantlr.RuleContext
 }
 pub fn TypedEntryContext::alternative(Self) -> String?
+pub fn TypedEntryContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn TypedEntryContext::get_entry(Self) -> Array[Self]
 pub fn TypedEntryContext::get_expression(Self) -> Array[TypedExpressionContext]
 pub fn TypedEntryContext::get_token_ID(Self) -> Array[@moonantlr.Token]
@@ -48,6 +50,7 @@ pub fn TypedExpressionContext::as_Number(Self) -> TypedNumberContext?
 pub fn TypedExpressionContext::as_Power(Self) -> TypedPowerContext?
 pub fn TypedExpressionContext::as_Product(Self) -> TypedProductContext?
 pub fn TypedExpressionContext::as_Sum(Self) -> TypedSumContext?
+pub fn TypedExpressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn TypedExpressionContext::get_expression(Self) -> Array[Self]
 pub fn TypedExpressionContext::get_token_INT(Self) -> Array[@moonantlr.Token]
 pub fn TypedExpressionContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]

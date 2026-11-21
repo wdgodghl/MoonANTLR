@@ -41,6 +41,7 @@ pub struct Atn {
   sets : Array[Array[(Int32, Int32)]]
   actions : Array[(Int32, Int32, Int32)]
   parser_actions : Map[Int32, Int32]
+  rule_actions : Map[(Int32, String), Int32]
 }
 
 ///|

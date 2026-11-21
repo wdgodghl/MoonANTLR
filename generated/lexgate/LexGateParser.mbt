@@ -43,6 +43,17 @@ pub fn LexGateDocumentContext::raw(
 }
 
 ///|
+pub fn LexGateDocumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> LexGateDocumentContext? {
+  if node.name == "document" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn LexGateParser::parse_document(
   self : LexGateParser,
   source : String,

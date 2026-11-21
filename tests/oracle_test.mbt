@@ -20046,3 +20046,256 @@ test "Java oracle attributes 002" {
     "(document (number \"10\") (number \"20\") <EOF>)",
   )
 }
+
+///|
+test "Java oracle lifecycle document 0" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "x",
+    start_rule=0,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [100, 10001, 1001, 100001])
+  assert_eq(parsed.frame.unwrap().int_value("total"), Some(1111))
+}
+
+///|
+test "Java oracle lifecycle document 1" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "",
+    start_rule=0,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [100, 10000, 1000, 100000])
+  assert_eq(parsed.frame.unwrap().int_value("total"), Some(1111))
+}
+
+///|
+test "Java oracle lifecycle document 2" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "a",
+    start_rule=0,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [100, 100001])
+  assert_eq(parsed.frame.unwrap().int_value("total"), Some(1001))
+}
+
+///|
+test "Java oracle lifecycle broken 0" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "ab",
+    start_rule=1,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [100, 10002, 1002, 100002])
+  assert_eq(parsed.frame.unwrap().int_value("total"), Some(1111))
+}
+
+///|
+test "Java oracle lifecycle broken 1" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "a",
+    start_rule=1,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [100, 10001, 1001, 100001])
+  assert_eq(parsed.frame.unwrap().int_value("total"), Some(1111))
+}
+
+///|
+test "Java oracle lifecycle broken 2" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "",
+    start_rule=1,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [100, 100000])
+  assert_eq(parsed.frame.unwrap().int_value("total"), Some(1001))
+}
+
+///|
+test "Java oracle lifecycle broken 3" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "axb",
+    start_rule=1,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [100, 10003, 1003, 100003])
+  assert_eq(parsed.frame.unwrap().int_value("total"), Some(1111))
+}
+
+///|
+test "Java oracle lifecycle set_sequence 0" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "acf",
+    start_rule=2,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [])
+  let typed = @lifecycle.LifecycleSet_sequenceContext::from_raw(parsed.context).unwrap()
+  @debug.assert_eq(
+    typed
+    .label_values()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [(2, "a", 0, 1, 1, 0, 0), (4, "c", 1, 2, 1, 1, 0), (7, "f", 2, 3, 1, 2, 0)],
+  )
+}
+
+///|
+test "Java oracle lifecycle set_sequence 1" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "af",
+    start_rule=2,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [])
+  let typed = @lifecycle.LifecycleSet_sequenceContext::from_raw(parsed.context).unwrap()
+  @debug.assert_eq(
+    typed
+    .label_values()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (2, "a", 0, 1, 1, 0, 0),
+      (4, "<missing 'c'>", -1, 0, 1, 1, 0),
+      (7, "f", 1, 2, 1, 1, 0),
+    ],
+  )
+}
+
+///|
+test "Java oracle lifecycle set_sequence 2" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "ad",
+    start_rule=2,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [])
+  let typed = @lifecycle.LifecycleSet_sequenceContext::from_raw(parsed.context).unwrap()
+  @debug.assert_eq(
+    typed
+    .label_values()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (2, "a", 0, 1, 1, 0, 0),
+      (5, "d", 1, 2, 1, 1, 0),
+      (6, "<missing 'e'>", -1, 0, 1, 1, 0),
+    ],
+  )
+}
+
+///|
+test "Java oracle lifecycle set_loop 0" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "a,c,",
+    start_rule=3,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [])
+  let typed = @lifecycle.LifecycleSet_loopContext::from_raw(parsed.context).unwrap()
+  @debug.assert_eq(
+    typed
+    .label_values()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (2, "a", 0, 1, 1, 0, 0),
+      (4, "c", 2, 3, 1, 2, 0),
+      (4, "<missing 'c'>", -1, 0, 1, 3, 0),
+    ],
+  )
+}
+
+///|
+test "Java oracle lifecycle set_loop 1" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "a,,,",
+    start_rule=3,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [])
+  let typed = @lifecycle.LifecycleSet_loopContext::from_raw(parsed.context).unwrap()
+  @debug.assert_eq(
+    typed
+    .label_values()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (2, "a", 0, 1, 1, 0, 0),
+      (4, "<missing 'c'>", -1, 0, 1, 2, 0),
+      (4, "<missing 'c'>", -1, 0, 1, 3, 0),
+      (4, "<missing 'c'>", -1, 0, 1, 3, 0),
+    ],
+  )
+}
+
+///|
+test "Java oracle lifecycle set_loop 2" {
+  let offsets : Array[Int32] = []
+  let parsed = @lifecycle.grammar().parse_default(
+    "a,c,,d,",
+    start_rule=3,
+    semantics=lifecycle_bindings(),
+    parser_action=event => {
+      offsets.push(lifecycle_delta(event.action) * 100 + event.next_token.start)
+    },
+  )
+  @debug.assert_eq(offsets, [])
+  let typed = @lifecycle.LifecycleSet_loopContext::from_raw(parsed.context).unwrap()
+  @debug.assert_eq(
+    typed
+    .label_values()
+    .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
+    [
+      (2, "a", 0, 1, 1, 0, 0),
+      (4, "c", 2, 3, 1, 2, 0),
+      (5, "d", 5, 6, 1, 5, 0),
+      (4, "<missing 'c'>", -1, 0, 1, 6, 0),
+    ],
+  )
+}

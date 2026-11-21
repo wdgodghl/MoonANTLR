@@ -3,6 +3,23 @@
 pub type LexerPredicate = (Int32, Int32, Int32, String) -> Bool
 
 ///|
+pub(all) struct LexerPredicateEvent {
+  rule : Int32
+  predicate : Int32
+  token_start : Int32
+  token_line : Int32
+  token_column : Int32
+  offset : Int32
+  line : Int32
+  column : Int32
+  text : String
+  source : String
+}
+
+///|
+pub type LexerContextPredicate = (LexerPredicateEvent) -> Bool
+
+///|
 struct Budget {
   mut remaining : Int32
 }
@@ -122,6 +139,8 @@ fn lex_match(
   budget : Budget,
   source : String,
   predicate : LexerPredicate?,
+  context_predicate : LexerContextPredicate?,
+  token_start : Int32,
 ) -> (LexConfig?, Int32) raise RuntimeError {
   if mode < 0 || mode >= atn.modes.length() {
     raise InvalidAtn("unknown lexer mode")
@@ -197,7 +216,42 @@ fn lex_match(
       let edge = state.edges[i]
       match edge.kind {
         4 =>
-          if predicate is Some(check) && check(edge.a, edge.b, cfg.pos, source) {
+          if (if context_predicate is Some(check) {
+              let mut token_line = 1
+              let mut token_column = 0
+              for i in 0..<token_start {
+                if chars[i] == '\n' {
+                  token_line += 1
+                  token_column = 0
+                } else {
+                  token_column += 1
+                }
+              }
+              let mut line = token_line
+              let mut column = token_column
+              for i in token_start..<cfg.pos {
+                if chars[i] == '\n' {
+                  line += 1
+                  column = 0
+                } else {
+                  column += 1
+                }
+              }
+              check({
+                rule: edge.a,
+                predicate: edge.b,
+                offset: cfg.pos,
+                token_start,
+                token_line,
+                token_column,
+                line,
+                column,
+                text: String::from_array(chars[token_start:cfg.pos]),
+                source,
+              })
+            } else {
+              predicate is Some(check) && check(edge.a, edge.b, cfg.pos, source)
+            }) {
             work.push({ ..cfg, state: edge.target, })
           }
         1 => work.push({ ..cfg, state: edge.target, })
@@ -241,9 +295,12 @@ pub fn Atn::tokenize(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
 ) -> Array[Token] raise RuntimeError {
-  self.lex(source, work_limit, lexer_predicate, lexer_action, false).tokens
+  self.lex(
+    source, work_limit, lexer_predicate, lexer_context_predicate, lexer_action, false,
+  ).tokens
 }
 
 ///|
@@ -253,9 +310,12 @@ pub fn Atn::tokenize_recovering(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
 ) -> LexResult raise RuntimeError {
-  self.lex(source, work_limit, lexer_predicate, lexer_action, true)
+  self.lex(
+    source, work_limit, lexer_predicate, lexer_context_predicate, lexer_action, true,
+  )
 }
 
 ///|
@@ -266,6 +326,7 @@ pub struct LexerCursor {
   chars : Array[Char]
   budget : Budget
   lexer_predicate : LexerPredicate?
+  lexer_context_predicate : LexerContextPredicate?
   lexer_action : LexerAction?
   recover : Bool
   errors : Array[RuntimeError]
@@ -291,6 +352,7 @@ pub fn Atn::lexer_cursor(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
   recover~ : Bool = false,
 ) -> LexerCursor raise RuntimeError {
@@ -298,7 +360,7 @@ pub fn Atn::lexer_cursor(
     raise InvalidAtn("lexer ATN expected")
   }
   self.validate_supported(
-    predicates=lexer_predicate is Some(_),
+    predicates=lexer_predicate is Some(_) || lexer_context_predicate is Some(_),
     custom_lexer_actions=lexer_action is Some(_),
   )
   {
@@ -307,6 +369,7 @@ pub fn Atn::lexer_cursor(
     chars: source.to_array(),
     budget: { remaining: work_limit, },
     lexer_predicate,
+    lexer_context_predicate,
     lexer_action,
     recover,
     errors: [],
@@ -333,6 +396,7 @@ pub fn Grammar::lexer_cursor(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
   recover~ : Bool = false,
 ) -> LexerCursor raise RuntimeError {
@@ -340,6 +404,7 @@ pub fn Grammar::lexer_cursor(
     source,
     work_limit~,
     lexer_predicate?,
+    lexer_context_predicate?,
     lexer_action?,
     recover~,
   )
@@ -365,6 +430,33 @@ pub fn LexerCursor::next_token(self : LexerCursor) -> Token raise RuntimeError {
 }
 
 ///|
+/// Reset the input for host accept-position adapters. Modes and the work
+/// budget are preserved; source coordinates are recomputed.
+pub fn LexerCursor::seek(
+  self : LexerCursor,
+  offset : Int32,
+) -> Unit raise RuntimeError {
+  if offset < 0 || offset > self.chars.length() {
+    raise InvalidArgument("lexer position out of range")
+  }
+  self.pos = offset
+  self.line = 1
+  self.column = 0
+  for i in 0..<offset {
+    if self.chars[i] == '\n' {
+      self.line += 1
+      self.column = 0
+    } else {
+      self.column += 1
+    }
+  }
+  self.continuing = false
+  self.first = true
+  self.done = false
+  self.eof = None
+}
+
+///|
 fn LexerCursor::advance(self : LexerCursor) -> Token raise RuntimeError {
   while self.first || self.pos < self.chars.length() || self.continuing {
     self.first = false
@@ -383,6 +475,8 @@ fn LexerCursor::advance(self : LexerCursor) -> Token raise RuntimeError {
       self.budget,
       self.source,
       self.lexer_predicate,
+      self.lexer_context_predicate,
+      self.token_start,
     )
     let accepted = match candidate {
       Some(cfg) => cfg
@@ -419,9 +513,6 @@ fn LexerCursor::advance(self : LexerCursor) -> Token raise RuntimeError {
         self.continuing = false
         continue
       }
-    }
-    if accepted.pos == self.pos && !accepted.matched_eof {
-      raise Unsupported("zero-width lexer token")
     }
     let mut emission = Emit(self.atn.token_types[accepted.root])
     for (index, offset) in accepted.actions {
@@ -494,9 +585,7 @@ fn LexerCursor::advance(self : LexerCursor) -> Token raise RuntimeError {
     }
     self.continuing = emission is More
     if emission is Emit(kind) {
-      if (kind <= 0 && kind != -1) ||
-        kind > self.atn.max_token ||
-        self.channel < 0 {
+      if (kind <= 0 && kind != -1) || self.channel < 0 {
         raise InvalidAtn("invalid emitted token type or channel")
       }
       let token : Token = {
@@ -564,6 +653,7 @@ fn Atn::lex(
   source : String,
   work_limit : Int32,
   lexer_predicate : LexerPredicate?,
+  lexer_context_predicate : LexerContextPredicate?,
   lexer_action : LexerAction?,
   recover : Bool,
 ) -> LexResult raise RuntimeError {
@@ -571,6 +661,7 @@ fn Atn::lex(
     source,
     work_limit~,
     lexer_predicate?,
+    lexer_context_predicate?,
     lexer_action?,
     recover~,
   )
@@ -592,9 +683,16 @@ pub fn Grammar::tokenize(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
 ) -> Array[Token] raise RuntimeError {
-  self.lexer.tokenize(source, work_limit~, lexer_predicate?, lexer_action?)
+  self.lexer.tokenize(
+    source,
+    work_limit~,
+    lexer_predicate?,
+    lexer_context_predicate?,
+    lexer_action?,
+  )
 }
 
 ///|
@@ -604,12 +702,14 @@ pub fn Grammar::tokenize_recovering(
   source : String,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
 ) -> LexResult raise RuntimeError {
   self.lexer.tokenize_recovering(
     source,
     work_limit~,
     lexer_predicate?,
+    lexer_context_predicate?,
     lexer_action?,
   )
 }

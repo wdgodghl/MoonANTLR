@@ -76,6 +76,9 @@
     "Attributes": {
       "cases": 3,
       "accepted": 3
+    },
+    "RuleLifecycle": {
+      "cases": 13
     }
   }
 }

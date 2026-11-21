@@ -72,6 +72,8 @@ public final class Oracle {
             Token next = parser.getCurrentToken();
             if (args.length > 2 && args[2].equals("default")) {
                 Object offsets = grammar.equals("ParseActions") ? parser.getClass().getField("offsets").get(parser) : "[]";
+                String attributeSpec=System.getProperty("moonantlr.attributes");
+                String attributes=attributeSpec==null?"":",\"frame\":"+UpstreamAttributes.frame(parsed,attributeSpec)+",\"shared\":"+UpstreamAttributes.shared(parser);
                 java.util.List<String> errorTokens = new java.util.ArrayList<>();
                 errorTokens(parsed, errorTokens);
                 java.util.List<String> events = new java.util.ArrayList<>();
@@ -83,7 +85,7 @@ public final class Oracle {
                 }, parsed);
                 System.out.println("{\"tree\":" + quote(errorTree(parsed, parser), false)
                     + ",\"parserErrors\":[" + String.join(",", allErrors)
-                    + "],\"events\":[" + String.join(",", events) + "],\"errorTokens\":[" + String.join(",", errorTokens) + "],\"offsets\":" + offsets + ",\"nextKind\":" + next.getType() + ",\"nextText\":" + quote(next.getText(), false) + "}");
+                    + "],\"events\":[" + String.join(",", events) + "],\"errorTokens\":[" + String.join(",", errorTokens) + "],\"offsets\":" + offsets + attributes + ",\"nextKind\":" + next.getType() + ",\"nextText\":" + quote(next.getText(), false) + "}");
                 continue;
             }
             boolean first = true;
@@ -94,6 +96,18 @@ public final class Oracle {
                    .append(',').append(t.getStartIndex()).append(',').append(t.getStopIndex() + 1)
                    .append(',').append(t.getLine()).append(',').append(t.getCharPositionInLine())
                    .append(',').append(t.getChannel()).append(']');
+            }
+            if (grammar.equals("Lifecycle")) {
+                Object total = 0;
+                try { total = parsed.getClass().getField("total").get(parsed); } catch (NoSuchFieldException ignored) { }
+                java.util.List<String> captures=new java.util.ArrayList<>();
+                try {
+                    @SuppressWarnings("unchecked") java.util.List<Token> values=(java.util.List<Token>)parsed.getClass().getField("values").get(parsed);
+                    for(Token t:values) captures.add("["+t.getType()+","+quote(t.getText(),false)+","+t.getStartIndex()+","+(t.getStopIndex()+1)+","+t.getLine()+","+t.getCharPositionInLine()+","+t.getChannel()+"]");
+                } catch(NoSuchFieldException ignored) { }
+                Object offsets = parser.getClass().getField("offsets").get(parser);
+                System.out.println(out.append("],\"total\":").append(total).append(",\"captures\":[").append(String.join(",",captures)).append("],\"offsets\":").append(offsets).append('}'));
+                continue;
             }
             if (grammar.equals("Attributes")) {
                 Object total = parsed.getClass().getField("total").get(parsed);

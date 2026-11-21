@@ -14,6 +14,7 @@ pub(all) struct SemanticEvent {
   next_token : Token
   frame : RuleFrame
   tokens : Array[Token]
+  lookahead_fn : (Int32) -> Token raise RuntimeError
 }
 
 ///|
@@ -22,15 +23,34 @@ pub(all) struct SemanticEvent {
 /// state. Predicate hooks must remain side-effect-free in both entry points.
 pub(all) struct RuleSemantics {
   enter : (Int32, RuleFrame) -> RuleFrame
+  /// Construct a fresh attribute scope when left recursion wraps its left child.
+  wrap : (Int32, RuleFrame) -> RuleFrame
   arguments : (SemanticEvent, Int32) -> Map[String, Json]
-  action : (SemanticEvent, Int32) -> RuleFrame
-  predicate : (SemanticEvent, Int32) -> Bool
+  action : (SemanticEvent, Int32) -> RuleFrame raise RuntimeError
+  predicate : (SemanticEvent, Int32) -> Bool raise RuntimeError
+}
+
+///|
+/// One-based visible lookahead, fetching from the Lexer only when requested.
+pub fn SemanticEvent::lookahead(
+  self : SemanticEvent,
+  offset : Int32,
+) -> Token raise RuntimeError {
+  if offset < 1 {
+    raise InvalidArgument("lookahead is one-based")
+  }
+  (self.lookahead_fn)(offset)
 }
 
 ///|
 pub fn RuleSemantics::new() -> RuleSemantics {
   {
     enter: (_, frame) => frame,
+    wrap: (_, previous) => {
+      values: Map([]),
+      shared: previous.shared.copy(),
+      children: [previous],
+    },
     arguments: (_, _) => Map([]),
     action: (event, _) => event.frame,
     predicate: (_, _) => true,

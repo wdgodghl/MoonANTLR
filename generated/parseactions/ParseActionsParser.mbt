@@ -69,6 +69,17 @@ pub fn ParseActionsDocumentContext::raw(
 }
 
 ///|
+pub fn ParseActionsDocumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> ParseActionsDocumentContext? {
+  if node.name == "document" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn ParseActionsParser::parse_document(
   self : ParseActionsParser,
   source : String,
@@ -118,6 +129,17 @@ pub fn ParseActionsItemContext::raw(
   self : ParseActionsItemContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn ParseActionsItemContext::from_raw(
+  node : @runtime.RuleContext,
+) -> ParseActionsItemContext? {
+  if node.name == "item" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|
@@ -191,6 +213,17 @@ pub fn ParseActionsExpressionContext::raw(
   self : ParseActionsExpressionContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn ParseActionsExpressionContext::from_raw(
+  node : @runtime.RuleContext,
+) -> ParseActionsExpressionContext? {
+  if node.name == "expression" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|

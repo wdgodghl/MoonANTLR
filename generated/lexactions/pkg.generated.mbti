@@ -21,6 +21,7 @@ pub struct LexActionsDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn LexActionsDocumentContext::alternative(Self) -> String?
+pub fn LexActionsDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn LexActionsDocumentContext::get_document(Self) -> Array[Self]
 pub fn LexActionsDocumentContext::get_token_A(Self) -> Array[@moonantlr.Token]
 pub fn LexActionsDocumentContext::get_token_B(Self) -> Array[@moonantlr.Token]
@@ -58,6 +59,7 @@ pub struct LexActionsUnitContext {
   node : @moonantlr.RuleContext
 }
 pub fn LexActionsUnitContext::alternative(Self) -> String?
+pub fn LexActionsUnitContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn LexActionsUnitContext::get_token_LONG(Self) -> Array[@moonantlr.Token]
 pub fn LexActionsUnitContext::get_unit(Self) -> Array[Self]
 pub fn LexActionsUnitContext::raw(Self) -> @moonantlr.RuleContext

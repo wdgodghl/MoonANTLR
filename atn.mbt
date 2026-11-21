@@ -101,6 +101,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     sets: [],
     actions: [],
     parser_actions: Map([]),
+    rule_actions: Map([]),
   }
   let nnon_greedy = rd.count()
   for (source_kind, target) in links {
@@ -246,7 +247,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
       if action == 0 && a < 0 {
         raise InvalidAtn("negative lexer channel")
       }
-      if action == 7 && a != -1 && (a < 1 || a > max_token) {
+      if action == 7 && a != -1 && a < 1 {
         raise InvalidAtn("lexer action token type out of bounds")
       }
       atn.actions.push((action, a, b))
@@ -314,6 +315,9 @@ fn Atn::validate_supported(
   custom_parser_actions~ : Bool = false,
   contextual_predicates~ : Bool = false,
 ) -> Unit raise RuntimeError {
+  if !self.rule_actions.is_empty() && !custom_parser_actions {
+    raise Unsupported("rule lifecycle actions")
+  }
   for index, state in self.states {
     for edge in state.edges {
       if edge.kind == 4 &&
@@ -360,4 +364,27 @@ pub fn Atn::with_parser_action_sites(
     parser_actions[state] = ordinal
   }
   { ..self, parser_actions, }
+}
+
+///|
+/// Lifecycle ordinals share the generated Parser action source table.
+pub fn Atn::with_rule_action_sites(
+  self : Atn,
+  sites : Array[(Int32, String, Int32)],
+) -> Atn raise RuntimeError {
+  if self.kind != 1 {
+    raise InvalidAtn("parser ATN expected")
+  }
+  let actions : Map[(Int32, String), Int32] = Map([])
+  for (rule, phase, ordinal) in sites {
+    if rule < 0 ||
+      rule >= self.starts.length() ||
+      ordinal < self.parser_actions.length() ||
+      (phase != "init" && phase != "after" && phase != "finally") ||
+      actions.contains((rule, phase)) {
+      raise InvalidAtn("invalid or duplicate rule lifecycle action")
+    }
+    actions[(rule, phase)] = ordinal
+  }
+  { ..self, rule_actions: actions, }
 }

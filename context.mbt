@@ -6,6 +6,8 @@ pub(all) struct RuleContext {
   children : Array[ContextChild]
   sources : Array[Int32]
   path : Array[Int32]
+  /// Label captures returned by inline recovery need not occur in the tree.
+  recovered_captures : Map[Int32, Array[(Int32, Token)]]
 }
 
 ///|
@@ -104,16 +106,24 @@ pub fn RuleContext::select_tokens(
   self : RuleContext,
   states : Array[Int32],
 ) -> Array[Token] {
-  let found : Array[Token] = []
+  let found : Array[(Int32, Token)] = []
   for i, child in self.children {
     if states.contains(self.sources[i]) {
       match child {
-        TokenChild(token) => found.push(token)
+        TokenChild(token) => found.push((i * 2 + 1, token))
         _ => ()
       }
     }
   }
-  found
+  for state in states {
+    if self.recovered_captures.get(state) is Some(tokens) {
+      for (position, token) in tokens {
+        found.push((position * 2, token))
+      }
+    }
+  }
+  found.mut_view().stable_sort_by((a, b) => a.0.compare(b.0))
+  found.map(pair => pair.1)
 }
 
 ///|

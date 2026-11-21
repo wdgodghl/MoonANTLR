@@ -182,6 +182,17 @@ pub fn CSharpPreprocessorParserPreprocessor_directiveContext::raw(
 }
 
 ///|
+pub fn CSharpPreprocessorParserPreprocessor_directiveContext::from_raw(
+  node : @runtime.RuleContext,
+) -> CSharpPreprocessorParserPreprocessor_directiveContext? {
+  if node.name == "preprocessor_directive" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn CSharpPreprocessorParser::parse_preprocessor_directive(
   self : CSharpPreprocessorParser,
   source : String,
@@ -620,6 +631,17 @@ pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::raw(
 }
 
 ///|
+pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::from_raw(
+  node : @runtime.RuleContext,
+) -> CSharpPreprocessorParserDirective_new_line_or_sharpContext? {
+  if node.name == "directive_new_line_or_sharp" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn CSharpPreprocessorParser::parse_directive_new_line_or_sharp(
   self : CSharpPreprocessorParser,
   source : String,
@@ -671,6 +693,17 @@ pub fn CSharpPreprocessorParserPreprocessor_expressionContext::raw(
   self : CSharpPreprocessorParserPreprocessor_expressionContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn CSharpPreprocessorParserPreprocessor_expressionContext::from_raw(
+  node : @runtime.RuleContext,
+) -> CSharpPreprocessorParserPreprocessor_expressionContext? {
+  if node.name == "preprocessor_expression" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|

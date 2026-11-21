@@ -12,6 +12,8 @@ pub fn lexer_data() -> Array[Int32]
 
 pub fn parser_data() -> Array[Int32]
 
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
 // Errors
 
 // Types and methods
@@ -19,6 +21,7 @@ pub struct PredicateDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn PredicateDocumentContext::alternative(Self) -> String?
+pub fn PredicateDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn PredicateDocumentContext::get_document(Self) -> Array[Self]
 pub fn PredicateDocumentContext::get_enabled(Self) -> Array[PredicateEnabledContext]
 pub fn PredicateDocumentContext::get_fallback(Self) -> Array[PredicateFallbackContext]
@@ -29,6 +32,7 @@ pub struct PredicateEnabledContext {
   node : @moonantlr.RuleContext
 }
 pub fn PredicateEnabledContext::alternative(Self) -> String?
+pub fn PredicateEnabledContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn PredicateEnabledContext::get_enabled(Self) -> Array[Self]
 pub fn PredicateEnabledContext::get_token_INT(Self) -> Array[@moonantlr.Token]
 pub fn PredicateEnabledContext::raw(Self) -> @moonantlr.RuleContext
@@ -37,6 +41,7 @@ pub struct PredicateFallbackContext {
   node : @moonantlr.RuleContext
 }
 pub fn PredicateFallbackContext::alternative(Self) -> String?
+pub fn PredicateFallbackContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn PredicateFallbackContext::get_fallback(Self) -> Array[Self]
 pub fn PredicateFallbackContext::get_token_INT(Self) -> Array[@moonantlr.Token]
 pub fn PredicateFallbackContext::raw(Self) -> @moonantlr.RuleContext

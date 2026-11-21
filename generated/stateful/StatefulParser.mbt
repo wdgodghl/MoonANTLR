@@ -43,6 +43,17 @@ pub fn StatefulParserDocumentContext::raw(
 }
 
 ///|
+pub fn StatefulParserDocumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> StatefulParserDocumentContext? {
+  if node.name == "document" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn StatefulParser::parse_document(
   self : StatefulParser,
   source : String,

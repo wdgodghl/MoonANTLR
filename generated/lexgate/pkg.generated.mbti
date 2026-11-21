@@ -10,6 +10,8 @@ pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
 
 pub fn lexer_data() -> Array[Int32]
 
+pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)]
+
 pub fn lexer_rule_names() -> Array[String]
 
 pub fn parser_data() -> Array[Int32]
@@ -21,6 +23,7 @@ pub struct LexGateDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn LexGateDocumentContext::alternative(Self) -> String?
+pub fn LexGateDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn LexGateDocumentContext::get_document(Self) -> Array[Self]
 pub fn LexGateDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
 pub fn LexGateDocumentContext::get_token_ID(Self) -> Array[@moonantlr.Token]
@@ -31,7 +34,7 @@ pub struct LexGateLexer {
   atn : @moonantlr.Atn
 }
 pub fn LexGateLexer::new() -> Self raise @moonantlr.RuntimeError
-pub fn LexGateLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+pub fn LexGateLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (@moonantlr.LexerPredicateEvent) -> Bool) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct LexGateListener {
   terminal : (@moonantlr.Token) -> Unit

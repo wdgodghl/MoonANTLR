@@ -10,9 +10,13 @@ pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
 
 pub fn lexer_data() -> Array[Int32]
 
+pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)]
+
 pub fn lexer_rule_names() -> Array[String]
 
 pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
 
 // Errors
 
@@ -21,7 +25,7 @@ pub struct CSharpLexer {
   atn : @moonantlr.Atn
 }
 pub fn CSharpLexer::new() -> Self raise @moonantlr.RuntimeError
-pub fn CSharpLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+pub fn CSharpLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (@moonantlr.LexerPredicateEvent) -> Bool, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub struct CSharpParser {
   grammar : @moonantlr.Grammar
@@ -251,6 +255,7 @@ pub struct CSharpParserAccessor_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAccessor_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserAccessor_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAccessor_bodyContext::get_accessor_body(Self) -> Array[Self]
 pub fn CSharpParserAccessor_bodyContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserAccessor_bodyContext::get_token_literal_134(Self) -> Array[@moonantlr.Token]
@@ -260,6 +265,7 @@ pub struct CSharpParserAccessor_declarationsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAccessor_declarationsContext::alternative(Self) -> String?
+pub fn CSharpParserAccessor_declarationsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAccessor_declarationsContext::get_accessor_body(Self) -> Array[CSharpParserAccessor_bodyContext]
 pub fn CSharpParserAccessor_declarationsContext::get_accessor_declarations(Self) -> Array[Self]
 pub fn CSharpParserAccessor_declarationsContext::get_accessor_modifier(Self) -> Array[CSharpParserAccessor_modifierContext]
@@ -276,6 +282,7 @@ pub struct CSharpParserAccessor_modifierContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAccessor_modifierContext::alternative(Self) -> String?
+pub fn CSharpParserAccessor_modifierContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAccessor_modifierContext::get_accessor_modifier(Self) -> Array[Self]
 pub fn CSharpParserAccessor_modifierContext::get_token_INTERNAL(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserAccessor_modifierContext::get_token_PRIVATE(Self) -> Array[@moonantlr.Token]
@@ -286,6 +293,7 @@ pub struct CSharpParserAdd_accessor_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAdd_accessor_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserAdd_accessor_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAdd_accessor_declarationContext::get_add_accessor_declaration(Self) -> Array[Self]
 pub fn CSharpParserAdd_accessor_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserAdd_accessor_declarationContext::get_block(Self) -> Array[CSharpParserBlockContext]
@@ -296,6 +304,7 @@ pub struct CSharpParserAdditive_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAdditive_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserAdditive_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAdditive_expressionContext::get_additive_expression(Self) -> Array[Self]
 pub fn CSharpParserAdditive_expressionContext::get_multiplicative_expression(Self) -> Array[CSharpParserMultiplicative_expressionContext]
 pub fn CSharpParserAdditive_expressionContext::get_token_literal_135(Self) -> Array[@moonantlr.Token]
@@ -306,6 +315,7 @@ pub struct CSharpParserAll_member_modifierContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAll_member_modifierContext::alternative(Self) -> String?
+pub fn CSharpParserAll_member_modifierContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAll_member_modifierContext::get_all_member_modifier(Self) -> Array[Self]
 pub fn CSharpParserAll_member_modifierContext::get_token_ABSTRACT(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserAll_member_modifierContext::get_token_ASYNC(Self) -> Array[@moonantlr.Token]
@@ -329,6 +339,7 @@ pub struct CSharpParserAll_member_modifiersContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAll_member_modifiersContext::alternative(Self) -> String?
+pub fn CSharpParserAll_member_modifiersContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAll_member_modifiersContext::get_all_member_modifier(Self) -> Array[CSharpParserAll_member_modifierContext]
 pub fn CSharpParserAll_member_modifiersContext::get_all_member_modifiers(Self) -> Array[Self]
 pub fn CSharpParserAll_member_modifiersContext::raw(Self) -> @moonantlr.RuleContext
@@ -337,6 +348,7 @@ pub struct CSharpParserAnd_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAnd_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserAnd_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAnd_expressionContext::get_and_expression(Self) -> Array[Self]
 pub fn CSharpParserAnd_expressionContext::get_equality_expression(Self) -> Array[CSharpParserEquality_expressionContext]
 pub fn CSharpParserAnd_expressionContext::get_token_literal_140(Self) -> Array[@moonantlr.Token]
@@ -352,6 +364,7 @@ pub struct CSharpParserAnonymous_function_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAnonymous_function_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserAnonymous_function_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAnonymous_function_bodyContext::get_anonymous_function_body(Self) -> Array[Self]
 pub fn CSharpParserAnonymous_function_bodyContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserAnonymous_function_bodyContext::get_throwable_expression(Self) -> Array[CSharpParserThrowable_expressionContext]
@@ -361,6 +374,7 @@ pub struct CSharpParserAnonymous_function_signatureContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAnonymous_function_signatureContext::alternative(Self) -> String?
+pub fn CSharpParserAnonymous_function_signatureContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAnonymous_function_signatureContext::get_anonymous_function_signature(Self) -> Array[Self]
 pub fn CSharpParserAnonymous_function_signatureContext::get_explicit_anonymous_function_parameter_list(Self) -> Array[CSharpParserExplicit_anonymous_function_parameter_listContext]
 pub fn CSharpParserAnonymous_function_signatureContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -373,6 +387,7 @@ pub struct CSharpParserAnonymous_object_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAnonymous_object_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserAnonymous_object_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAnonymous_object_initializerContext::get_anonymous_object_initializer(Self) -> Array[Self]
 pub fn CSharpParserAnonymous_object_initializerContext::get_member_declarator_list(Self) -> Array[CSharpParserMember_declarator_listContext]
 pub fn CSharpParserAnonymous_object_initializerContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -384,6 +399,7 @@ pub struct CSharpParserArg_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserArg_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserArg_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserArg_declarationContext::get_arg_declaration(Self) -> Array[Self]
 pub fn CSharpParserArg_declarationContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserArg_declarationContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -395,6 +411,7 @@ pub struct CSharpParserArgumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserArgumentContext::alternative(Self) -> String?
+pub fn CSharpParserArgumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserArgumentContext::get_argument(Self) -> Array[Self]
 pub fn CSharpParserArgumentContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserArgumentContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -411,6 +428,7 @@ pub struct CSharpParserArgument_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserArgument_listContext::alternative(Self) -> String?
+pub fn CSharpParserArgument_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserArgument_listContext::get_argument(Self) -> Array[CSharpParserArgumentContext]
 pub fn CSharpParserArgument_listContext::get_argument_list(Self) -> Array[Self]
 pub fn CSharpParserArgument_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -420,6 +438,7 @@ pub struct CSharpParserArray_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserArray_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserArray_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserArray_initializerContext::get_array_initializer(Self) -> Array[Self]
 pub fn CSharpParserArray_initializerContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserArray_initializerContext::get_token_OPEN_BRACE(Self) -> Array[@moonantlr.Token]
@@ -431,6 +450,7 @@ pub struct CSharpParserArray_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserArray_typeContext::alternative(Self) -> String?
+pub fn CSharpParserArray_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserArray_typeContext::get_array_type(Self) -> Array[Self]
 pub fn CSharpParserArray_typeContext::get_base_type(Self) -> Array[CSharpParserBase_typeContext]
 pub fn CSharpParserArray_typeContext::get_rank_specifier(Self) -> Array[CSharpParserRank_specifierContext]
@@ -442,6 +462,7 @@ pub struct CSharpParserAssignmentContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAssignmentContext::alternative(Self) -> String?
+pub fn CSharpParserAssignmentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAssignmentContext::get_assignment(Self) -> Array[Self]
 pub fn CSharpParserAssignmentContext::get_assignment_operator(Self) -> Array[CSharpParserAssignment_operatorContext]
 pub fn CSharpParserAssignmentContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
@@ -454,6 +475,7 @@ pub struct CSharpParserAssignment_operatorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAssignment_operatorContext::alternative(Self) -> String?
+pub fn CSharpParserAssignment_operatorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAssignment_operatorContext::get_assignment_operator(Self) -> Array[Self]
 pub fn CSharpParserAssignment_operatorContext::get_right_shift_assignment(Self) -> Array[CSharpParserRight_shift_assignmentContext]
 pub fn CSharpParserAssignment_operatorContext::get_token_literal_145(Self) -> Array[@moonantlr.Token]
@@ -472,6 +494,7 @@ pub struct CSharpParserAttributeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAttributeContext::alternative(Self) -> String?
+pub fn CSharpParserAttributeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAttributeContext::get_attribute(Self) -> Array[Self]
 pub fn CSharpParserAttributeContext::get_attribute_argument(Self) -> Array[CSharpParserAttribute_argumentContext]
 pub fn CSharpParserAttributeContext::get_namespace_or_type_name(Self) -> Array[CSharpParserNamespace_or_type_nameContext]
@@ -484,6 +507,7 @@ pub struct CSharpParserAttribute_argumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAttribute_argumentContext::alternative(Self) -> String?
+pub fn CSharpParserAttribute_argumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAttribute_argumentContext::get_attribute_argument(Self) -> Array[Self]
 pub fn CSharpParserAttribute_argumentContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserAttribute_argumentContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -494,6 +518,7 @@ pub struct CSharpParserAttribute_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAttribute_listContext::alternative(Self) -> String?
+pub fn CSharpParserAttribute_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAttribute_listContext::get_attribute(Self) -> Array[CSharpParserAttributeContext]
 pub fn CSharpParserAttribute_listContext::get_attribute_list(Self) -> Array[Self]
 pub fn CSharpParserAttribute_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -503,6 +528,7 @@ pub struct CSharpParserAttribute_sectionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAttribute_sectionContext::alternative(Self) -> String?
+pub fn CSharpParserAttribute_sectionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAttribute_sectionContext::get_attribute_list(Self) -> Array[CSharpParserAttribute_listContext]
 pub fn CSharpParserAttribute_sectionContext::get_attribute_section(Self) -> Array[Self]
 pub fn CSharpParserAttribute_sectionContext::get_attribute_target(Self) -> Array[CSharpParserAttribute_targetContext]
@@ -516,6 +542,7 @@ pub struct CSharpParserAttribute_targetContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAttribute_targetContext::alternative(Self) -> String?
+pub fn CSharpParserAttribute_targetContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAttribute_targetContext::get_attribute_target(Self) -> Array[Self]
 pub fn CSharpParserAttribute_targetContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserAttribute_targetContext::get_keyword(Self) -> Array[CSharpParserKeywordContext]
@@ -525,6 +552,7 @@ pub struct CSharpParserAttributesContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserAttributesContext::alternative(Self) -> String?
+pub fn CSharpParserAttributesContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserAttributesContext::get_attribute_section(Self) -> Array[CSharpParserAttribute_sectionContext]
 pub fn CSharpParserAttributesContext::get_attributes(Self) -> Array[Self]
 pub fn CSharpParserAttributesContext::raw(Self) -> @moonantlr.RuleContext
@@ -539,6 +567,7 @@ pub struct CSharpParserBase_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserBase_typeContext::alternative(Self) -> String?
+pub fn CSharpParserBase_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserBase_typeContext::get_base_type(Self) -> Array[Self]
 pub fn CSharpParserBase_typeContext::get_class_type(Self) -> Array[CSharpParserClass_typeContext]
 pub fn CSharpParserBase_typeContext::get_simple_type(Self) -> Array[CSharpParserSimple_typeContext]
@@ -551,6 +580,7 @@ pub struct CSharpParserBlockContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserBlockContext::alternative(Self) -> String?
+pub fn CSharpParserBlockContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserBlockContext::get_block(Self) -> Array[Self]
 pub fn CSharpParserBlockContext::get_statement_list(Self) -> Array[CSharpParserStatement_listContext]
 pub fn CSharpParserBlockContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -561,6 +591,7 @@ pub struct CSharpParserBodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserBodyContext::alternative(Self) -> String?
+pub fn CSharpParserBodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserBodyContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserBodyContext::get_body(Self) -> Array[Self]
 pub fn CSharpParserBodyContext::get_token_literal_134(Self) -> Array[@moonantlr.Token]
@@ -570,6 +601,7 @@ pub struct CSharpParserBoolean_literalContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserBoolean_literalContext::alternative(Self) -> String?
+pub fn CSharpParserBoolean_literalContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserBoolean_literalContext::get_boolean_literal(Self) -> Array[Self]
 pub fn CSharpParserBoolean_literalContext::get_token_FALSE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserBoolean_literalContext::get_token_TRUE(Self) -> Array[@moonantlr.Token]
@@ -579,6 +611,7 @@ pub struct CSharpParserBracket_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserBracket_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserBracket_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserBracket_expressionContext::get_bracket_expression(Self) -> Array[Self]
 pub fn CSharpParserBracket_expressionContext::get_indexer_argument(Self) -> Array[CSharpParserIndexer_argumentContext]
 pub fn CSharpParserBracket_expressionContext::get_token_literal_127(Self) -> Array[@moonantlr.Token]
@@ -597,6 +630,7 @@ pub struct CSharpParserCase_guardContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserCase_guardContext::alternative(Self) -> String?
+pub fn CSharpParserCase_guardContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserCase_guardContext::get_case_guard(Self) -> Array[Self]
 pub fn CSharpParserCase_guardContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserCase_guardContext::get_token_WHEN(Self) -> Array[@moonantlr.Token]
@@ -606,6 +640,7 @@ pub struct CSharpParserCast_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserCast_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserCast_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserCast_expressionContext::get_cast_expression(Self) -> Array[Self]
 pub fn CSharpParserCast_expressionContext::get_token_CLOSE_PARENS(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserCast_expressionContext::get_token_OPEN_PARENS(Self) -> Array[@moonantlr.Token]
@@ -617,6 +652,7 @@ pub struct CSharpParserCatch_clausesContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserCatch_clausesContext::alternative(Self) -> String?
+pub fn CSharpParserCatch_clausesContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserCatch_clausesContext::get_catch_clauses(Self) -> Array[Self]
 pub fn CSharpParserCatch_clausesContext::get_general_catch_clause(Self) -> Array[CSharpParserGeneral_catch_clauseContext]
 pub fn CSharpParserCatch_clausesContext::get_specific_catch_clause(Self) -> Array[CSharpParserSpecific_catch_clauseContext]
@@ -638,6 +674,7 @@ pub struct CSharpParserClass_baseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserClass_baseContext::alternative(Self) -> String?
+pub fn CSharpParserClass_baseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserClass_baseContext::get_class_base(Self) -> Array[Self]
 pub fn CSharpParserClass_baseContext::get_class_type(Self) -> Array[CSharpParserClass_typeContext]
 pub fn CSharpParserClass_baseContext::get_namespace_or_type_name(Self) -> Array[CSharpParserNamespace_or_type_nameContext]
@@ -649,6 +686,7 @@ pub struct CSharpParserClass_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserClass_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserClass_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserClass_bodyContext::get_class_body(Self) -> Array[Self]
 pub fn CSharpParserClass_bodyContext::get_class_member_declarations(Self) -> Array[CSharpParserClass_member_declarationsContext]
 pub fn CSharpParserClass_bodyContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -659,6 +697,7 @@ pub struct CSharpParserClass_definitionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserClass_definitionContext::alternative(Self) -> String?
+pub fn CSharpParserClass_definitionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserClass_definitionContext::get_class_base(Self) -> Array[CSharpParserClass_baseContext]
 pub fn CSharpParserClass_definitionContext::get_class_body(Self) -> Array[CSharpParserClass_bodyContext]
 pub fn CSharpParserClass_definitionContext::get_class_definition(Self) -> Array[Self]
@@ -673,6 +712,7 @@ pub struct CSharpParserClass_member_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserClass_member_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserClass_member_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserClass_member_declarationContext::get_all_member_modifiers(Self) -> Array[CSharpParserAll_member_modifiersContext]
 pub fn CSharpParserClass_member_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserClass_member_declarationContext::get_class_member_declaration(Self) -> Array[Self]
@@ -684,6 +724,7 @@ pub struct CSharpParserClass_member_declarationsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserClass_member_declarationsContext::alternative(Self) -> String?
+pub fn CSharpParserClass_member_declarationsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserClass_member_declarationsContext::get_class_member_declaration(Self) -> Array[CSharpParserClass_member_declarationContext]
 pub fn CSharpParserClass_member_declarationsContext::get_class_member_declarations(Self) -> Array[Self]
 pub fn CSharpParserClass_member_declarationsContext::raw(Self) -> @moonantlr.RuleContext
@@ -692,6 +733,7 @@ pub struct CSharpParserClass_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserClass_typeContext::alternative(Self) -> String?
+pub fn CSharpParserClass_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserClass_typeContext::get_class_type(Self) -> Array[Self]
 pub fn CSharpParserClass_typeContext::get_namespace_or_type_name(Self) -> Array[CSharpParserNamespace_or_type_nameContext]
 pub fn CSharpParserClass_typeContext::get_token_DYNAMIC(Self) -> Array[@moonantlr.Token]
@@ -703,6 +745,7 @@ pub struct CSharpParserCollection_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserCollection_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserCollection_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserCollection_initializerContext::get_collection_initializer(Self) -> Array[Self]
 pub fn CSharpParserCollection_initializerContext::get_element_initializer(Self) -> Array[CSharpParserElement_initializerContext]
 pub fn CSharpParserCollection_initializerContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -714,6 +757,7 @@ pub struct CSharpParserCombined_join_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserCombined_join_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserCombined_join_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserCombined_join_clauseContext::get_combined_join_clause(Self) -> Array[Self]
 pub fn CSharpParserCombined_join_clauseContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserCombined_join_clauseContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -729,6 +773,7 @@ pub struct CSharpParserCommon_member_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserCommon_member_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserCommon_member_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserCommon_member_declarationContext::get_body(Self) -> Array[CSharpParserBodyContext]
 pub fn CSharpParserCommon_member_declarationContext::get_class_definition(Self) -> Array[CSharpParserClass_definitionContext]
 pub fn CSharpParserCommon_member_declarationContext::get_common_member_declaration(Self) -> Array[Self]
@@ -752,6 +797,7 @@ pub struct CSharpParserCompilation_unitContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserCompilation_unitContext::alternative(Self) -> String?
+pub fn CSharpParserCompilation_unitContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserCompilation_unitContext::get_compilation_unit(Self) -> Array[Self]
 pub fn CSharpParserCompilation_unitContext::get_extern_alias_directives(Self) -> Array[CSharpParserExtern_alias_directivesContext]
 pub fn CSharpParserCompilation_unitContext::get_global_attribute_section(Self) -> Array[CSharpParserGlobal_attribute_sectionContext]
@@ -765,6 +811,7 @@ pub struct CSharpParserConditional_and_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConditional_and_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserConditional_and_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConditional_and_expressionContext::get_conditional_and_expression(Self) -> Array[Self]
 pub fn CSharpParserConditional_and_expressionContext::get_inclusive_or_expression(Self) -> Array[CSharpParserInclusive_or_expressionContext]
 pub fn CSharpParserConditional_and_expressionContext::get_token_OP_AND(Self) -> Array[@moonantlr.Token]
@@ -774,6 +821,7 @@ pub struct CSharpParserConditional_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConditional_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserConditional_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConditional_expressionContext::get_conditional_expression(Self) -> Array[Self]
 pub fn CSharpParserConditional_expressionContext::get_null_coalescing_expression(Self) -> Array[CSharpParserNull_coalescing_expressionContext]
 pub fn CSharpParserConditional_expressionContext::get_throwable_expression(Self) -> Array[CSharpParserThrowable_expressionContext]
@@ -785,6 +833,7 @@ pub struct CSharpParserConditional_or_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConditional_or_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserConditional_or_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConditional_or_expressionContext::get_conditional_and_expression(Self) -> Array[CSharpParserConditional_and_expressionContext]
 pub fn CSharpParserConditional_or_expressionContext::get_conditional_or_expression(Self) -> Array[Self]
 pub fn CSharpParserConditional_or_expressionContext::get_token_OP_OR(Self) -> Array[@moonantlr.Token]
@@ -794,6 +843,7 @@ pub struct CSharpParserConstant_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConstant_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserConstant_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConstant_declarationContext::get_constant_declaration(Self) -> Array[Self]
 pub fn CSharpParserConstant_declarationContext::get_constant_declarators(Self) -> Array[CSharpParserConstant_declaratorsContext]
 pub fn CSharpParserConstant_declarationContext::get_token_CONST(Self) -> Array[@moonantlr.Token]
@@ -805,6 +855,7 @@ pub struct CSharpParserConstant_declaratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConstant_declaratorContext::alternative(Self) -> String?
+pub fn CSharpParserConstant_declaratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConstant_declaratorContext::get_constant_declarator(Self) -> Array[Self]
 pub fn CSharpParserConstant_declaratorContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserConstant_declaratorContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -815,6 +866,7 @@ pub struct CSharpParserConstant_declaratorsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConstant_declaratorsContext::alternative(Self) -> String?
+pub fn CSharpParserConstant_declaratorsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConstant_declaratorsContext::get_constant_declarator(Self) -> Array[CSharpParserConstant_declaratorContext]
 pub fn CSharpParserConstant_declaratorsContext::get_constant_declarators(Self) -> Array[Self]
 pub fn CSharpParserConstant_declaratorsContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -824,6 +876,7 @@ pub struct CSharpParserConstructor_constraintContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConstructor_constraintContext::alternative(Self) -> String?
+pub fn CSharpParserConstructor_constraintContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConstructor_constraintContext::get_constructor_constraint(Self) -> Array[Self]
 pub fn CSharpParserConstructor_constraintContext::get_token_CLOSE_PARENS(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserConstructor_constraintContext::get_token_NEW(Self) -> Array[@moonantlr.Token]
@@ -834,6 +887,7 @@ pub struct CSharpParserConstructor_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConstructor_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserConstructor_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConstructor_declarationContext::get_body(Self) -> Array[CSharpParserBodyContext]
 pub fn CSharpParserConstructor_declarationContext::get_constructor_declaration(Self) -> Array[Self]
 pub fn CSharpParserConstructor_declarationContext::get_constructor_initializer(Self) -> Array[CSharpParserConstructor_initializerContext]
@@ -847,6 +901,7 @@ pub struct CSharpParserConstructor_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConstructor_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserConstructor_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConstructor_initializerContext::get_argument_list(Self) -> Array[CSharpParserArgument_listContext]
 pub fn CSharpParserConstructor_initializerContext::get_constructor_initializer(Self) -> Array[Self]
 pub fn CSharpParserConstructor_initializerContext::get_token_BASE(Self) -> Array[@moonantlr.Token]
@@ -866,6 +921,7 @@ pub struct CSharpParserConversion_operator_declaratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserConversion_operator_declaratorContext::alternative(Self) -> String?
+pub fn CSharpParserConversion_operator_declaratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserConversion_operator_declaratorContext::get_arg_declaration(Self) -> Array[CSharpParserArg_declarationContext]
 pub fn CSharpParserConversion_operator_declaratorContext::get_conversion_operator_declarator(Self) -> Array[Self]
 pub fn CSharpParserConversion_operator_declaratorContext::get_token_CLOSE_PARENS(Self) -> Array[@moonantlr.Token]
@@ -880,6 +936,7 @@ pub struct CSharpParserDeclarationStatementContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserDeclarationStatementContext::alternative(Self) -> String?
+pub fn CSharpParserDeclarationStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserDeclarationStatementContext::get_declarationStatement(Self) -> Array[Self]
 pub fn CSharpParserDeclarationStatementContext::get_local_constant_declaration(Self) -> Array[CSharpParserLocal_constant_declarationContext]
 pub fn CSharpParserDeclarationStatementContext::get_local_function_declaration(Self) -> Array[CSharpParserLocal_function_declarationContext]
@@ -897,6 +954,7 @@ pub struct CSharpParserDelegate_definitionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserDelegate_definitionContext::alternative(Self) -> String?
+pub fn CSharpParserDelegate_definitionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserDelegate_definitionContext::get_delegate_definition(Self) -> Array[Self]
 pub fn CSharpParserDelegate_definitionContext::get_formal_parameter_list(Self) -> Array[CSharpParserFormal_parameter_listContext]
 pub fn CSharpParserDelegate_definitionContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -913,6 +971,7 @@ pub struct CSharpParserDestructor_definitionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserDestructor_definitionContext::alternative(Self) -> String?
+pub fn CSharpParserDestructor_definitionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserDestructor_definitionContext::get_body(Self) -> Array[CSharpParserBodyContext]
 pub fn CSharpParserDestructor_definitionContext::get_destructor_definition(Self) -> Array[Self]
 pub fn CSharpParserDestructor_definitionContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -931,6 +990,7 @@ pub struct CSharpParserElement_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserElement_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserElement_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserElement_initializerContext::get_element_initializer(Self) -> Array[Self]
 pub fn CSharpParserElement_initializerContext::get_expression_list(Self) -> Array[CSharpParserExpression_listContext]
 pub fn CSharpParserElement_initializerContext::get_non_assignment_expression(Self) -> Array[CSharpParserNon_assignment_expressionContext]
@@ -942,6 +1002,7 @@ pub struct CSharpParserEmbedded_statementContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEmbedded_statementContext::alternative(Self) -> String?
+pub fn CSharpParserEmbedded_statementContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEmbedded_statementContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserEmbedded_statementContext::get_embedded_statement(Self) -> Array[Self]
 pub fn CSharpParserEmbedded_statementContext::get_simple_embedded_statement(Self) -> Array[CSharpParserSimple_embedded_statementContext]
@@ -951,6 +1012,7 @@ pub struct CSharpParserEnum_baseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEnum_baseContext::alternative(Self) -> String?
+pub fn CSharpParserEnum_baseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEnum_baseContext::get_enum_base(Self) -> Array[Self]
 pub fn CSharpParserEnum_baseContext::get_token_literal_133(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserEnum_baseContext::get_type_(Self) -> Array[CSharpParserType_Context]
@@ -960,6 +1022,7 @@ pub struct CSharpParserEnum_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEnum_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserEnum_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEnum_bodyContext::get_enum_body(Self) -> Array[Self]
 pub fn CSharpParserEnum_bodyContext::get_enum_member_declaration(Self) -> Array[CSharpParserEnum_member_declarationContext]
 pub fn CSharpParserEnum_bodyContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -971,6 +1034,7 @@ pub struct CSharpParserEnum_definitionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEnum_definitionContext::alternative(Self) -> String?
+pub fn CSharpParserEnum_definitionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEnum_definitionContext::get_enum_base(Self) -> Array[CSharpParserEnum_baseContext]
 pub fn CSharpParserEnum_definitionContext::get_enum_body(Self) -> Array[CSharpParserEnum_bodyContext]
 pub fn CSharpParserEnum_definitionContext::get_enum_definition(Self) -> Array[Self]
@@ -983,6 +1047,7 @@ pub struct CSharpParserEnum_member_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEnum_member_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserEnum_member_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEnum_member_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserEnum_member_declarationContext::get_enum_member_declaration(Self) -> Array[Self]
 pub fn CSharpParserEnum_member_declarationContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
@@ -994,6 +1059,7 @@ pub struct CSharpParserEquality_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEquality_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserEquality_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEquality_expressionContext::get_equality_expression(Self) -> Array[Self]
 pub fn CSharpParserEquality_expressionContext::get_relational_expression(Self) -> Array[CSharpParserRelational_expressionContext]
 pub fn CSharpParserEquality_expressionContext::get_token_OP_EQ(Self) -> Array[@moonantlr.Token]
@@ -1004,6 +1070,7 @@ pub struct CSharpParserEvent_accessor_declarationsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEvent_accessor_declarationsContext::alternative(Self) -> String?
+pub fn CSharpParserEvent_accessor_declarationsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEvent_accessor_declarationsContext::get_add_accessor_declaration(Self) -> Array[CSharpParserAdd_accessor_declarationContext]
 pub fn CSharpParserEvent_accessor_declarationsContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserEvent_accessor_declarationsContext::get_block(Self) -> Array[CSharpParserBlockContext]
@@ -1017,6 +1084,7 @@ pub struct CSharpParserEvent_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserEvent_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserEvent_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserEvent_declarationContext::get_event_accessor_declarations(Self) -> Array[CSharpParserEvent_accessor_declarationsContext]
 pub fn CSharpParserEvent_declarationContext::get_event_declaration(Self) -> Array[Self]
 pub fn CSharpParserEvent_declarationContext::get_member_name(Self) -> Array[CSharpParserMember_nameContext]
@@ -1032,6 +1100,7 @@ pub struct CSharpParserException_filterContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserException_filterContext::alternative(Self) -> String?
+pub fn CSharpParserException_filterContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserException_filterContext::get_exception_filter(Self) -> Array[Self]
 pub fn CSharpParserException_filterContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserException_filterContext::get_token_CLOSE_PARENS(Self) -> Array[@moonantlr.Token]
@@ -1043,6 +1112,7 @@ pub struct CSharpParserExclusive_or_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserExclusive_or_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserExclusive_or_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserExclusive_or_expressionContext::get_and_expression(Self) -> Array[CSharpParserAnd_expressionContext]
 pub fn CSharpParserExclusive_or_expressionContext::get_exclusive_or_expression(Self) -> Array[Self]
 pub fn CSharpParserExclusive_or_expressionContext::get_token_literal_142(Self) -> Array[@moonantlr.Token]
@@ -1052,6 +1122,7 @@ pub struct CSharpParserExplicit_anonymous_function_parameterContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserExplicit_anonymous_function_parameterContext::alternative(Self) -> String?
+pub fn CSharpParserExplicit_anonymous_function_parameterContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserExplicit_anonymous_function_parameterContext::get_explicit_anonymous_function_parameter(Self) -> Array[Self]
 pub fn CSharpParserExplicit_anonymous_function_parameterContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserExplicit_anonymous_function_parameterContext::get_token_IN(Self) -> Array[@moonantlr.Token]
@@ -1065,6 +1136,7 @@ pub struct CSharpParserExplicit_anonymous_function_parameter_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserExplicit_anonymous_function_parameter_listContext::alternative(Self) -> String?
+pub fn CSharpParserExplicit_anonymous_function_parameter_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserExplicit_anonymous_function_parameter_listContext::get_explicit_anonymous_function_parameter(Self) -> Array[CSharpParserExplicit_anonymous_function_parameterContext]
 pub fn CSharpParserExplicit_anonymous_function_parameter_listContext::get_explicit_anonymous_function_parameter_list(Self) -> Array[Self]
 pub fn CSharpParserExplicit_anonymous_function_parameter_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -1074,6 +1146,7 @@ pub struct CSharpParserExpressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserExpressionContext::alternative(Self) -> String?
+pub fn CSharpParserExpressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserExpressionContext::get_assignment(Self) -> Array[CSharpParserAssignmentContext]
 pub fn CSharpParserExpressionContext::get_expression(Self) -> Array[Self]
 pub fn CSharpParserExpressionContext::get_non_assignment_expression(Self) -> Array[CSharpParserNon_assignment_expressionContext]
@@ -1090,6 +1163,7 @@ pub struct CSharpParserExpression_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserExpression_listContext::alternative(Self) -> String?
+pub fn CSharpParserExpression_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserExpression_listContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserExpression_listContext::get_expression_list(Self) -> Array[Self]
 pub fn CSharpParserExpression_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -1099,6 +1173,7 @@ pub struct CSharpParserExtern_alias_directiveContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserExtern_alias_directiveContext::alternative(Self) -> String?
+pub fn CSharpParserExtern_alias_directiveContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserExtern_alias_directiveContext::get_extern_alias_directive(Self) -> Array[Self]
 pub fn CSharpParserExtern_alias_directiveContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserExtern_alias_directiveContext::get_token_ALIAS(Self) -> Array[@moonantlr.Token]
@@ -1110,6 +1185,7 @@ pub struct CSharpParserExtern_alias_directivesContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserExtern_alias_directivesContext::alternative(Self) -> String?
+pub fn CSharpParserExtern_alias_directivesContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserExtern_alias_directivesContext::get_extern_alias_directive(Self) -> Array[CSharpParserExtern_alias_directiveContext]
 pub fn CSharpParserExtern_alias_directivesContext::get_extern_alias_directives(Self) -> Array[Self]
 pub fn CSharpParserExtern_alias_directivesContext::raw(Self) -> @moonantlr.RuleContext
@@ -1118,6 +1194,7 @@ pub struct CSharpParserField_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserField_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserField_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserField_declarationContext::get_field_declaration(Self) -> Array[Self]
 pub fn CSharpParserField_declarationContext::get_token_literal_134(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserField_declarationContext::get_variable_declarators(Self) -> Array[CSharpParserVariable_declaratorsContext]
@@ -1127,6 +1204,7 @@ pub struct CSharpParserFinally_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFinally_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserFinally_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFinally_clauseContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserFinally_clauseContext::get_finally_clause(Self) -> Array[Self]
 pub fn CSharpParserFinally_clauseContext::get_token_FINALLY(Self) -> Array[@moonantlr.Token]
@@ -1142,6 +1220,7 @@ pub struct CSharpParserFixed_parameterContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFixed_parameterContext::alternative(Self) -> String?
+pub fn CSharpParserFixed_parameterContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFixed_parameterContext::get_arg_declaration(Self) -> Array[CSharpParserArg_declarationContext]
 pub fn CSharpParserFixed_parameterContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserFixed_parameterContext::get_fixed_parameter(Self) -> Array[Self]
@@ -1153,6 +1232,7 @@ pub struct CSharpParserFixed_parametersContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFixed_parametersContext::alternative(Self) -> String?
+pub fn CSharpParserFixed_parametersContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFixed_parametersContext::get_fixed_parameter(Self) -> Array[CSharpParserFixed_parameterContext]
 pub fn CSharpParserFixed_parametersContext::get_fixed_parameters(Self) -> Array[Self]
 pub fn CSharpParserFixed_parametersContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -1162,6 +1242,7 @@ pub struct CSharpParserFixed_pointer_declaratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFixed_pointer_declaratorContext::alternative(Self) -> String?
+pub fn CSharpParserFixed_pointer_declaratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFixed_pointer_declaratorContext::get_fixed_pointer_declarator(Self) -> Array[Self]
 pub fn CSharpParserFixed_pointer_declaratorContext::get_fixed_pointer_initializer(Self) -> Array[CSharpParserFixed_pointer_initializerContext]
 pub fn CSharpParserFixed_pointer_declaratorContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -1172,6 +1253,7 @@ pub struct CSharpParserFixed_pointer_declaratorsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFixed_pointer_declaratorsContext::alternative(Self) -> String?
+pub fn CSharpParserFixed_pointer_declaratorsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFixed_pointer_declaratorsContext::get_fixed_pointer_declarator(Self) -> Array[CSharpParserFixed_pointer_declaratorContext]
 pub fn CSharpParserFixed_pointer_declaratorsContext::get_fixed_pointer_declarators(Self) -> Array[Self]
 pub fn CSharpParserFixed_pointer_declaratorsContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -1181,6 +1263,7 @@ pub struct CSharpParserFixed_pointer_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFixed_pointer_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserFixed_pointer_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFixed_pointer_initializerContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserFixed_pointer_initializerContext::get_fixed_pointer_initializer(Self) -> Array[Self]
 pub fn CSharpParserFixed_pointer_initializerContext::get_stackalloc_initializer(Self) -> Array[CSharpParserStackalloc_initializerContext]
@@ -1191,6 +1274,7 @@ pub struct CSharpParserFixed_size_buffer_declaratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFixed_size_buffer_declaratorContext::alternative(Self) -> String?
+pub fn CSharpParserFixed_size_buffer_declaratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFixed_size_buffer_declaratorContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserFixed_size_buffer_declaratorContext::get_fixed_size_buffer_declarator(Self) -> Array[Self]
 pub fn CSharpParserFixed_size_buffer_declaratorContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -1202,6 +1286,7 @@ pub struct CSharpParserFloating_point_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFloating_point_typeContext::alternative(Self) -> String?
+pub fn CSharpParserFloating_point_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFloating_point_typeContext::get_floating_point_type(Self) -> Array[Self]
 pub fn CSharpParserFloating_point_typeContext::get_token_DOUBLE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserFloating_point_typeContext::get_token_FLOAT(Self) -> Array[@moonantlr.Token]
@@ -1217,6 +1302,7 @@ pub struct CSharpParserFor_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFor_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserFor_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFor_initializerContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserFor_initializerContext::get_for_initializer(Self) -> Array[Self]
 pub fn CSharpParserFor_initializerContext::get_local_variable_declaration(Self) -> Array[CSharpParserLocal_variable_declarationContext]
@@ -1227,6 +1313,7 @@ pub struct CSharpParserFor_iteratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFor_iteratorContext::alternative(Self) -> String?
+pub fn CSharpParserFor_iteratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFor_iteratorContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserFor_iteratorContext::get_for_iterator(Self) -> Array[Self]
 pub fn CSharpParserFor_iteratorContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -1242,6 +1329,7 @@ pub struct CSharpParserFormal_parameter_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFormal_parameter_listContext::alternative(Self) -> String?
+pub fn CSharpParserFormal_parameter_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFormal_parameter_listContext::get_fixed_parameters(Self) -> Array[CSharpParserFixed_parametersContext]
 pub fn CSharpParserFormal_parameter_listContext::get_formal_parameter_list(Self) -> Array[Self]
 pub fn CSharpParserFormal_parameter_listContext::get_parameter_array(Self) -> Array[CSharpParserParameter_arrayContext]
@@ -1252,6 +1340,7 @@ pub struct CSharpParserFrom_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserFrom_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserFrom_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserFrom_clauseContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserFrom_clauseContext::get_from_clause(Self) -> Array[Self]
 pub fn CSharpParserFrom_clauseContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -1264,6 +1353,7 @@ pub struct CSharpParserGeneral_catch_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserGeneral_catch_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserGeneral_catch_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserGeneral_catch_clauseContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserGeneral_catch_clauseContext::get_exception_filter(Self) -> Array[CSharpParserException_filterContext]
 pub fn CSharpParserGeneral_catch_clauseContext::get_general_catch_clause(Self) -> Array[Self]
@@ -1274,6 +1364,7 @@ pub struct CSharpParserGeneric_dimension_specifierContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserGeneric_dimension_specifierContext::alternative(Self) -> String?
+pub fn CSharpParserGeneric_dimension_specifierContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserGeneric_dimension_specifierContext::get_generic_dimension_specifier(Self) -> Array[Self]
 pub fn CSharpParserGeneric_dimension_specifierContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserGeneric_dimension_specifierContext::get_token_literal_146(Self) -> Array[@moonantlr.Token]
@@ -1284,6 +1375,7 @@ pub struct CSharpParserGet_accessor_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserGet_accessor_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserGet_accessor_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserGet_accessor_declarationContext::get_accessor_body(Self) -> Array[CSharpParserAccessor_bodyContext]
 pub fn CSharpParserGet_accessor_declarationContext::get_accessor_modifier(Self) -> Array[CSharpParserAccessor_modifierContext]
 pub fn CSharpParserGet_accessor_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
@@ -1295,6 +1387,7 @@ pub struct CSharpParserGlobal_attribute_sectionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserGlobal_attribute_sectionContext::alternative(Self) -> String?
+pub fn CSharpParserGlobal_attribute_sectionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserGlobal_attribute_sectionContext::get_attribute_list(Self) -> Array[CSharpParserAttribute_listContext]
 pub fn CSharpParserGlobal_attribute_sectionContext::get_global_attribute_section(Self) -> Array[Self]
 pub fn CSharpParserGlobal_attribute_sectionContext::get_global_attribute_target(Self) -> Array[CSharpParserGlobal_attribute_targetContext]
@@ -1308,6 +1401,7 @@ pub struct CSharpParserGlobal_attribute_targetContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserGlobal_attribute_targetContext::alternative(Self) -> String?
+pub fn CSharpParserGlobal_attribute_targetContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserGlobal_attribute_targetContext::get_global_attribute_target(Self) -> Array[Self]
 pub fn CSharpParserGlobal_attribute_targetContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserGlobal_attribute_targetContext::get_keyword(Self) -> Array[CSharpParserKeywordContext]
@@ -1323,6 +1417,7 @@ pub struct CSharpParserIdentifierContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIdentifierContext::alternative(Self) -> String?
+pub fn CSharpParserIdentifierContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIdentifierContext::get_identifier(Self) -> Array[Self]
 pub fn CSharpParserIdentifierContext::get_token_ADD(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserIdentifierContext::get_token_ALIAS(Self) -> Array[@moonantlr.Token]
@@ -1365,6 +1460,7 @@ pub struct CSharpParserIf_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIf_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserIf_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIf_bodyContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserIf_bodyContext::get_if_body(Self) -> Array[Self]
 pub fn CSharpParserIf_bodyContext::get_simple_embedded_statement(Self) -> Array[CSharpParserSimple_embedded_statementContext]
@@ -1374,6 +1470,7 @@ pub struct CSharpParserImplicit_anonymous_function_parameter_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserImplicit_anonymous_function_parameter_listContext::alternative(Self) -> String?
+pub fn CSharpParserImplicit_anonymous_function_parameter_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserImplicit_anonymous_function_parameter_listContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserImplicit_anonymous_function_parameter_listContext::get_implicit_anonymous_function_parameter_list(Self) -> Array[Self]
 pub fn CSharpParserImplicit_anonymous_function_parameter_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -1383,6 +1480,7 @@ pub struct CSharpParserInclusive_or_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInclusive_or_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserInclusive_or_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInclusive_or_expressionContext::get_exclusive_or_expression(Self) -> Array[CSharpParserExclusive_or_expressionContext]
 pub fn CSharpParserInclusive_or_expressionContext::get_inclusive_or_expression(Self) -> Array[Self]
 pub fn CSharpParserInclusive_or_expressionContext::get_token_literal_141(Self) -> Array[@moonantlr.Token]
@@ -1392,6 +1490,7 @@ pub struct CSharpParserIndexer_argumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIndexer_argumentContext::alternative(Self) -> String?
+pub fn CSharpParserIndexer_argumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIndexer_argumentContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserIndexer_argumentContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserIndexer_argumentContext::get_indexer_argument(Self) -> Array[Self]
@@ -1402,6 +1501,7 @@ pub struct CSharpParserIndexer_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIndexer_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserIndexer_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIndexer_declarationContext::get_accessor_declarations(Self) -> Array[CSharpParserAccessor_declarationsContext]
 pub fn CSharpParserIndexer_declarationContext::get_formal_parameter_list(Self) -> Array[CSharpParserFormal_parameter_listContext]
 pub fn CSharpParserIndexer_declarationContext::get_indexer_declaration(Self) -> Array[Self]
@@ -1419,6 +1519,7 @@ pub struct CSharpParserInitializer_valueContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInitializer_valueContext::alternative(Self) -> String?
+pub fn CSharpParserInitializer_valueContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInitializer_valueContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserInitializer_valueContext::get_initializer_value(Self) -> Array[Self]
 pub fn CSharpParserInitializer_valueContext::get_object_or_collection_initializer(Self) -> Array[CSharpParserObject_or_collection_initializerContext]
@@ -1428,6 +1529,7 @@ pub struct CSharpParserIntegral_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIntegral_typeContext::alternative(Self) -> String?
+pub fn CSharpParserIntegral_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIntegral_typeContext::get_integral_type(Self) -> Array[Self]
 pub fn CSharpParserIntegral_typeContext::get_token_BYTE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserIntegral_typeContext::get_token_CHAR(Self) -> Array[@moonantlr.Token]
@@ -1444,6 +1546,7 @@ pub struct CSharpParserInterface_accessorsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterface_accessorsContext::alternative(Self) -> String?
+pub fn CSharpParserInterface_accessorsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterface_accessorsContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserInterface_accessorsContext::get_interface_accessors(Self) -> Array[Self]
 pub fn CSharpParserInterface_accessorsContext::get_token_GET(Self) -> Array[@moonantlr.Token]
@@ -1455,6 +1558,7 @@ pub struct CSharpParserInterface_baseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterface_baseContext::alternative(Self) -> String?
+pub fn CSharpParserInterface_baseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterface_baseContext::get_interface_base(Self) -> Array[Self]
 pub fn CSharpParserInterface_baseContext::get_interface_type_list(Self) -> Array[CSharpParserInterface_type_listContext]
 pub fn CSharpParserInterface_baseContext::get_token_literal_133(Self) -> Array[@moonantlr.Token]
@@ -1464,6 +1568,7 @@ pub struct CSharpParserInterface_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterface_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserInterface_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterface_bodyContext::get_interface_body(Self) -> Array[Self]
 pub fn CSharpParserInterface_bodyContext::get_interface_member_declaration(Self) -> Array[CSharpParserInterface_member_declarationContext]
 pub fn CSharpParserInterface_bodyContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -1474,6 +1579,7 @@ pub struct CSharpParserInterface_definitionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterface_definitionContext::alternative(Self) -> String?
+pub fn CSharpParserInterface_definitionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterface_definitionContext::get_class_body(Self) -> Array[CSharpParserClass_bodyContext]
 pub fn CSharpParserInterface_definitionContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserInterface_definitionContext::get_interface_base(Self) -> Array[CSharpParserInterface_baseContext]
@@ -1488,6 +1594,7 @@ pub struct CSharpParserInterface_member_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterface_member_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserInterface_member_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterface_member_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserInterface_member_declarationContext::get_formal_parameter_list(Self) -> Array[CSharpParserFormal_parameter_listContext]
 pub fn CSharpParserInterface_member_declarationContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -1516,6 +1623,7 @@ pub struct CSharpParserInterface_type_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterface_type_listContext::alternative(Self) -> String?
+pub fn CSharpParserInterface_type_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterface_type_listContext::get_interface_type_list(Self) -> Array[Self]
 pub fn CSharpParserInterface_type_listContext::get_namespace_or_type_name(Self) -> Array[CSharpParserNamespace_or_type_nameContext]
 pub fn CSharpParserInterface_type_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -1525,6 +1633,7 @@ pub struct CSharpParserInterpolated_regular_stringContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterpolated_regular_stringContext::alternative(Self) -> String?
+pub fn CSharpParserInterpolated_regular_stringContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterpolated_regular_stringContext::get_interpolated_regular_string(Self) -> Array[Self]
 pub fn CSharpParserInterpolated_regular_stringContext::get_interpolated_regular_string_part(Self) -> Array[CSharpParserInterpolated_regular_string_partContext]
 pub fn CSharpParserInterpolated_regular_stringContext::get_token_DOUBLE_QUOTE_INSIDE(Self) -> Array[@moonantlr.Token]
@@ -1535,6 +1644,7 @@ pub struct CSharpParserInterpolated_regular_string_partContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterpolated_regular_string_partContext::alternative(Self) -> String?
+pub fn CSharpParserInterpolated_regular_string_partContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterpolated_regular_string_partContext::get_interpolated_regular_string_part(Self) -> Array[Self]
 pub fn CSharpParserInterpolated_regular_string_partContext::get_interpolated_string_expression(Self) -> Array[CSharpParserInterpolated_string_expressionContext]
 pub fn CSharpParserInterpolated_regular_string_partContext::get_token_DOUBLE_CURLY_INSIDE(Self) -> Array[@moonantlr.Token]
@@ -1546,6 +1656,7 @@ pub struct CSharpParserInterpolated_string_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterpolated_string_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserInterpolated_string_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterpolated_string_expressionContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserInterpolated_string_expressionContext::get_interpolated_string_expression(Self) -> Array[Self]
 pub fn CSharpParserInterpolated_string_expressionContext::get_token_FORMAT_STRING(Self) -> Array[@moonantlr.Token]
@@ -1557,6 +1668,7 @@ pub struct CSharpParserInterpolated_verbatium_stringContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterpolated_verbatium_stringContext::alternative(Self) -> String?
+pub fn CSharpParserInterpolated_verbatium_stringContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterpolated_verbatium_stringContext::get_interpolated_verbatium_string(Self) -> Array[Self]
 pub fn CSharpParserInterpolated_verbatium_stringContext::get_interpolated_verbatium_string_part(Self) -> Array[CSharpParserInterpolated_verbatium_string_partContext]
 pub fn CSharpParserInterpolated_verbatium_stringContext::get_token_DOUBLE_QUOTE_INSIDE(Self) -> Array[@moonantlr.Token]
@@ -1567,6 +1679,7 @@ pub struct CSharpParserInterpolated_verbatium_string_partContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserInterpolated_verbatium_string_partContext::alternative(Self) -> String?
+pub fn CSharpParserInterpolated_verbatium_string_partContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserInterpolated_verbatium_string_partContext::get_interpolated_string_expression(Self) -> Array[CSharpParserInterpolated_string_expressionContext]
 pub fn CSharpParserInterpolated_verbatium_string_partContext::get_interpolated_verbatium_string_part(Self) -> Array[Self]
 pub fn CSharpParserInterpolated_verbatium_string_partContext::get_token_DOUBLE_CURLY_INSIDE(Self) -> Array[@moonantlr.Token]
@@ -1578,6 +1691,7 @@ pub struct CSharpParserIsTypeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIsTypeContext::alternative(Self) -> String?
+pub fn CSharpParserIsTypeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIsTypeContext::get_base_type(Self) -> Array[CSharpParserBase_typeContext]
 pub fn CSharpParserIsTypeContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserIsTypeContext::get_isType(Self) -> Array[Self]
@@ -1591,6 +1705,7 @@ pub struct CSharpParserIsTypePatternArmContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIsTypePatternArmContext::alternative(Self) -> String?
+pub fn CSharpParserIsTypePatternArmContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIsTypePatternArmContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserIsTypePatternArmContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserIsTypePatternArmContext::get_isTypePatternArm(Self) -> Array[Self]
@@ -1601,6 +1716,7 @@ pub struct CSharpParserIsTypePatternArmsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserIsTypePatternArmsContext::alternative(Self) -> String?
+pub fn CSharpParserIsTypePatternArmsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserIsTypePatternArmsContext::get_isTypePatternArm(Self) -> Array[CSharpParserIsTypePatternArmContext]
 pub fn CSharpParserIsTypePatternArmsContext::get_isTypePatternArms(Self) -> Array[Self]
 pub fn CSharpParserIsTypePatternArmsContext::get_token_literal_125(Self) -> Array[@moonantlr.Token]
@@ -1612,6 +1728,7 @@ pub struct CSharpParserKeywordContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserKeywordContext::alternative(Self) -> String?
+pub fn CSharpParserKeywordContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserKeywordContext::get_keyword(Self) -> Array[Self]
 pub fn CSharpParserKeywordContext::get_token_ABSTRACT(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserKeywordContext::get_token_AS(Self) -> Array[@moonantlr.Token]
@@ -1697,6 +1814,7 @@ pub struct CSharpParserLabeled_StatementContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLabeled_StatementContext::alternative(Self) -> String?
+pub fn CSharpParserLabeled_StatementContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLabeled_StatementContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserLabeled_StatementContext::get_labeled_Statement(Self) -> Array[Self]
 pub fn CSharpParserLabeled_StatementContext::get_statement(Self) -> Array[CSharpParserStatementContext]
@@ -1707,6 +1825,7 @@ pub struct CSharpParserLambda_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLambda_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserLambda_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLambda_expressionContext::get_anonymous_function_body(Self) -> Array[CSharpParserAnonymous_function_bodyContext]
 pub fn CSharpParserLambda_expressionContext::get_anonymous_function_signature(Self) -> Array[CSharpParserAnonymous_function_signatureContext]
 pub fn CSharpParserLambda_expressionContext::get_lambda_expression(Self) -> Array[Self]
@@ -1718,6 +1837,7 @@ pub struct CSharpParserLet_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLet_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserLet_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLet_clauseContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserLet_clauseContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserLet_clauseContext::get_let_clause(Self) -> Array[Self]
@@ -2259,6 +2379,7 @@ pub struct CSharpParserLiteralContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLiteralContext::alternative(Self) -> String?
+pub fn CSharpParserLiteralContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLiteralContext::get_boolean_literal(Self) -> Array[CSharpParserBoolean_literalContext]
 pub fn CSharpParserLiteralContext::get_literal(Self) -> Array[Self]
 pub fn CSharpParserLiteralContext::get_string_literal(Self) -> Array[CSharpParserString_literalContext]
@@ -2280,6 +2401,7 @@ pub struct CSharpParserLocal_constant_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_constant_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_constant_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_constant_declarationContext::get_constant_declarators(Self) -> Array[CSharpParserConstant_declaratorsContext]
 pub fn CSharpParserLocal_constant_declarationContext::get_local_constant_declaration(Self) -> Array[Self]
 pub fn CSharpParserLocal_constant_declarationContext::get_token_CONST(Self) -> Array[@moonantlr.Token]
@@ -2290,6 +2412,7 @@ pub struct CSharpParserLocal_function_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_function_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_function_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_function_bodyContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserLocal_function_bodyContext::get_local_function_body(Self) -> Array[Self]
 pub fn CSharpParserLocal_function_bodyContext::get_right_arrow(Self) -> Array[CSharpParserRight_arrowContext]
@@ -2301,6 +2424,7 @@ pub struct CSharpParserLocal_function_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_function_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_function_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_function_declarationContext::get_local_function_body(Self) -> Array[CSharpParserLocal_function_bodyContext]
 pub fn CSharpParserLocal_function_declarationContext::get_local_function_declaration(Self) -> Array[Self]
 pub fn CSharpParserLocal_function_declarationContext::get_local_function_header(Self) -> Array[CSharpParserLocal_function_headerContext]
@@ -2310,6 +2434,7 @@ pub struct CSharpParserLocal_function_headerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_function_headerContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_function_headerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_function_headerContext::get_formal_parameter_list(Self) -> Array[CSharpParserFormal_parameter_listContext]
 pub fn CSharpParserLocal_function_headerContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserLocal_function_headerContext::get_local_function_header(Self) -> Array[Self]
@@ -2325,6 +2450,7 @@ pub struct CSharpParserLocal_function_modifiersContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_function_modifiersContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_function_modifiersContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_function_modifiersContext::get_local_function_modifiers(Self) -> Array[Self]
 pub fn CSharpParserLocal_function_modifiersContext::get_token_ASYNC(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserLocal_function_modifiersContext::get_token_STATIC(Self) -> Array[@moonantlr.Token]
@@ -2335,6 +2461,7 @@ pub struct CSharpParserLocal_variable_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_variable_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_variable_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_variable_declarationContext::get_fixed_pointer_declarators(Self) -> Array[CSharpParserFixed_pointer_declaratorsContext]
 pub fn CSharpParserLocal_variable_declarationContext::get_local_variable_declaration(Self) -> Array[Self]
 pub fn CSharpParserLocal_variable_declarationContext::get_local_variable_declarator(Self) -> Array[CSharpParserLocal_variable_declaratorContext]
@@ -2351,6 +2478,7 @@ pub struct CSharpParserLocal_variable_declaratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_variable_declaratorContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_variable_declaratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_variable_declaratorContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserLocal_variable_declaratorContext::get_local_variable_declarator(Self) -> Array[Self]
 pub fn CSharpParserLocal_variable_declaratorContext::get_local_variable_initializer(Self) -> Array[CSharpParserLocal_variable_initializerContext]
@@ -2362,6 +2490,7 @@ pub struct CSharpParserLocal_variable_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_variable_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_variable_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_variable_initializerContext::get_array_initializer(Self) -> Array[CSharpParserArray_initializerContext]
 pub fn CSharpParserLocal_variable_initializerContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserLocal_variable_initializerContext::get_local_variable_initializer(Self) -> Array[Self]
@@ -2372,6 +2501,7 @@ pub struct CSharpParserLocal_variable_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserLocal_variable_typeContext::alternative(Self) -> String?
+pub fn CSharpParserLocal_variable_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserLocal_variable_typeContext::get_local_variable_type(Self) -> Array[Self]
 pub fn CSharpParserLocal_variable_typeContext::get_token_VAR(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserLocal_variable_typeContext::get_type_(Self) -> Array[CSharpParserType_Context]
@@ -2393,6 +2523,7 @@ pub struct CSharpParserMember_accessContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMember_accessContext::alternative(Self) -> String?
+pub fn CSharpParserMember_accessContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMember_accessContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserMember_accessContext::get_member_access(Self) -> Array[Self]
 pub fn CSharpParserMember_accessContext::get_token_literal_131(Self) -> Array[@moonantlr.Token]
@@ -2404,6 +2535,7 @@ pub struct CSharpParserMember_declaratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMember_declaratorContext::alternative(Self) -> String?
+pub fn CSharpParserMember_declaratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMember_declaratorContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserMember_declaratorContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserMember_declaratorContext::get_member_declarator(Self) -> Array[Self]
@@ -2415,6 +2547,7 @@ pub struct CSharpParserMember_declarator_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMember_declarator_listContext::alternative(Self) -> String?
+pub fn CSharpParserMember_declarator_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMember_declarator_listContext::get_member_declarator(Self) -> Array[CSharpParserMember_declaratorContext]
 pub fn CSharpParserMember_declarator_listContext::get_member_declarator_list(Self) -> Array[Self]
 pub fn CSharpParserMember_declarator_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -2424,6 +2557,7 @@ pub struct CSharpParserMember_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMember_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserMember_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMember_initializerContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserMember_initializerContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserMember_initializerContext::get_initializer_value(Self) -> Array[CSharpParserInitializer_valueContext]
@@ -2437,6 +2571,7 @@ pub struct CSharpParserMember_initializer_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMember_initializer_listContext::alternative(Self) -> String?
+pub fn CSharpParserMember_initializer_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMember_initializer_listContext::get_member_initializer(Self) -> Array[CSharpParserMember_initializerContext]
 pub fn CSharpParserMember_initializer_listContext::get_member_initializer_list(Self) -> Array[Self]
 pub fn CSharpParserMember_initializer_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -2446,6 +2581,7 @@ pub struct CSharpParserMember_nameContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMember_nameContext::alternative(Self) -> String?
+pub fn CSharpParserMember_nameContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMember_nameContext::get_member_name(Self) -> Array[Self]
 pub fn CSharpParserMember_nameContext::get_namespace_or_type_name(Self) -> Array[CSharpParserNamespace_or_type_nameContext]
 pub fn CSharpParserMember_nameContext::raw(Self) -> @moonantlr.RuleContext
@@ -2454,6 +2590,7 @@ pub struct CSharpParserMethod_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMethod_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserMethod_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMethod_bodyContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserMethod_bodyContext::get_method_body(Self) -> Array[Self]
 pub fn CSharpParserMethod_bodyContext::get_token_literal_134(Self) -> Array[@moonantlr.Token]
@@ -2463,6 +2600,7 @@ pub struct CSharpParserMethod_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMethod_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserMethod_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMethod_declarationContext::get_formal_parameter_list(Self) -> Array[CSharpParserFormal_parameter_listContext]
 pub fn CSharpParserMethod_declarationContext::get_method_body(Self) -> Array[CSharpParserMethod_bodyContext]
 pub fn CSharpParserMethod_declarationContext::get_method_declaration(Self) -> Array[Self]
@@ -2480,6 +2618,7 @@ pub struct CSharpParserMethod_invocationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMethod_invocationContext::alternative(Self) -> String?
+pub fn CSharpParserMethod_invocationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMethod_invocationContext::get_argument_list(Self) -> Array[CSharpParserArgument_listContext]
 pub fn CSharpParserMethod_invocationContext::get_method_invocation(Self) -> Array[Self]
 pub fn CSharpParserMethod_invocationContext::get_token_CLOSE_PARENS(Self) -> Array[@moonantlr.Token]
@@ -2490,6 +2629,7 @@ pub struct CSharpParserMethod_member_nameContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMethod_member_nameContext::alternative(Self) -> String?
+pub fn CSharpParserMethod_member_nameContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMethod_member_nameContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserMethod_member_nameContext::get_method_member_name(Self) -> Array[Self]
 pub fn CSharpParserMethod_member_nameContext::get_token_literal_131(Self) -> Array[@moonantlr.Token]
@@ -2501,6 +2641,7 @@ pub struct CSharpParserMultiplicative_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserMultiplicative_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserMultiplicative_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserMultiplicative_expressionContext::get_multiplicative_expression(Self) -> Array[Self]
 pub fn CSharpParserMultiplicative_expressionContext::get_switch_expression(Self) -> Array[CSharpParserSwitch_expressionContext]
 pub fn CSharpParserMultiplicative_expressionContext::get_token_literal_137(Self) -> Array[@moonantlr.Token]
@@ -2518,6 +2659,7 @@ pub struct CSharpParserNamespace_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNamespace_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserNamespace_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNamespace_bodyContext::get_extern_alias_directives(Self) -> Array[CSharpParserExtern_alias_directivesContext]
 pub fn CSharpParserNamespace_bodyContext::get_namespace_body(Self) -> Array[Self]
 pub fn CSharpParserNamespace_bodyContext::get_namespace_member_declarations(Self) -> Array[CSharpParserNamespace_member_declarationsContext]
@@ -2530,6 +2672,7 @@ pub struct CSharpParserNamespace_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNamespace_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserNamespace_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNamespace_declarationContext::get_namespace_body(Self) -> Array[CSharpParserNamespace_bodyContext]
 pub fn CSharpParserNamespace_declarationContext::get_namespace_declaration(Self) -> Array[Self]
 pub fn CSharpParserNamespace_declarationContext::get_qualified_identifier(Self) -> Array[CSharpParserQualified_identifierContext]
@@ -2542,6 +2685,7 @@ pub struct CSharpParserNamespace_member_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNamespace_member_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserNamespace_member_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNamespace_member_declarationContext::get_namespace_declaration(Self) -> Array[CSharpParserNamespace_declarationContext]
 pub fn CSharpParserNamespace_member_declarationContext::get_namespace_member_declaration(Self) -> Array[Self]
 pub fn CSharpParserNamespace_member_declarationContext::get_type_declaration(Self) -> Array[CSharpParserType_declarationContext]
@@ -2551,6 +2695,7 @@ pub struct CSharpParserNamespace_member_declarationsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNamespace_member_declarationsContext::alternative(Self) -> String?
+pub fn CSharpParserNamespace_member_declarationsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNamespace_member_declarationsContext::get_namespace_member_declaration(Self) -> Array[CSharpParserNamespace_member_declarationContext]
 pub fn CSharpParserNamespace_member_declarationsContext::get_namespace_member_declarations(Self) -> Array[Self]
 pub fn CSharpParserNamespace_member_declarationsContext::raw(Self) -> @moonantlr.RuleContext
@@ -2559,6 +2704,7 @@ pub struct CSharpParserNamespace_or_type_nameContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNamespace_or_type_nameContext::alternative(Self) -> String?
+pub fn CSharpParserNamespace_or_type_nameContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNamespace_or_type_nameContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserNamespace_or_type_nameContext::get_namespace_or_type_name(Self) -> Array[Self]
 pub fn CSharpParserNamespace_or_type_nameContext::get_qualified_alias_member(Self) -> Array[CSharpParserQualified_alias_memberContext]
@@ -2570,6 +2716,7 @@ pub struct CSharpParserNon_assignment_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNon_assignment_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserNon_assignment_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNon_assignment_expressionContext::get_conditional_expression(Self) -> Array[CSharpParserConditional_expressionContext]
 pub fn CSharpParserNon_assignment_expressionContext::get_lambda_expression(Self) -> Array[CSharpParserLambda_expressionContext]
 pub fn CSharpParserNon_assignment_expressionContext::get_non_assignment_expression(Self) -> Array[Self]
@@ -2580,6 +2727,7 @@ pub struct CSharpParserNull_coalescing_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNull_coalescing_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserNull_coalescing_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNull_coalescing_expressionContext::get_conditional_or_expression(Self) -> Array[CSharpParserConditional_or_expressionContext]
 pub fn CSharpParserNull_coalescing_expressionContext::get_null_coalescing_expression(Self) -> Array[Self]
 pub fn CSharpParserNull_coalescing_expressionContext::get_throw_expression(Self) -> Array[CSharpParserThrow_expressionContext]
@@ -2590,6 +2738,7 @@ pub struct CSharpParserNumeric_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserNumeric_typeContext::alternative(Self) -> String?
+pub fn CSharpParserNumeric_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserNumeric_typeContext::get_floating_point_type(Self) -> Array[CSharpParserFloating_point_typeContext]
 pub fn CSharpParserNumeric_typeContext::get_integral_type(Self) -> Array[CSharpParserIntegral_typeContext]
 pub fn CSharpParserNumeric_typeContext::get_numeric_type(Self) -> Array[Self]
@@ -2606,6 +2755,7 @@ pub struct CSharpParserObject_creation_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserObject_creation_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserObject_creation_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserObject_creation_expressionContext::get_argument_list(Self) -> Array[CSharpParserArgument_listContext]
 pub fn CSharpParserObject_creation_expressionContext::get_object_creation_expression(Self) -> Array[Self]
 pub fn CSharpParserObject_creation_expressionContext::get_object_or_collection_initializer(Self) -> Array[CSharpParserObject_or_collection_initializerContext]
@@ -2617,6 +2767,7 @@ pub struct CSharpParserObject_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserObject_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserObject_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserObject_initializerContext::get_member_initializer_list(Self) -> Array[CSharpParserMember_initializer_listContext]
 pub fn CSharpParserObject_initializerContext::get_object_initializer(Self) -> Array[Self]
 pub fn CSharpParserObject_initializerContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -2628,6 +2779,7 @@ pub struct CSharpParserObject_or_collection_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserObject_or_collection_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserObject_or_collection_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserObject_or_collection_initializerContext::get_collection_initializer(Self) -> Array[CSharpParserCollection_initializerContext]
 pub fn CSharpParserObject_or_collection_initializerContext::get_object_initializer(Self) -> Array[CSharpParserObject_initializerContext]
 pub fn CSharpParserObject_or_collection_initializerContext::get_object_or_collection_initializer(Self) -> Array[Self]
@@ -2637,6 +2789,7 @@ pub struct CSharpParserOperator_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserOperator_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserOperator_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserOperator_declarationContext::get_arg_declaration(Self) -> Array[CSharpParserArg_declarationContext]
 pub fn CSharpParserOperator_declarationContext::get_body(Self) -> Array[CSharpParserBodyContext]
 pub fn CSharpParserOperator_declarationContext::get_operator_declaration(Self) -> Array[Self]
@@ -2655,6 +2808,7 @@ pub struct CSharpParserOrderby_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserOrderby_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserOrderby_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserOrderby_clauseContext::get_orderby_clause(Self) -> Array[Self]
 pub fn CSharpParserOrderby_clauseContext::get_ordering(Self) -> Array[CSharpParserOrderingContext]
 pub fn CSharpParserOrderby_clauseContext::get_token_ORDERBY(Self) -> Array[@moonantlr.Token]
@@ -2665,6 +2819,7 @@ pub struct CSharpParserOrderingContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserOrderingContext::alternative(Self) -> String?
+pub fn CSharpParserOrderingContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserOrderingContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserOrderingContext::get_ordering(Self) -> Array[Self]
 pub fn CSharpParserOrderingContext::get_token_ASCENDING(Self) -> Array[@moonantlr.Token]
@@ -2676,6 +2831,7 @@ pub struct CSharpParserOverloadable_operatorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserOverloadable_operatorContext::alternative(Self) -> String?
+pub fn CSharpParserOverloadable_operatorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserOverloadable_operatorContext::get_overloadable_operator(Self) -> Array[Self]
 pub fn CSharpParserOverloadable_operatorContext::get_right_shift(Self) -> Array[CSharpParserRight_shiftContext]
 pub fn CSharpParserOverloadable_operatorContext::get_token_BANG(Self) -> Array[@moonantlr.Token]
@@ -2705,6 +2861,7 @@ pub struct CSharpParserParameter_arrayContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserParameter_arrayContext::alternative(Self) -> String?
+pub fn CSharpParserParameter_arrayContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserParameter_arrayContext::get_array_type(Self) -> Array[CSharpParserArray_typeContext]
 pub fn CSharpParserParameter_arrayContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserParameter_arrayContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
@@ -2716,6 +2873,7 @@ pub struct CSharpParserParameter_modifierContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserParameter_modifierContext::alternative(Self) -> String?
+pub fn CSharpParserParameter_modifierContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserParameter_modifierContext::get_parameter_modifier(Self) -> Array[Self]
 pub fn CSharpParserParameter_modifierContext::get_token_IN(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserParameter_modifierContext::get_token_OUT(Self) -> Array[@moonantlr.Token]
@@ -2733,6 +2891,7 @@ pub struct CSharpParserPointer_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserPointer_typeContext::alternative(Self) -> String?
+pub fn CSharpParserPointer_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserPointer_typeContext::get_class_type(Self) -> Array[CSharpParserClass_typeContext]
 pub fn CSharpParserPointer_typeContext::get_pointer_type(Self) -> Array[Self]
 pub fn CSharpParserPointer_typeContext::get_rank_specifier(Self) -> Array[CSharpParserRank_specifierContext]
@@ -2746,6 +2905,7 @@ pub struct CSharpParserPredefined_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserPredefined_typeContext::alternative(Self) -> String?
+pub fn CSharpParserPredefined_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserPredefined_typeContext::get_predefined_type(Self) -> Array[Self]
 pub fn CSharpParserPredefined_typeContext::get_token_BOOL(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserPredefined_typeContext::get_token_BYTE(Self) -> Array[@moonantlr.Token]
@@ -2768,6 +2928,7 @@ pub struct CSharpParserPrimary_constraintContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserPrimary_constraintContext::alternative(Self) -> String?
+pub fn CSharpParserPrimary_constraintContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserPrimary_constraintContext::get_class_type(Self) -> Array[CSharpParserClass_typeContext]
 pub fn CSharpParserPrimary_constraintContext::get_primary_constraint(Self) -> Array[Self]
 pub fn CSharpParserPrimary_constraintContext::get_token_CLASS(Self) -> Array[@moonantlr.Token]
@@ -2780,6 +2941,7 @@ pub struct CSharpParserPrimary_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserPrimary_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserPrimary_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserPrimary_expressionContext::get_bracket_expression(Self) -> Array[CSharpParserBracket_expressionContext]
 pub fn CSharpParserPrimary_expressionContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserPrimary_expressionContext::get_member_access(Self) -> Array[CSharpParserMember_accessContext]
@@ -2813,6 +2975,7 @@ pub fn CSharpParserPrimary_expression_startContext::as_thisReferenceExpression(S
 pub fn CSharpParserPrimary_expression_startContext::as_tupleExpression(Self) -> CSharpParserTupleExpressionContext?
 pub fn CSharpParserPrimary_expression_startContext::as_typeofExpression(Self) -> CSharpParserTypeofExpressionContext?
 pub fn CSharpParserPrimary_expression_startContext::as_uncheckedExpression(Self) -> CSharpParserUncheckedExpressionContext?
+pub fn CSharpParserPrimary_expression_startContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserPrimary_expression_startContext::get_anonymous_object_initializer(Self) -> Array[CSharpParserAnonymous_object_initializerContext]
 pub fn CSharpParserPrimary_expression_startContext::get_argument(Self) -> Array[CSharpParserArgumentContext]
 pub fn CSharpParserPrimary_expression_startContext::get_array_initializer(Self) -> Array[CSharpParserArray_initializerContext]
@@ -2856,6 +3019,7 @@ pub struct CSharpParserProperty_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserProperty_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserProperty_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserProperty_declarationContext::get_accessor_declarations(Self) -> Array[CSharpParserAccessor_declarationsContext]
 pub fn CSharpParserProperty_declarationContext::get_member_name(Self) -> Array[CSharpParserMember_nameContext]
 pub fn CSharpParserProperty_declarationContext::get_property_declaration(Self) -> Array[Self]
@@ -2872,6 +3036,7 @@ pub struct CSharpParserQualified_alias_memberContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserQualified_alias_memberContext::alternative(Self) -> String?
+pub fn CSharpParserQualified_alias_memberContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserQualified_alias_memberContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserQualified_alias_memberContext::get_qualified_alias_member(Self) -> Array[Self]
 pub fn CSharpParserQualified_alias_memberContext::get_token_literal_149(Self) -> Array[@moonantlr.Token]
@@ -2882,6 +3047,7 @@ pub struct CSharpParserQualified_identifierContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserQualified_identifierContext::alternative(Self) -> String?
+pub fn CSharpParserQualified_identifierContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserQualified_identifierContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserQualified_identifierContext::get_qualified_identifier(Self) -> Array[Self]
 pub fn CSharpParserQualified_identifierContext::get_token_literal_131(Self) -> Array[@moonantlr.Token]
@@ -2891,6 +3057,7 @@ pub struct CSharpParserQuery_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserQuery_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserQuery_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserQuery_bodyContext::get_query_body(Self) -> Array[Self]
 pub fn CSharpParserQuery_bodyContext::get_query_body_clause(Self) -> Array[CSharpParserQuery_body_clauseContext]
 pub fn CSharpParserQuery_bodyContext::get_query_continuation(Self) -> Array[CSharpParserQuery_continuationContext]
@@ -2901,6 +3068,7 @@ pub struct CSharpParserQuery_body_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserQuery_body_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserQuery_body_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserQuery_body_clauseContext::get_combined_join_clause(Self) -> Array[CSharpParserCombined_join_clauseContext]
 pub fn CSharpParserQuery_body_clauseContext::get_from_clause(Self) -> Array[CSharpParserFrom_clauseContext]
 pub fn CSharpParserQuery_body_clauseContext::get_let_clause(Self) -> Array[CSharpParserLet_clauseContext]
@@ -2913,6 +3081,7 @@ pub struct CSharpParserQuery_continuationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserQuery_continuationContext::alternative(Self) -> String?
+pub fn CSharpParserQuery_continuationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserQuery_continuationContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserQuery_continuationContext::get_query_body(Self) -> Array[CSharpParserQuery_bodyContext]
 pub fn CSharpParserQuery_continuationContext::get_query_continuation(Self) -> Array[Self]
@@ -2923,6 +3092,7 @@ pub struct CSharpParserQuery_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserQuery_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserQuery_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserQuery_expressionContext::get_from_clause(Self) -> Array[CSharpParserFrom_clauseContext]
 pub fn CSharpParserQuery_expressionContext::get_query_body(Self) -> Array[CSharpParserQuery_bodyContext]
 pub fn CSharpParserQuery_expressionContext::get_query_expression(Self) -> Array[Self]
@@ -2932,6 +3102,7 @@ pub struct CSharpParserRange_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserRange_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserRange_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserRange_expressionContext::get_range_expression(Self) -> Array[Self]
 pub fn CSharpParserRange_expressionContext::get_token_OP_RANGE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserRange_expressionContext::get_unary_expression(Self) -> Array[CSharpParserUnary_expressionContext]
@@ -2941,6 +3112,7 @@ pub struct CSharpParserRank_specifierContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserRank_specifierContext::alternative(Self) -> String?
+pub fn CSharpParserRank_specifierContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserRank_specifierContext::get_rank_specifier(Self) -> Array[Self]
 pub fn CSharpParserRank_specifierContext::get_token_literal_127(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserRank_specifierContext::get_token_literal_128(Self) -> Array[@moonantlr.Token]
@@ -2951,6 +3123,7 @@ pub struct CSharpParserRelational_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserRelational_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserRelational_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserRelational_expressionContext::get_isType(Self) -> Array[CSharpParserIsTypeContext]
 pub fn CSharpParserRelational_expressionContext::get_relational_expression(Self) -> Array[Self]
 pub fn CSharpParserRelational_expressionContext::get_shift_expression(Self) -> Array[CSharpParserShift_expressionContext]
@@ -2967,6 +3140,7 @@ pub struct CSharpParserRemove_accessor_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserRemove_accessor_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserRemove_accessor_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserRemove_accessor_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserRemove_accessor_declarationContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserRemove_accessor_declarationContext::get_remove_accessor_declaration(Self) -> Array[Self]
@@ -2977,6 +3151,7 @@ pub struct CSharpParserResource_acquisitionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserResource_acquisitionContext::alternative(Self) -> String?
+pub fn CSharpParserResource_acquisitionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserResource_acquisitionContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserResource_acquisitionContext::get_local_variable_declaration(Self) -> Array[CSharpParserLocal_variable_declarationContext]
 pub fn CSharpParserResource_acquisitionContext::get_resource_acquisition(Self) -> Array[Self]
@@ -2992,6 +3167,7 @@ pub struct CSharpParserReturn_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserReturn_typeContext::alternative(Self) -> String?
+pub fn CSharpParserReturn_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserReturn_typeContext::get_return_type(Self) -> Array[Self]
 pub fn CSharpParserReturn_typeContext::get_token_VOID(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserReturn_typeContext::get_type_(Self) -> Array[CSharpParserType_Context]
@@ -3001,6 +3177,7 @@ pub struct CSharpParserRight_arrowContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserRight_arrowContext::alternative(Self) -> String?
+pub fn CSharpParserRight_arrowContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserRight_arrowContext::get_right_arrow(Self) -> Array[Self]
 pub fn CSharpParserRight_arrowContext::get_token_literal_145(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserRight_arrowContext::get_token_literal_147(Self) -> Array[@moonantlr.Token]
@@ -3012,6 +3189,7 @@ pub struct CSharpParserRight_shiftContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserRight_shiftContext::alternative(Self) -> String?
+pub fn CSharpParserRight_shiftContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserRight_shiftContext::get_right_shift(Self) -> Array[Self]
 pub fn CSharpParserRight_shiftContext::get_token_literal_147(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserRight_shiftContext::label_first(Self) -> Array[@moonantlr.Token]
@@ -3022,6 +3200,7 @@ pub struct CSharpParserRight_shift_assignmentContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserRight_shift_assignmentContext::alternative(Self) -> String?
+pub fn CSharpParserRight_shift_assignmentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserRight_shift_assignmentContext::get_right_shift_assignment(Self) -> Array[Self]
 pub fn CSharpParserRight_shift_assignmentContext::get_token_literal_147(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserRight_shift_assignmentContext::get_token_literal_159(Self) -> Array[@moonantlr.Token]
@@ -3033,6 +3212,7 @@ pub struct CSharpParserSecondary_constraintsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSecondary_constraintsContext::alternative(Self) -> String?
+pub fn CSharpParserSecondary_constraintsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSecondary_constraintsContext::get_namespace_or_type_name(Self) -> Array[CSharpParserNamespace_or_type_nameContext]
 pub fn CSharpParserSecondary_constraintsContext::get_secondary_constraints(Self) -> Array[Self]
 pub fn CSharpParserSecondary_constraintsContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -3042,6 +3222,7 @@ pub struct CSharpParserSelect_or_group_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSelect_or_group_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserSelect_or_group_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSelect_or_group_clauseContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserSelect_or_group_clauseContext::get_select_or_group_clause(Self) -> Array[Self]
 pub fn CSharpParserSelect_or_group_clauseContext::get_token_BY(Self) -> Array[@moonantlr.Token]
@@ -3053,6 +3234,7 @@ pub struct CSharpParserSet_accessor_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSet_accessor_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserSet_accessor_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSet_accessor_declarationContext::get_accessor_body(Self) -> Array[CSharpParserAccessor_bodyContext]
 pub fn CSharpParserSet_accessor_declarationContext::get_accessor_modifier(Self) -> Array[CSharpParserAccessor_modifierContext]
 pub fn CSharpParserSet_accessor_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
@@ -3064,6 +3246,7 @@ pub struct CSharpParserShift_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserShift_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserShift_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserShift_expressionContext::get_additive_expression(Self) -> Array[CSharpParserAdditive_expressionContext]
 pub fn CSharpParserShift_expressionContext::get_right_shift(Self) -> Array[CSharpParserRight_shiftContext]
 pub fn CSharpParserShift_expressionContext::get_shift_expression(Self) -> Array[Self]
@@ -3101,6 +3284,7 @@ pub fn CSharpParserSimple_embedded_statementContext::as_unsafeStatement(Self) ->
 pub fn CSharpParserSimple_embedded_statementContext::as_usingStatement(Self) -> CSharpParserUsingStatementContext?
 pub fn CSharpParserSimple_embedded_statementContext::as_whileStatement(Self) -> CSharpParserWhileStatementContext?
 pub fn CSharpParserSimple_embedded_statementContext::as_yieldStatement(Self) -> CSharpParserYieldStatementContext?
+pub fn CSharpParserSimple_embedded_statementContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSimple_embedded_statementContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserSimple_embedded_statementContext::get_catch_clauses(Self) -> Array[CSharpParserCatch_clausesContext]
 pub fn CSharpParserSimple_embedded_statementContext::get_embedded_statement(Self) -> Array[CSharpParserEmbedded_statementContext]
@@ -3151,6 +3335,7 @@ pub struct CSharpParserSimple_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSimple_typeContext::alternative(Self) -> String?
+pub fn CSharpParserSimple_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSimple_typeContext::get_numeric_type(Self) -> Array[CSharpParserNumeric_typeContext]
 pub fn CSharpParserSimple_typeContext::get_simple_type(Self) -> Array[Self]
 pub fn CSharpParserSimple_typeContext::get_token_BOOL(Self) -> Array[@moonantlr.Token]
@@ -3166,6 +3351,7 @@ pub struct CSharpParserSpecific_catch_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSpecific_catch_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserSpecific_catch_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSpecific_catch_clauseContext::get_block(Self) -> Array[CSharpParserBlockContext]
 pub fn CSharpParserSpecific_catch_clauseContext::get_class_type(Self) -> Array[CSharpParserClass_typeContext]
 pub fn CSharpParserSpecific_catch_clauseContext::get_exception_filter(Self) -> Array[CSharpParserException_filterContext]
@@ -3180,6 +3366,7 @@ pub struct CSharpParserStackalloc_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserStackalloc_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserStackalloc_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserStackalloc_initializerContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserStackalloc_initializerContext::get_stackalloc_initializer(Self) -> Array[Self]
 pub fn CSharpParserStackalloc_initializerContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -3195,6 +3382,7 @@ pub struct CSharpParserStatementContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserStatementContext::alternative(Self) -> String?
+pub fn CSharpParserStatementContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserStatementContext::get_declarationStatement(Self) -> Array[CSharpParserDeclarationStatementContext]
 pub fn CSharpParserStatementContext::get_embedded_statement(Self) -> Array[CSharpParserEmbedded_statementContext]
 pub fn CSharpParserStatementContext::get_labeled_Statement(Self) -> Array[CSharpParserLabeled_StatementContext]
@@ -3205,6 +3393,7 @@ pub struct CSharpParserStatement_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserStatement_listContext::alternative(Self) -> String?
+pub fn CSharpParserStatement_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserStatement_listContext::get_statement(Self) -> Array[CSharpParserStatementContext]
 pub fn CSharpParserStatement_listContext::get_statement_list(Self) -> Array[Self]
 pub fn CSharpParserStatement_listContext::raw(Self) -> @moonantlr.RuleContext
@@ -3213,6 +3402,7 @@ pub struct CSharpParserString_literalContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserString_literalContext::alternative(Self) -> String?
+pub fn CSharpParserString_literalContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserString_literalContext::get_interpolated_regular_string(Self) -> Array[CSharpParserInterpolated_regular_stringContext]
 pub fn CSharpParserString_literalContext::get_interpolated_verbatium_string(Self) -> Array[CSharpParserInterpolated_verbatium_stringContext]
 pub fn CSharpParserString_literalContext::get_string_literal(Self) -> Array[Self]
@@ -3224,6 +3414,7 @@ pub struct CSharpParserStruct_bodyContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserStruct_bodyContext::alternative(Self) -> String?
+pub fn CSharpParserStruct_bodyContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserStruct_bodyContext::get_struct_body(Self) -> Array[Self]
 pub fn CSharpParserStruct_bodyContext::get_struct_member_declaration(Self) -> Array[CSharpParserStruct_member_declarationContext]
 pub fn CSharpParserStruct_bodyContext::get_token_CLOSE_BRACE(Self) -> Array[@moonantlr.Token]
@@ -3234,6 +3425,7 @@ pub struct CSharpParserStruct_definitionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserStruct_definitionContext::alternative(Self) -> String?
+pub fn CSharpParserStruct_definitionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserStruct_definitionContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserStruct_definitionContext::get_struct_body(Self) -> Array[CSharpParserStruct_bodyContext]
 pub fn CSharpParserStruct_definitionContext::get_struct_definition(Self) -> Array[Self]
@@ -3250,6 +3442,7 @@ pub struct CSharpParserStruct_interfacesContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserStruct_interfacesContext::alternative(Self) -> String?
+pub fn CSharpParserStruct_interfacesContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserStruct_interfacesContext::get_interface_type_list(Self) -> Array[CSharpParserInterface_type_listContext]
 pub fn CSharpParserStruct_interfacesContext::get_struct_interfaces(Self) -> Array[Self]
 pub fn CSharpParserStruct_interfacesContext::get_token_literal_133(Self) -> Array[@moonantlr.Token]
@@ -3259,6 +3452,7 @@ pub struct CSharpParserStruct_member_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserStruct_member_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserStruct_member_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserStruct_member_declarationContext::get_all_member_modifiers(Self) -> Array[CSharpParserAll_member_modifiersContext]
 pub fn CSharpParserStruct_member_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserStruct_member_declarationContext::get_common_member_declaration(Self) -> Array[CSharpParserCommon_member_declarationContext]
@@ -3279,6 +3473,7 @@ pub struct CSharpParserSwitch_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSwitch_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserSwitch_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSwitch_expressionContext::get_range_expression(Self) -> Array[CSharpParserRange_expressionContext]
 pub fn CSharpParserSwitch_expressionContext::get_switch_expression(Self) -> Array[Self]
 pub fn CSharpParserSwitch_expressionContext::get_switch_expression_arms(Self) -> Array[CSharpParserSwitch_expression_armsContext]
@@ -3292,6 +3487,7 @@ pub struct CSharpParserSwitch_expression_armContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSwitch_expression_armContext::alternative(Self) -> String?
+pub fn CSharpParserSwitch_expression_armContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSwitch_expression_armContext::get_case_guard(Self) -> Array[CSharpParserCase_guardContext]
 pub fn CSharpParserSwitch_expression_armContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserSwitch_expression_armContext::get_right_arrow(Self) -> Array[CSharpParserRight_arrowContext]
@@ -3303,6 +3499,7 @@ pub struct CSharpParserSwitch_expression_armsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSwitch_expression_armsContext::alternative(Self) -> String?
+pub fn CSharpParserSwitch_expression_armsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSwitch_expression_armsContext::get_switch_expression_arm(Self) -> Array[CSharpParserSwitch_expression_armContext]
 pub fn CSharpParserSwitch_expression_armsContext::get_switch_expression_arms(Self) -> Array[Self]
 pub fn CSharpParserSwitch_expression_armsContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -3312,6 +3509,7 @@ pub struct CSharpParserSwitch_labelContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSwitch_labelContext::alternative(Self) -> String?
+pub fn CSharpParserSwitch_labelContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSwitch_labelContext::get_case_guard(Self) -> Array[CSharpParserCase_guardContext]
 pub fn CSharpParserSwitch_labelContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserSwitch_labelContext::get_switch_label(Self) -> Array[Self]
@@ -3324,6 +3522,7 @@ pub struct CSharpParserSwitch_sectionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserSwitch_sectionContext::alternative(Self) -> String?
+pub fn CSharpParserSwitch_sectionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserSwitch_sectionContext::get_statement_list(Self) -> Array[CSharpParserStatement_listContext]
 pub fn CSharpParserSwitch_sectionContext::get_switch_label(Self) -> Array[CSharpParserSwitch_labelContext]
 pub fn CSharpParserSwitch_sectionContext::get_switch_section(Self) -> Array[Self]
@@ -3351,6 +3550,7 @@ pub struct CSharpParserThrow_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserThrow_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserThrow_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserThrow_expressionContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserThrow_expressionContext::get_throw_expression(Self) -> Array[Self]
 pub fn CSharpParserThrow_expressionContext::get_token_THROW(Self) -> Array[@moonantlr.Token]
@@ -3360,6 +3560,7 @@ pub struct CSharpParserThrowable_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserThrowable_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserThrowable_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserThrowable_expressionContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserThrowable_expressionContext::get_throw_expression(Self) -> Array[CSharpParserThrow_expressionContext]
 pub fn CSharpParserThrowable_expressionContext::get_throwable_expression(Self) -> Array[Self]
@@ -3381,6 +3582,7 @@ pub struct CSharpParserTuple_elementContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserTuple_elementContext::alternative(Self) -> String?
+pub fn CSharpParserTuple_elementContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserTuple_elementContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserTuple_elementContext::get_tuple_element(Self) -> Array[Self]
 pub fn CSharpParserTuple_elementContext::get_type_(Self) -> Array[CSharpParserType_Context]
@@ -3390,6 +3592,7 @@ pub struct CSharpParserTuple_typeContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserTuple_typeContext::alternative(Self) -> String?
+pub fn CSharpParserTuple_typeContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserTuple_typeContext::get_token_literal_129(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserTuple_typeContext::get_token_literal_130(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserTuple_typeContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
@@ -3401,6 +3604,7 @@ pub struct CSharpParserType_Context {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_Context::alternative(Self) -> String?
+pub fn CSharpParserType_Context::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_Context::get_base_type(Self) -> Array[CSharpParserBase_typeContext]
 pub fn CSharpParserType_Context::get_rank_specifier(Self) -> Array[CSharpParserRank_specifierContext]
 pub fn CSharpParserType_Context::get_token_literal_137(Self) -> Array[@moonantlr.Token]
@@ -3412,6 +3616,7 @@ pub struct CSharpParserType_argument_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_argument_listContext::alternative(Self) -> String?
+pub fn CSharpParserType_argument_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_argument_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserType_argument_listContext::get_token_literal_146(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserType_argument_listContext::get_token_literal_147(Self) -> Array[@moonantlr.Token]
@@ -3423,6 +3628,7 @@ pub struct CSharpParserType_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserType_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_declarationContext::get_all_member_modifiers(Self) -> Array[CSharpParserAll_member_modifiersContext]
 pub fn CSharpParserType_declarationContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserType_declarationContext::get_class_definition(Self) -> Array[CSharpParserClass_definitionContext]
@@ -3437,6 +3643,7 @@ pub struct CSharpParserType_parameterContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_parameterContext::alternative(Self) -> String?
+pub fn CSharpParserType_parameterContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_parameterContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserType_parameterContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserType_parameterContext::get_type_parameter(Self) -> Array[Self]
@@ -3446,6 +3653,7 @@ pub struct CSharpParserType_parameter_constraintsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_parameter_constraintsContext::alternative(Self) -> String?
+pub fn CSharpParserType_parameter_constraintsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_parameter_constraintsContext::get_constructor_constraint(Self) -> Array[CSharpParserConstructor_constraintContext]
 pub fn CSharpParserType_parameter_constraintsContext::get_primary_constraint(Self) -> Array[CSharpParserPrimary_constraintContext]
 pub fn CSharpParserType_parameter_constraintsContext::get_secondary_constraints(Self) -> Array[CSharpParserSecondary_constraintsContext]
@@ -3457,6 +3665,7 @@ pub struct CSharpParserType_parameter_constraints_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_parameter_constraints_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserType_parameter_constraints_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_parameter_constraints_clauseContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserType_parameter_constraints_clauseContext::get_token_WHERE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserType_parameter_constraints_clauseContext::get_token_literal_133(Self) -> Array[@moonantlr.Token]
@@ -3468,6 +3677,7 @@ pub struct CSharpParserType_parameter_constraints_clausesContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_parameter_constraints_clausesContext::alternative(Self) -> String?
+pub fn CSharpParserType_parameter_constraints_clausesContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_parameter_constraints_clausesContext::get_type_parameter_constraints_clause(Self) -> Array[CSharpParserType_parameter_constraints_clauseContext]
 pub fn CSharpParserType_parameter_constraints_clausesContext::get_type_parameter_constraints_clauses(Self) -> Array[Self]
 pub fn CSharpParserType_parameter_constraints_clausesContext::raw(Self) -> @moonantlr.RuleContext
@@ -3476,6 +3686,7 @@ pub struct CSharpParserType_parameter_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserType_parameter_listContext::alternative(Self) -> String?
+pub fn CSharpParserType_parameter_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserType_parameter_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserType_parameter_listContext::get_token_literal_146(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserType_parameter_listContext::get_token_literal_147(Self) -> Array[@moonantlr.Token]
@@ -3487,6 +3698,7 @@ pub struct CSharpParserTyped_member_declarationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserTyped_member_declarationContext::alternative(Self) -> String?
+pub fn CSharpParserTyped_member_declarationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserTyped_member_declarationContext::get_field_declaration(Self) -> Array[CSharpParserField_declarationContext]
 pub fn CSharpParserTyped_member_declarationContext::get_indexer_declaration(Self) -> Array[CSharpParserIndexer_declarationContext]
 pub fn CSharpParserTyped_member_declarationContext::get_method_declaration(Self) -> Array[CSharpParserMethod_declarationContext]
@@ -3510,6 +3722,7 @@ pub struct CSharpParserUnary_expressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserUnary_expressionContext::alternative(Self) -> String?
+pub fn CSharpParserUnary_expressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserUnary_expressionContext::get_cast_expression(Self) -> Array[CSharpParserCast_expressionContext]
 pub fn CSharpParserUnary_expressionContext::get_primary_expression(Self) -> Array[CSharpParserPrimary_expressionContext]
 pub fn CSharpParserUnary_expressionContext::get_token_AWAIT(Self) -> Array[@moonantlr.Token]
@@ -3529,6 +3742,7 @@ pub struct CSharpParserUnbound_type_nameContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserUnbound_type_nameContext::alternative(Self) -> String?
+pub fn CSharpParserUnbound_type_nameContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserUnbound_type_nameContext::get_generic_dimension_specifier(Self) -> Array[CSharpParserGeneric_dimension_specifierContext]
 pub fn CSharpParserUnbound_type_nameContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserUnbound_type_nameContext::get_token_literal_131(Self) -> Array[@moonantlr.Token]
@@ -3585,6 +3799,7 @@ pub fn CSharpParserUsing_directiveContext::alternative(Self) -> String?
 pub fn CSharpParserUsing_directiveContext::as_usingAliasDirective(Self) -> CSharpParserUsingAliasDirectiveContext?
 pub fn CSharpParserUsing_directiveContext::as_usingNamespaceDirective(Self) -> CSharpParserUsingNamespaceDirectiveContext?
 pub fn CSharpParserUsing_directiveContext::as_usingStaticDirective(Self) -> CSharpParserUsingStaticDirectiveContext?
+pub fn CSharpParserUsing_directiveContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserUsing_directiveContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserUsing_directiveContext::get_namespace_or_type_name(Self) -> Array[CSharpParserNamespace_or_type_nameContext]
 pub fn CSharpParserUsing_directiveContext::get_token_STATIC(Self) -> Array[@moonantlr.Token]
@@ -3598,6 +3813,7 @@ pub struct CSharpParserUsing_directivesContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserUsing_directivesContext::alternative(Self) -> String?
+pub fn CSharpParserUsing_directivesContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserUsing_directivesContext::get_using_directive(Self) -> Array[CSharpParserUsing_directiveContext]
 pub fn CSharpParserUsing_directivesContext::get_using_directives(Self) -> Array[Self]
 pub fn CSharpParserUsing_directivesContext::raw(Self) -> @moonantlr.RuleContext
@@ -3606,6 +3822,7 @@ pub struct CSharpParserVariable_declaratorContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserVariable_declaratorContext::alternative(Self) -> String?
+pub fn CSharpParserVariable_declaratorContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserVariable_declaratorContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserVariable_declaratorContext::get_token_literal_145(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserVariable_declaratorContext::get_variable_declarator(Self) -> Array[Self]
@@ -3616,6 +3833,7 @@ pub struct CSharpParserVariable_declaratorsContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserVariable_declaratorsContext::alternative(Self) -> String?
+pub fn CSharpParserVariable_declaratorsContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserVariable_declaratorsContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserVariable_declaratorsContext::get_variable_declarator(Self) -> Array[CSharpParserVariable_declaratorContext]
 pub fn CSharpParserVariable_declaratorsContext::get_variable_declarators(Self) -> Array[Self]
@@ -3625,6 +3843,7 @@ pub struct CSharpParserVariable_initializerContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserVariable_initializerContext::alternative(Self) -> String?
+pub fn CSharpParserVariable_initializerContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserVariable_initializerContext::get_array_initializer(Self) -> Array[CSharpParserArray_initializerContext]
 pub fn CSharpParserVariable_initializerContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserVariable_initializerContext::get_variable_initializer(Self) -> Array[Self]
@@ -3634,6 +3853,7 @@ pub struct CSharpParserVariance_annotationContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserVariance_annotationContext::alternative(Self) -> String?
+pub fn CSharpParserVariance_annotationContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserVariance_annotationContext::get_token_IN(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserVariance_annotationContext::get_token_OUT(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserVariance_annotationContext::get_variance_annotation(Self) -> Array[Self]
@@ -3643,6 +3863,7 @@ pub struct CSharpParserVariant_type_parameterContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserVariant_type_parameterContext::alternative(Self) -> String?
+pub fn CSharpParserVariant_type_parameterContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserVariant_type_parameterContext::get_attributes(Self) -> Array[CSharpParserAttributesContext]
 pub fn CSharpParserVariant_type_parameterContext::get_identifier(Self) -> Array[CSharpParserIdentifierContext]
 pub fn CSharpParserVariant_type_parameterContext::get_variance_annotation(Self) -> Array[CSharpParserVariance_annotationContext]
@@ -3653,6 +3874,7 @@ pub struct CSharpParserVariant_type_parameter_listContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserVariant_type_parameter_listContext::alternative(Self) -> String?
+pub fn CSharpParserVariant_type_parameter_listContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserVariant_type_parameter_listContext::get_token_literal_132(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserVariant_type_parameter_listContext::get_token_literal_146(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserVariant_type_parameter_listContext::get_token_literal_147(Self) -> Array[@moonantlr.Token]
@@ -3929,6 +4151,7 @@ pub struct CSharpParserWhere_clauseContext {
   node : @moonantlr.RuleContext
 }
 pub fn CSharpParserWhere_clauseContext::alternative(Self) -> String?
+pub fn CSharpParserWhere_clauseContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn CSharpParserWhere_clauseContext::get_expression(Self) -> Array[CSharpParserExpressionContext]
 pub fn CSharpParserWhere_clauseContext::get_token_WHERE(Self) -> Array[@moonantlr.Token]
 pub fn CSharpParserWhere_clauseContext::get_where_clause(Self) -> Array[Self]

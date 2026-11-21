@@ -21,6 +21,7 @@ pub struct DecisionsChoiceContext {
 pub fn DecisionsChoiceContext::alternative(Self) -> String?
 pub fn DecisionsChoiceContext::as_Long(Self) -> DecisionsLongContext?
 pub fn DecisionsChoiceContext::as_Short(Self) -> DecisionsShortContext?
+pub fn DecisionsChoiceContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsChoiceContext::get_choice(Self) -> Array[Self]
 pub fn DecisionsChoiceContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
 pub fn DecisionsChoiceContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
@@ -30,6 +31,7 @@ pub struct DecisionsDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn DecisionsDocumentContext::alternative(Self) -> String?
+pub fn DecisionsDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsDocumentContext::get_document(Self) -> Array[Self]
 pub fn DecisionsDocumentContext::get_item(Self) -> Array[DecisionsItemContext]
 pub fn DecisionsDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
@@ -39,6 +41,7 @@ pub struct DecisionsEitherContext {
   node : @moonantlr.RuleContext
 }
 pub fn DecisionsEitherContext::alternative(Self) -> String?
+pub fn DecisionsEitherContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsEitherContext::get_either(Self) -> Array[Self]
 pub fn DecisionsEitherContext::get_first(Self) -> Array[DecisionsFirstContext]
 pub fn DecisionsEitherContext::get_second(Self) -> Array[DecisionsSecondContext]
@@ -48,6 +51,7 @@ pub struct DecisionsFirstContext {
   node : @moonantlr.RuleContext
 }
 pub fn DecisionsFirstContext::alternative(Self) -> String?
+pub fn DecisionsFirstContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsFirstContext::get_first(Self) -> Array[Self]
 pub fn DecisionsFirstContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
 pub fn DecisionsFirstContext::raw(Self) -> @moonantlr.RuleContext
@@ -56,6 +60,7 @@ pub struct DecisionsItemContext {
   node : @moonantlr.RuleContext
 }
 pub fn DecisionsItemContext::alternative(Self) -> String?
+pub fn DecisionsItemContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsItemContext::get_choice(Self) -> Array[DecisionsChoiceContext]
 pub fn DecisionsItemContext::get_either(Self) -> Array[DecisionsEitherContext]
 pub fn DecisionsItemContext::get_item(Self) -> Array[Self]
@@ -104,6 +109,7 @@ pub struct DecisionsLongChoiceContext {
   node : @moonantlr.RuleContext
 }
 pub fn DecisionsLongChoiceContext::alternative(Self) -> String?
+pub fn DecisionsLongChoiceContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsLongChoiceContext::get_longChoice(Self) -> Array[Self]
 pub fn DecisionsLongChoiceContext::get_token_ID(Self) -> Array[@moonantlr.Token]
 pub fn DecisionsLongChoiceContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
@@ -134,6 +140,7 @@ pub struct DecisionsSecondContext {
   node : @moonantlr.RuleContext
 }
 pub fn DecisionsSecondContext::alternative(Self) -> String?
+pub fn DecisionsSecondContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsSecondContext::get_second(Self) -> Array[Self]
 pub fn DecisionsSecondContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
 pub fn DecisionsSecondContext::raw(Self) -> @moonantlr.RuleContext
@@ -142,6 +149,7 @@ pub struct DecisionsSequenceContext {
   node : @moonantlr.RuleContext
 }
 pub fn DecisionsSequenceContext::alternative(Self) -> String?
+pub fn DecisionsSequenceContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn DecisionsSequenceContext::get_sequence(Self) -> Array[Self]
 pub fn DecisionsSequenceContext::get_token_ID(Self) -> Array[@moonantlr.Token]
 pub fn DecisionsSequenceContext::raw(Self) -> @moonantlr.RuleContext

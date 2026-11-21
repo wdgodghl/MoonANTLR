@@ -9,6 +9,7 @@ fn attribute_int(frame : @runtime.RuleFrame, name : String) -> Int32 {
 ///|
 fn attribute_bindings() -> @runtime.RuleSemantics {
   {
+    ..@runtime.RuleSemantics::new(),
     enter: (_, frame) => {
       frame.values["seen"] = Json::number(0)
       frame

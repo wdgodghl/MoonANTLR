@@ -45,6 +45,17 @@ pub fn OptionsParserDocumentContext::raw(
 }
 
 ///|
+pub fn OptionsParserDocumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> OptionsParserDocumentContext? {
+  if node.name == "document" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn OptionsParser::parse_document(
   self : OptionsParser,
   source : String,
@@ -109,6 +120,17 @@ pub fn OptionsParserAtomContext::raw(
   self : OptionsParserAtomContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn OptionsParserAtomContext::from_raw(
+  node : @runtime.RuleContext,
+) -> OptionsParserAtomContext? {
+  if node.name == "atom" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|

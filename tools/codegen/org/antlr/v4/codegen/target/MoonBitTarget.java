@@ -51,8 +51,11 @@ public final class MoonBitTarget extends JavaTarget {
     // Prefix all grammar-derived methods to avoid collisions with runtime helpers
     // and MoonBit keywords. Types are prefixed by the recognizer's grammar name.
     private static String method(String name) { return "get_" + name; }
+    private static String typeName(String name) {
+        return Character.isUpperCase(name.charAt(0)) ? name : "Moon" + name;
+    }
     private static String type(Grammar g, String name) {
-        return g.name + Character.toUpperCase(name.charAt(0)) + name.substring(1) + "Context";
+        return typeName(g.name) + Character.toUpperCase(name.charAt(0)) + name.substring(1) + "Context";
     }
     private static void block(StringBuilder out, String code) {
         if (code.startsWith("pub(all) struct ")) code = code.replace(",\n", "\n");
@@ -206,7 +209,17 @@ public final class MoonBitTarget extends JavaTarget {
 
     private void emitRecognizer(Grammar g, StringBuilder out) {
         String data = atnData(g);
-        String recognizer = g.getRecognizerName();
+        String recognizer = typeName(g.getRecognizerName());
+        if (hasPredicates(g)) {
+            List<String> predicateSources = new ArrayList<>();
+            g.sempreds.entrySet().stream().filter(entry -> entry.getKey().atnState != null &&
+                Arrays.stream(entry.getKey().atnState.getTransitions()).anyMatch(PredicateTransition.class::isInstance))
+                .sorted(Comparator.comparingInt(Map.Entry::getValue)).forEach(entry -> {
+                ActionAST node=entry.getKey();
+                predicateSources.add("("+node.atnState.ruleIndex+", "+entry.getValue()+", "+q(node.getText())+")");
+            });
+            block(out, "pub fn "+(g.isLexer()?"lexer":"parser")+"_predicate_sources() -> Array[(Int, Int, String)] { ["+String.join(", ",predicateSources)+"] }");
+        }
         if (g.isLexer()) {
             boolean predicates = hasPredicates(g);
             boolean actions = hasLexerActions(g);
@@ -217,20 +230,32 @@ public final class MoonBitTarget extends JavaTarget {
             block(out, "pub fn lexer_data() -> Array[Int] { " + data + " }");
             block(out, "pub struct " + recognizer + " { atn : @runtime.Atn }");
             block(out, "pub fn " + recognizer + "::new() -> " + recognizer + " raise @runtime.RuntimeError { { atn: @runtime.deserialize(lexer_data()) } }");
-            block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String" + (predicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (actions ? ", lexer_action? : @runtime.LexerAction" : "") + ") -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source" + (predicates ? ", lexer_predicate?" : "") + (actions ? ", lexer_action?" : "") + ") }");
+            block(out, "pub fn " + recognizer + "::tokenize(self : " + recognizer + ", source : String" + (predicates ? ", lexer_predicate? : @runtime.LexerPredicate, lexer_context_predicate? : @runtime.LexerContextPredicate" : "") + (actions ? ", lexer_action? : @runtime.LexerAction" : "") + ") -> Array[@runtime.Token] raise @runtime.RuntimeError { self.atn.tokenize(source" + (predicates ? ", lexer_predicate?, lexer_context_predicate?" : "") + (actions ? ", lexer_action?" : "") + ") }");
             return;
         }
         emitAttributeMetadata(g, out);
         List<Integer> parserActions = parserActionStates(g);
-        if (!parserActions.isEmpty()) {
-            Map<Integer,String> sources = new HashMap<>();
-            for (Rule rule : g.rules.values()) for (GrammarAST action : atnActions(rule.ast))
-                sources.put(action.atnState.stateNumber, action.getText());
-            List<String> bodies = parserActions.stream().map(site -> q(sources.getOrDefault(site, ""))).toList();
-            block(out, "pub fn parser_action_sources() -> Array[String] { " + bodies + " }");
+        Map<Integer,String> sources = new HashMap<>();
+        for (Rule rule : g.rules.values()) for (GrammarAST action : atnActions(rule.ast))
+            sources.put(action.atnState.stateNumber, action.getText());
+        List<String> bodies = new ArrayList<>(parserActions.stream().map(site -> q(sources.getOrDefault(site, ""))).toList());
+        List<String> lifecycle = new ArrayList<>();
+        for (Rule rule : g.rules.values()) {
+            for (String phase : List.of("init", "after", "finally")) {
+                ActionAST action = phase.equals("finally") ? rule.finallyAction : rule.namedActions.get(phase);
+                if (action != null) {
+                    lifecycle.add("(" + rule.index + ", " + q(phase) + ", " + bodies.size() + ")");
+                    bodies.add(q(action.getText()));
+                }
+            }
         }
+        if (!bodies.isEmpty()) block(out, "pub fn parser_action_sources() -> Array[String] { " + bodies + " }");
         String actionBinding = parserActions.isEmpty() ? "" : ".with_parser_action_sites(parser_action_sites())";
         if (!parserActions.isEmpty()) block(out, "pub fn parser_action_sites() -> Array[Int] { " + parserActions + " }");
+        if (!lifecycle.isEmpty()) {
+            block(out, "pub fn rule_action_sites() -> Array[(Int, String, Int)] { [" + String.join(", ", lifecycle) + "] }");
+            actionBinding += ".with_rule_action_sites(rule_action_sites())";
+        }
         block(out, "pub fn parser_data() -> Array[Int] { " + data + " }");
         List<String> rules = new ArrayList<>();
         for (String name : g.getRuleNames()) rules.add(q(name));
@@ -246,7 +271,8 @@ public final class MoonBitTarget extends JavaTarget {
             String ctx = type(g, rule.name);
             block(out, "pub struct " + ctx + " { node : @runtime.RuleContext }");
             block(out, "pub fn " + ctx + "::raw(self : " + ctx + ") -> @runtime.RuleContext { self.node }");
-            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (lexerActions ? ", lexer_action? : @runtime.LexerAction" : "") + (parserActions.isEmpty() ? "" : ", parser_action? : @runtime.ParserAction") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + (lexerActions ? ", lexer_action?" : "") + (parserActions.isEmpty() ? "" : ", parser_action?") + ")} }");
+            block(out, "pub fn " + ctx + "::from_raw(node : @runtime.RuleContext) -> " + ctx + "? { if node.name == " + q(rule.name) + " { Some({node,}) } else { None } }");
+            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (lexerActions ? ", lexer_action? : @runtime.LexerAction" : "") + (bodies.isEmpty() ? "" : ", parser_action? : @runtime.ParserAction") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + (lexerActions ? ", lexer_action?" : "") + (bodies.isEmpty() ? "" : ", parser_action?") + ")} }");
             Set<String> refs = new TreeSet<>();
             for (GrammarAST ref : rule.ast.getNodesWithType(ANTLRParser.RULE_REF))
                 if (g.getRule(ref.getText()) != null) refs.add(ref.getText());
@@ -313,7 +339,7 @@ public final class MoonBitTarget extends JavaTarget {
     }
 
     private void emitVisitor(Grammar g, StringBuilder out) {
-        String name = g.name + "Visitor";
+        String name = typeName(g.name) + "Visitor";
         StringBuilder fields = new StringBuilder("terminal : (@runtime.Token) -> T,\n");
         StringBuilder init = new StringBuilder("terminal,\n");
         StringBuilder cases = new StringBuilder();
@@ -336,7 +362,7 @@ public final class MoonBitTarget extends JavaTarget {
     }
 
     private void emitListener(Grammar g, StringBuilder out) {
-        String name = g.name + "Listener";
+        String name = typeName(g.name) + "Listener";
         StringBuilder fields = new StringBuilder("terminal : (@runtime.Token) -> Unit,\n");
         StringBuilder init = new StringBuilder("terminal: (_) => (),\n");
         StringBuilder enter = new StringBuilder(), exit = new StringBuilder();

@@ -23,6 +23,7 @@ pub struct ParseActionsDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn ParseActionsDocumentContext::alternative(Self) -> String?
+pub fn ParseActionsDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn ParseActionsDocumentContext::get_document(Self) -> Array[Self]
 pub fn ParseActionsDocumentContext::get_item(Self) -> Array[ParseActionsItemContext]
 pub fn ParseActionsDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
@@ -32,6 +33,7 @@ pub struct ParseActionsExpressionContext {
   node : @moonantlr.RuleContext
 }
 pub fn ParseActionsExpressionContext::alternative(Self) -> String?
+pub fn ParseActionsExpressionContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn ParseActionsExpressionContext::get_expression(Self) -> Array[Self]
 pub fn ParseActionsExpressionContext::get_token_INT(Self) -> Array[@moonantlr.Token]
 pub fn ParseActionsExpressionContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
@@ -41,6 +43,7 @@ pub struct ParseActionsItemContext {
   node : @moonantlr.RuleContext
 }
 pub fn ParseActionsItemContext::alternative(Self) -> String?
+pub fn ParseActionsItemContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn ParseActionsItemContext::get_expression(Self) -> Array[ParseActionsExpressionContext]
 pub fn ParseActionsItemContext::get_item(Self) -> Array[Self]
 pub fn ParseActionsItemContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]

@@ -1,0 +1,128 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/lifecycle"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct LifecycleBrokenContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LifecycleBrokenContext::alternative(Self) -> String?
+pub fn LifecycleBrokenContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LifecycleBrokenContext::get_broken(Self) -> Array[Self]
+pub fn LifecycleBrokenContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleBrokenContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleBrokenContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct LifecycleBrokenContextAttributes {
+  attr_total : Int32?
+}
+pub fn LifecycleBrokenContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct LifecycleDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LifecycleDocumentContext::alternative(Self) -> String?
+pub fn LifecycleDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LifecycleDocumentContext::get_document(Self) -> Array[Self]
+pub fn LifecycleDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleDocumentContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct LifecycleDocumentContextAttributes {
+  attr_total : Int32?
+}
+pub fn LifecycleDocumentContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct LifecycleLexer {
+  atn : @moonantlr.Atn
+}
+pub fn LifecycleLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn LifecycleLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct LifecycleListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (LifecycleDocumentContext) -> Unit
+  exit_document : (LifecycleDocumentContext) -> Unit
+  enter_broken : (LifecycleBrokenContext) -> Unit
+  exit_broken : (LifecycleBrokenContext) -> Unit
+  enter_set_sequence : (LifecycleSet_sequenceContext) -> Unit
+  exit_set_sequence : (LifecycleSet_sequenceContext) -> Unit
+  enter_set_loop : (LifecycleSet_loopContext) -> Unit
+  exit_set_loop : (LifecycleSet_loopContext) -> Unit
+}
+pub fn LifecycleListener::new() -> Self
+pub fn LifecycleListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct LifecycleParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn LifecycleParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn LifecycleParser::parse_broken(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleBrokenContext raise @moonantlr.RuntimeError
+pub fn LifecycleParser::parse_document(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleDocumentContext raise @moonantlr.RuntimeError
+pub fn LifecycleParser::parse_set_loop(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleSet_loopContext raise @moonantlr.RuntimeError
+pub fn LifecycleParser::parse_set_sequence(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleSet_sequenceContext raise @moonantlr.RuntimeError
+
+pub struct LifecycleSet_loopContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LifecycleSet_loopContext::alternative(Self) -> String?
+pub fn LifecycleSet_loopContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LifecycleSet_loopContext::get_set_loop(Self) -> Array[Self]
+pub fn LifecycleSet_loopContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_loopContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_loopContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_loopContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_loopContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_loopContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_loopContext::label_values(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_loopContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct LifecycleSet_sequenceContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LifecycleSet_sequenceContext::alternative(Self) -> String?
+pub fn LifecycleSet_sequenceContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LifecycleSet_sequenceContext::get_set_sequence(Self) -> Array[Self]
+pub fn LifecycleSet_sequenceContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::label_values(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleSet_sequenceContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct LifecycleVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (LifecycleDocumentContext, Array[T]) -> T
+  visit_broken : (LifecycleBrokenContext, Array[T]) -> T
+  visit_set_sequence : (LifecycleSet_sequenceContext, Array[T]) -> T
+  visit_set_loop : (LifecycleSet_loopContext, Array[T]) -> T
+}
+pub fn[T] LifecycleVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] LifecycleVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

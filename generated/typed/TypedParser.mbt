@@ -61,6 +61,17 @@ pub fn TypedDocumentContext::raw(
 }
 
 ///|
+pub fn TypedDocumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> TypedDocumentContext? {
+  if node.name == "document" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn TypedParser::parse_document(
   self : TypedParser,
   source : String,
@@ -121,6 +132,17 @@ pub struct TypedEntryContext {
 ///|
 pub fn TypedEntryContext::raw(self : TypedEntryContext) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn TypedEntryContext::from_raw(
+  node : @runtime.RuleContext,
+) -> TypedEntryContext? {
+  if node.name == "entry" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|
@@ -198,6 +220,17 @@ pub fn TypedExpressionContext::raw(
   self : TypedExpressionContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn TypedExpressionContext::from_raw(
+  node : @runtime.RuleContext,
+) -> TypedExpressionContext? {
+  if node.name == "expression" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|

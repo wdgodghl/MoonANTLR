@@ -91,9 +91,9 @@ def main():
         for name in corpus():
             names = [name + "Lexer", name + "Parser"] if name in {"Modes", "Stateful", "Options"} else [name]
             sources.extend(str(ROOT / "grammars" / (n + ".g4")) for n in names)
-        sources.extend(str(ROOT / "grammars" / (name + ".g4")) for name in ["LexActions", "ParseActions", "Attributes"])
+        sources.extend(str(ROOT / "grammars" / (name + ".g4")) for name in ["LexActions", "ParseActions", "Attributes", "Lifecycle"])
         run([args.java, "-Dfile.encoding=UTF-8", "-jar", str(jar), "-encoding", "UTF-8", "-Dlanguage=Java", "-Xexact-output-dir", "-lib", str(directory), "-o", str(directory)] + sources)
-        run([args.javac, "-encoding", "UTF-8", "-cp", str(jar), "-d", str(directory), str(ROOT / "tools" / "Oracle.java")] + [str(p) for p in directory.glob("*.java")])
+        run([args.javac, "-encoding", "UTF-8", "-cp", str(jar), "-d", str(directory), str(ROOT / "tools" / "Oracle.java"), str(ROOT / "tools" / "UpstreamAttributes.java")] + [str(p) for p in directory.glob("*.java")])
         for name, cases in corpus().items():
             payload = "".join(base64.b64encode(s.encode()).decode() + "\n" for s in cases)
             result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar), "Oracle", name], input=payload, capture_output=True)
@@ -284,6 +284,28 @@ def main():
                        f"  assert_eq(committed.context.to_tree().to_sexpr(), {json.dumps(row['tree'])})",
                        "}", ""]
         counts["Attributes"] = {"cases": len(rows), "accepted": len(rows)}
+        lifecycle_count = 0
+        for rule, start, cases in [("document", 0, ["x", "", "a"]), ("broken", 1, ["ab", "a", "", "axb"]),
+                ("set_sequence", 2, ["acf", "af", "ad"]), ("set_loop", 3, ["a,c,", "a,,,", "a,c,,d,"])]:
+            payload = "".join(base64.b64encode(source.encode()).decode() + "\n" for source in cases)
+            result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory)+os.pathsep+str(jar),
+                "Oracle", "Lifecycle", rule], input=payload, capture_output=True)
+            rows = [json.loads(line) for line in result.stdout.splitlines()]
+            for index, (source, row) in enumerate(zip(cases, rows)):
+                lifecycle_count += 1
+                output += ["///|", f'test "Java oracle lifecycle {rule} {index}" {{',
+                    "  let offsets : Array[Int] = []",
+                    f"  let parsed = @lifecycle.grammar().parse_default({json.dumps(source)}, start_rule={start}, semantics=lifecycle_bindings(), parser_action=event => offsets.push(lifecycle_delta(event.action)*100 + event.next_token.start))",
+                    f"  @debug.assert_eq(offsets, {row['offsets']})"]
+                if rule.startswith("set_"):
+                    captures=", ".join("("+", ".join(json.dumps(v,ensure_ascii=False) for v in token)+")" for token in row["captures"])
+                    context_type="Lifecycle"+rule[0].upper()+rule[1:]+"Context"
+                    output += [f"  let typed = @lifecycle.{context_type}::from_raw(parsed.context).unwrap()",
+                        f"  @debug.assert_eq(typed.label_values().map(t => (t.kind,t.text,t.start,t.end,t.line,t.column,t.channel)), [{captures}])"]
+                else:
+                    output += [f"  assert_eq(parsed.frame.unwrap().int_value(\"total\"), Some({row['total']}))"]
+                output += ["}", ""]
+        counts["RuleLifecycle"] = {"cases": lifecycle_count}
     (ROOT / "tests" / "oracle_test.mbt").write_text("\n".join(output), encoding="utf-8", newline="\n")
     (ROOT / "tests" / "oracle-manifest.json").write_text(json.dumps({"upstream": "ANTLR 4.13.2 Java target", "seed": 20261105, "grammars": counts}, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(counts))

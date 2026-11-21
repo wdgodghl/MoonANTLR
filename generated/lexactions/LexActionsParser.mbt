@@ -45,6 +45,17 @@ pub fn LexActionsDocumentContext::raw(
 }
 
 ///|
+pub fn LexActionsDocumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> LexActionsDocumentContext? {
+  if node.name == "document" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn LexActionsParser::parse_document(
   self : LexActionsParser,
   source : String,
@@ -127,6 +138,17 @@ pub fn LexActionsUnitContext::raw(
   self : LexActionsUnitContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn LexActionsUnitContext::from_raw(
+  node : @runtime.RuleContext,
+) -> LexActionsUnitContext? {
+  if node.name == "unit" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|

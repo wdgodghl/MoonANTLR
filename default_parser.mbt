@@ -182,11 +182,13 @@ fn DefaultParser::rule(
     children: [],
     sources: [],
     path: [],
+    recovered_captures: Map([]),
   }
   let mut frame = match (self.semantics, seed) {
     (Some(bindings), Some(seed)) => Some((bindings.enter)(rule, seed))
     _ => None
   }
+  frame = self.lifecycle(rule, "init", context, frame)
   let mut children : Array[RecoveryTree] = []
   while true {
     self.budget.tick()
@@ -236,6 +238,9 @@ fn DefaultParser::rule(
       }
     }
     context = include_error_tokens(context, children)
+    // sync may have discarded a token; predicates observe the new lookahead.
+    let token = self.input.token(self.pos)
+    let event_pos = self.pos
     let event = frame.map(frame => SemanticEvent::{
       rule,
       site: state_id,
@@ -243,6 +248,7 @@ fn DefaultParser::rule(
       next_token: token,
       frame: frame.snapshot(),
       tokens: self.input.original,
+      lookahead_fn: offset => self.input.token(event_pos + offset - 1),
     })
     let choice = if state.edges.length() > 1 {
       if self.semantics is Some(_) || self.predicate is Some(_) {
@@ -288,16 +294,18 @@ fn DefaultParser::rule(
       1 =>
         if atn.is_precedence_decision(state_id) &&
           atn.states[edge.target].kind != 12 {
-          frame = frame.map(previous => {
-            ..previous.snapshot(),
-            children: [previous.snapshot()],
-          })
+          frame = match (self.semantics, frame) {
+            (Some(bindings), Some(previous)) =>
+              Some((bindings.wrap)(rule, previous.snapshot()))
+            _ => None
+          }
           children = [RuleNode(context.name, children)]
           context = {
             name: context.name,
             children: [RuleChild(context)],
             sources: [-1],
             path: [],
+            recovered_captures: Map([]),
           }
         }
       3 => {
@@ -370,9 +378,13 @@ fn DefaultParser::rule(
             self.report(expected)
             self.discard(children)
             matched = self.input.token(self.pos)
-          } else if self.next_set(edge.target, outer).contains(matched.kind) {
+          } else if self.next_set(edge.target, outer).contains(matched.kind) ||
+            (
+              matched.kind == -1 &&
+              self.next_set(edge.target, outer).contains(-2)
+            ) {
             self.report(expected)
-            let kind = expected[0]
+            let kind = if expected.is_empty() { 0 } else { expected[0] }
             let location = if matched.kind == -1 && self.pos > 0 {
               self.input.token(self.pos - 1)
             } else {
@@ -386,8 +398,18 @@ fn DefaultParser::rule(
               end: 0,
               channel: 0,
             }
-            context = context.append(TokenChild(inserted), state_id)
-            children.push(ErrorNode(inserted, "inserted"))
+            if edge.kind == 5 {
+              context = context.append(TokenChild(inserted), state_id)
+              children.push(ErrorNode(inserted, "inserted"))
+            } else {
+              // Java's generated set match uses recoverInline's return value
+              // for a label, without Parser.match's synthetic error-node step.
+              let captures = context.recovered_captures.copy()
+              let values = captures.get(state_id).unwrap_or([]).copy()
+              values.push((context.children.length(), inserted))
+              captures[state_id] = values
+              context = { ..context, recovered_captures: captures, }
+            }
             state_id = edge.target
             continue
           } else {
@@ -409,11 +431,53 @@ fn DefaultParser::rule(
     }
     state_id = edge.target
   }
+  context = include_error_tokens(context, children)
+  if atn.states[state_id].kind == 7 {
+    frame = self.lifecycle(rule, "after", context, frame)
+  }
+  frame = self.lifecycle(rule, "finally", context, frame)
   (
     include_error_tokens(context, children),
     RuleNode(context.name, children),
     frame,
   )
+}
+
+///|
+fn DefaultParser::lifecycle(
+  self : DefaultParser,
+  rule : Int32,
+  phase : String,
+  context : RuleContext,
+  frame : RuleFrame?,
+) -> RuleFrame? raise RuntimeError {
+  guard self.grammar.parser.rule_actions.get((rule, phase)) is Some(action) else {
+    return frame
+  }
+  let next_token = self.input.token(self.pos)
+  let event_pos = self.pos
+  let frame = if self.semantics is Some(bindings) && frame is Some(frame) {
+    Some(
+      (bindings.action)(
+        {
+          rule,
+          site: self.grammar.parser.starts[rule],
+          context,
+          frame: frame.snapshot(),
+          next_token,
+          tokens: self.input.original,
+          lookahead_fn: offset => self.input.token(event_pos + offset - 1),
+        },
+        action,
+      ),
+    )
+  } else {
+    frame
+  }
+  if self.action is Some(execute) {
+    execute({ rule, action, context, next_token, })
+  }
+  frame
 }
 
 ///|

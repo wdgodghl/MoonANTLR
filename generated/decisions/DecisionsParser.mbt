@@ -75,6 +75,17 @@ pub fn DecisionsDocumentContext::raw(
 }
 
 ///|
+pub fn DecisionsDocumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsDocumentContext? {
+  if node.name == "document" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn DecisionsParser::parse_document(
   self : DecisionsParser,
   source : String,
@@ -121,6 +132,17 @@ pub fn DecisionsItemContext::raw(
   self : DecisionsItemContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn DecisionsItemContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsItemContext? {
+  if node.name == "item" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|
@@ -221,6 +243,17 @@ pub fn DecisionsChoiceContext::raw(
   self : DecisionsChoiceContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn DecisionsChoiceContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsChoiceContext? {
+  if node.name == "choice" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|
@@ -338,6 +371,17 @@ pub fn DecisionsSequenceContext::raw(
 }
 
 ///|
+pub fn DecisionsSequenceContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsSequenceContext? {
+  if node.name == "sequence" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn DecisionsParser::parse_sequence(
   self : DecisionsParser,
   source : String,
@@ -377,6 +421,17 @@ pub fn DecisionsLongChoiceContext::raw(
   self : DecisionsLongChoiceContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn DecisionsLongChoiceContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsLongChoiceContext? {
+  if node.name == "longChoice" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|
@@ -445,6 +500,17 @@ pub fn DecisionsEitherContext::raw(
 }
 
 ///|
+pub fn DecisionsEitherContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsEitherContext? {
+  if node.name == "either" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn DecisionsParser::parse_either(
   self : DecisionsParser,
   source : String,
@@ -494,6 +560,17 @@ pub fn DecisionsFirstContext::raw(
 }
 
 ///|
+pub fn DecisionsFirstContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsFirstContext? {
+  if node.name == "first" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
 pub fn DecisionsParser::parse_first(
   self : DecisionsParser,
   source : String,
@@ -533,6 +610,17 @@ pub fn DecisionsSecondContext::raw(
   self : DecisionsSecondContext,
 ) -> @runtime.RuleContext {
   self.node
+}
+
+///|
+pub fn DecisionsSecondContext::from_raw(
+  node : @runtime.RuleContext,
+) -> DecisionsSecondContext? {
+  if node.name == "second" {
+    Some({ node, })
+  } else {
+    None
+  }
 }
 
 ///|

@@ -20,6 +20,8 @@ pub fn parser_action_sources() -> Array[String]
 
 pub fn parser_data() -> Array[Int32]
 
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
 // Errors
 
 // Types and methods
@@ -27,6 +29,7 @@ pub struct AttributesDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn AttributesDocumentContext::alternative(Self) -> String?
+pub fn AttributesDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn AttributesDocumentContext::get_document(Self) -> Array[Self]
 pub fn AttributesDocumentContext::get_number(Self) -> Array[AttributesNumberContext]
 pub fn AttributesDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
@@ -59,6 +62,7 @@ pub struct AttributesNumberContext {
   node : @moonantlr.RuleContext
 }
 pub fn AttributesNumberContext::alternative(Self) -> String?
+pub fn AttributesNumberContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn AttributesNumberContext::get_number(Self) -> Array[Self]
 pub fn AttributesNumberContext::get_token_INT(Self) -> Array[@moonantlr.Token]
 pub fn AttributesNumberContext::raw(Self) -> @moonantlr.RuleContext

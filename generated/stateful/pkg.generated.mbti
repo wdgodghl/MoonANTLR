@@ -33,6 +33,7 @@ pub struct StatefulParserDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn StatefulParserDocumentContext::alternative(Self) -> String?
+pub fn StatefulParserDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn StatefulParserDocumentContext::get_document(Self) -> Array[Self]
 pub fn StatefulParserDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
 pub fn StatefulParserDocumentContext::get_token_STRING(Self) -> Array[@moonantlr.Token]

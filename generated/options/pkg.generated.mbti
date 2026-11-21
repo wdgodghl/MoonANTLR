@@ -32,6 +32,7 @@ pub struct OptionsParserAtomContext {
   node : @moonantlr.RuleContext
 }
 pub fn OptionsParserAtomContext::alternative(Self) -> String?
+pub fn OptionsParserAtomContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn OptionsParserAtomContext::get_atom(Self) -> Array[Self]
 pub fn OptionsParserAtomContext::get_token_WORD(Self) -> Array[@moonantlr.Token]
 pub fn OptionsParserAtomContext::raw(Self) -> @moonantlr.RuleContext
@@ -40,6 +41,7 @@ pub struct OptionsParserDocumentContext {
   node : @moonantlr.RuleContext
 }
 pub fn OptionsParserDocumentContext::alternative(Self) -> String?
+pub fn OptionsParserDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
 pub fn OptionsParserDocumentContext::get_atom(Self) -> Array[OptionsParserAtomContext]
 pub fn OptionsParserDocumentContext::get_document(Self) -> Array[Self]
 pub fn OptionsParserDocumentContext::get_token_ALIAS(Self) -> Array[@moonantlr.Token]

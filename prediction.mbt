@@ -52,7 +52,7 @@ priv struct Predictor {
   states : Array[DfaState]
   interned : Map[String, Int32]
   starts : Map[(Int32, Int32, Int32, Bool, Bool), Int32]
-  mut check : ((Int32, Int32, Bool) -> Bool)?
+  mut check : ((Int32, Int32, Bool) -> Bool raise RuntimeError)?
   follows : Array[Array[Int32]]
   mut decisions : Int32
   mut fallbacks : Int32
@@ -255,6 +255,23 @@ fn Predictor::advance(
     }
   }
   let next = self.closure(seeds)
+  // Rule-stop configurations survive EOF reach operations (skippedStopStates
+  // in ParserATNSimulator); they must not be replaced by local-failure alts.
+  let next = if token == -1 && !state.accepted.is_empty() {
+    let reached = self.states[next]
+    let accepted = reached.accepted.copy()
+    for alt in state.accepted {
+      if !accepted.contains(alt) {
+        accepted.push(alt)
+      }
+    }
+    accepted.sort()
+    let id = self.states.length()
+    self.states.push({ configs: reached.configs, accepted, edges: Map([]), })
+    id
+  } else {
+    next
+  }
   state.edges[token] = next
   next
 }
@@ -369,12 +386,20 @@ fn Predictor::predict(
     let token = tokens.token(pos).kind
     for cfg in self.states[immediate].configs {
       self.budget.tick()
-      if self.atn.matches(self.atn.states[cfg.state].edges[cfg.edge], token) &&
+      if cfg.context == 0 &&
+        self.atn.matches(self.atn.states[cfg.state].edges[cfg.edge], token) &&
         !viable.contains(cfg.alt) {
         viable.push(cfg.alt)
       }
     }
-    if viable.length() == 1 &&
+    let caller = self.start(state, precedence, context)
+    let caller_accepts = context != 0 &&
+      self.states[caller].configs.any(cfg => {
+        self.states[immediate].accepted.contains(cfg.alt) &&
+        self.atn.matches(self.atn.states[cfg.state].edges[cfg.edge], token)
+      })
+    if !caller_accepts &&
+      viable.length() == 1 &&
       !self.states[immediate].accepted.contains(viable[0]) {
       return viable
     }

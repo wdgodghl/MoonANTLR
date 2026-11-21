@@ -54,6 +54,40 @@ priv struct ParseContext {
 }
 
 ///|
+fn ParseConfig::lifecycle(
+  self : ParseConfig,
+  ctx : ParseContext,
+  rule : Int32,
+  phase : String,
+) -> ParseConfig raise RuntimeError {
+  guard ctx.atn.rule_actions.get((rule, phase)) is Some(action) else {
+    return self
+  }
+  let next_token = ctx.tokens.token(self.pos)
+  let frame = if ctx.semantics is Some(bindings) && self.frame is Some(frame) {
+    Some(
+      (bindings.action)(
+        {
+          rule,
+          site: self.state,
+          context: self.context,
+          frame: frame.snapshot(),
+          next_token,
+          tokens: ctx.source_tokens,
+          lookahead_fn: offset => ctx.tokens.token(self.pos + offset - 1),
+        },
+        action,
+      ),
+    )
+  } else {
+    self.frame
+  }
+  let actions = self.actions.copy()
+  actions.push({ rule, action, next_token, context: self.context, })
+  { ..self, frame, actions, }
+}
+
+///|
 fn ParseContext::expect(self : ParseContext, pos : Int32, edge : Edge) -> Unit {
   if pos > self.furthest {
     self.furthest = pos
@@ -110,11 +144,17 @@ fn parse_rule(
     {
       state: ctx.atn.starts[rule],
       pos,
-      context: { name: ctx.rules[rule], children: [], sources: [], path: [], },
+      context: {
+        name: ctx.rules[rule],
+        children: [],
+        sources: [],
+        path: [],
+        recovered_captures: Map([]),
+      },
       visited: [],
       actions: [],
       frame,
-    },
+    }.lifecycle(ctx, rule, "init"),
   ]
   let results : Array[Outcome] = []
   while work.length() > 0 {
@@ -127,6 +167,9 @@ fn parse_rule(
       partial.val = Some(cfg.context)
     }
     if state.kind == 7 {
+      let cfg = cfg
+        .lifecycle(ctx, rule, "after")
+        .lifecycle(ctx, rule, "finally")
       results.push({
         pos: cfg.pos,
         context: cfg.context,
@@ -153,6 +196,7 @@ fn parse_rule(
       next_token,
       frame: frame.snapshot(),
       tokens: ctx.source_tokens,
+      lookahead_fn: offset => ctx.tokens.token(cfg.pos + offset - 1),
     })
     let predicted = if ctx.predicting && state.edges.length() > 1 {
       ctx.predictor.predict(
@@ -196,15 +240,17 @@ fn parse_rule(
               children: [RuleChild(cfg.context)],
               sources: [-1],
               path: [],
+              recovered_captures: Map([]),
             }
           } else {
             cfg.context
           }
           let frame = if recursive_iteration {
-            cfg.frame.map(frame => {
-              ..frame.snapshot(),
-              children: [frame.snapshot()],
-            })
+            match (ctx.semantics, cfg.frame) {
+              (Some(bindings), Some(frame)) =>
+                Some((bindings.wrap)(rule, frame.snapshot()))
+              _ => None
+            }
           } else {
             cfg.frame
           }
