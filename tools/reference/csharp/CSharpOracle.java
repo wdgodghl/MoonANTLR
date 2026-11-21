@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 public class CSharpOracle {
-    private static String quote(String text, boolean moon) {
+    static String quote(String text, boolean moon) {
         StringBuilder out = new StringBuilder("\"");
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);

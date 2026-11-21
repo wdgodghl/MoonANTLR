@@ -2,6 +2,7 @@
 package "wdgodghl/moonantlr/csharp"
 
 import {
+  "moonbitlang/core/json",
   "wdgodghl/moonantlr",
 }
 
@@ -12,17 +13,28 @@ pub fn parse(String, rule? : String, work_limit? : Int32) -> @moonantlr.ParseRes
 
 pub fn parse_recovering(String, rule? : String, work_limit? : Int32) -> @moonantlr.DefaultParseResult raise @moonantlr.RuntimeError
 
-pub fn preprocess(String) -> PreprocessorResult raise @moonantlr.RuntimeError
+pub fn preprocess(String, recover_lexer? : Bool) -> PreprocessorResult raise @moonantlr.RuntimeError
 
 pub fn tokenize(String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub fn tokenize_recovering(String) -> @moonantlr.LexResult raise @moonantlr.RuntimeError
+
+pub fn tokenize_traced(String, recover? : Bool) -> LexerTraceResult raise @moonantlr.RuntimeError
 
 // Errors
 
 // Types and methods
+pub(all) struct LexerTraceResult {
+  result : @moonantlr.LexResult
+  events : Array[@json.Json]
+}
+
 pub(all) struct PreprocessorResult {
   tokens : Array[@moonantlr.Token]
   original_tokens : Array[@moonantlr.Token]
   directives : Array[Bool]
+  lexical_errors : Array[@moonantlr.RuntimeError]
+  trace : Array[@json.Json]
 }
 
 // Type aliases

@@ -34,6 +34,86 @@ test "CSharp Java 000 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 000" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#define FEATURE\n#if FEATURE && !false\n#else\n#endif\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorDirectiveDefine",
+      "offset": 17,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 28,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+    {
+      "method": "OnPreprocessorExpressionFalse",
+      "offset": 37,
+      "value": "false",
+      "conditions": [true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalBang",
+      "offset": 37,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalAnd",
+      "offset": 37,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 39,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElse",
+      "offset": 45,
+      "value": false,
+      "conditions": [true, true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 51,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG", "FEATURE"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess(
+        "#define FEATURE\n#if FEATURE && !false\n#else\n#endif\n",
+      ).trace,
+    ),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 001 directives" {
   @debug.assert_eq(
     @csharp.directives("#define X\n#undef X\n#if X\n#else\n#endif\n"),
@@ -62,6 +142,70 @@ test "CSharp Java 001 directives" {
     (196, "\n", 37, 38, 5, 6, 3),
     (-1, "<EOF>", 38, 38, 6, 0, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 001" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#define X\n#undef X\n#if X\n#else\n#endif\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorDirectiveDefine",
+      "offset": 11,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG", "X"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveUndef",
+      "offset": 20,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 24,
+      "value": "false",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 26,
+      "value": false,
+      "conditions": [true, false],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElse",
+      "offset": 32,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 38,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess("#define X\n#undef X\n#if X\n#else\n#endif\n").trace,
+    ),
+    expected_parser,
+  )
 }
 
 ///|
@@ -95,6 +239,84 @@ test "CSharp Java 002 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 002" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#if false\n#if true\n#else\n#endif\n#else\n#endif\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorExpressionFalse",
+      "offset": 9,
+      "value": "false",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 11,
+      "value": false,
+      "conditions": [true, false],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionTrue",
+      "offset": 18,
+      "value": "true",
+      "conditions": [true, false],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 20,
+      "value": false,
+      "conditions": [true, false, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElse",
+      "offset": 26,
+      "value": false,
+      "conditions": [true, false, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 33,
+      "value": false,
+      "conditions": [true, false],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElse",
+      "offset": 39,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 45,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess("#if false\n#if true\n#else\n#endif\n#else\n#endif\n").trace,
+    ),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 003 directives" {
   @debug.assert_eq(
     @csharp.directives("#if false\n#elif DEBUG\n#else\n#endif\n"),
@@ -118,6 +340,70 @@ test "CSharp Java 003 directives" {
     (196, "\n", 34, 35, 4, 6, 3),
     (-1, "<EOF>", 35, 35, 5, 0, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 003" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#if false\n#elif DEBUG\n#else\n#endif\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorExpressionFalse",
+      "offset": 9,
+      "value": "false",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 11,
+      "value": false,
+      "conditions": [true, false],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 21,
+      "value": "true",
+      "conditions": [true, false],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElif",
+      "offset": 23,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElse",
+      "offset": 29,
+      "value": false,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 35,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess("#if false\n#elif DEBUG\n#else\n#endif\n").trace,
+    ),
+    expected_parser,
+  )
 }
 
 ///|
@@ -151,6 +437,84 @@ test "CSharp Java 004 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 004" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#if (DEBUG && true) || false\n#endif\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 11,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionTrue",
+      "offset": 18,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalAnd",
+      "offset": 18,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalOpenParens",
+      "offset": 20,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionFalse",
+      "offset": 28,
+      "value": "false",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalOr",
+      "offset": 28,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 30,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 36,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess("#if (DEBUG && true) || false\n#endif\n").trace,
+    ),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 005 directives" {
   @debug.assert_eq(@csharp.directives("#if DEBUG == true\n#endif\n"), [
     true, true,
@@ -174,6 +538,58 @@ test "CSharp Java 005 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 005" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("#if DEBUG == true\n#endif\n", recover=true).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 10,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionTrue",
+      "offset": 17,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalEq",
+      "offset": 17,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 19,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 25,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(@csharp.preprocess("#if DEBUG == true\n#endif\n").trace),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 006 directives" {
   @debug.assert_eq(@csharp.directives("#if DEBUG != false\n#endif\n"), [
     true, true,
@@ -194,6 +610,58 @@ test "CSharp Java 006 directives" {
     (196, "\n", 25, 26, 2, 6, 3),
     (-1, "<EOF>", 26, 26, 3, 0, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 006" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("#if DEBUG != false\n#endif\n", recover=true).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 10,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionFalse",
+      "offset": 18,
+      "value": "false",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalNe",
+      "offset": 18,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 20,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 26,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(@csharp.preprocess("#if DEBUG != false\n#endif\n").trace),
+    expected_parser,
+  )
 }
 
 ///|
@@ -225,6 +693,51 @@ test "CSharp Java 007 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 007" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#line 42 \"sample.cs\"\n#line default\n#line hidden\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorDirectiveLine",
+      "offset": 22,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveLine",
+      "offset": 36,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveLine",
+      "offset": 48,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess(
+        "#line 42 \"sample.cs\"\n#line default\n#line hidden\n",
+      ).trace,
+    ),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 008 directives" {
   @debug.assert_eq(@csharp.directives("#region title\n#endregion title\n"), [
     true, true,
@@ -241,6 +754,37 @@ test "CSharp Java 008 directives" {
     (196, "\n", 30, 31, 2, 16, 3),
     (-1, "<EOF>", 31, 31, 3, 0, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 008" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("#region title\n#endregion title\n", recover=true).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorDirectiveRegion",
+      "offset": 15,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndregion",
+      "offset": 31,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(@csharp.preprocess("#region title\n#endregion title\n").trace),
+    expected_parser,
+  )
 }
 
 ///|
@@ -265,6 +809,42 @@ test "CSharp Java 009 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 009" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#pragma warning disable\n#nullable enable\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorDirectivePragma",
+      "offset": 25,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveNullable",
+      "offset": 41,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess("#pragma warning disable\n#nullable enable\n").trace,
+    ),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 010 directives" {
   @debug.assert_eq(@csharp.directives("#warning message\n#error message\n"), [
     true, true,
@@ -281,6 +861,40 @@ test "CSharp Java 010 directives" {
     (196, "\n", 31, 32, 2, 14, 3),
     (-1, "<EOF>", 32, 32, 3, 0, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 010" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#warning message\n#error message\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorDirectiveWarning",
+      "offset": 18,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveError",
+      "offset": 32,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(@csharp.preprocess("#warning message\n#error message\n").trace),
+    expected_parser,
+  )
 }
 
 ///|
@@ -315,6 +929,77 @@ test "CSharp Java 011 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 011" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#if false\n#define X\n#endif\n#if X\n#endif\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorExpressionFalse",
+      "offset": 9,
+      "value": "false",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 11,
+      "value": false,
+      "conditions": [true, false],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveDefine",
+      "offset": 21,
+      "value": false,
+      "conditions": [true, false],
+      "symbols": ["DEBUG", "X"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 28,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG", "X"],
+    },
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 32,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG", "X"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 34,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG", "X"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 40,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG", "X"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess("#if false\n#define X\n#endif\n#if X\n#endif\n").trace,
+    ),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 012 directives" {
   @debug.assert_eq(
     @csharp.directives("#if DEBUG\n#elif false\n#else\n#endif\n"),
@@ -341,6 +1026,70 @@ test "CSharp Java 012 directives" {
 }
 
 ///|
+test "CSharp Java helper snapshots 012" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "#if DEBUG\n#elif false\n#else\n#endif\n",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+  let expected_parser : Json = [
+    {
+      "method": "OnPreprocessorExpressionConditionalSymbol",
+      "offset": 9,
+      "value": "true",
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveIf",
+      "offset": 11,
+      "value": true,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorExpressionFalse",
+      "offset": 21,
+      "value": "false",
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElif",
+      "offset": 23,
+      "value": false,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveElse",
+      "offset": 29,
+      "value": false,
+      "conditions": [true, true],
+      "symbols": ["DEBUG"],
+    },
+    {
+      "method": "OnPreprocessorDirectiveEndif",
+      "offset": 35,
+      "value": true,
+      "conditions": [true],
+      "symbols": ["DEBUG"],
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.preprocess("#if DEBUG\n#elif false\n#else\n#endif\n").trace,
+    ),
+    expected_parser,
+  )
+}
+
+///|
 test "CSharp Java 013 expression" {
   assert_eq(
     @csharp.parse("8 >> 1", rule="expression").context.to_tree().to_sexpr(),
@@ -358,6 +1107,15 @@ test "CSharp Java 013 expression" {
     (116, "1", 5, 6, 1, 5, 0),
     (-1, "<EOF>", 6, 6, 1, 6, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 013" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("8 >> 1", recover=true).events),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -383,6 +1141,15 @@ test "CSharp Java 014 expression" {
 }
 
 ///|
+test "CSharp Java helper snapshots 014" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("8 > > 1", recover=true).events),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 014 expression" {
   let result = @csharp.parse_recovering("8 > > 1", rule="expression")
   assert_eq(
@@ -404,6 +1171,15 @@ test "CSharp Java 015 expression" {
     _ => false
   }
   assert_true(rejected)
+}
+
+///|
+test "CSharp Java helper snapshots 015" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("8 >/*gap*/> 1", recover=true).events),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -445,6 +1221,15 @@ test "CSharp Java 016 declarationStatement" {
 }
 
 ///|
+test "CSharp Java helper snapshots 016" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("int x=1,y=2;", recover=true).events),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 016 declarationStatement" {
   let result = @csharp.parse_recovering(
     "int x=1,y=2;",
@@ -467,6 +1252,15 @@ test "CSharp Java 017 declarationStatement" {
     _ => false
   }
   assert_true(rejected)
+}
+
+///|
+test "CSharp Java helper snapshots 017" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("var x=1,y=2;", recover=true).events),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -507,6 +1301,15 @@ test "CSharp Java 018 declarationStatement" {
 }
 
 ///|
+test "CSharp Java helper snapshots 018" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("var x=1;", recover=true).events),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 018 declarationStatement" {
   let result = @csharp.parse_recovering("var x=1;", rule="declarationStatement")
   assert_eq(
@@ -533,6 +1336,46 @@ test "CSharp Java 019 tokens" {
 }
 
 ///|
+test "CSharp Java helper snapshots 019" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnInterpolatedRegularStringStart",
+      "offset": 2,
+      "strings": [false],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 9,
+      "strings": [false],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 13,
+      "strings": [false],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 14,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("$\"value={1+2}\"", recover=true).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java 020 tokens" {
   let tokens = @csharp.tokenize("$@\"a\"\"b{1}\"").map(t => {
     (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
@@ -549,6 +1392,44 @@ test "CSharp Java 020 tokens" {
 }
 
 ///|
+test "CSharp Java helper snapshots 020" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnInterpolatedVerbatiumStringStart",
+      "offset": 3,
+      "strings": [true],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 8,
+      "strings": [true],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 10,
+      "strings": [true],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 11,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("$@\"a\"\"b{1}\"", recover=true).events),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java 021 tokens" {
   let tokens = @csharp.tokenize("$\"value={1:00}\"").map(t => {
     (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
@@ -562,6 +1443,53 @@ test "CSharp Java 021 tokens" {
     (176, "\"", 14, 15, 1, 14, 0),
     (-1, "<EOF>", 15, 15, 1, 15, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 021" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnInterpolatedRegularStringStart",
+      "offset": 2,
+      "strings": [false],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 9,
+      "strings": [false],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnColon",
+      "offset": 11,
+      "strings": [false],
+      "braces": [1],
+      "mode": 2,
+    },
+    {
+      "method": "OnCloseBraceInside",
+      "offset": 14,
+      "strings": [false],
+      "braces": [],
+      "mode": 2,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 15,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("$\"value={1:00}\"", recover=true).events,
+    ),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -586,6 +1514,60 @@ test "CSharp Java 022 tokens" {
 }
 
 ///|
+test "CSharp Java helper snapshots 022" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnInterpolatedRegularStringStart",
+      "offset": 2,
+      "strings": [false],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 4,
+      "strings": [false],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnOpenBrace",
+      "offset": 16,
+      "strings": [false],
+      "braces": [2],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 18,
+      "strings": [false],
+      "braces": [1],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 19,
+      "strings": [false],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 21,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("$\"a{new object { }}b\"", recover=true).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java 023 tokens" {
   let tokens = @csharp.tokenize("$\"a{1}\" $\"b{2}\"").map(t => {
     (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
@@ -605,6 +1587,74 @@ test "CSharp Java 023 tokens" {
 }
 
 ///|
+test "CSharp Java helper snapshots 023" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnInterpolatedRegularStringStart",
+      "offset": 2,
+      "strings": [false],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 4,
+      "strings": [false],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 6,
+      "strings": [false],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 7,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnInterpolatedRegularStringStart",
+      "offset": 10,
+      "strings": [false],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 12,
+      "strings": [false],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 14,
+      "strings": [false],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 15,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("$\"a{1}\" $\"b{2}\"", recover=true).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java 024 tokens" {
   let tokens = @csharp.tokenize("$\"line\\n={1}\"").map(t => {
     (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
@@ -621,6 +1671,46 @@ test "CSharp Java 024 tokens" {
 }
 
 ///|
+test "CSharp Java helper snapshots 024" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnInterpolatedRegularStringStart",
+      "offset": 2,
+      "strings": [false],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 10,
+      "strings": [false],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 12,
+      "strings": [false],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 13,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("$\"line\\n={1}\"", recover=true).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java 025 tokens" {
   let tokens = @csharp.tokenize("$\"😀={1}\"").map(t => {
     (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
@@ -632,6 +1722,44 @@ test "CSharp Java 025 tokens" {
     (176, "\"", 7, 8, 1, 7, 0),
     (-1, "<EOF>", 8, 8, 1, 8, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 025" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnInterpolatedRegularStringStart",
+      "offset": 2,
+      "strings": [false],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OpenBraceInside",
+      "offset": 5,
+      "strings": [false],
+      "braces": [1],
+      "mode": 1,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 7,
+      "strings": [false],
+      "braces": [],
+      "mode": 1,
+    },
+    {
+      "method": "OnDoubleQuoteInside",
+      "offset": 8,
+      "strings": [],
+      "braces": [],
+      "mode": 1,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("$\"😀={1}\"", recover=true).events),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -654,6 +1782,15 @@ test "CSharp Java 026 declarationStatement" {
     (134, ";", 8, 9, 1, 8, 0),
     (-1, "<EOF>", 9, 9, 1, 9, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 026" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("int 变量=1;", recover=true).events),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -711,6 +1848,49 @@ test "CSharp Java 027 compilation_unit" {
     (126, "}", 38, 39, 1, 38, 0),
     (-1, "<EOF>", 39, 39, 1, 39, 0),
   ])
+}
+
+///|
+test "CSharp Java helper snapshots 027" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 9,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnOpenBrace",
+      "offset": 27,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 37,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 39,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "class C { int x; void F() { return; } }",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -778,6 +1958,49 @@ test "CSharp Java 028 compilation_unit" {
 }
 
 ///|
+test "CSharp Java helper snapshots 028" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 23,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnOpenBrace",
+      "offset": 38,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 52,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 54,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "using System; class C { int F(int x) { return x+1; } }",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 028 compilation_unit" {
   let result = @csharp.parse_recovering(
     "using System; class C { int F(int x) { return x+1; } }",
@@ -800,6 +2023,32 @@ test "CSharp Java 029 compilation_unit" {
     _ => false
   }
   assert_true(rejected)
+}
+
+///|
+test "CSharp Java helper snapshots 029" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 9,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 17,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("class C { int x }", recover=true).events,
+    ),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -830,6 +2079,25 @@ test "CSharp Java 030 compilation_unit" {
 }
 
 ///|
+test "CSharp Java helper snapshots 030" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 9,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("class C { int x;", recover=true).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 030 compilation_unit" {
   let result = @csharp.parse_recovering(
     "class C { int x;",
@@ -857,6 +2125,49 @@ test "CSharp Java 031 compilation_unit" {
     _ => false
   }
   assert_true(rejected)
+}
+
+///|
+test "CSharp Java helper snapshots 031" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 9,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnOpenBrace",
+      "offset": 20,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 41,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 43,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "class C { void F() { int x = ; int y=2; } }",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -913,6 +2224,46 @@ test "CSharp Java 032 compilation_unit" {
 }
 
 ///|
+test "CSharp Java helper snapshots 032" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 9,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnOpenBrace",
+      "offset": 20,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 31,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 33,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("class C { void F() { return;; } }", recover=true).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 032 compilation_unit" {
   let result = @csharp.parse_recovering(
     "class C { void F() { return;; } }",
@@ -948,6 +2299,15 @@ test "CSharp Java 033 expression" {
 }
 
 ///|
+test "CSharp Java helper snapshots 033" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("x => x+1", recover=true).events),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 033 expression" {
   let result = @csharp.parse_recovering("x => x+1", rule="expression")
   assert_eq(
@@ -967,6 +2327,15 @@ test "CSharp Java 034 expression" {
     _ => false
   }
   assert_true(rejected)
+}
+
+///|
+test "CSharp Java helper snapshots 034" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("x = > x+1", recover=true).events),
+    expected_lexer,
+  )
 }
 
 ///|
@@ -1002,6 +2371,15 @@ test "CSharp Java 035 expression" {
 }
 
 ///|
+test "CSharp Java helper snapshots 035" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("x >>= 1", recover=true).events),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 035 expression" {
   let result = @csharp.parse_recovering("x >>= 1", rule="expression")
   assert_eq(
@@ -1024,6 +2402,15 @@ test "CSharp Java 036 expression" {
 }
 
 ///|
+test "CSharp Java helper snapshots 036" {
+  let expected_lexer : Json = []
+  @debug.assert_eq(
+    Json::array(@csharp.tokenize_traced("x > >= 1", recover=true).events),
+    expected_lexer,
+  )
+}
+
+///|
 test "CSharp Java recovery 036 expression" {
   let result = @csharp.parse_recovering("x > >= 1", rule="expression")
   assert_eq(
@@ -1032,5 +2419,118 @@ test "CSharp Java recovery 036 expression" {
   )
   @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
     (Some(1), Some(7)),
+  ])
+}
+
+///|
+test "CSharp Java 037 compilation_unit" {
+  let rejected = try {
+    let _ = @csharp.parse("class C { 💥 int x; }", rule="compilation_unit")
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "CSharp Java helper snapshots 037" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 9,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 20,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced("class C { 💥 int x; }", recover=true).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
+test "CSharp Java recovery 037 compilation_unit" {
+  let result = @csharp.parse_recovering(
+    "class C { 💥 int x; }",
+    rule="compilation_unit",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(compilation_unit (namespace_member_declarations (namespace_member_declaration (type_declaration (class_definition \"class\" (identifier \"C\") (class_body \"{\" (class_member_declarations (class_member_declaration (common_member_declaration (typed_member_declaration (type_ (base_type (simple_type (numeric_type (integral_type \"int\"))))) (field_declaration (variable_declarators (variable_declarator (identifier \"x\"))) \";\"))))) \"}\"))))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(10)),
+  ])
+}
+
+///|
+test "CSharp Java 038 compilation_unit" {
+  let rejected = try {
+    let _ = @csharp.parse(
+      "class C {\n💥 int x;\n💥 int y; }",
+      rule="compilation_unit",
+    )
+    false
+  } catch {
+    @runtime.SyntaxError(_, _, _) => true
+    _ => false
+  }
+  assert_true(rejected)
+}
+
+///|
+test "CSharp Java helper snapshots 038" {
+  let expected_lexer : Json = [
+    {
+      "method": "OnOpenBrace",
+      "offset": 9,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+    {
+      "method": "OnCloseBrace",
+      "offset": 29,
+      "strings": [],
+      "braces": [],
+      "mode": 0,
+    },
+  ]
+  @debug.assert_eq(
+    Json::array(
+      @csharp.tokenize_traced(
+        "class C {\n💥 int x;\n💥 int y; }",
+        recover=true,
+      ).events,
+    ),
+    expected_lexer,
+  )
+}
+
+///|
+test "CSharp Java recovery 038 compilation_unit" {
+  let result = @csharp.parse_recovering(
+    "class C {\n💥 int x;\n💥 int y; }",
+    rule="compilation_unit",
+  )
+  assert_eq(
+    result.tree.to_sexpr(),
+    "(compilation_unit (namespace_member_declarations (namespace_member_declaration (type_declaration (class_definition \"class\" (identifier \"C\") (class_body \"{\" (class_member_declarations (class_member_declaration (common_member_declaration (typed_member_declaration (type_ (base_type (simple_type (numeric_type (integral_type \"int\"))))) (field_declaration (variable_declarators (variable_declarator (identifier \"x\"))) \";\")))) (class_member_declaration (common_member_declaration (typed_member_declaration (type_ (base_type (simple_type (numeric_type (integral_type \"int\"))))) (field_declaration (variable_declarators (variable_declarator (identifier \"y\"))) \";\"))))) \"}\"))))) <EOF>)",
+  )
+  @debug.assert_eq(result.diagnostics.map(d => (d.line, d.column)), [
+    (Some(2), Some(0)),
+    (Some(3), Some(0)),
   ])
 }

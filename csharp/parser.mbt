@@ -87,12 +87,19 @@ pub fn parse_recovering(
   if start < 0 {
     raise @runtime.InvalidArgument("unknown C# rule: " + rule)
   }
-  let prepared = preprocess(source)
-  grammar.parse_default_tokens(
+  let prepared = preprocess(source, recover_lexer=true)
+  let parsed = grammar.parse_default_tokens(
     prepared.tokens,
     semantics=syntax_bindings(),
     start_rule=start,
     work_limit~,
     original_tokens=prepared.original_tokens,
   )
+  let diagnostics = prepared.lexical_errors.map(error => {
+    error.diagnostic(grammar)
+  })
+  for diagnostic in parsed.diagnostics {
+    diagnostics.push(diagnostic)
+  }
+  { ..parsed, diagnostics, }
 }

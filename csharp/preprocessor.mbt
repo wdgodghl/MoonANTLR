@@ -26,7 +26,7 @@ fn expression_value(frame : @runtime.RuleFrame) -> Bool {
 }
 
 ///|
-fn bindings() -> @runtime.RuleSemantics {
+fn bindings(trace : Array[Json]) -> @runtime.RuleSemantics {
   let sources = @preprocessor.parser_action_sources()
   {
     ..@runtime.RuleSemantics::new(),
@@ -108,6 +108,30 @@ fn bindings() -> @runtime.RuleSemantics {
         frame.shared["conditions"] = Json::array(stack)
         frame.values["value"] = Json::boolean(value)
       }
+      let helper_name = String::from_array(
+        source
+        .to_array()
+        .filter(c => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')),
+      )
+      let helper_name = if helper_name.has_prefix("this") {
+        helper_name[4:].to_owned()
+      } else {
+        helper_name
+      }
+      let symbols : Array[String] = []
+      for key, value in frame.shared {
+        if key.has_prefix("symbol:") && boolean(value) {
+          symbols.push(key[7:].to_owned())
+        }
+      }
+      symbols.sort_by((a, b) => a.lexical_compare(b))
+      trace.push({
+        "method": Json::string(helper_name),
+        "offset": Json::number(event.next_token.start.to_double()),
+        "value": frame.values.get("value").unwrap_or(Json::null()),
+        "conditions": Json::array(conditions(frame.shared)),
+        "symbols": Json::array(symbols.map(value => Json::string(value))),
+      })
       frame
     },
   }
@@ -119,16 +143,25 @@ pub(all) struct PreprocessorResult {
   tokens : Array[@runtime.Token]
   original_tokens : Array[@runtime.Token]
   directives : Array[Bool]
+  lexical_errors : Array[@runtime.RuntimeError]
+  trace : Array[Json]
 }
 
 ///|
 /// Evaluate directives and remove inactive source tokens.
 pub fn preprocess(
   source : String,
+  recover_lexer~ : Bool = false,
 ) -> PreprocessorResult raise @runtime.RuntimeError {
-  let tokens = tokenize(source)
+  let lexed = if recover_lexer {
+    tokenize_recovering(source)
+  } else {
+    @runtime.LexResult::{ tokens: tokenize(source), errors: [], }
+  }
+  let tokens = lexed.tokens
   let grammar = @preprocessor.grammar()
-  let semantics = bindings()
+  let trace : Array[Json] = []
+  let semantics = bindings(trace)
   let result : Array[Bool] = []
   let output : Array[@runtime.Token] = []
   let mut active = true
@@ -172,7 +205,13 @@ pub fn preprocess(
     }
   }
   output.push(tokens.last().unwrap())
-  { tokens: output, original_tokens: tokens, directives: result, }
+  {
+    tokens: output,
+    original_tokens: tokens,
+    directives: result,
+    lexical_errors: lexed.errors,
+    trace,
+  }
 }
 
 ///|

@@ -4,6 +4,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -48,6 +49,8 @@ CASES = [
     ("expression", "x = > x+1"),
     ("expression", "x >>= 1"),
     ("expression", "x > >= 1"),
+    ("compilation_unit", "class C { 💥 int x; }"),
+    ("compilation_unit", "class C {\n💥 int x;\n💥 int y; }"),
 ]
 
 
@@ -79,6 +82,16 @@ def main():
                                 input=payload, encoding="utf-8", check=True, capture_output=True)
         rows = [json.loads(line) for line in result.stdout.splitlines()]
         assert len(rows) == len(CASES)
+        snapshots = subprocess.run([args.java, "-Dfile.encoding=UTF-8", "-cp",
+            str(directory) + os.pathsep + str(jar), "CSharpTraceOracle"], input=payload,
+            encoding="utf-8", check=True, capture_output=True)
+        traces = [json.loads(line) for line in snapshots.stdout.splitlines()]
+        assert len(traces) == len(CASES)
+        for key, filename in [("lexer", "CSharpLexerBase.java"), ("preprocessor", "CSharpPreprocessorParserBase.java")]:
+            source = (ROOT / "tools/reference/csharp" / filename).read_text(encoding="utf8")
+            required = set(re.findall(r"protected void (\w+)\(", source))
+            covered = {event["method"] for trace in traces for event in trace[key]}
+            assert required <= covered, f"Uncovered C# action helpers: {required - covered}"
         for index, ((rule, source), row) in enumerate(zip(CASES, rows)):
             output += ["///|", f'test "CSharp Java {index:03d} {rule}" {{']
             quoted = json.dumps(source, ensure_ascii=False)
@@ -94,6 +107,14 @@ def main():
                 output += [f"  let tokens = @csharp.tokenize({quoted}).map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel))",
                            f"  @debug.assert_eq(tokens, [{tuples}])"]
             output += ["}", ""]
+            trace = traces[index]
+            output += ["///|", f'test "CSharp Java helper snapshots {index:03d}" {{',
+                f"  let expected_lexer : Json = {json.dumps(trace['lexer'], ensure_ascii=False)}",
+                f"  @debug.assert_eq(Json::array(@csharp.tokenize_traced({quoted}, recover=true).events), expected_lexer)"]
+            if rule == "directives":
+                output += [f"  let expected_parser : Json = {json.dumps(trace['preprocessor'], ensure_ascii=False)}",
+                    f"  @debug.assert_eq(Json::array(@csharp.preprocess({quoted}).trace), expected_parser)"]
+            output += ["}", ""]
             if rule not in {"directives", "tokens"}:
                 positions = ", ".join(f"(Some({line}), Some({column}))" for line, column in row["errors"])
                 output += ["///|", f'test "CSharp Java recovery {index:03d} {rule}" {{',
@@ -105,6 +126,8 @@ def main():
         "source_commit": "7bb150f62f54e587f18e323b71fa0309bdec5056",
         "antlr": "4.13.2", "cases": len(rows), "accepted": sum(row["accepted"] for row in rows),
         "recovery_cases": sum(rule not in {"directives", "tokens"} for rule, _ in CASES),
+        "helper_snapshot_cases": len(traces),
+        "lexer_action_helpers": 8, "preprocessor_action_helpers": 22,
     }, indent=2) + "\n", encoding="utf-8", newline="\n")
     print("CSharp Java cases:", len(rows))
 

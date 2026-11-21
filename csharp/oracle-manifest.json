@@ -1,7 +1,10 @@
 {
   "source_commit": "7bb150f62f54e587f18e323b71fa0309bdec5056",
   "antlr": "4.13.2",
-  "cases": 37,
+  "cases": 39,
   "accepted": 29,
-  "recovery_cases": 17
+  "recovery_cases": 19,
+  "helper_snapshot_cases": 39,
+  "lexer_action_helpers": 8,
+  "preprocessor_action_helpers": 22
 }
