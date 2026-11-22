@@ -93,7 +93,11 @@ pub fn LifecycleLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn LifecycleLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct LifecycleListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (LifecycleDocumentContext) -> Unit
   exit_document : (LifecycleDocumentContext) -> Unit
   enter_broken : (LifecycleBrokenContext) -> Unit
@@ -109,7 +113,7 @@ pub(all) struct LifecycleListener {
   enter_argument : (LifecycleArgumentContext) -> Unit
   exit_argument : (LifecycleArgumentContext) -> Unit
 }
-pub fn LifecycleListener::new() -> Self
+pub fn LifecycleListener::new(antlr_dispatch? : Bool) -> Self
 pub fn LifecycleListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct LifecycleNestedContext {
@@ -166,6 +170,7 @@ pub fn LifecycleSet_sequenceContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct LifecycleVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (LifecycleDocumentContext, Array[T]) -> T
   visit_broken : (LifecycleBrokenContext, Array[T]) -> T
   visit_set_sequence : (LifecycleSet_sequenceContext, Array[T]) -> T
@@ -174,7 +179,7 @@ pub(all) struct LifecycleVisitor[T] {
   visit_argument_caller : (LifecycleArgument_callerContext, Array[T]) -> T
   visit_argument : (LifecycleArgumentContext, Array[T]) -> T
 }
-pub fn[T] LifecycleVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] LifecycleVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] LifecycleVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

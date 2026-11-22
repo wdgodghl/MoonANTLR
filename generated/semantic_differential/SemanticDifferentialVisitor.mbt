@@ -3,6 +3,7 @@
 ///|
 pub(all) struct SemanticDifferentialVisitor[T] {
   terminal : (@runtime.Token) -> T
+  error : (@runtime.Token) -> T
   visit_entry : (SemanticDifferentialEntryContext, Array[T]) -> T
   visit_left : (SemanticDifferentialLeftContext, Array[T]) -> T
   visit_right : (SemanticDifferentialRightContext, Array[T]) -> T
@@ -16,9 +17,11 @@ pub(all) struct SemanticDifferentialVisitor[T] {
 pub fn[T] SemanticDifferentialVisitor::new(
   terminal~ : (@runtime.Token) -> T,
   rule~ : (@runtime.RuleContext, Array[T]) -> T,
+  error? : (@runtime.Token) -> T,
 ) -> SemanticDifferentialVisitor[T] {
   {
     terminal,
+    error: error.unwrap_or(terminal),
     visit_entry: (context, children) => rule(context.raw(), children),
     visit_left: (context, children) => rule(context.raw(), children),
     visit_right: (context, children) => rule(context.raw(), children),
@@ -34,9 +37,14 @@ pub fn[T] SemanticDifferentialVisitor::visit(
   self : SemanticDifferentialVisitor[T],
   node : @runtime.RuleContext,
 ) -> T {
-  let values = node.children.map(child => {
+  let values = node.children.mapi((index, child) => {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.visit(context)
     }
   })

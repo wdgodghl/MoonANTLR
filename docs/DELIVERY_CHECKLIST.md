@@ -22,7 +22,7 @@ MoonBit 绑定，不宣称自动翻译任意宿主程序。
 | 动态控制与上下文观察 | `ParserControl` 支持动作中切换预测、树构建和 Bail 策略；14 个独立 Java 用例检查中止、动态树、规则 start/stop 及空规则边界 |
 | 原始宿主输出 | 350 个描述用例全部比较原始 stdout；Token 字符串、属性、文本、树、监听器、谓词观察、Parser/Lexer DFA 从实际运行状态计算；未知动作使生成失败 |
 | 上游分类及四目标 | 13 类 350 个固定描述用例；CI 分别检查、构建、测试 wasm、wasm-gc、JS、native；参考任务从原始语法重新生成并拒绝差异 |
-| 扩展兼容性差分 | 1218 个独立 Java 对照，涵盖三种预测模式、Lexer 边界、组合谓词与参数；语法哈希、种子与复现见 `COMPATIBILITY_DIFFERENTIAL.md` |
+| 扩展兼容性差分 | 1226 个独立 Java 对照，涵盖三种预测模式、Lexer 边界、组合谓词与参数；语法哈希、种子与复现见 `COMPATIBILITY_DIFFERENTIAL.md` |
 | 来源与许可证 | `THIRD_PARTY_NOTICES.md`、BSD-3-Clause/EPL-1.0 许可及语法声明；C# 派生部分保留 EPL-1.0 |
 
 ## 原始配置与比较边界

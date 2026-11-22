@@ -28,13 +28,17 @@ pub fn OpenDeviceStatementLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn OpenDeviceStatementLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct OpenDeviceStatementListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_program : (OpenDeviceStatementProgramContext) -> Unit
   exit_program : (OpenDeviceStatementProgramContext) -> Unit
   enter_statement : (OpenDeviceStatementStatementContext) -> Unit
   exit_statement : (OpenDeviceStatementStatementContext) -> Unit
 }
-pub fn OpenDeviceStatementListener::new() -> Self
+pub fn OpenDeviceStatementListener::new(antlr_dispatch? : Bool) -> Self
 pub fn OpenDeviceStatementListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct OpenDeviceStatementParser {

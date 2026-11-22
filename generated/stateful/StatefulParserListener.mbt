@@ -2,14 +2,28 @@
 
 ///|
 pub(all) struct StatefulParserListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (StatefulParserDocumentContext) -> Unit
   exit_document : (StatefulParserDocumentContext) -> Unit
 }
 
 ///|
-pub fn StatefulParserListener::new() -> StatefulParserListener {
-  { terminal: _ => (), enter_document: _ => (), exit_document: _ => (), }
+pub fn StatefulParserListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> StatefulParserListener {
+  {
+    antlr_dispatch,
+    terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
+    enter_document: _ => (),
+    exit_document: _ => (),
+  }
 }
 
 ///|
@@ -17,19 +31,32 @@ pub fn StatefulParserListener::walk(
   self : StatefulParserListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" =>
-      (self.enter_document)(StatefulParserDocumentContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" =>
+        (self.enter_document)(StatefulParserDocumentContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(StatefulParserDocumentContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" =>
+        (self.exit_document)(StatefulParserDocumentContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

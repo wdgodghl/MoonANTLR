@@ -82,7 +82,11 @@ pub fn TypedLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn TypedLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct TypedListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (TypedDocumentContext) -> Unit
   exit_document : (TypedDocumentContext) -> Unit
   enter_entry : (TypedEntryContext) -> Unit
@@ -100,7 +104,7 @@ pub(all) struct TypedListener {
   enter_alt_Sum : (TypedSumContext) -> Unit
   exit_alt_Sum : (TypedSumContext) -> Unit
 }
-pub fn TypedListener::new() -> Self
+pub fn TypedListener::new(antlr_dispatch? : Bool) -> Self
 pub fn TypedListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct TypedNumberContext {
@@ -137,6 +141,7 @@ pub fn TypedSumContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct TypedVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (TypedDocumentContext, Array[T]) -> T
   visit_entry : (TypedEntryContext, Array[T]) -> T
   visit_expression : (TypedExpressionContext, Array[T]) -> T
@@ -146,7 +151,7 @@ pub(all) struct TypedVisitor[T] {
   visit_alt_Product : ((TypedProductContext, Array[T]) -> T)?
   visit_alt_Sum : ((TypedSumContext, Array[T]) -> T)?
 }
-pub fn[T] TypedVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] TypedVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] TypedVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

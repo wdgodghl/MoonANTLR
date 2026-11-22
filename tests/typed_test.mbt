@@ -51,7 +51,7 @@ test "generated visitor evaluates expressions without tree string matching" {
 test "generated listener walks nested rules in enter terminal exit order" {
   let events : Array[String] = []
   let listener = {
-    ..@typed.TypedListener::new(),
+    ..@typed.TypedListener::new(antlr_dispatch=false),
     enter_expression: context => events.push("+" + context.raw().text()),
     exit_expression: context => events.push("-" + context.raw().text()),
     terminal: token => events.push(token.text),

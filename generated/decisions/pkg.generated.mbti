@@ -82,7 +82,11 @@ pub fn DecisionsLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn DecisionsLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct DecisionsListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (DecisionsDocumentContext) -> Unit
   exit_document : (DecisionsDocumentContext) -> Unit
   enter_item : (DecisionsItemContext) -> Unit
@@ -104,7 +108,7 @@ pub(all) struct DecisionsListener {
   enter_alt_Short : (DecisionsShortContext) -> Unit
   exit_alt_Short : (DecisionsShortContext) -> Unit
 }
-pub fn DecisionsListener::new() -> Self
+pub fn DecisionsListener::new(antlr_dispatch? : Bool) -> Self
 pub fn DecisionsListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct DecisionsLongChoiceContext {
@@ -164,6 +168,7 @@ pub fn DecisionsShortContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct DecisionsVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (DecisionsDocumentContext, Array[T]) -> T
   visit_item : (DecisionsItemContext, Array[T]) -> T
   visit_choice : (DecisionsChoiceContext, Array[T]) -> T
@@ -175,7 +180,7 @@ pub(all) struct DecisionsVisitor[T] {
   visit_first : (DecisionsFirstContext, Array[T]) -> T
   visit_second : (DecisionsSecondContext, Array[T]) -> T
 }
-pub fn[T] DecisionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] DecisionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] DecisionsVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

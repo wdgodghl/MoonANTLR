@@ -1850,7 +1850,11 @@ pub fn CSharpParserLet_clauseContext::get_token_literal_145(Self) -> Array[@moon
 pub fn CSharpParserLet_clauseContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct CSharpParserListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_compilation_unit : (CSharpParserCompilation_unitContext) -> Unit
   exit_compilation_unit : (CSharpParserCompilation_unitContext) -> Unit
   enter_namespace_or_type_name : (CSharpParserNamespace_or_type_nameContext) -> Unit
@@ -2370,7 +2374,7 @@ pub(all) struct CSharpParserListener {
   enter_alt_usingStaticDirective : (CSharpParserUsingStaticDirectiveContext) -> Unit
   exit_alt_usingStaticDirective : (CSharpParserUsingStaticDirectiveContext) -> Unit
 }
-pub fn CSharpParserListener::new() -> Self
+pub fn CSharpParserListener::new(antlr_dispatch? : Bool) -> Self
 pub fn CSharpParserListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct CSharpParserLiteralAccessExpressionContext {
@@ -3888,6 +3892,7 @@ pub fn CSharpParserVariant_type_parameter_listContext::raw(Self) -> @moonantlr.R
 
 pub(all) struct CSharpParserVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_compilation_unit : (CSharpParserCompilation_unitContext, Array[T]) -> T
   visit_namespace_or_type_name : (CSharpParserNamespace_or_type_nameContext, Array[T]) -> T
   visit_type_ : (CSharpParserType_Context, Array[T]) -> T
@@ -4148,7 +4153,7 @@ pub(all) struct CSharpParserVisitor[T] {
   visit_object_creation_expression : (CSharpParserObject_creation_expressionContext, Array[T]) -> T
   visit_identifier : (CSharpParserIdentifierContext, Array[T]) -> T
 }
-pub fn[T] CSharpParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] CSharpParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] CSharpParserVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 pub struct CSharpParserWhere_clauseContext {

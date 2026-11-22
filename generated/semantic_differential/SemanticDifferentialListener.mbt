@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct SemanticDifferentialListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_entry : (SemanticDifferentialEntryContext) -> Unit
   exit_entry : (SemanticDifferentialEntryContext) -> Unit
   enter_left : (SemanticDifferentialLeftContext) -> Unit
@@ -20,9 +24,15 @@ pub(all) struct SemanticDifferentialListener {
 }
 
 ///|
-pub fn SemanticDifferentialListener::new() -> SemanticDifferentialListener {
+pub fn SemanticDifferentialListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> SemanticDifferentialListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_entry: _ => (),
     exit_entry: _ => (),
     enter_left: _ => (),
@@ -45,38 +55,50 @@ pub fn SemanticDifferentialListener::walk(
   self : SemanticDifferentialListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "entry" => (self.enter_entry)(SemanticDifferentialEntryContext::{ node, })
-    "left" => (self.enter_left)(SemanticDifferentialLeftContext::{ node, })
-    "right" => (self.enter_right)(SemanticDifferentialRightContext::{ node, })
-    "combined" =>
-      (self.enter_combined)(SemanticDifferentialCombinedContext::{ node, })
-    "local" => (self.enter_local)(SemanticDifferentialLocalContext::{ node, })
-    "parameterized" =>
-      (self.enter_parameterized)(SemanticDifferentialParameterizedContext::{
-        node,
-      })
-    "child" => (self.enter_child)(SemanticDifferentialChildContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "entry" => (self.enter_entry)(SemanticDifferentialEntryContext::{ node, })
+      "left" => (self.enter_left)(SemanticDifferentialLeftContext::{ node, })
+      "right" => (self.enter_right)(SemanticDifferentialRightContext::{ node, })
+      "combined" =>
+        (self.enter_combined)(SemanticDifferentialCombinedContext::{ node, })
+      "local" => (self.enter_local)(SemanticDifferentialLocalContext::{ node, })
+      "parameterized" =>
+        (self.enter_parameterized)(SemanticDifferentialParameterizedContext::{
+          node,
+        })
+      "child" => (self.enter_child)(SemanticDifferentialChildContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "entry" => (self.exit_entry)(SemanticDifferentialEntryContext::{ node, })
-    "left" => (self.exit_left)(SemanticDifferentialLeftContext::{ node, })
-    "right" => (self.exit_right)(SemanticDifferentialRightContext::{ node, })
-    "combined" =>
-      (self.exit_combined)(SemanticDifferentialCombinedContext::{ node, })
-    "local" => (self.exit_local)(SemanticDifferentialLocalContext::{ node, })
-    "parameterized" =>
-      (self.exit_parameterized)(SemanticDifferentialParameterizedContext::{
-        node,
-      })
-    "child" => (self.exit_child)(SemanticDifferentialChildContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "entry" => (self.exit_entry)(SemanticDifferentialEntryContext::{ node, })
+      "left" => (self.exit_left)(SemanticDifferentialLeftContext::{ node, })
+      "right" => (self.exit_right)(SemanticDifferentialRightContext::{ node, })
+      "combined" =>
+        (self.exit_combined)(SemanticDifferentialCombinedContext::{ node, })
+      "local" => (self.exit_local)(SemanticDifferentialLocalContext::{ node, })
+      "parameterized" =>
+        (self.exit_parameterized)(SemanticDifferentialParameterizedContext::{
+          node,
+        })
+      "child" => (self.exit_child)(SemanticDifferentialChildContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

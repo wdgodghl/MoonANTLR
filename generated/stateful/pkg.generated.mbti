@@ -45,18 +45,23 @@ pub fn StatefulParserDocumentContext::get_token_WORD(Self) -> Array[@moonantlr.T
 pub fn StatefulParserDocumentContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct StatefulParserListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (StatefulParserDocumentContext) -> Unit
   exit_document : (StatefulParserDocumentContext) -> Unit
 }
-pub fn StatefulParserListener::new() -> Self
+pub fn StatefulParserListener::new(antlr_dispatch? : Bool) -> Self
 pub fn StatefulParserListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub(all) struct StatefulParserVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (StatefulParserDocumentContext, Array[T]) -> T
 }
-pub fn[T] StatefulParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] StatefulParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] StatefulParserVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

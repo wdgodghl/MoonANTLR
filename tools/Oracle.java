@@ -95,7 +95,22 @@ public final class Oracle {
                     public void visitTerminal(TerminalNode node) { events.add(quote("token:" + node.getText(),false)); }
                     public void visitErrorNode(ErrorNode node) { events.add(quote("error:" + node.getText(),false)); }
                 }, parsed);
+                java.util.List<String> dispatch = new java.util.ArrayList<>();
+                Class<?> listenerType;
+                try { listenerType=Class.forName(grammar+"Listener"); }
+                catch(ClassNotFoundException absent) { listenerType=Class.forName(parser.getClass().getSimpleName()+"Listener"); }
+                ParseTreeListener proxy=(ParseTreeListener)java.lang.reflect.Proxy.newProxyInstance(listenerType.getClassLoader(),new Class<?>[]{listenerType},(instance,method,values)->{
+                    if(values!=null && values.length==1) {
+                        Object value=values[0];
+                        String detail=value instanceof ParserRuleContext ? parser.getRuleNames()[((ParserRuleContext)value).getRuleIndex()] : ((ParseTree)value).getText();
+                        dispatch.add(quote(method.getName()+":"+detail,false));
+                    }
+                    return null;
+                });
+                ParseTreeWalker.DEFAULT.walk(proxy,parsed);
                 System.out.println("{\"tree\":" + quote(errorTree(parsed, parser), false)
+                    + ",\"contextText\":"+quote(parsed.getText(),false)
+                    + ",\"dispatchEvents\":["+String.join(",",dispatch)+"]"
                     + ",\"parserErrors\":[" + String.join(",", allErrors)
                     + "],\"events\":[" + String.join(",", events) + "],\"errorTokens\":[" + String.join(",", errorTokens) + "],\"offsets\":" + offsets + attributes + ",\"nextKind\":" + next.getType() + ",\"nextText\":" + quote(next.getText(), false)
                     + ",\"predictionEvents\":["+String.join(",",trace.events)+"],\"stdout\":"+quote(captured.toString(StandardCharsets.UTF_8).replace("\r\n","\n"),false)+",\"stderr\":"+quote(String.join("",messages),false)+"}");

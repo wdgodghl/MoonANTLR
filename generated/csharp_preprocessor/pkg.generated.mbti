@@ -54,7 +54,11 @@ pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::get_token_EOF
 pub fn CSharpPreprocessorParserDirective_new_line_or_sharpContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct CSharpPreprocessorParserListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_preprocessor_directive : (CSharpPreprocessorParserPreprocessor_directiveContext) -> Unit
   exit_preprocessor_directive : (CSharpPreprocessorParserPreprocessor_directiveContext) -> Unit
   enter_directive_new_line_or_sharp : (CSharpPreprocessorParserDirective_new_line_or_sharpContext) -> Unit
@@ -76,7 +80,7 @@ pub(all) struct CSharpPreprocessorParserListener {
   enter_alt_preprocessorRegion : (CSharpPreprocessorParserPreprocessorRegionContext) -> Unit
   exit_alt_preprocessorRegion : (CSharpPreprocessorParserPreprocessorRegionContext) -> Unit
 }
-pub fn CSharpPreprocessorParserListener::new() -> Self
+pub fn CSharpPreprocessorParserListener::new(antlr_dispatch? : Bool) -> Self
 pub fn CSharpPreprocessorParserListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct CSharpPreprocessorParserPreprocessorConditionalContext {
@@ -191,6 +195,7 @@ pub fn CSharpPreprocessorParserPreprocessor_expressionContextAttributes::from_fr
 
 pub(all) struct CSharpPreprocessorParserVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_preprocessor_directive : (CSharpPreprocessorParserPreprocessor_directiveContext, Array[T]) -> T
   visit_alt_preprocessorConditional : ((CSharpPreprocessorParserPreprocessorConditionalContext, Array[T]) -> T)?
   visit_alt_preprocessorDeclaration : ((CSharpPreprocessorParserPreprocessorDeclarationContext, Array[T]) -> T)?
@@ -202,7 +207,7 @@ pub(all) struct CSharpPreprocessorParserVisitor[T] {
   visit_directive_new_line_or_sharp : (CSharpPreprocessorParserDirective_new_line_or_sharpContext, Array[T]) -> T
   visit_preprocessor_expression : (CSharpPreprocessorParserPreprocessor_expressionContext, Array[T]) -> T
 }
-pub fn[T] CSharpPreprocessorParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] CSharpPreprocessorParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] CSharpPreprocessorParserVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

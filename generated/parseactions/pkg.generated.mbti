@@ -61,7 +61,11 @@ pub fn ParseActionsLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn ParseActionsLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct ParseActionsListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (ParseActionsDocumentContext) -> Unit
   exit_document : (ParseActionsDocumentContext) -> Unit
   enter_item : (ParseActionsItemContext) -> Unit
@@ -69,7 +73,7 @@ pub(all) struct ParseActionsListener {
   enter_expression : (ParseActionsExpressionContext) -> Unit
   exit_expression : (ParseActionsExpressionContext) -> Unit
 }
-pub fn ParseActionsListener::new() -> Self
+pub fn ParseActionsListener::new(antlr_dispatch? : Bool) -> Self
 pub fn ParseActionsListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct ParseActionsParser {
@@ -82,11 +86,12 @@ pub fn ParseActionsParser::parse_item(Self, String, parser_action? : (@moonantlr
 
 pub(all) struct ParseActionsVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (ParseActionsDocumentContext, Array[T]) -> T
   visit_item : (ParseActionsItemContext, Array[T]) -> T
   visit_expression : (ParseActionsExpressionContext, Array[T]) -> T
 }
-pub fn[T] ParseActionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] ParseActionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] ParseActionsVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

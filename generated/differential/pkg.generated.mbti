@@ -128,7 +128,11 @@ pub fn DifferentialLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn DifferentialLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct DifferentialListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (DifferentialDocumentContext) -> Unit
   exit_document : (DifferentialDocumentContext) -> Unit
   enter_expression : (DifferentialExpressionContext) -> Unit
@@ -158,7 +162,7 @@ pub(all) struct DifferentialListener {
   enter_inner : (DifferentialInnerContext) -> Unit
   exit_inner : (DifferentialInnerContext) -> Unit
 }
-pub fn DifferentialListener::new() -> Self
+pub fn DifferentialListener::new(antlr_dispatch? : Bool) -> Self
 pub fn DifferentialListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct DifferentialMaybeContext {
@@ -234,6 +238,7 @@ pub fn DifferentialSecondContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct DifferentialVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (DifferentialDocumentContext, Array[T]) -> T
   visit_expression : (DifferentialExpressionContext, Array[T]) -> T
   visit_choice : (DifferentialChoiceContext, Array[T]) -> T
@@ -249,7 +254,7 @@ pub(all) struct DifferentialVisitor[T] {
   visit_contexts : (DifferentialContextsContext, Array[T]) -> T
   visit_inner : (DifferentialInnerContext, Array[T]) -> T
 }
-pub fn[T] DifferentialVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] DifferentialVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] DifferentialVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

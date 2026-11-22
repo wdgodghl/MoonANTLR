@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct ExceptionsListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_caught : (ExceptionsCaughtContext) -> Unit
   exit_caught : (ExceptionsCaughtContext) -> Unit
   enter_caught_host : (ExceptionsCaught_hostContext) -> Unit
@@ -18,9 +22,15 @@ pub(all) struct ExceptionsListener {
 }
 
 ///|
-pub fn ExceptionsListener::new() -> ExceptionsListener {
+pub fn ExceptionsListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> ExceptionsListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_caught: _ => (),
     exit_caught: _ => (),
     enter_caught_host: _ => (),
@@ -41,38 +51,50 @@ pub fn ExceptionsListener::walk(
   self : ExceptionsListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "caught" => (self.enter_caught)(ExceptionsCaughtContext::{ node, })
-    "caught_host" =>
-      (self.enter_caught_host)(ExceptionsCaught_hostContext::{ node, })
-    "specific" => (self.enter_specific)(ExceptionsSpecificContext::{ node, })
-    "predicate_failure" =>
-      (self.enter_predicate_failure)(ExceptionsPredicate_failureContext::{
-        node,
-      })
-    "outer" => (self.enter_outer)(ExceptionsOuterContext::{ node, })
-    "nested_callee" =>
-      (self.enter_nested_callee)(ExceptionsNested_calleeContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "caught" => (self.enter_caught)(ExceptionsCaughtContext::{ node, })
+      "caught_host" =>
+        (self.enter_caught_host)(ExceptionsCaught_hostContext::{ node, })
+      "specific" => (self.enter_specific)(ExceptionsSpecificContext::{ node, })
+      "predicate_failure" =>
+        (self.enter_predicate_failure)(ExceptionsPredicate_failureContext::{
+          node,
+        })
+      "outer" => (self.enter_outer)(ExceptionsOuterContext::{ node, })
+      "nested_callee" =>
+        (self.enter_nested_callee)(ExceptionsNested_calleeContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "caught" => (self.exit_caught)(ExceptionsCaughtContext::{ node, })
-    "caught_host" =>
-      (self.exit_caught_host)(ExceptionsCaught_hostContext::{ node, })
-    "specific" => (self.exit_specific)(ExceptionsSpecificContext::{ node, })
-    "predicate_failure" =>
-      (self.exit_predicate_failure)(ExceptionsPredicate_failureContext::{
-        node,
-      })
-    "outer" => (self.exit_outer)(ExceptionsOuterContext::{ node, })
-    "nested_callee" =>
-      (self.exit_nested_callee)(ExceptionsNested_calleeContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "caught" => (self.exit_caught)(ExceptionsCaughtContext::{ node, })
+      "caught_host" =>
+        (self.exit_caught_host)(ExceptionsCaught_hostContext::{ node, })
+      "specific" => (self.exit_specific)(ExceptionsSpecificContext::{ node, })
+      "predicate_failure" =>
+        (self.exit_predicate_failure)(ExceptionsPredicate_failureContext::{
+          node,
+        })
+      "outer" => (self.exit_outer)(ExceptionsOuterContext::{ node, })
+      "nested_callee" =>
+        (self.exit_nested_callee)(ExceptionsNested_calleeContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

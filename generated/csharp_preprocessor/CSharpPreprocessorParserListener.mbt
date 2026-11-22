@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct CSharpPreprocessorParserListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_preprocessor_directive : (
     CSharpPreprocessorParserPreprocessor_directiveContext,
   ) -> Unit
@@ -62,9 +66,15 @@ pub(all) struct CSharpPreprocessorParserListener {
 }
 
 ///|
-pub fn CSharpPreprocessorParserListener::new() -> CSharpPreprocessorParserListener {
+pub fn CSharpPreprocessorParserListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> CSharpPreprocessorParserListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_preprocessor_directive: _ => (),
     exit_preprocessor_directive: _ => (),
     enter_directive_new_line_or_sharp: _ => (),
@@ -93,20 +103,25 @@ pub fn CSharpPreprocessorParserListener::walk(
   self : CSharpPreprocessorParserListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "preprocessor_directive" =>
-      (self.enter_preprocessor_directive)(CSharpPreprocessorParserPreprocessor_directiveContext::{
-        node,
-      })
-    "directive_new_line_or_sharp" =>
-      (self.enter_directive_new_line_or_sharp)(CSharpPreprocessorParserDirective_new_line_or_sharpContext::{
-        node,
-      })
-    "preprocessor_expression" =>
-      (self.enter_preprocessor_expression)(CSharpPreprocessorParserPreprocessor_expressionContext::{
-        node,
-      })
-    _ => ()
+  let labelled = self.antlr_dispatch &&
+    ["preprocessor_directive"].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "preprocessor_directive" =>
+        (self.enter_preprocessor_directive)(CSharpPreprocessorParserPreprocessor_directiveContext::{
+          node,
+        })
+      "directive_new_line_or_sharp" =>
+        (self.enter_directive_new_line_or_sharp)(CSharpPreprocessorParserDirective_new_line_or_sharpContext::{
+          node,
+        })
+      "preprocessor_expression" =>
+        (self.enter_preprocessor_expression)(CSharpPreprocessorParserPreprocessor_expressionContext::{
+          node,
+        })
+      _ => ()
+    }
   }
   if node.name == "preprocessor_directive" {
     if CSharpPreprocessorParserPreprocessor_directiveContext::{ node, }.alternative() ==
@@ -164,9 +179,14 @@ pub fn CSharpPreprocessorParserListener::walk(
       })
     }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
@@ -226,19 +246,22 @@ pub fn CSharpPreprocessorParserListener::walk(
       })
     }
   }
-  match node.name {
-    "preprocessor_directive" =>
-      (self.exit_preprocessor_directive)(CSharpPreprocessorParserPreprocessor_directiveContext::{
-        node,
-      })
-    "directive_new_line_or_sharp" =>
-      (self.exit_directive_new_line_or_sharp)(CSharpPreprocessorParserDirective_new_line_or_sharpContext::{
-        node,
-      })
-    "preprocessor_expression" =>
-      (self.exit_preprocessor_expression)(CSharpPreprocessorParserPreprocessor_expressionContext::{
-        node,
-      })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "preprocessor_directive" =>
+        (self.exit_preprocessor_directive)(CSharpPreprocessorParserPreprocessor_directiveContext::{
+          node,
+        })
+      "directive_new_line_or_sharp" =>
+        (self.exit_directive_new_line_or_sharp)(CSharpPreprocessorParserDirective_new_line_or_sharpContext::{
+          node,
+        })
+      "preprocessor_expression" =>
+        (self.exit_preprocessor_expression)(CSharpPreprocessorParserPreprocessor_expressionContext::{
+          node,
+        })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

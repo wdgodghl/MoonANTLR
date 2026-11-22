@@ -3,6 +3,7 @@
 ///|
 pub(all) struct OptionsParserVisitor[T] {
   terminal : (@runtime.Token) -> T
+  error : (@runtime.Token) -> T
   visit_document : (OptionsParserDocumentContext, Array[T]) -> T
   visit_atom : (OptionsParserAtomContext, Array[T]) -> T
 }
@@ -11,9 +12,11 @@ pub(all) struct OptionsParserVisitor[T] {
 pub fn[T] OptionsParserVisitor::new(
   terminal~ : (@runtime.Token) -> T,
   rule~ : (@runtime.RuleContext, Array[T]) -> T,
+  error? : (@runtime.Token) -> T,
 ) -> OptionsParserVisitor[T] {
   {
     terminal,
+    error: error.unwrap_or(terminal),
     visit_document: (context, children) => rule(context.raw(), children),
     visit_atom: (context, children) => rule(context.raw(), children),
   }
@@ -24,9 +27,14 @@ pub fn[T] OptionsParserVisitor::visit(
   self : OptionsParserVisitor[T],
   node : @runtime.RuleContext,
 ) -> T {
-  let values = node.children.map(child => {
+  let values = node.children.mapi((index, child) => {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.visit(context)
     }
   })

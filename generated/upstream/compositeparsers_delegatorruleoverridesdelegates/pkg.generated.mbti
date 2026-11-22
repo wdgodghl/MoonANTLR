@@ -49,13 +49,17 @@ pub fn MLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn MLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct MListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_b : (MBContext) -> Unit
   exit_b : (MBContext) -> Unit
   enter_a : (MAContext) -> Unit
   exit_a : (MAContext) -> Unit
 }
-pub fn MListener::new() -> Self
+pub fn MListener::new(antlr_dispatch? : Bool) -> Self
 pub fn MListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct MParser {

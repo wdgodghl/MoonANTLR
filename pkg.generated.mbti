@@ -293,6 +293,7 @@ pub fn[T] RecoveryVisitor::visit(Self[T], RecoveryTree) -> T
 pub(all) struct RuleContext {
   name : String
   children : Array[ContextChild]
+  error_children : Array[Int32]
   sources : Array[Int32]
   path : Array[Int32]
   build_tree : Bool
@@ -301,6 +302,7 @@ pub(all) struct RuleContext {
   labels : Array[(Int32, ContextChild)]
   recovered_captures : Map[Int32, Array[(Int32, Token)]]
 }
+pub fn RuleContext::get_text(Self) -> String
 pub fn RuleContext::rules(Self, String, states? : Array[Int32]) -> Array[Self]
 pub fn RuleContext::select_tokens(Self, Array[Int32]) -> Array[Token]
 pub fn RuleContext::span(Self) -> (Int32, Int32)?

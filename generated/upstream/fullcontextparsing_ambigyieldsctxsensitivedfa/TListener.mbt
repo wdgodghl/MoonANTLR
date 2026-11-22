@@ -2,30 +2,54 @@
 
 ///|
 pub(all) struct TListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_s : (TSContext) -> Unit
   exit_s : (TSContext) -> Unit
 }
 
 ///|
-pub fn TListener::new() -> TListener {
-  { terminal: _ => (), enter_s: _ => (), exit_s: _ => (), }
+pub fn TListener::new(antlr_dispatch~ : Bool = true) -> TListener {
+  {
+    antlr_dispatch,
+    terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
+    enter_s: _ => (),
+    exit_s: _ => (),
+  }
 }
 
 ///|
 pub fn TListener::walk(self : TListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "s" => (self.enter_s)(TSContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "s" => (self.enter_s)(TSContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "s" => (self.exit_s)(TSContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "s" => (self.exit_s)(TSContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

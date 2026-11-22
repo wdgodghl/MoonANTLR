@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct MListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_s : (MSContext) -> Unit
   exit_s : (MSContext) -> Unit
   enter_x : (MXContext) -> Unit
@@ -10,9 +14,13 @@ pub(all) struct MListener {
 }
 
 ///|
-pub fn MListener::new() -> MListener {
+pub fn MListener::new(antlr_dispatch~ : Bool = true) -> MListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_s: _ => (),
     exit_s: _ => (),
     enter_x: _ => (),
@@ -22,20 +30,32 @@ pub fn MListener::new() -> MListener {
 
 ///|
 pub fn MListener::walk(self : MListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "s" => (self.enter_s)(MSContext::{ node, })
-    "x" => (self.enter_x)(MXContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "s" => (self.enter_s)(MSContext::{ node, })
+      "x" => (self.enter_x)(MXContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "s" => (self.exit_s)(MSContext::{ node, })
-    "x" => (self.exit_x)(MXContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "s" => (self.exit_s)(MSContext::{ node, })
+      "x" => (self.exit_x)(MXContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

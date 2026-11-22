@@ -46,13 +46,17 @@ pub fn Issue2301Lexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn Issue2301Lexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct Issue2301Listener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_constant : (Issue2301ConstantContext) -> Unit
   exit_constant : (Issue2301ConstantContext) -> Unit
   enter_expr : (Issue2301ExprContext) -> Unit
   exit_expr : (Issue2301ExprContext) -> Unit
 }
-pub fn Issue2301Listener::new() -> Self
+pub fn Issue2301Listener::new(antlr_dispatch? : Bool) -> Self
 pub fn Issue2301Listener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct Issue2301Parser {

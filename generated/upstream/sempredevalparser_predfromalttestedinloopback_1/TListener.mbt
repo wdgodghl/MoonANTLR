@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct TListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_file_ : (TFile_Context) -> Unit
   exit_file_ : (TFile_Context) -> Unit
   enter_para : (TParaContext) -> Unit
@@ -14,9 +18,13 @@ pub(all) struct TListener {
 }
 
 ///|
-pub fn TListener::new() -> TListener {
+pub fn TListener::new(antlr_dispatch~ : Bool = true) -> TListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_file_: _ => (),
     exit_file_: _ => (),
     enter_para: _ => (),
@@ -30,24 +38,36 @@ pub fn TListener::new() -> TListener {
 
 ///|
 pub fn TListener::walk(self : TListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "file_" => (self.enter_file_)(TFile_Context::{ node, })
-    "para" => (self.enter_para)(TParaContext::{ node, })
-    "paraContent" => (self.enter_paraContent)(TParaContentContext::{ node, })
-    "s" => (self.enter_s)(TSContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "file_" => (self.enter_file_)(TFile_Context::{ node, })
+      "para" => (self.enter_para)(TParaContext::{ node, })
+      "paraContent" => (self.enter_paraContent)(TParaContentContext::{ node, })
+      "s" => (self.enter_s)(TSContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "file_" => (self.exit_file_)(TFile_Context::{ node, })
-    "para" => (self.exit_para)(TParaContext::{ node, })
-    "paraContent" => (self.exit_paraContent)(TParaContentContext::{ node, })
-    "s" => (self.exit_s)(TSContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "file_" => (self.exit_file_)(TFile_Context::{ node, })
+      "para" => (self.exit_para)(TParaContext::{ node, })
+      "paraContent" => (self.exit_paraContent)(TParaContentContext::{ node, })
+      "s" => (self.exit_s)(TSContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct PredicateListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (PredicateDocumentContext) -> Unit
   exit_document : (PredicateDocumentContext) -> Unit
   enter_enabled : (PredicateEnabledContext) -> Unit
@@ -12,9 +16,15 @@ pub(all) struct PredicateListener {
 }
 
 ///|
-pub fn PredicateListener::new() -> PredicateListener {
+pub fn PredicateListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> PredicateListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_enabled: _ => (),
@@ -29,22 +39,34 @@ pub fn PredicateListener::walk(
   self : PredicateListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(PredicateDocumentContext::{ node, })
-    "enabled" => (self.enter_enabled)(PredicateEnabledContext::{ node, })
-    "fallback" => (self.enter_fallback)(PredicateFallbackContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" => (self.enter_document)(PredicateDocumentContext::{ node, })
+      "enabled" => (self.enter_enabled)(PredicateEnabledContext::{ node, })
+      "fallback" => (self.enter_fallback)(PredicateFallbackContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(PredicateDocumentContext::{ node, })
-    "enabled" => (self.exit_enabled)(PredicateEnabledContext::{ node, })
-    "fallback" => (self.exit_fallback)(PredicateFallbackContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(PredicateDocumentContext::{ node, })
+      "enabled" => (self.exit_enabled)(PredicateEnabledContext::{ node, })
+      "fallback" => (self.exit_fallback)(PredicateFallbackContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

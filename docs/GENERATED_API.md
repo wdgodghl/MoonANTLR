@@ -1,5 +1,10 @@
 # Generated API
 
+`RuleContext.get_text()` follows ANTLR `ParseTree.getText()`: it concatenates
+visible children, including EOF and error-node text. Use a typed context's
+`raw()` accessor to call it. `RuleContext.text()` is the convenience form that
+excludes EOF. Both return empty text when no visible tree children were built.
+
 `MoonBitTarget` is an ANTLR 4.13.2 plugin that emits MoonBit recognizers over
 the MoonANTLR ATN runtime. Generation needs Python 3.10+, JDK 17+ and the
 official complete ANTLR jar. Executing the generated MoonBit needs none of them.
@@ -72,18 +77,21 @@ entry methods that may accept a prefix when the rule omits EOF.
 
 `TypedVisitor[T]` is a bottom-up fold. Its `terminal` callback maps tokens to
 values; every rule callback receives its typed context and child values.
-`TypedVisitor::new(terminal=..., rule=...)` supplies defaults for all rules.
+`TypedVisitor::new(terminal=..., rule=..., error=...)` supplies defaults for all
+rules. The optional `error` callback receives recovered error nodes; if omitted,
+it uses `terminal` for backward compatibility.
 Copy the record to override `visit_expression`, for example. An optional
 `visit_alt_Number: Some(callback)` handles a labelled alternative and takes
 precedence over its rule callback. Unset alternatives fall back to that rule.
 EOF is passed to the terminal callback too.
 
-`TypedListener::new()` provides no-op callbacks. Override `enter_expression`,
-`exit_expression`, `enter_alt_Number`, `exit_alt_Number`, and/or `terminal`,
-then call `walk(context.raw())`. For each node the order is rule enter,
-alternative enter, children from left to right, alternative exit, rule exit.
-This includes both general and alternative callbacks, unlike ANTLR Java's
-alternative-only dispatch for labelled rules.
+`TypedListener::new()` provides no-op callbacks. Override `enter`, `exit`,
+`enter_expression`, `exit_expression`, `enter_alt_Number`, `exit_alt_Number`,
+`terminal` and/or `error`, then call `walk(context.raw())`. Generic `enter` runs
+first; generic `exit` runs last. Children are visited left to right and error
+nodes use `error` instead of `terminal`. The default dispatch follows ANTLR Java:
+labelled rules invoke their alternative callbacks instead of base-rule callbacks.
+`new(antlr_dispatch=false)` retains the extension that invokes both kinds.
 
 Visitors and listeners are grammar-specific: only pass contexts produced by
 the matching generated parser. The checked-in example and `tests/typed_test.mbt`

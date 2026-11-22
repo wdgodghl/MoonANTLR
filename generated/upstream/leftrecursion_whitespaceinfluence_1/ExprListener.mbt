@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct ExprListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_prog : (ExprProgContext) -> Unit
   exit_prog : (ExprProgContext) -> Unit
   enter_expression : (ExprExpressionContext) -> Unit
@@ -66,9 +70,13 @@ pub(all) struct ExprListener {
 }
 
 ///|
-pub fn ExprListener::new() -> ExprListener {
+pub fn ExprListener::new(antlr_dispatch~ : Bool = true) -> ExprListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_prog: _ => (),
     exit_prog: _ => (),
     enter_expression: _ => (),
@@ -137,10 +145,14 @@ pub fn ExprListener::walk(
   self : ExprListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "prog" => (self.enter_prog)(ExprProgContext::{ node, })
-    "expression" => (self.enter_expression)(ExprExpressionContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && ["expression"].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "prog" => (self.enter_prog)(ExprProgContext::{ node, })
+      "expression" => (self.enter_expression)(ExprExpressionContext::{ node, })
+      _ => ()
+    }
   }
   if node.name == "expression" {
     if ExprExpressionContext::{ node, }.alternative() == Some("doAnd") {
@@ -282,9 +294,14 @@ pub fn ExprListener::walk(
       (self.enter_alt_newTrueBoolean)(ExprNewTrueBooleanContext::{ node, })
     }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
@@ -428,9 +445,12 @@ pub fn ExprListener::walk(
       (self.exit_alt_newTrueBoolean)(ExprNewTrueBooleanContext::{ node, })
     }
   }
-  match node.name {
-    "prog" => (self.exit_prog)(ExprProgContext::{ node, })
-    "expression" => (self.exit_expression)(ExprExpressionContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "prog" => (self.exit_prog)(ExprProgContext::{ node, })
+      "expression" => (self.exit_expression)(ExprExpressionContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

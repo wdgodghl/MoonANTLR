@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct AttributesListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (AttributesDocumentContext) -> Unit
   exit_document : (AttributesDocumentContext) -> Unit
   enter_number : (AttributesNumberContext) -> Unit
@@ -10,9 +14,15 @@ pub(all) struct AttributesListener {
 }
 
 ///|
-pub fn AttributesListener::new() -> AttributesListener {
+pub fn AttributesListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> AttributesListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_number: _ => (),
@@ -25,20 +35,32 @@ pub fn AttributesListener::walk(
   self : AttributesListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(AttributesDocumentContext::{ node, })
-    "number" => (self.enter_number)(AttributesNumberContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" => (self.enter_document)(AttributesDocumentContext::{ node, })
+      "number" => (self.enter_number)(AttributesNumberContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(AttributesDocumentContext::{ node, })
-    "number" => (self.exit_number)(AttributesNumberContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(AttributesDocumentContext::{ node, })
+      "number" => (self.exit_number)(AttributesNumberContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

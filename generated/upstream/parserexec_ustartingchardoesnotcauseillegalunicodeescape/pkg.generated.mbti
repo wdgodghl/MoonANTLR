@@ -28,11 +28,15 @@ pub fn MoonuLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn MoonuLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct MoonuListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_u : (MoonuUContext) -> Unit
   exit_u : (MoonuUContext) -> Unit
 }
-pub fn MoonuListener::new() -> Self
+pub fn MoonuListener::new(antlr_dispatch? : Bool) -> Self
 pub fn MoonuListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct MoonuParser {

@@ -39,11 +39,15 @@ pub fn LexGateLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn LexGateLexer::tokenize(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (@moonantlr.LexerPredicateEvent) -> Bool) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct LexGateListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (LexGateDocumentContext) -> Unit
   exit_document : (LexGateDocumentContext) -> Unit
 }
-pub fn LexGateListener::new() -> Self
+pub fn LexGateListener::new(antlr_dispatch? : Bool) -> Self
 pub fn LexGateListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct LexGateParser {
@@ -54,9 +58,10 @@ pub fn LexGateParser::parse_document(Self, String, lexer_predicate? : (Int32, In
 
 pub(all) struct LexGateVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (LexGateDocumentContext, Array[T]) -> T
 }
-pub fn[T] LexGateVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] LexGateVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] LexGateVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

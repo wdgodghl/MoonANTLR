@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct TListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_ifStatement : (TIfStatementContext) -> Unit
   exit_ifStatement : (TIfStatementContext) -> Unit
   enter_elseIfStatement : (TElseIfStatementContext) -> Unit
@@ -16,9 +20,13 @@ pub(all) struct TListener {
 }
 
 ///|
-pub fn TListener::new() -> TListener {
+pub fn TListener::new(antlr_dispatch~ : Bool = true) -> TListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_ifStatement: _ => (),
     exit_ifStatement: _ => (),
     enter_elseIfStatement: _ => (),
@@ -34,32 +42,44 @@ pub fn TListener::new() -> TListener {
 
 ///|
 pub fn TListener::walk(self : TListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "ifStatement" => (self.enter_ifStatement)(TIfStatementContext::{ node, })
-    "elseIfStatement" =>
-      (self.enter_elseIfStatement)(TElseIfStatementContext::{ node, })
-    "expression" => (self.enter_expression)(TExpressionContext::{ node, })
-    "executableStatement" =>
-      (self.enter_executableStatement)(TExecutableStatementContext::{ node, })
-    "elseStatement" =>
-      (self.enter_elseStatement)(TElseStatementContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "ifStatement" => (self.enter_ifStatement)(TIfStatementContext::{ node, })
+      "elseIfStatement" =>
+        (self.enter_elseIfStatement)(TElseIfStatementContext::{ node, })
+      "expression" => (self.enter_expression)(TExpressionContext::{ node, })
+      "executableStatement" =>
+        (self.enter_executableStatement)(TExecutableStatementContext::{ node, })
+      "elseStatement" =>
+        (self.enter_elseStatement)(TElseStatementContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "ifStatement" => (self.exit_ifStatement)(TIfStatementContext::{ node, })
-    "elseIfStatement" =>
-      (self.exit_elseIfStatement)(TElseIfStatementContext::{ node, })
-    "expression" => (self.exit_expression)(TExpressionContext::{ node, })
-    "executableStatement" =>
-      (self.exit_executableStatement)(TExecutableStatementContext::{ node, })
-    "elseStatement" =>
-      (self.exit_elseStatement)(TElseStatementContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "ifStatement" => (self.exit_ifStatement)(TIfStatementContext::{ node, })
+      "elseIfStatement" =>
+        (self.exit_elseIfStatement)(TElseIfStatementContext::{ node, })
+      "expression" => (self.exit_expression)(TExpressionContext::{ node, })
+      "executableStatement" =>
+        (self.exit_executableStatement)(TExecutableStatementContext::{ node, })
+      "elseStatement" =>
+        (self.exit_elseStatement)(TElseStatementContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct OptionsParserListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (OptionsParserDocumentContext) -> Unit
   exit_document : (OptionsParserDocumentContext) -> Unit
   enter_atom : (OptionsParserAtomContext) -> Unit
@@ -10,9 +14,15 @@ pub(all) struct OptionsParserListener {
 }
 
 ///|
-pub fn OptionsParserListener::new() -> OptionsParserListener {
+pub fn OptionsParserListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> OptionsParserListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_atom: _ => (),
@@ -25,20 +35,34 @@ pub fn OptionsParserListener::walk(
   self : OptionsParserListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(OptionsParserDocumentContext::{ node, })
-    "atom" => (self.enter_atom)(OptionsParserAtomContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" =>
+        (self.enter_document)(OptionsParserDocumentContext::{ node, })
+      "atom" => (self.enter_atom)(OptionsParserAtomContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(OptionsParserDocumentContext::{ node, })
-    "atom" => (self.exit_atom)(OptionsParserAtomContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" =>
+        (self.exit_document)(OptionsParserDocumentContext::{ node, })
+      "atom" => (self.exit_atom)(OptionsParserAtomContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

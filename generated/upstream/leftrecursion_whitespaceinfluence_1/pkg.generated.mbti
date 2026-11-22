@@ -210,7 +210,11 @@ pub fn ExprLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn ExprLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct ExprListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_prog : (ExprProgContext) -> Unit
   exit_prog : (ExprProgContext) -> Unit
   enter_expression : (ExprExpressionContext) -> Unit
@@ -272,7 +276,7 @@ pub(all) struct ExprListener {
   enter_alt_newTrueBoolean : (ExprNewTrueBooleanContext) -> Unit
   exit_alt_newTrueBoolean : (ExprNewTrueBooleanContext) -> Unit
 }
-pub fn ExprListener::new() -> Self
+pub fn ExprListener::new(antlr_dispatch? : Bool) -> Self
 pub fn ExprListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct ExprNewArrayContext {

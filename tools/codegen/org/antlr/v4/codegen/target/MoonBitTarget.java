@@ -376,8 +376,8 @@ public final class MoonBitTarget extends JavaTarget {
 
     private void emitVisitor(Grammar g, StringBuilder out) {
         String name = typeName(g.name) + "Visitor";
-        StringBuilder fields = new StringBuilder("terminal : (@runtime.Token) -> T,\n");
-        StringBuilder init = new StringBuilder("terminal,\n");
+        StringBuilder fields = new StringBuilder("terminal : (@runtime.Token) -> T,\nerror : (@runtime.Token) -> T,\n");
+        StringBuilder init = new StringBuilder("terminal,\nerror: error.unwrap_or(terminal),\n");
         StringBuilder cases = new StringBuilder();
         for (Rule rule : g.rules.values()) {
             String ctx = type(g, rule.name);
@@ -393,14 +393,14 @@ public final class MoonBitTarget extends JavaTarget {
             cases.append("self.visit_").append(rule.name).append("(context, values) }\n");
         }
         block(out, "pub(all) struct " + name + "[T] { " + fields + " }");
-        block(out, "pub fn[T] " + name + "::new(terminal~ : (@runtime.Token) -> T, rule~ : (@runtime.RuleContext, Array[T]) -> T) -> " + name + "[T] { {" + init + "} }");
-        block(out, "pub fn[T] " + name + "::visit(self : " + name + "[T], node : @runtime.RuleContext) -> T { let values = node.children.map(child => match child { @runtime.TokenChild(token) => self.terminal(token); @runtime.RuleChild(context) => self.visit(context) }); match node.name { " + cases + "_ => abort(\"foreign rule context\") } }");
+        block(out, "pub fn[T] " + name + "::new(terminal~ : (@runtime.Token) -> T, rule~ : (@runtime.RuleContext, Array[T]) -> T, error? : (@runtime.Token) -> T) -> " + name + "[T] { {" + init + "} }");
+        block(out, "pub fn[T] " + name + "::visit(self : " + name + "[T], node : @runtime.RuleContext) -> T { let values = node.children.mapi((index, child) => match child { @runtime.TokenChild(token) => if node.error_children.contains(index) { (self.error)(token) } else { self.terminal(token) }; @runtime.RuleChild(context) => self.visit(context) }); match node.name { " + cases + "_ => abort(\"foreign rule context\") } }");
     }
 
     private void emitListener(Grammar g, StringBuilder out) {
         String name = typeName(g.name) + "Listener";
-        StringBuilder fields = new StringBuilder("terminal : (@runtime.Token) -> Unit,\n");
-        StringBuilder init = new StringBuilder("terminal: (_) => (),\n");
+        StringBuilder fields = new StringBuilder("antlr_dispatch : Bool,\nterminal : (@runtime.Token) -> Unit,\nerror : (@runtime.Token) -> Unit,\nenter : (@runtime.RuleContext) -> Unit,\nexit : (@runtime.RuleContext) -> Unit,\n");
+        StringBuilder init = new StringBuilder("antlr_dispatch,\nterminal: (_) => (),\nerror: (_) => (),\nenter: (_) => (),\nexit: (_) => (),\n");
         StringBuilder enter = new StringBuilder(), exit = new StringBuilder();
         for (Rule rule : g.rules.values()) {
             String ctx = type(g, rule.name);
@@ -411,9 +411,11 @@ public final class MoonBitTarget extends JavaTarget {
             }
         }
         StringBuilder altEnter = new StringBuilder(), altExit = new StringBuilder();
+        List<String> labelledRules = new ArrayList<>();
         for (Rule rule : g.rules.values()) {
             Map<String,List<org.antlr.v4.runtime.misc.Pair<Integer,AltAST>>> labels = rule.getAltLabels();
             if (labels == null) continue;
+            labelledRules.add(q(rule.name));
             for (String label : new TreeSet<>(labels.keySet())) for (String phase : new String[]{"enter", "exit"}) {
                 fields.append(phase).append("_alt_").append(label).append(" : (").append(type(g,label)).append(") -> Unit,\n");
                 init.append(phase).append("_alt_").append(label).append(": (_) => (),\n");
@@ -421,7 +423,7 @@ public final class MoonBitTarget extends JavaTarget {
             }
         }
         block(out, "pub(all) struct " + name + " { " + fields + " }");
-        block(out, "pub fn " + name + "::new() -> " + name + " { {" + init + "} }");
-        block(out, "pub fn " + name + "::walk(self : " + name + ", node : @runtime.RuleContext) -> Unit { match node.name { " + enter + "_ => () }; " + altEnter + "for child in node.children { match child { @runtime.TokenChild(token) => self.terminal(token); @runtime.RuleChild(context) => self.walk(context) } }; " + altExit + "match node.name { " + exit + "_ => () } }");
+        block(out, "pub fn " + name + "::new(antlr_dispatch~ : Bool = true) -> " + name + " { {" + init + "} }");
+        block(out, "pub fn " + name + "::walk(self : " + name + ", node : @runtime.RuleContext) -> Unit { let labelled = self.antlr_dispatch && " + labelledRules + ".contains(node.name); (self.enter)(node); if !labelled { match node.name { " + enter + "_ => () } }; " + altEnter + "for index, child in node.children { match child { @runtime.TokenChild(token) => if node.error_children.contains(index) { (self.error)(token) } else { self.terminal(token) }; @runtime.RuleChild(context) => self.walk(context) } }; " + altExit + "if !labelled { match node.name { " + exit + "_ => () } }; (self.exit)(node) }");
     }
 }

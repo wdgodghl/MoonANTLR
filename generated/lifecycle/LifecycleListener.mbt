@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct LifecycleListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (LifecycleDocumentContext) -> Unit
   exit_document : (LifecycleDocumentContext) -> Unit
   enter_broken : (LifecycleBrokenContext) -> Unit
@@ -20,9 +24,15 @@ pub(all) struct LifecycleListener {
 }
 
 ///|
-pub fn LifecycleListener::new() -> LifecycleListener {
+pub fn LifecycleListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> LifecycleListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_broken: _ => (),
@@ -45,34 +55,46 @@ pub fn LifecycleListener::walk(
   self : LifecycleListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(LifecycleDocumentContext::{ node, })
-    "broken" => (self.enter_broken)(LifecycleBrokenContext::{ node, })
-    "set_sequence" =>
-      (self.enter_set_sequence)(LifecycleSet_sequenceContext::{ node, })
-    "set_loop" => (self.enter_set_loop)(LifecycleSet_loopContext::{ node, })
-    "nested" => (self.enter_nested)(LifecycleNestedContext::{ node, })
-    "argument_caller" =>
-      (self.enter_argument_caller)(LifecycleArgument_callerContext::{ node, })
-    "argument" => (self.enter_argument)(LifecycleArgumentContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" => (self.enter_document)(LifecycleDocumentContext::{ node, })
+      "broken" => (self.enter_broken)(LifecycleBrokenContext::{ node, })
+      "set_sequence" =>
+        (self.enter_set_sequence)(LifecycleSet_sequenceContext::{ node, })
+      "set_loop" => (self.enter_set_loop)(LifecycleSet_loopContext::{ node, })
+      "nested" => (self.enter_nested)(LifecycleNestedContext::{ node, })
+      "argument_caller" =>
+        (self.enter_argument_caller)(LifecycleArgument_callerContext::{ node, })
+      "argument" => (self.enter_argument)(LifecycleArgumentContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(LifecycleDocumentContext::{ node, })
-    "broken" => (self.exit_broken)(LifecycleBrokenContext::{ node, })
-    "set_sequence" =>
-      (self.exit_set_sequence)(LifecycleSet_sequenceContext::{ node, })
-    "set_loop" => (self.exit_set_loop)(LifecycleSet_loopContext::{ node, })
-    "nested" => (self.exit_nested)(LifecycleNestedContext::{ node, })
-    "argument_caller" =>
-      (self.exit_argument_caller)(LifecycleArgument_callerContext::{ node, })
-    "argument" => (self.exit_argument)(LifecycleArgumentContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(LifecycleDocumentContext::{ node, })
+      "broken" => (self.exit_broken)(LifecycleBrokenContext::{ node, })
+      "set_sequence" =>
+        (self.exit_set_sequence)(LifecycleSet_sequenceContext::{ node, })
+      "set_loop" => (self.exit_set_loop)(LifecycleSet_loopContext::{ node, })
+      "nested" => (self.exit_nested)(LifecycleNestedContext::{ node, })
+      "argument_caller" =>
+        (self.exit_argument_caller)(LifecycleArgument_callerContext::{ node, })
+      "argument" => (self.exit_argument)(LifecycleArgumentContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

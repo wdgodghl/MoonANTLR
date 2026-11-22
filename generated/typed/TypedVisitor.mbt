@@ -3,6 +3,7 @@
 ///|
 pub(all) struct TypedVisitor[T] {
   terminal : (@runtime.Token) -> T
+  error : (@runtime.Token) -> T
   visit_document : (TypedDocumentContext, Array[T]) -> T
   visit_entry : (TypedEntryContext, Array[T]) -> T
   visit_expression : (TypedExpressionContext, Array[T]) -> T
@@ -17,9 +18,11 @@ pub(all) struct TypedVisitor[T] {
 pub fn[T] TypedVisitor::new(
   terminal~ : (@runtime.Token) -> T,
   rule~ : (@runtime.RuleContext, Array[T]) -> T,
+  error? : (@runtime.Token) -> T,
 ) -> TypedVisitor[T] {
   {
     terminal,
+    error: error.unwrap_or(terminal),
     visit_document: (context, children) => rule(context.raw(), children),
     visit_entry: (context, children) => rule(context.raw(), children),
     visit_expression: (context, children) => rule(context.raw(), children),
@@ -36,9 +39,14 @@ pub fn[T] TypedVisitor::visit(
   self : TypedVisitor[T],
   node : @runtime.RuleContext,
 ) -> T {
-  let values = node.children.map(child => {
+  let values = node.children.mapi((index, child) => {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.visit(context)
     }
   })

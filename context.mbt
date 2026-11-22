@@ -4,6 +4,8 @@
 pub(all) struct RuleContext {
   name : String
   children : Array[ContextChild]
+  /// Child indices containing ANTLR error nodes rather than ordinary terminals.
+  error_children : Array[Int32]
   sources : Array[Int32]
   path : Array[Int32]
   build_tree : Bool
@@ -127,6 +129,20 @@ pub fn RuleContext::text(self : RuleContext) -> String {
     match child {
       TokenChild(token) => if token.kind != -1 { out.write_string(token.text) }
       RuleChild(context) => out.write_string(context.text())
+    }
+  }
+  out.to_string()
+}
+
+///|
+/// ANTLR ParseTree.getText semantics: concatenate visible tree children,
+/// including synthetic error-node text and the literal EOF node text.
+pub fn RuleContext::get_text(self : RuleContext) -> String {
+  let out = StringBuilder()
+  for child in self.children {
+    match child {
+      TokenChild(token) => out.write_string(token.text)
+      RuleChild(context) => out.write_string(context.get_text())
     }
   }
   out.to_string()

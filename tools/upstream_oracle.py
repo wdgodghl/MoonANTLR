@@ -11,6 +11,10 @@ EXPECTED_CATEGORIES={'CompositeLexers':2,'CompositeParsers':15,'FullContextParsi
     'ParserErrors':34,'ParserExec':50,'SemPredEvalLexer':8,'SemPredEvalParser':26,'Sets':31}
 
 def run(args,**kwargs):
+    args=list(args)
+    executable=Path(str(args[0])).stem.lower()
+    if executable=='javac':args.insert(1,'-J-Dfile.encoding=UTF-8')
+    elif executable=='java' and not any(str(value).startswith('-Dfile.encoding=') for value in args[1:]):args.insert(1,'-Dfile.encoding=UTF-8')
     return subprocess.run(list(map(str,args)),check=True,encoding='utf8',capture_output=True,**kwargs)
 
 def sections(path):
@@ -308,6 +312,7 @@ def main():
                 f'  assert_eq(parsed.next_token.kind, {row["nextKind"]})',f'  assert_eq(parsed.next_token.text, {quoted(row["nextText"])})',
                 f'  let lexed = grammar.tokenize_recovering({quoted(data["input"])}, lexer_action=(_, _) => ())']
             out += [f'  assert_eq(bound_frame_json(parsed.frame.unwrap(), build_tree={str(build_tree).lower()}), @json.parse({quoted(json.dumps(row["frame"],ensure_ascii=False,separators=(",",":")))}))']
+            out += [f'  assert_eq(parsed.context.get_text(), {quoted(row["contextText"])})']
             out += [f'  assert_eq(printed.to_string(), {quoted(row["stdout"])})']
             if 'showDiagnosticErrors' in flags:
                 out += [f'  let expected_prediction : Json = {json.dumps(row["predictionEvents"],ensure_ascii=False)}', '  @debug.assert_eq(Json::array(parsed.prediction_events.map(event => event.to_json())), expected_prediction)']

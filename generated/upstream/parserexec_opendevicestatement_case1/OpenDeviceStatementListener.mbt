@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct OpenDeviceStatementListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_program : (OpenDeviceStatementProgramContext) -> Unit
   exit_program : (OpenDeviceStatementProgramContext) -> Unit
   enter_statement : (OpenDeviceStatementStatementContext) -> Unit
@@ -10,9 +14,15 @@ pub(all) struct OpenDeviceStatementListener {
 }
 
 ///|
-pub fn OpenDeviceStatementListener::new() -> OpenDeviceStatementListener {
+pub fn OpenDeviceStatementListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> OpenDeviceStatementListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_program: _ => (),
     exit_program: _ => (),
     enter_statement: _ => (),
@@ -25,24 +35,36 @@ pub fn OpenDeviceStatementListener::walk(
   self : OpenDeviceStatementListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "program" =>
-      (self.enter_program)(OpenDeviceStatementProgramContext::{ node, })
-    "statement" =>
-      (self.enter_statement)(OpenDeviceStatementStatementContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "program" =>
+        (self.enter_program)(OpenDeviceStatementProgramContext::{ node, })
+      "statement" =>
+        (self.enter_statement)(OpenDeviceStatementStatementContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "program" =>
-      (self.exit_program)(OpenDeviceStatementProgramContext::{ node, })
-    "statement" =>
-      (self.exit_statement)(OpenDeviceStatementStatementContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "program" =>
+        (self.exit_program)(OpenDeviceStatementProgramContext::{ node, })
+      "statement" =>
+        (self.exit_statement)(OpenDeviceStatementStatementContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

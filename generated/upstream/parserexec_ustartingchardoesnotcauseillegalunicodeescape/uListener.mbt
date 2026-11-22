@@ -2,14 +2,26 @@
 
 ///|
 pub(all) struct MoonuListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_u : (MoonuUContext) -> Unit
   exit_u : (MoonuUContext) -> Unit
 }
 
 ///|
-pub fn MoonuListener::new() -> MoonuListener {
-  { terminal: _ => (), enter_u: _ => (), exit_u: _ => (), }
+pub fn MoonuListener::new(antlr_dispatch~ : Bool = true) -> MoonuListener {
+  {
+    antlr_dispatch,
+    terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
+    enter_u: _ => (),
+    exit_u: _ => (),
+  }
 }
 
 ///|
@@ -17,18 +29,30 @@ pub fn MoonuListener::walk(
   self : MoonuListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "u" => (self.enter_u)(MoonuUContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "u" => (self.enter_u)(MoonuUContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "u" => (self.exit_u)(MoonuUContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "u" => (self.exit_u)(MoonuUContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

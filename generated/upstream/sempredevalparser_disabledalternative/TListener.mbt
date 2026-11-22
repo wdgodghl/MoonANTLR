@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct TListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_cppCompilationUnit : (TCppCompilationUnitContext) -> Unit
   exit_cppCompilationUnit : (TCppCompilationUnitContext) -> Unit
   enter_content : (TContentContext) -> Unit
@@ -12,9 +16,13 @@ pub(all) struct TListener {
 }
 
 ///|
-pub fn TListener::new() -> TListener {
+pub fn TListener::new(antlr_dispatch~ : Bool = true) -> TListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_cppCompilationUnit: _ => (),
     exit_cppCompilationUnit: _ => (),
     enter_content: _ => (),
@@ -26,24 +34,36 @@ pub fn TListener::new() -> TListener {
 
 ///|
 pub fn TListener::walk(self : TListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "cppCompilationUnit" =>
-      (self.enter_cppCompilationUnit)(TCppCompilationUnitContext::{ node, })
-    "content" => (self.enter_content)(TContentContext::{ node, })
-    "anything" => (self.enter_anything)(TAnythingContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "cppCompilationUnit" =>
+        (self.enter_cppCompilationUnit)(TCppCompilationUnitContext::{ node, })
+      "content" => (self.enter_content)(TContentContext::{ node, })
+      "anything" => (self.enter_anything)(TAnythingContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "cppCompilationUnit" =>
-      (self.exit_cppCompilationUnit)(TCppCompilationUnitContext::{ node, })
-    "content" => (self.exit_content)(TContentContext::{ node, })
-    "anything" => (self.exit_anything)(TAnythingContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "cppCompilationUnit" =>
+        (self.exit_cppCompilationUnit)(TCppCompilationUnitContext::{ node, })
+      "content" => (self.exit_content)(TContentContext::{ node, })
+      "anything" => (self.exit_anything)(TAnythingContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

@@ -1,10 +1,11 @@
 {
   "antlr": "4.13.2",
   "antlr_sha256": "eae2dfa119a64327444672aff63e9ec35a20180dc5b8090b7a6ab85125df4d76",
-  "cases": 1218,
+  "cases": 1226,
   "parser_cases": 1008,
   "lexer_cases": 84,
   "semantic_cases": 126,
+  "labelled_dispatch_cases": 8,
   "seeds": {
     "parser": 20261123,
     "lexer": 20261124
@@ -26,6 +27,7 @@
   "grammar_sha256": {
     "Differential.g4": "3ee710cd86e6881a1caa3457d0a374f5d5137dc7ceee46b25b69dfc0e8ea56e3",
     "UnicodeModesLexer.g4": "ae4032fd5b374f8922d99cdcd2d7dacc80023d73e7b11983d272744470c5856a",
-    "SemanticDifferential.g4": "4b6546d4ff8ef0857751faa0fd34f3ab32e95c9063980eedc3ff5f814de06ff7"
+    "SemanticDifferential.g4": "4b6546d4ff8ef0857751faa0fd34f3ab32e95c9063980eedc3ff5f814de06ff7",
+    "Typed.g4": "8b333b3032d0a8a103329a303950ec70ad2ef5cc0bba9846efba695a0be52636"
   }
 }

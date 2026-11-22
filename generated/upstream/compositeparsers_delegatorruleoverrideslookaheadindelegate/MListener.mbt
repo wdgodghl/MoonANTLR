@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct MListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_prog : (MProgContext) -> Unit
   exit_prog : (MProgContext) -> Unit
   enter_type_ : (MType_Context) -> Unit
@@ -14,9 +18,13 @@ pub(all) struct MListener {
 }
 
 ///|
-pub fn MListener::new() -> MListener {
+pub fn MListener::new(antlr_dispatch~ : Bool = true) -> MListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_prog: _ => (),
     exit_prog: _ => (),
     enter_type_: _ => (),
@@ -30,24 +38,36 @@ pub fn MListener::new() -> MListener {
 
 ///|
 pub fn MListener::walk(self : MListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "prog" => (self.enter_prog)(MProgContext::{ node, })
-    "type_" => (self.enter_type_)(MType_Context::{ node, })
-    "decl" => (self.enter_decl)(MDeclContext::{ node, })
-    "init_" => (self.enter_init_)(MInit_Context::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "prog" => (self.enter_prog)(MProgContext::{ node, })
+      "type_" => (self.enter_type_)(MType_Context::{ node, })
+      "decl" => (self.enter_decl)(MDeclContext::{ node, })
+      "init_" => (self.enter_init_)(MInit_Context::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "prog" => (self.exit_prog)(MProgContext::{ node, })
-    "type_" => (self.exit_type_)(MType_Context::{ node, })
-    "decl" => (self.exit_decl)(MDeclContext::{ node, })
-    "init_" => (self.exit_init_)(MInit_Context::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "prog" => (self.exit_prog)(MProgContext::{ node, })
+      "type_" => (self.exit_type_)(MType_Context::{ node, })
+      "decl" => (self.exit_decl)(MDeclContext::{ node, })
+      "init_" => (self.exit_init_)(MInit_Context::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

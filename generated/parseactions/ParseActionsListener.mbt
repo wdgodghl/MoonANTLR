@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct ParseActionsListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (ParseActionsDocumentContext) -> Unit
   exit_document : (ParseActionsDocumentContext) -> Unit
   enter_item : (ParseActionsItemContext) -> Unit
@@ -12,9 +16,15 @@ pub(all) struct ParseActionsListener {
 }
 
 ///|
-pub fn ParseActionsListener::new() -> ParseActionsListener {
+pub fn ParseActionsListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> ParseActionsListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_item: _ => (),
@@ -29,24 +39,37 @@ pub fn ParseActionsListener::walk(
   self : ParseActionsListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(ParseActionsDocumentContext::{ node, })
-    "item" => (self.enter_item)(ParseActionsItemContext::{ node, })
-    "expression" =>
-      (self.enter_expression)(ParseActionsExpressionContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" =>
+        (self.enter_document)(ParseActionsDocumentContext::{ node, })
+      "item" => (self.enter_item)(ParseActionsItemContext::{ node, })
+      "expression" =>
+        (self.enter_expression)(ParseActionsExpressionContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(ParseActionsDocumentContext::{ node, })
-    "item" => (self.exit_item)(ParseActionsItemContext::{ node, })
-    "expression" =>
-      (self.exit_expression)(ParseActionsExpressionContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(ParseActionsDocumentContext::{ node, })
+      "item" => (self.exit_item)(ParseActionsItemContext::{ node, })
+      "expression" =>
+        (self.exit_expression)(ParseActionsExpressionContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

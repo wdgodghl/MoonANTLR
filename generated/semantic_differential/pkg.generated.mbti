@@ -75,7 +75,11 @@ pub fn SemanticDifferentialLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn SemanticDifferentialLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct SemanticDifferentialListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_entry : (SemanticDifferentialEntryContext) -> Unit
   exit_entry : (SemanticDifferentialEntryContext) -> Unit
   enter_left : (SemanticDifferentialLeftContext) -> Unit
@@ -91,7 +95,7 @@ pub(all) struct SemanticDifferentialListener {
   enter_child : (SemanticDifferentialChildContext) -> Unit
   exit_child : (SemanticDifferentialChildContext) -> Unit
 }
-pub fn SemanticDifferentialListener::new() -> Self
+pub fn SemanticDifferentialListener::new(antlr_dispatch? : Bool) -> Self
 pub fn SemanticDifferentialListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct SemanticDifferentialLocalContext {
@@ -139,6 +143,7 @@ pub fn SemanticDifferentialRightContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct SemanticDifferentialVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_entry : (SemanticDifferentialEntryContext, Array[T]) -> T
   visit_left : (SemanticDifferentialLeftContext, Array[T]) -> T
   visit_right : (SemanticDifferentialRightContext, Array[T]) -> T
@@ -147,7 +152,7 @@ pub(all) struct SemanticDifferentialVisitor[T] {
   visit_parameterized : (SemanticDifferentialParameterizedContext, Array[T]) -> T
   visit_child : (SemanticDifferentialChildContext, Array[T]) -> T
 }
-pub fn[T] SemanticDifferentialVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] SemanticDifferentialVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] SemanticDifferentialVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

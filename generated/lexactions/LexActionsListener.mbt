@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct LexActionsListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (LexActionsDocumentContext) -> Unit
   exit_document : (LexActionsDocumentContext) -> Unit
   enter_unit : (LexActionsUnitContext) -> Unit
@@ -10,9 +14,15 @@ pub(all) struct LexActionsListener {
 }
 
 ///|
-pub fn LexActionsListener::new() -> LexActionsListener {
+pub fn LexActionsListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> LexActionsListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_unit: _ => (),
@@ -25,20 +35,32 @@ pub fn LexActionsListener::walk(
   self : LexActionsListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(LexActionsDocumentContext::{ node, })
-    "unit" => (self.enter_unit)(LexActionsUnitContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" => (self.enter_document)(LexActionsDocumentContext::{ node, })
+      "unit" => (self.enter_unit)(LexActionsUnitContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(LexActionsDocumentContext::{ node, })
-    "unit" => (self.exit_unit)(LexActionsUnitContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(LexActionsDocumentContext::{ node, })
+      "unit" => (self.exit_unit)(LexActionsUnitContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

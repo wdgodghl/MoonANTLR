@@ -82,7 +82,11 @@ pub fn ControlLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn ControlLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct ControlListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (ControlDocumentContext) -> Unit
   exit_document : (ControlDocumentContext) -> Unit
   enter_branch : (ControlBranchContext) -> Unit
@@ -96,7 +100,7 @@ pub(all) struct ControlListener {
   enter_empty : (ControlEmptyContext) -> Unit
   exit_empty : (ControlEmptyContext) -> Unit
 }
-pub fn ControlListener::new() -> Self
+pub fn ControlListener::new(antlr_dispatch? : Bool) -> Self
 pub fn ControlListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct ControlParser {
@@ -124,6 +128,7 @@ pub fn ControlToggleContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct ControlVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (ControlDocumentContext, Array[T]) -> T
   visit_branch : (ControlBranchContext, Array[T]) -> T
   visit_toggle : (ControlToggleContext, Array[T]) -> T
@@ -131,7 +136,7 @@ pub(all) struct ControlVisitor[T] {
   visit_boundaries : (ControlBoundariesContext, Array[T]) -> T
   visit_empty : (ControlEmptyContext, Array[T]) -> T
 }
-pub fn[T] ControlVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] ControlVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] ControlVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

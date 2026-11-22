@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct GListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_root : (GRootContext) -> Unit
   exit_root : (GRootContext) -> Unit
   enter_continue : (GContinueContext) -> Unit
@@ -20,9 +24,13 @@ pub(all) struct GListener {
 }
 
 ///|
-pub fn GListener::new() -> GListener {
+pub fn GListener::new(antlr_dispatch~ : Bool = true) -> GListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_root: _ => (),
     exit_root: _ => (),
     enter_continue: _ => (),
@@ -42,12 +50,16 @@ pub fn GListener::new() -> GListener {
 
 ///|
 pub fn GListener::walk(self : GListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "root" => (self.enter_root)(GRootContext::{ node, })
-    "continue" => (self.enter_continue)(GContinueContext::{ node, })
-    "args" => (self.enter_args)(GArgsContext::{ node, })
-    "for" => (self.enter_for)(GForContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && ["continue"].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "root" => (self.enter_root)(GRootContext::{ node, })
+      "continue" => (self.enter_continue)(GContinueContext::{ node, })
+      "args" => (self.enter_args)(GArgsContext::{ node, })
+      "for" => (self.enter_for)(GForContext::{ node, })
+      _ => ()
+    }
   }
   if node.name == "continue" {
     if GContinueContext::{ node, }.alternative() == Some("class") {
@@ -64,9 +76,14 @@ pub fn GListener::walk(self : GListener, node : @runtime.RuleContext) -> Unit {
       (self.enter_alt_int)(GIntContext::{ node, })
     }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
@@ -85,11 +102,14 @@ pub fn GListener::walk(self : GListener, node : @runtime.RuleContext) -> Unit {
       (self.exit_alt_int)(GIntContext::{ node, })
     }
   }
-  match node.name {
-    "root" => (self.exit_root)(GRootContext::{ node, })
-    "continue" => (self.exit_continue)(GContinueContext::{ node, })
-    "args" => (self.exit_args)(GArgsContext::{ node, })
-    "for" => (self.exit_for)(GForContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "root" => (self.exit_root)(GRootContext::{ node, })
+      "continue" => (self.exit_continue)(GContinueContext::{ node, })
+      "args" => (self.exit_args)(GArgsContext::{ node, })
+      "for" => (self.exit_for)(GForContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

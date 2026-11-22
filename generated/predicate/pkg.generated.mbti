@@ -55,7 +55,11 @@ pub fn PredicateLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn PredicateLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct PredicateListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (PredicateDocumentContext) -> Unit
   exit_document : (PredicateDocumentContext) -> Unit
   enter_enabled : (PredicateEnabledContext) -> Unit
@@ -63,7 +67,7 @@ pub(all) struct PredicateListener {
   enter_fallback : (PredicateFallbackContext) -> Unit
   exit_fallback : (PredicateFallbackContext) -> Unit
 }
-pub fn PredicateListener::new() -> Self
+pub fn PredicateListener::new(antlr_dispatch? : Bool) -> Self
 pub fn PredicateListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct PredicateParser {
@@ -76,11 +80,12 @@ pub fn PredicateParser::parse_fallback(Self, String, predicate? : (Int32, Int32,
 
 pub(all) struct PredicateVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (PredicateDocumentContext, Array[T]) -> T
   visit_enabled : (PredicateEnabledContext, Array[T]) -> T
   visit_fallback : (PredicateFallbackContext, Array[T]) -> T
 }
-pub fn[T] PredicateVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] PredicateVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] PredicateVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

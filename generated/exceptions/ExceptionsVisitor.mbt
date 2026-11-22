@@ -3,6 +3,7 @@
 ///|
 pub(all) struct ExceptionsVisitor[T] {
   terminal : (@runtime.Token) -> T
+  error : (@runtime.Token) -> T
   visit_caught : (ExceptionsCaughtContext, Array[T]) -> T
   visit_caught_host : (ExceptionsCaught_hostContext, Array[T]) -> T
   visit_specific : (ExceptionsSpecificContext, Array[T]) -> T
@@ -15,9 +16,11 @@ pub(all) struct ExceptionsVisitor[T] {
 pub fn[T] ExceptionsVisitor::new(
   terminal~ : (@runtime.Token) -> T,
   rule~ : (@runtime.RuleContext, Array[T]) -> T,
+  error? : (@runtime.Token) -> T,
 ) -> ExceptionsVisitor[T] {
   {
     terminal,
+    error: error.unwrap_or(terminal),
     visit_caught: (context, children) => rule(context.raw(), children),
     visit_caught_host: (context, children) => rule(context.raw(), children),
     visit_specific: (context, children) => rule(context.raw(), children),
@@ -34,9 +37,14 @@ pub fn[T] ExceptionsVisitor::visit(
   self : ExceptionsVisitor[T],
   node : @runtime.RuleContext,
 ) -> T {
-  let values = node.children.map(child => {
+  let values = node.children.mapi((index, child) => {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.visit(context)
     }
   })

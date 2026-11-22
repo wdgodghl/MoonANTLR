@@ -45,10 +45,14 @@ fn include_error_tokens(
   }
   let children : Array[ContextChild] = []
   let sources : Array[Int32] = []
+  let error_children : Array[Int32] = []
   let mut cursor = 0
   for node in recovered {
     match node {
       TokenNode(token) | ErrorNode(token, _) => {
+        if node is ErrorNode(_, _) {
+          error_children.push(children.length())
+        }
         let matched = cursor < context.children.length() &&
           (match context.children[cursor] {
             TokenChild(existing) => existing == token
@@ -68,7 +72,7 @@ fn include_error_tokens(
         }
     }
   }
-  { ..context, children, sources, }
+  { ..context, children, sources, error_children, }
 }
 
 ///|
@@ -280,6 +284,7 @@ fn DefaultParser::rule(
     sources: [],
     path: [],
     recovered_captures: Map([]),
+    error_children: [],
     build_tree: self.control.build_tree,
     labels: [],
   }
@@ -482,6 +487,7 @@ fn DefaultParser::rule(
               },
               path: [],
               recovered_captures: Map([]),
+              error_children: [],
               build_tree: self.control.build_tree,
               labels: [(-1, RuleChild(context))],
             }

@@ -24,11 +24,15 @@ pub fn TestLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn TestLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct TestListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_program : (TestProgramContext) -> Unit
   exit_program : (TestProgramContext) -> Unit
 }
-pub fn TestListener::new() -> Self
+pub fn TestListener::new(antlr_dispatch? : Bool) -> Self
 pub fn TestListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct TestParser {

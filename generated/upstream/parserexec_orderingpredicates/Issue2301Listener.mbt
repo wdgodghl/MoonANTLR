@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct Issue2301Listener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_constant : (Issue2301ConstantContext) -> Unit
   exit_constant : (Issue2301ConstantContext) -> Unit
   enter_expr : (Issue2301ExprContext) -> Unit
@@ -10,9 +14,15 @@ pub(all) struct Issue2301Listener {
 }
 
 ///|
-pub fn Issue2301Listener::new() -> Issue2301Listener {
+pub fn Issue2301Listener::new(
+  antlr_dispatch~ : Bool = true,
+) -> Issue2301Listener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_constant: _ => (),
     exit_constant: _ => (),
     enter_expr: _ => (),
@@ -25,20 +35,32 @@ pub fn Issue2301Listener::walk(
   self : Issue2301Listener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "constant" => (self.enter_constant)(Issue2301ConstantContext::{ node, })
-    "expr" => (self.enter_expr)(Issue2301ExprContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "constant" => (self.enter_constant)(Issue2301ConstantContext::{ node, })
+      "expr" => (self.enter_expr)(Issue2301ExprContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "constant" => (self.exit_constant)(Issue2301ConstantContext::{ node, })
-    "expr" => (self.exit_expr)(Issue2301ExprContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "constant" => (self.exit_constant)(Issue2301ConstantContext::{ node, })
+      "expr" => (self.exit_expr)(Issue2301ExprContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

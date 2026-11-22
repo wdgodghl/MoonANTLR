@@ -155,6 +155,7 @@ test "upstream CompositeParsers BringInLiteralsFromDelegate" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "=a")
   assert_eq(printed.to_string(), "S.a")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:=", "token:a", "exit:a", "exit:s",
@@ -231,6 +232,7 @@ test "upstream CompositeParsers CombinedImportsCombined" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x349")
   assert_eq(printed.to_string(), "S.x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:x", "token:x", "token:34", "exit:x", "token:9", "exit:s",
@@ -309,6 +311,7 @@ test "upstream CompositeParsers DelegatesSeeSameTokenType" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "aa")
   assert_eq(printed.to_string(), "S.x\nT.y\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:x", "token:a", "exit:x", "enter:y", "token:a", "exit:y", "exit:s",
@@ -383,6 +386,7 @@ test "upstream CompositeParsers DelegatorAccessesDelegateMembers" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "foo\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "token:b", "exit:s",
@@ -455,6 +459,7 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRule" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "S.a\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:b", "exit:a", "exit:s",
@@ -562,6 +567,7 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRuleWithArgs" {
       "{\"values\":{},\"children\":[{\"values\":{\"x\":3,\"y\":1000},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "S.a1000\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:b", "exit:a", "exit:s",
@@ -638,6 +644,7 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRuleWithReturnStruct" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "S.ab")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:b", "exit:a", "exit:s",
@@ -710,6 +717,7 @@ test "upstream CompositeParsers DelegatorInvokesFirstVersionOfDelegateRule" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "S.a\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:b", "token:b", "exit:b", "exit:a", "exit:s",
@@ -782,6 +790,7 @@ test "upstream CompositeParsers DelegatorRuleOverridesDelegate" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "c")
   assert_eq(printed.to_string(), "S.a")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "enter:b", "token:c", "exit:b", "exit:a",
@@ -855,6 +864,7 @@ test "upstream CompositeParsers DelegatorRuleOverridesDelegates" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "c")
   assert_eq(printed.to_string(), "M.b\nS.a\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "enter:b", "token:c", "exit:b", "exit:a",
@@ -935,6 +945,7 @@ test "upstream CompositeParsers DelegatorRuleOverridesLookaheadInDelegate" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "floatx=3;")
   assert_eq(printed.to_string(), "JavaDecl: floatx=3;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:decl", "enter:type_", "token:float", "exit:type_", "token:x",
@@ -1006,6 +1017,7 @@ test "upstream CompositeParsers ImportedGrammarWithEmptyOptions" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:b", "exit:a", "exit:s",
@@ -1069,6 +1081,7 @@ test "upstream CompositeParsers ImportedRuleWithAction" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:b", "exit:a", "exit:s",
@@ -1130,6 +1143,7 @@ test "upstream CompositeParsers ImportLexerWithOnlyFragmentRules" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "testtest")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:program", "token:test", "token:test", "exit:program",
@@ -1210,6 +1224,7 @@ test "upstream CompositeParsers KeywordVSIDOrder" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "M.A\nM.a: [@0,0:2='abc',<1>,1:0]\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:abc", "exit:a",
@@ -1289,6 +1304,7 @@ test "upstream FullContextParsing AmbiguityNoLoop" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a@")
   assert_eq(printed.to_string(), "alt 1\n")
   let expected_prediction : Json = [
     {
@@ -1423,6 +1439,7 @@ test "upstream FullContextParsing AmbigYieldsCtxSensitiveDFA" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "Decision 0:\ns0-ID->:s1^=>1\n")
   let expected_prediction : Json = [
     {
@@ -1537,6 +1554,7 @@ test "upstream FullContextParsing CtxSensitiveDFA_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "$34abc")
   assert_eq(printed.to_string(), "Decision 1:\ns0-INT->s1\ns1-ID->:s2^=>1\n")
   let expected_prediction : Json = [
     {
@@ -1657,6 +1675,7 @@ test "upstream FullContextParsing CtxSensitiveDFA_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "@34abc")
   assert_eq(printed.to_string(), "Decision 1:\ns0-INT->s1\ns1-ID->:s2^=>1\n")
   let expected_prediction : Json = [
     {
@@ -1785,6 +1804,7 @@ test "upstream FullContextParsing CtxSensitiveDFATwoDiffInput" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "$34abc@34abc")
   assert_eq(printed.to_string(), "Decision 2:\ns0-INT->s1\ns1-ID->:s2^=>1\n")
   let expected_prediction : Json = [
     {
@@ -1966,6 +1986,7 @@ test "upstream FullContextParsing ExprAmbiguity_1" {
       "{\"values\":{},\"children\":[{\"values\":{\"_p\":0},\"children\":[{\"values\":{\"_p\":5},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a+b")
   assert_eq(printed.to_string(), "(expr a + (expr b))\n")
   let expected_prediction : Json = [
     {
@@ -2130,6 +2151,7 @@ test "upstream FullContextParsing ExprAmbiguity_2" {
       "{\"values\":{},\"children\":[{\"values\":{\"_p\":0},\"children\":[{\"values\":{\"_p\":5},\"children\":[{\"values\":{\"_p\":6},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a+b*c")
   assert_eq(printed.to_string(), "(expr a + (expr b * (expr c)))\n")
   let expected_prediction : Json = [
     {
@@ -2275,6 +2297,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "{ifxthenreturn}")
   assert_eq(printed.to_string(), "Decision 1:\ns0-'}'->:s1=>2\n")
   let expected_prediction : Json = []
   @debug.assert_eq(
@@ -2387,6 +2410,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "{ifxthenreturnelsefoo}")
   assert_eq(printed.to_string(), "Decision 1:\ns0-'else'->:s1^=>1\n")
   let expected_prediction : Json = [
     {
@@ -2521,6 +2545,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "{ifxthenifythenreturnelsefoo}")
   assert_eq(
     printed.to_string(),
     "Decision 1:\ns0-'}'->:s2=>2\ns0-'else'->:s1^=>1\n",
@@ -2663,6 +2688,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "{ifxthenifythenreturnelsefooelsebar}")
   assert_eq(printed.to_string(), "Decision 1:\ns0-'else'->:s1^=>1\n")
   let expected_prediction : Json = [
     {
@@ -2822,6 +2848,10 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_5" {
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
+  )
+  assert_eq(
+    parsed.context.get_text(),
+    "{ifxthenreturnelsefooifxthenifythenreturnelsefoo}",
   )
   assert_eq(
     printed.to_string(),
@@ -2992,6 +3022,10 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_6" {
     ),
   )
   assert_eq(
+    parsed.context.get_text(),
+    "{ifxthenreturnelsefooifxthenifythenreturnelsefoo}",
+  )
+  assert_eq(
     printed.to_string(),
     "Decision 1:\ns0-'}'->:s2=>2\ns0-'else'->:s1^=>1\n",
   )
@@ -3160,6 +3194,7 @@ test "upstream FullContextParsing LoopsSimulateTailRecursion" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a(i)<-x")
   assert_eq(printed.to_string(), "pass: a(i)<-x\n")
   let expected_prediction : Json = [
     {
@@ -3284,6 +3319,7 @@ test "upstream FullContextParsing SLLSeesEOFInLLGrammar" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "34abc")
   assert_eq(printed.to_string(), "Decision 0:\ns0-INT->s1\ns1-ID->:s2^=>1\n")
   let expected_prediction : Json = [
     {
@@ -3391,6 +3427,7 @@ test "upstream LeftRecursion AmbigLR_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1\n")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:stat", "enter:expr", "token:1", "exit:expr", "token:\n",
@@ -3462,6 +3499,7 @@ test "upstream LeftRecursion AmbigLR_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a=5\n")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:stat", "token:a", "token:=", "enter:expr", "token:5", "exit:expr",
@@ -3535,6 +3573,7 @@ test "upstream LeftRecursion AmbigLR_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b=6\n")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:stat", "token:b", "token:=", "enter:expr", "token:6", "exit:expr",
@@ -3608,6 +3647,7 @@ test "upstream LeftRecursion AmbigLR_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a+b*2\n")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:stat", "enter:expr", "enter:expr", "token:a", "exit:expr",
@@ -3684,6 +3724,7 @@ test "upstream LeftRecursion AmbigLR_5" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(1+2)*3\n")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:stat", "enter:expr", "enter:expr", "token:(", "enter:expr",
@@ -3769,6 +3810,7 @@ test "upstream LeftRecursion Declarations_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a<EOF>")
   assert_eq(printed.to_string(), "(s (declarator a) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:declarator", "token:a", "exit:declarator", "token:<EOF>", "exit:s",
@@ -3844,6 +3886,7 @@ test "upstream LeftRecursion Declarations_10" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(*a)[]<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (declarator (declarator ( (declarator * (declarator a)) )) [ ]) <EOF>)\n",
@@ -3933,6 +3976,7 @@ test "upstream LeftRecursion Declarations_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "*a<EOF>")
   assert_eq(printed.to_string(), "(s (declarator * (declarator a)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:declarator", "token:*", "enter:declarator", "token:a", "exit:declarator",
@@ -4013,6 +4057,7 @@ test "upstream LeftRecursion Declarations_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "**a<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (declarator * (declarator * (declarator a))) <EOF>)\n",
@@ -4098,6 +4143,7 @@ test "upstream LeftRecursion Declarations_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a[3]<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (declarator (declarator a) [ (e 3) ]) <EOF>)\n",
@@ -4184,6 +4230,7 @@ test "upstream LeftRecursion Declarations_5" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "b[]<EOF>")
   assert_eq(printed.to_string(), "(s (declarator (declarator b) [ ]) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:declarator", "enter:declarator", "token:b", "exit:declarator",
@@ -4265,6 +4312,7 @@ test "upstream LeftRecursion Declarations_6" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(a)<EOF>")
   assert_eq(printed.to_string(), "(s (declarator ( (declarator a) )) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:declarator", "token:(", "enter:declarator", "token:a", "exit:declarator",
@@ -4346,6 +4394,7 @@ test "upstream LeftRecursion Declarations_7" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a[]()<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (declarator (declarator (declarator a) [ ]) ( )) <EOF>)\n",
@@ -4433,6 +4482,7 @@ test "upstream LeftRecursion Declarations_8" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a[][]<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (declarator (declarator (declarator a) [ ]) [ ]) <EOF>)\n",
@@ -4520,6 +4570,7 @@ test "upstream LeftRecursion Declarations_9" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "*a[]<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (declarator * (declarator (declarator a) [ ])) <EOF>)\n",
@@ -4601,6 +4652,7 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "(a x)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:x", "exit:a",
@@ -4673,6 +4725,7 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xy")
   assert_eq(printed.to_string(), "(a (a x) y)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "enter:a", "token:x", "exit:a", "token:y", "exit:a",
@@ -4749,6 +4802,7 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xyz")
   assert_eq(printed.to_string(), "(a (a (a x) y) z)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "enter:a", "enter:a", "token:x", "exit:a", "token:y", "exit:a", "token:z",
@@ -4827,6 +4881,7 @@ test "upstream LeftRecursion Expressions_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a<EOF>")
   assert_eq(printed.to_string(), "(s (e a) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:a", "exit:e", "token:<EOF>", "exit:s",
@@ -4899,6 +4954,7 @@ test "upstream LeftRecursion Expressions_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1<EOF>")
   assert_eq(printed.to_string(), "(s (e 1) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:1", "exit:e", "token:<EOF>", "exit:s",
@@ -4971,6 +5027,7 @@ test "upstream LeftRecursion Expressions_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a-1<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) - (e 1)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:-", "enter:e", "token:1",
@@ -5049,6 +5106,7 @@ test "upstream LeftRecursion Expressions_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a.b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) . b) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:.", "token:b", "exit:e",
@@ -5127,6 +5185,7 @@ test "upstream LeftRecursion Expressions_5" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a.this<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) . this) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:.", "token:this",
@@ -5205,6 +5264,7 @@ test "upstream LeftRecursion Expressions_6" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "-a<EOF>")
   assert_eq(printed.to_string(), "(s (e - (e a)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:-", "enter:e", "token:a", "exit:e", "exit:e", "token:<EOF>",
@@ -5285,6 +5345,7 @@ test "upstream LeftRecursion Expressions_7" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "-a+b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e - (e a)) + (e b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:-", "enter:e", "token:a", "exit:e", "exit:e",
@@ -5367,6 +5428,7 @@ test "upstream LeftRecursion JavaExpressions_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a|b&c<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) | (e (e b) & (e c))) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:|", "enter:e", "enter:e",
@@ -5453,6 +5515,7 @@ test "upstream LeftRecursion JavaExpressions_10" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a.f(x)==T.c<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e (e (e a) . f) ( (expressionList (e x)) )) == (e (e T) . c)) <EOF>)\n",
@@ -5549,6 +5612,7 @@ test "upstream LeftRecursion JavaExpressions_11" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a.f().g(x,1)<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e (e (e (e a) . f) ( )) . g) ( (expressionList (e x) , (e 1)) )) <EOF>)\n",
@@ -5648,6 +5712,7 @@ test "upstream LeftRecursion JavaExpressions_12" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "newT[((n-1)*x)+1]<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e new (typespec T) [ (e (e ( (e (e ( (e (e n) - (e 1)) )) * (e x)) )) + (e 1)) ]) <EOF>)\n",
@@ -5748,6 +5813,7 @@ test "upstream LeftRecursion JavaExpressions_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(a|b)&c<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e ( (e (e a) | (e b)) )) & (e c)) <EOF>)\n",
@@ -5834,6 +5900,7 @@ test "upstream LeftRecursion JavaExpressions_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a>b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) > (e b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:>", "enter:e", "token:b",
@@ -5912,6 +5979,7 @@ test "upstream LeftRecursion JavaExpressions_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a>>b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) >> (e b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:>>", "enter:e",
@@ -5993,6 +6061,7 @@ test "upstream LeftRecursion JavaExpressions_5" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a=b=c<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) = (e (e b) = (e c))) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:=", "enter:e", "enter:e",
@@ -6077,6 +6146,7 @@ test "upstream LeftRecursion JavaExpressions_6" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a^b^c<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) ^ (e (e b) ^ (e c))) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:^", "enter:e", "enter:e",
@@ -6161,6 +6231,7 @@ test "upstream LeftRecursion JavaExpressions_7" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(T)x<EOF>")
   assert_eq(printed.to_string(), "(s (e ( (typespec T) ) (e x)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:(", "enter:typespec", "token:T", "exit:typespec",
@@ -6243,6 +6314,7 @@ test "upstream LeftRecursion JavaExpressions_8" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "newA().b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e new (typespec A) ( )) . b) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:new", "enter:typespec", "token:A", "exit:typespec",
@@ -6328,6 +6400,7 @@ test "upstream LeftRecursion JavaExpressions_9" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(T)t.f()<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e ( (typespec T) ) (e (e t) . f)) ( )) <EOF>)\n",
@@ -6415,6 +6488,7 @@ test "upstream LeftRecursion LabelsOnOpSubrule_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "4")
   assert_eq(printed.to_string(), "(s (e 4))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:4", "exit:e", "exit:s",
@@ -6490,6 +6564,7 @@ test "upstream LeftRecursion LabelsOnOpSubrule_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1*2/3")
   assert_eq(printed.to_string(), "(s (e (e (e 1) * (e 2)) / (e 3)))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "enter:e", "token:1", "exit:e", "token:*", "enter:e",
@@ -6582,6 +6657,7 @@ test "upstream LeftRecursion LabelsOnOpSubrule_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(1/2)*3")
   assert_eq(printed.to_string(), "(s (e (e ( (e (e 1) / (e 2)) )) * (e 3)))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:(", "enter:e", "enter:e", "token:1",
@@ -6665,6 +6741,7 @@ test "upstream LeftRecursion MultipleActions_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "4")
   assert_eq(printed.to_string(), "(s (e 4))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:4", "exit:e", "exit:s",
@@ -6752,6 +6829,7 @@ test "upstream LeftRecursion MultipleActions_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1*2/3")
   assert_eq(printed.to_string(), "(s (e (e (e 1) * (e 2)) / (e 3)))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "enter:e", "token:1", "exit:e", "token:*", "enter:e",
@@ -6850,6 +6928,7 @@ test "upstream LeftRecursion MultipleActions_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(1/2)*3")
   assert_eq(printed.to_string(), "(s (e (e ( (e (e 1) / (e 2)) )) * (e 3)))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:(", "enter:e", "enter:e", "token:1",
@@ -6941,6 +7020,7 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "4")
   assert_eq(printed.to_string(), "(s (e 4))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:4", "exit:e", "exit:s",
@@ -7034,6 +7114,7 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1*2/3")
   assert_eq(printed.to_string(), "(s (e (e (e 1) * (e 2)) / (e 3)))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "enter:e", "token:1", "exit:e", "token:*", "enter:e",
@@ -7138,6 +7219,7 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(1/2)*3")
   assert_eq(printed.to_string(), "(s (e (e ( (e (e 1) / (e 2)) )) * (e 3)))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:(", "enter:e", "enter:e", "token:1",
@@ -7272,6 +7354,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_1" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":4},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "4")
   assert_eq(printed.to_string(), "4\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:4", "exit:e", "exit:s",
@@ -7395,6 +7478,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_2" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":3},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":2},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1+2")
   assert_eq(printed.to_string(), "3\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:1", "exit:e", "token:+", "enter:e", "token:2",
@@ -7527,6 +7611,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_3" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":7},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":6},\"children\":[{\"values\":{\"v\":2},\"children\":[]},{\"values\":{\"v\":3},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1+2*3")
   assert_eq(printed.to_string(), "7\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:1", "exit:e", "token:+", "enter:e", "enter:e",
@@ -7662,6 +7747,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_4" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":12},\"children\":[{\"values\":{\"v\":4},\"children\":[{\"values\":{\"v\":3},\"children\":[]}]},{\"values\":{\"v\":3},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "i++*3")
   assert_eq(printed.to_string(), "12\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "enter:e", "token:i", "exit:e", "token:++",
@@ -7795,6 +7881,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_5" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":102},\"children\":[{\"values\":{\"v\":99},\"children\":[{\"values\":{\"v\":99},\"children\":[]}]},{\"values\":{\"v\":3},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(99)+3")
   assert_eq(printed.to_string(), "102\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:(", "enter:e", "token:99", "exit:e",
@@ -7878,6 +7965,7 @@ test "upstream LeftRecursion PrecedenceFilterConsidersContext" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "aa<EOF>")
   assert_eq(
     printed.to_string(),
     "(prog (statement (letterA a)) (statement (letterA a)) <EOF>)\n",
@@ -7959,6 +8047,7 @@ test "upstream LeftRecursion PrefixAndOtherAlt_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "-1<EOF>")
   assert_eq(printed.to_string(), "(s (expr (literal - 1)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:expr", "enter:literal", "token:-", "token:1", "exit:literal",
@@ -8039,6 +8128,7 @@ test "upstream LeftRecursion PrefixAndOtherAlt_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "-1+-1<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (expr (expr (literal - 1)) (op +) (expr (literal - 1))) <EOF>)\n",
@@ -8160,6 +8250,7 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_1" {
       "{\"values\":{},\"children\":[{\"values\":{\"result\":\"a\"},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a")
   assert_eq(printed.to_string(), "a\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:a", "exit:e", "exit:s",
@@ -8268,6 +8359,7 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_2" {
       "{\"values\":{},\"children\":[{\"values\":{\"result\":\"(a+b)\"},\"children\":[{\"values\":{\"result\":\"a\"},\"children\":[]},{\"values\":{\"result\":\"b\"},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a+b")
   assert_eq(printed.to_string(), "(a+b)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:+", "enter:e", "token:b",
@@ -8385,6 +8477,7 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_3" {
       "{\"values\":{},\"children\":[{\"values\":{\"result\":\"((a=b)+c)\"},\"children\":[{\"values\":{\"result\":\"(a=b)\"},\"children\":[{\"values\":{\"result\":\"b\"},\"children\":[]}]},{\"values\":{\"result\":\"c\"},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a=b+c")
   assert_eq(printed.to_string(), "((a=b)+c)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "token:=", "enter:e", "token:b",
@@ -8505,6 +8598,7 @@ test "upstream LeftRecursion ReturnValueAndActions_1" {
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":4},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "4")
   assert_eq(printed.to_string(), "4\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:4", "exit:e", "exit:s",
@@ -8617,6 +8711,7 @@ test "upstream LeftRecursion ReturnValueAndActions_2" {
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":3},\"children\":[{\"values\":{\"ignored\":null,\"v\":1},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":2},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1+2")
   assert_eq(printed.to_string(), "3\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:1", "exit:e", "token:+", "enter:e", "token:2",
@@ -8738,6 +8833,7 @@ test "upstream LeftRecursion ReturnValueAndActions_3" {
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":7},\"children\":[{\"values\":{\"ignored\":null,\"v\":1},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":6},\"children\":[{\"values\":{\"ignored\":null,\"v\":2},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":3},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1+2*3")
   assert_eq(printed.to_string(), "7\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:1", "exit:e", "token:+", "enter:e", "enter:e",
@@ -8870,6 +8966,7 @@ test "upstream LeftRecursion ReturnValueAndActions_4" {
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":9},\"children\":[{\"values\":{\"ignored\":null,\"v\":3},\"children\":[{\"values\":{\"ignored\":null,\"v\":3},\"children\":[{\"values\":{\"ignored\":null,\"v\":1},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":2},\"children\":[]}]}]},{\"values\":{\"ignored\":null,\"v\":3},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "(1+2)*3")
   assert_eq(printed.to_string(), "9\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:(", "enter:e", "enter:e", "token:1",
@@ -8992,6 +9089,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_1" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":4},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "4")
   assert_eq(printed.to_string(), "4\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:4", "exit:e", "exit:s",
@@ -9103,6 +9201,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_2" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":3},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":2},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1+2")
   assert_eq(printed.to_string(), "3\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:1", "exit:e", "token:+", "enter:e", "token:2",
@@ -9223,6 +9322,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_3" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":7},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":6},\"children\":[{\"values\":{\"v\":2},\"children\":[]},{\"values\":{\"v\":3},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1+2*3")
   assert_eq(printed.to_string(), "7\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:1", "exit:e", "token:+", "enter:e", "enter:e",
@@ -9346,6 +9446,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_4" {
       "{\"values\":{},\"children\":[{\"values\":{\"v\":12},\"children\":[{\"values\":{\"v\":4},\"children\":[{\"values\":{\"v\":3},\"children\":[]}]},{\"values\":{\"v\":3},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "i++*3")
   assert_eq(printed.to_string(), "12\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "enter:e", "token:i", "exit:e", "token:++",
@@ -9428,6 +9529,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a*b<EOF>")
   assert_eq(printed.to_string(), "(s (expr (expr a) * (expr b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:expr", "enter:expr", "token:a", "exit:expr", "token:*", "enter:expr",
@@ -9509,6 +9611,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a,c>>x<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (expr (expr a) , (expr c) >> (expr x)) <EOF>)\n",
@@ -9593,6 +9696,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x<EOF>")
   assert_eq(printed.to_string(), "(s (expr x) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:expr", "token:x", "exit:expr", "token:<EOF>", "exit:s",
@@ -9670,6 +9774,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a*b,c,x*y>>r<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (expr (expr (expr a) * (expr b)) , (expr c) , (expr (expr x) * (expr y)) >> (expr r)) <EOF>)\n",
@@ -9765,6 +9870,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a*b<EOF>")
   assert_eq(printed.to_string(), "(s (expr (expr a) * (expr b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:expr", "enter:expr", "token:a", "exit:expr", "token:*", "enter:expr",
@@ -9846,6 +9952,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a,c>>x<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (expr (expr (expr a) , (expr c)) >> (expr x)) <EOF>)\n",
@@ -9930,6 +10037,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x<EOF>")
   assert_eq(printed.to_string(), "(s (expr x) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:expr", "token:x", "exit:expr", "token:<EOF>", "exit:s",
@@ -10007,6 +10115,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a*b,c,x*y>>r<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (expr (expr (expr (expr (expr a) * (expr b)) , (expr c)) , (expr (expr x) * (expr y))) >> (expr r)) <EOF>)\n",
@@ -10107,6 +10216,7 @@ test "upstream LeftRecursion SemPred" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xyz")
   assert_eq(printed.to_string(), "(s (a (a (a x) y) z))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:a", "enter:a", "token:x", "exit:a", "token:y", "exit:a",
@@ -10194,6 +10304,7 @@ test "upstream LeftRecursion SemPredFailOption" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xyz")
   assert_eq(printed.to_string(), "(s (a (a x) y z))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:a", "token:x", "exit:a", "token:y", "error:z", "exit:a",
@@ -10272,6 +10383,7 @@ test "upstream LeftRecursion Simple_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "(s (a x))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "exit:a", "exit:s",
@@ -10344,6 +10456,7 @@ test "upstream LeftRecursion Simple_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xy")
   assert_eq(printed.to_string(), "(s (a (a x) y))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:a", "token:x", "exit:a", "token:y", "exit:a", "exit:s",
@@ -10420,6 +10533,7 @@ test "upstream LeftRecursion Simple_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xyz")
   assert_eq(printed.to_string(), "(s (a (a (a x) y) z))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:a", "enter:a", "token:x", "exit:a", "token:y", "exit:a",
@@ -10498,6 +10612,7 @@ test "upstream LeftRecursion TernaryExpr_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a<EOF>")
   assert_eq(printed.to_string(), "(s (e a) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:a", "exit:e", "token:<EOF>", "exit:s",
@@ -10570,6 +10685,7 @@ test "upstream LeftRecursion TernaryExpr_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a+b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) + (e b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:+", "enter:e", "token:b",
@@ -10648,6 +10764,7 @@ test "upstream LeftRecursion TernaryExpr_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a*b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) * (e b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:*", "enter:e", "token:b",
@@ -10729,6 +10846,7 @@ test "upstream LeftRecursion TernaryExpr_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b:c<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) ? (e b) : (e c)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:?", "enter:e", "token:b",
@@ -10813,6 +10931,7 @@ test "upstream LeftRecursion TernaryExpr_5" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a=b=c<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) = (e (e b) = (e c))) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:=", "enter:e", "enter:e",
@@ -10897,6 +11016,7 @@ test "upstream LeftRecursion TernaryExpr_6" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b+c:d<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e (e b) + (e c)) : (e d)) <EOF>)\n",
@@ -10986,6 +11106,7 @@ test "upstream LeftRecursion TernaryExpr_7" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b=c:d<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e (e b) = (e c)) : (e d)) <EOF>)\n",
@@ -11077,6 +11198,7 @@ test "upstream LeftRecursion TernaryExpr_8" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b?c:d:e<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e (e b) ? (e c) : (e d)) : (e e)) <EOF>)\n",
@@ -11171,6 +11293,7 @@ test "upstream LeftRecursion TernaryExpr_9" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b:c?d:e<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e b) : (e (e c) ? (e d) : (e e))) <EOF>)\n",
@@ -11260,6 +11383,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a<EOF>")
   assert_eq(printed.to_string(), "(s (e a) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:a", "exit:e", "token:<EOF>", "exit:s",
@@ -11332,6 +11456,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a+b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) + (e b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:+", "enter:e", "token:b",
@@ -11410,6 +11535,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a*b<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) * (e b)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:*", "enter:e", "token:b",
@@ -11491,6 +11617,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b:c<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) ? (e b) : (e c)) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:?", "enter:e", "token:b",
@@ -11575,6 +11702,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_5" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a=b=c<EOF>")
   assert_eq(printed.to_string(), "(s (e (e a) = (e (e b) = (e c))) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "enter:e", "token:a", "exit:e", "token:=", "enter:e", "enter:e",
@@ -11659,6 +11787,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_6" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b+c:d<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e (e b) + (e c)) : (e d)) <EOF>)\n",
@@ -11748,6 +11877,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_7" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b=c:d<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e (e b) = (e c)) : (e d)) <EOF>)\n",
@@ -11839,6 +11969,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_8" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b?c:d:e<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e (e b) ? (e c) : (e d)) : (e e)) <EOF>)\n",
@@ -11933,6 +12064,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_9" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a?b:c?d:e<EOF>")
   assert_eq(
     printed.to_string(),
     "(s (e (e a) ? (e b) : (e (e c) ? (e d) : (e e))) <EOF>)\n",
@@ -12016,6 +12148,7 @@ test "upstream LeftRecursion WhitespaceInfluence_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "Test(1,3)<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:expression", "token:Test", "token:(", "enter:expression",
@@ -12094,6 +12227,7 @@ test "upstream LeftRecursion WhitespaceInfluence_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "Test(1,3)<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "enter:expression", "token:Test", "token:(", "enter:expression",
@@ -14976,6 +15110,7 @@ test "upstream Listeners Basic" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "12")
   assert_eq(printed.to_string(), "(a 1 2)\n1\n2\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:1", "token:2", "exit:a", "exit:s",
@@ -15068,6 +15203,7 @@ test "upstream Listeners LR" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1+2*3")
   assert_eq(
     printed.to_string(),
     "(e (e 1) + (e (e 2) * (e 3)))\n1\n2\n3\n2 3 2\n1 2 1\n",
@@ -15168,6 +15304,7 @@ test "upstream Listeners LRWithLabels" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "1(2,3)")
   assert_eq(
     printed.to_string(),
     "(e (e 1) ( (eList (e 2) , (e 3)) ))\n1\n2\n3\n1 [13 6]\n",
@@ -15266,6 +15403,7 @@ test "upstream Listeners RuleGetters_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "12")
   assert_eq(printed.to_string(), "(a (b 1) (b 2))\n1 2 1\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:b", "token:1", "exit:b", "enter:b", "token:2", "exit:b",
@@ -15356,6 +15494,7 @@ test "upstream Listeners RuleGetters_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "(a (b abc))\nabc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:b", "token:abc", "exit:b", "exit:a", "exit:s",
@@ -15441,6 +15580,7 @@ test "upstream Listeners TokenGetters_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "12")
   assert_eq(printed.to_string(), "(a 1 2)\n1 2 [1, 2]\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:1", "token:2", "exit:a", "exit:s",
@@ -15530,6 +15670,7 @@ test "upstream Listeners TokenGetters_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "(a abc)\n[@0,0:2='abc',<4>,1:0]\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:abc", "exit:a", "exit:s",
@@ -15607,6 +15748,7 @@ test "upstream ParserErrors ConjuringUpToken" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a<missing 'b'>c")
   assert_eq(
     printed.to_string(),
     "conjured=[@-1,-1:-1='<missing 'b'>',<2>,1:1]\n",
@@ -15691,6 +15833,7 @@ test "upstream ParserErrors ConjuringUpTokenFromSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ad")
   assert_eq(
     printed.to_string(),
     "conjured=[@-1,-1:-1='<missing 'b'>',<2>,1:1]\n",
@@ -15774,6 +15917,7 @@ test "upstream ParserErrors ContextListGetters" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "abab")
   assert_eq(printed.to_string(), "abab")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:a", "exit:a", "enter:b", "token:b", "exit:b", "enter:a",
@@ -15844,6 +15988,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:expr", "token:x", "exit:expr", "token:<EOF>", "exit:start",
@@ -15910,6 +16055,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xx<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:expr", "enter:expr", "token:x", "exit:expr", "enter:expr",
@@ -15981,6 +16127,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xxx<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:expr", "enter:expr", "enter:expr", "token:x", "exit:expr",
@@ -16054,6 +16201,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xxxx<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:expr", "enter:expr", "enter:expr", "enter:expr", "token:x",
@@ -16131,6 +16279,7 @@ test "upstream ParserErrors ExtraneousInput" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "baa")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:file", "enter:body", "exit:body", "error:b", "error:a", "error:a", "exit:file",
@@ -16202,6 +16351,7 @@ test "upstream ParserErrors InvalidATNStateRemoval" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x:x")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "token:x", "token::", "enter:expr", "enter:primary", "token:x",
@@ -16271,6 +16421,7 @@ test "upstream ParserErrors InvalidEmptyInput" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "exit:start",
@@ -16355,6 +16506,7 @@ test "upstream ParserErrors LL1ErrorInfo" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "dogandsoftware<EOF>")
   assert_eq(printed.to_string(), "{'hardware', 'software'}\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:animal", "token:dog", "exit:animal", "token:and", "enter:acClass",
@@ -16425,6 +16577,7 @@ test "upstream ParserErrors LL2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ae")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "error:a", "error:e", "exit:a",
@@ -16495,6 +16648,7 @@ test "upstream ParserErrors LL3" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abe")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "error:a", "error:b", "error:e", "exit:a",
@@ -16571,6 +16725,7 @@ test "upstream ParserErrors LLStar" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aaae")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "error:a", "error:a", "error:a", "error:e", "exit:a",
@@ -16640,6 +16795,7 @@ test "upstream ParserErrors MultiTokenDeletionBeforeLoop" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aac")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:a", "token:c", "exit:a",
@@ -16711,6 +16867,7 @@ test "upstream ParserErrors MultiTokenDeletionBeforeLoop2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aac")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:a", "token:c", "exit:a",
@@ -16791,6 +16948,7 @@ test "upstream ParserErrors MultiTokenDeletionDuringLoop" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abaaababc")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "error:a", "error:a", "error:a", "token:b",
@@ -16875,6 +17033,7 @@ test "upstream ParserErrors MultiTokenDeletionDuringLoop2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abaaababc")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "error:a", "error:a", "error:a", "token:b",
@@ -16952,6 +17111,7 @@ test "upstream ParserErrors NoViableAltAvoidance" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a.")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:a", "exit:e", "error:.", "exit:s",
@@ -17019,6 +17179,7 @@ test "upstream ParserErrors SingleSetInsertion" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ad")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:d", "exit:a",
@@ -17105,6 +17266,7 @@ test "upstream ParserErrors SingleSetInsertionConsumption" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ad")
   assert_eq(printed.to_string(), "[@0,0:0='a',<3>,1:0]\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "enter:myset", "exit:myset", "token:d", "exit:a",
@@ -17172,6 +17334,7 @@ test "upstream ParserErrors SingleTokenDeletion" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aab")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:a", "token:b", "exit:a",
@@ -17240,6 +17403,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforeAlt" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ac")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "error:a", "token:c", "exit:a",
@@ -17308,6 +17472,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforeLoop" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aab<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:a", "token:b", "token:<EOF>", "exit:a",
@@ -17377,6 +17542,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforeLoop2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aab<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:a", "token:b", "token:<EOF>", "exit:a",
@@ -17445,6 +17611,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforePredict" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "caaab")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "error:c", "token:a", "token:a", "token:a", "token:b", "exit:a",
@@ -17537,6 +17704,7 @@ test "upstream ParserErrors SingleTokenDeletionConsumption" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "aabd")
   assert_eq(printed.to_string(), "[@2,2:2='b',<1>,1:2]\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "enter:myset", "error:a", "token:b", "exit:myset", "token:d",
@@ -17610,6 +17778,7 @@ test "upstream ParserErrors SingleTokenDeletionDuringLoop" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ababbc")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "error:a", "token:b", "token:b", "token:c",
@@ -17685,6 +17854,7 @@ test "upstream ParserErrors SingleTokenDeletionDuringLoop2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ababbc")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "error:a", "token:b", "token:b", "token:c",
@@ -17757,6 +17927,7 @@ test "upstream ParserErrors SingleTokenDeletionExpectingSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aab")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:a", "token:b", "exit:a",
@@ -17825,6 +17996,7 @@ test "upstream ParserErrors SingleTokenInsertion" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a<missing 'b'>c")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:<missing 'b'>", "token:c", "exit:a",
@@ -17892,6 +18064,7 @@ test "upstream ParserErrors TokenMismatch" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aa")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "error:a", "exit:a",
@@ -17962,6 +18135,7 @@ test "upstream ParserErrors TokenMismatch2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "(~FORCE_ERROR~")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:stat", "token:(", "error:~FORCE_ERROR~", "exit:stat",
@@ -18031,6 +18205,7 @@ test "upstream ParserErrors TokenMismatch3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:expression", "enter:value", "exit:value", "exit:expression",
@@ -18102,6 +18277,7 @@ test "upstream ParserExec AorAPlus" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "abc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "token:c", "exit:a",
@@ -18178,6 +18354,7 @@ test "upstream ParserExec AorAStar_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
   @debug.assert_eq(
@@ -18247,6 +18424,7 @@ test "upstream ParserExec AorAStar_2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "abc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "token:c", "exit:a",
@@ -18323,6 +18501,7 @@ test "upstream ParserExec AorB" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "34")
   assert_eq(printed.to_string(), "alt 2\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:34", "exit:a",
@@ -18394,6 +18573,7 @@ test "upstream ParserExec AorBPlus" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a34c")
   assert_eq(printed.to_string(), "a34c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:34", "token:c", "exit:a",
@@ -18470,6 +18650,7 @@ test "upstream ParserExec AorBStar_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
   @debug.assert_eq(
@@ -18539,6 +18720,7 @@ test "upstream ParserExec AorBStar_2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a34c")
   assert_eq(printed.to_string(), "a34c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:34", "token:c", "exit:a",
@@ -18615,6 +18797,7 @@ test "upstream ParserExec APlus" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "abc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "token:c", "exit:a",
@@ -18691,6 +18874,7 @@ test "upstream ParserExec AStar_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
   @debug.assert_eq(
@@ -18760,6 +18944,7 @@ test "upstream ParserExec AStar_2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "abc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "token:c", "exit:a",
@@ -18836,6 +19021,7 @@ test "upstream ParserExec Basic" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc34")
   assert_eq(printed.to_string(), "abc34\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:abc", "token:34", "exit:a",
@@ -18910,6 +19096,7 @@ test "upstream ParserExec BuildParseTree_FALSE" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=false),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "r\n")
   assert_true(parsed.context.children.is_empty())
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:r", "exit:r"])
@@ -18985,6 +19172,7 @@ test "upstream ParserExec BuildParseTree_TRUE" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "AB")
   assert_eq(printed.to_string(), "(r (a A) (b B))\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:r", "enter:a", "token:A", "exit:a", "enter:b", "token:B", "exit:b", "exit:r",
@@ -19068,6 +19256,7 @@ test "upstream ParserExec IfIfElseGreedyBinding1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ifyifyxelsex")
   assert_eq(printed.to_string(), "if y x else x\nif y if y x else x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:statement", "enter:ifStatement", "token:if", "token:y",
@@ -19165,6 +19354,7 @@ test "upstream ParserExec IfIfElseGreedyBinding2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ifyifyxelsex")
   assert_eq(printed.to_string(), "if y x else x\nif y if y x else x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:statement", "enter:ifStatement", "token:if", "token:y",
@@ -19262,6 +19452,7 @@ test "upstream ParserExec IfIfElseNonGreedyBinding1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ifyifyxelsex")
   assert_eq(printed.to_string(), "if y x\nif y if y x else x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:statement", "enter:ifStatement", "token:if", "token:y",
@@ -19360,6 +19551,7 @@ test "upstream ParserExec IfIfElseNonGreedyBinding2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ifyifyxelsex")
   assert_eq(printed.to_string(), "if y x\nif y if y x else x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:statement", "enter:ifStatement", "token:if", "token:y",
@@ -19458,6 +19650,7 @@ test "upstream ParserExec Keyword_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "break;continue;return;<EOF>")
   assert_eq(printed.to_string(), "break;continue;return;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:program", "enter:state", "token:break;", "exit:state", "enter:state",
@@ -19544,6 +19737,7 @@ test "upstream ParserExec Keyword_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "break;continue;return;<EOF>")
   assert_eq(printed.to_string(), "break;continue;return;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:program", "enter:sempred", "token:break;", "exit:sempred", "enter:sempred",
@@ -19630,6 +19824,7 @@ test "upstream ParserExec Keyword_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "break;continue;return;<EOF>")
   assert_eq(printed.to_string(), "break;continue;return;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:program", "enter:action", "token:break;", "exit:action", "enter:action",
@@ -19716,6 +19911,7 @@ test "upstream ParserExec Keyword_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "break;continue;return;<EOF>")
   assert_eq(printed.to_string(), "break;continue;return;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:program", "enter:ruleIndexMap", "token:break;", "exit:ruleIndexMap", "enter:ruleIndexMap",
@@ -19802,6 +19998,7 @@ test "upstream ParserExec Keyword_5" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "break;continue;return;<EOF>")
   assert_eq(printed.to_string(), "break;continue;return;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:program", "enter:addErrorListener", "token:break;", "exit:addErrorListener",
@@ -19888,6 +20085,7 @@ test "upstream ParserExec Keyword_6" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "break;continue;return;<EOF>")
   assert_eq(printed.to_string(), "break;continue;return;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:program", "enter:reset", "token:break;", "exit:reset", "enter:reset",
@@ -19971,6 +20169,7 @@ test "upstream ParserExec LabelAliasingAcrossLabeledAlternatives" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xy<EOF>")
   assert_eq(printed.to_string(), "x\ny\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:a", "enter:subrule", "token:x", "exit:subrule", "exit:a",
@@ -20039,6 +20238,7 @@ test "upstream ParserExec Labels" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "abc34;")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "enter:b", "token:abc", "token:34", "exit:b", "token:;", "exit:a",
@@ -20105,6 +20305,7 @@ test "upstream ParserExec ListLabelForClosureContext" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:expression", "token:a", "exit:expression",
@@ -20171,6 +20372,7 @@ test "upstream ParserExec ListLabelsOnRuleRefStartOfAlt" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "aandb")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:expression", "enter:expression", "token:a", "exit:expression", "token:and",
@@ -20240,6 +20442,7 @@ test "upstream ParserExec ListLabelsOnSet" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "abc34;")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "enter:b", "token:abc", "token:34", "exit:b", "token:;", "exit:a",
@@ -20316,6 +20519,7 @@ test "upstream ParserExec LL1OptionalBlock_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
   @debug.assert_eq(
@@ -20385,6 +20589,7 @@ test "upstream ParserExec LL1OptionalBlock_2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a")
   assert_eq(printed.to_string(), "a\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "exit:a",
@@ -20446,6 +20651,7 @@ test "upstream ParserExec MultipleEOFHandling" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "x<EOF><EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:prog", "token:x", "token:<EOF>", "token:<EOF>", "exit:prog",
@@ -20523,6 +20729,7 @@ test "upstream ParserExec OpenDeviceStatement_Case1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "OPENDEVICEDEVICE")
   assert_eq(printed.to_string(), "OPEN DEVICE DEVICE\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:statement", "token:OPEN", "token:DEVICE", "token:DEVICE", "exit:statement",
@@ -20607,6 +20814,7 @@ test "upstream ParserExec OpenDeviceStatement_Case2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "OPENDEVICEDEVICE")
   assert_eq(printed.to_string(), "OPEN DEVICE DEVICE\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:statement", "token:OPEN", "token:DEVICE", "token:DEVICE", "exit:statement",
@@ -20691,6 +20899,7 @@ test "upstream ParserExec OpenDeviceStatement_Case3" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "OPENDEVICEDEVICE")
   assert_eq(printed.to_string(), "OPEN DEVICE DEVICE\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:statement", "token:OPEN", "token:DEVICE", "token:DEVICE", "exit:statement",
@@ -20760,6 +20969,7 @@ test "upstream ParserExec Optional_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:stat", "token:x", "exit:stat",
@@ -20823,6 +21033,7 @@ test "upstream ParserExec Optional_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ifx")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:stat", "enter:ifstat", "token:if", "enter:stat", "token:x", "exit:stat",
@@ -20896,6 +21107,7 @@ test "upstream ParserExec Optional_3" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ifxelsex")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:stat", "enter:ifstat", "token:if", "enter:stat", "token:x", "exit:stat",
@@ -20971,6 +21183,7 @@ test "upstream ParserExec Optional_4" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ififxelsex")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:stat", "enter:ifstat", "token:if", "enter:stat", "enter:ifstat", "token:if",
@@ -21045,6 +21258,7 @@ test "upstream ParserExec OrderingPredicates" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "POINTATX")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:expr", "enter:expr", "token:POINT", "exit:expr", "token:AT", "token:X",
@@ -21128,6 +21342,7 @@ test "upstream ParserExec ParserProperty" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "valid\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:abc", "exit:a",
@@ -21206,6 +21421,7 @@ test "upstream ParserExec PredicatedIfIfElse" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ifxifxaelseb<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:stmt", "enter:ifStmt", "token:if", "token:x", "enter:stmt",
@@ -21291,6 +21507,7 @@ test "upstream ParserExec PredictionIssue334" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a<EOF>")
   assert_eq(printed.to_string(), "(file_ (item a) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:file_", "enter:item", "token:a", "exit:item", "token:<EOF>", "exit:file_",
@@ -21363,6 +21580,7 @@ test "upstream ParserExec PredictionMode_LL" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "XY<EOF>")
   assert_eq(printed.to_string(), "(r (a X) (b Y) <EOF>)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:r", "enter:a", "token:X", "exit:a", "enter:b", "token:Y", "exit:b", "token:<EOF>",
@@ -21446,6 +21664,7 @@ test "upstream ParserExec PredictionMode_SLL" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "XY<missing 'Y'><EOF>")
   assert_eq(printed.to_string(), "XY\n")
   assert_eq(parsed.prediction.full_context_fallbacks, 0)
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -21523,6 +21742,7 @@ test "upstream ParserExec ReferenceToATN_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
   @debug.assert_eq(
@@ -21592,6 +21812,7 @@ test "upstream ParserExec ReferenceToATN_2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a34c")
   assert_eq(printed.to_string(), "a34c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:34", "token:c", "exit:a",
@@ -21714,6 +21935,10 @@ test "upstream ParserExec ReservedWordsEscaping" {
       "{\"values\":{},\"children\":[{\"values\":{\"return\":0},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{\"return\":0},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{\"return\":0},\"children\":[]},{\"values\":{\"return\":0},\"children\":[{\"values\":{\"return\":0},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
   )
+  assert_eq(
+    parsed.context.get_text(),
+    "for for break break for if if for continue",
+  )
   assert_eq(printed.to_string(), "for for break break for if if for continue")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:root", "enter:continue", "enter:for", "token:for ", "exit:for", "enter:for",
@@ -21803,6 +22028,7 @@ test "upstream ParserExec TokenOffset" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "12345666")
   assert_eq(printed.to_string(), "12345666\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:12", "token:34", "token:56", "token:66", "exit:a",
@@ -21880,6 +22106,7 @@ test "upstream ParserExec uStartingCharDoesNotCauseIllegalUnicodeEscape" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "u")
   assert_eq(printed.to_string(), "u\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:u", "token:u", "exit:u",
@@ -21959,6 +22186,7 @@ test "upstream ParserExec Wildcard" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x=10;abc;;;;y=99;<EOF>")
   assert_eq(printed.to_string(), "x=10;\ny=99;\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "enter:assign", "token:x", "token:=", "token:10", "token:;", "exit:assign",
@@ -22060,6 +22288,7 @@ test "upstream ParseTrees AltNum" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xyz")
   assert_eq(printed.to_string(), "(a:3 x (b:2 y) z)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "enter:b", "token:y", "exit:b", "token:z", "exit:a",
@@ -22144,6 +22373,7 @@ test "upstream ParseTrees ExtraToken" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xzy")
   assert_eq(printed.to_string(), "(a x z y)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "error:z", "token:y", "exit:a", "exit:s",
@@ -22228,6 +22458,7 @@ test "upstream ParseTrees ExtraTokensAndAltLabels" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "${?a?}")
   assert_eq(printed.to_string(), "(s ${ (v ? a) ? })\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "token:${", "enter:v", "error:?", "token:a", "exit:v", "error:?",
@@ -22317,6 +22548,7 @@ test "upstream ParseTrees NoViableAlt" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "z")
   assert_eq(printed.to_string(), "(a z)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "error:z", "exit:a", "exit:s",
@@ -22393,6 +22625,7 @@ test "upstream ParseTrees RuleRef" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "yx")
   assert_eq(printed.to_string(), "(a (b y) x)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:b", "token:y", "exit:b", "token:x", "exit:a", "exit:s",
@@ -22478,6 +22711,7 @@ test "upstream ParseTrees Sync" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xzyy!")
   assert_eq(printed.to_string(), "(a x z y y !)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "error:z", "token:y", "token:y", "token:!",
@@ -22562,6 +22796,7 @@ test "upstream ParseTrees Token2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xy")
   assert_eq(printed.to_string(), "(a x y)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "token:y", "exit:a", "exit:s",
@@ -22644,6 +22879,7 @@ test "upstream ParseTrees TokenAndRuleContextString" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "[a, s]\n(a x)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "exit:a", "exit:s",
@@ -22723,6 +22959,7 @@ test "upstream ParseTrees TwoAltLoop" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xyyxyxz")
   assert_eq(printed.to_string(), "(a x y y x y x z)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "token:y", "token:y", "token:x", "token:y",
@@ -22809,6 +23046,7 @@ test "upstream ParseTrees TwoAlts" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "y")
   assert_eq(printed.to_string(), "(a y)\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:y", "exit:a", "exit:s",
@@ -23419,6 +23657,7 @@ test "upstream SemPredEvalParser ActionHidesPreds" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xxy")
   assert_eq(printed.to_string(), "alt 1\nalt 1\nalt 1\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "exit:a", "enter:a", "token:x", "exit:a", "enter:a",
@@ -23506,6 +23745,7 @@ test "upstream SemPredEvalParser ActionsHidePredsInGlobalFOLLOW" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a!")
   assert_eq(printed.to_string(), "eval=true\nparse\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:a", "exit:e", "token:!", "exit:s",
@@ -23610,6 +23850,7 @@ test "upstream SemPredEvalParser AtomWithClosureInTranslatedLRRule" {
       "{\"values\":{},\"children\":[{\"values\":{\"_p\":0},\"children\":[{\"values\":{\"_p\":4},\"children\":[]},{\"values\":{\"_p\":4},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a+b+a<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:start", "enter:e", "token:a", "token:+", "enter:e", "token:b", "exit:e",
@@ -23733,6 +23974,7 @@ test "upstream SemPredEvalParser DepedentPredsInGlobalFOLLOW" {
       "{\"values\":{},\"children\":[{\"values\":{\"i\":99},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a!")
   assert_eq(printed.to_string(), "eval=true\nparse\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "enter:e", "token:a", "exit:e", "token:!", "exit:a", "exit:s",
@@ -23858,6 +24100,7 @@ test "upstream SemPredEvalParser DependentPredNotInOuterCtxShouldBeIgnored" {
       "{\"values\":{},\"children\":[{\"values\":{\"i\":2},\"children\":[{\"values\":{\"i\":2},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a;")
   assert_eq(printed.to_string(), "alt 2\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:b", "enter:a", "token:a", "exit:a", "exit:b", "token:;", "exit:s",
@@ -23937,6 +24180,7 @@ test "upstream SemPredEvalParser DisabledAlternative" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "hello<EOF>")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:cppCompilationUnit", "enter:content", "enter:anything", "token:h", "exit:anything",
@@ -24030,6 +24274,7 @@ test "upstream SemPredEvalParser IndependentPredNotPassedOuterCtxToAvoidCastExce
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a;")
   assert_eq(printed.to_string(), "alt 2\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:b", "enter:a", "token:a", "exit:a", "exit:b", "token:;", "exit:s",
@@ -24125,6 +24370,7 @@ test "upstream SemPredEvalParser NoTruePredsThrowsNoViableAlt" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "y3x4")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "exit:a", "enter:a", "error:y", "error:3", "error:x", "error:4",
@@ -24212,6 +24458,7 @@ test "upstream SemPredEvalParser Order" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xy")
   assert_eq(printed.to_string(), "alt 1\nalt 1\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "exit:a", "enter:a", "token:y", "exit:a", "exit:s",
@@ -24302,6 +24549,7 @@ test "upstream SemPredEvalParser PredFromAltTestedInLoopBack_1" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "s\n\n\nx\n<EOF>")
   assert_eq(
     printed.to_string(),
     "(file_ (para (paraContent s) \\n \\n) (para (paraContent \\n x \\n)) <EOF>)\n",
@@ -24399,6 +24647,7 @@ test "upstream SemPredEvalParser PredFromAltTestedInLoopBack_2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "s\n\n\nx\n\n<EOF>")
   assert_eq(
     printed.to_string(),
     "(file_ (para (paraContent s) \\n \\n) (para (paraContent \\n x) \\n \\n) <EOF>)\n",
@@ -24520,6 +24769,7 @@ test "upstream SemPredEvalParser PredicateDependentOnArg" {
       "{\"values\":{},\"children\":[{\"values\":{\"i\":2},\"children\":[]},{\"values\":{\"i\":1},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ab")
   assert_eq(printed.to_string(), "alt 2\nalt 1\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:a", "exit:a", "enter:a", "token:b", "exit:a", "exit:s",
@@ -24623,6 +24873,7 @@ test "upstream SemPredEvalParser PredicateDependentOnArg2" {
       "{\"values\":{},\"children\":[{\"values\":{\"i\":2},\"children\":[]},{\"values\":{\"i\":1},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "ab")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:a", "exit:a", "enter:a", "token:b", "exit:a", "exit:s",
@@ -24708,6 +24959,7 @@ test "upstream SemPredEvalParser PredsInGlobalFOLLOW" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "a!")
   assert_eq(printed.to_string(), "eval=true\nparse\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:e", "token:a", "exit:e", "token:!", "exit:s",
@@ -24791,6 +25043,7 @@ test "upstream SemPredEvalParser PredTestedEvenWhenUnAmbig_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "ID abc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:primary", "token:abc", "exit:primary",
@@ -24876,6 +25129,7 @@ test "upstream SemPredEvalParser PredTestedEvenWhenUnAmbig_2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "enum")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:primary", "error:enum", "exit:primary",
@@ -24961,6 +25215,7 @@ test "upstream SemPredEvalParser RewindBeforePredEval" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "y3x4")
   assert_eq(printed.to_string(), "alt 2\nalt 1\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:y", "token:3", "exit:a", "enter:a", "token:x", "token:4",
@@ -25050,6 +25305,7 @@ test "upstream SemPredEvalParser Simple" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xy3")
   assert_eq(printed.to_string(), "alt 2\nalt 2\nalt 3\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "exit:a", "enter:a", "token:y", "exit:a", "enter:a",
@@ -25139,6 +25395,7 @@ test "upstream SemPredEvalParser SimpleValidate" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "error:x", "exit:a", "exit:s",
@@ -25222,6 +25479,7 @@ test "upstream SemPredEvalParser SimpleValidate2" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "34x")
   assert_eq(printed.to_string(), "alt 2\nalt 2\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:3", "exit:a", "enter:a", "token:4", "exit:a", "enter:a",
@@ -25309,6 +25567,7 @@ test "upstream SemPredEvalParser ToLeft" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xxy")
   assert_eq(printed.to_string(), "alt 2\nalt 2\nalt 2\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "exit:a", "enter:a", "token:x", "exit:a", "enter:a",
@@ -25405,6 +25664,7 @@ test "upstream SemPredEvalParser ToLeftWithVaryingPredicate" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "xxy")
   assert_eq(printed.to_string(), "i=1\nalt 2\ni=2\nalt 1\ni=3\nalt 2\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "exit:a", "enter:a", "token:x", "exit:a", "enter:a",
@@ -25500,6 +25760,7 @@ test "upstream SemPredEvalParser TwoUnpredicatedAlts" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x;y")
   assert_eq(printed.to_string(), "alt 1\nalt 1\n")
   let expected_prediction : Json = [
     {
@@ -25655,6 +25916,7 @@ test "upstream SemPredEvalParser TwoUnpredicatedAltsAndOneOrthogonalAlt" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "34;x;y")
   assert_eq(printed.to_string(), "alt 1\nalt 2\nalt 2\n")
   let expected_prediction : Json = [
     {
@@ -25800,6 +26062,7 @@ test "upstream SemPredEvalParser UnpredicatedPathsInAlt" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x4")
   assert_eq(printed.to_string(), "alt 1\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "token:x", "token:4", "exit:a", "exit:s",
@@ -25891,6 +26154,7 @@ test "upstream SemPredEvalParser ValidateInDFA" {
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.context.get_text(), "x;y")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:s", "enter:a", "error:x", "exit:a", "token:;", "enter:a", "error:y", "exit:a",
@@ -25967,6 +26231,7 @@ test "upstream Sets CharSetLiteral" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "AaBb")
   assert_eq(printed.to_string(), "A\na\nB\nb\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:A", "token:a", "token:B", "token:b", "exit:a",
@@ -26037,6 +26302,7 @@ test "upstream Sets ComplementSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "")
   assert_eq(printed.to_string(), "")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:parse", "exit:parse",
@@ -26107,6 +26373,7 @@ test "upstream Sets LexerOptionalSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ac")
   assert_eq(printed.to_string(), "ac\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:ac", "exit:a",
@@ -26177,6 +26444,7 @@ test "upstream Sets LexerPlusSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abaac")
   assert_eq(printed.to_string(), "abaac\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:abaac", "exit:a",
@@ -26247,6 +26515,7 @@ test "upstream Sets LexerStarSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abaac")
   assert_eq(printed.to_string(), "abaac\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:abaac", "exit:a",
@@ -26317,6 +26586,7 @@ test "upstream Sets NotChar" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:x", "exit:a",
@@ -26387,6 +26657,7 @@ test "upstream Sets NotCharSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:x", "exit:a",
@@ -26457,6 +26728,7 @@ test "upstream Sets NotCharSetWithRuleRef3" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:x", "exit:a",
@@ -26527,6 +26799,7 @@ test "upstream Sets OptionalLexerSingleElement" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "bc")
   assert_eq(printed.to_string(), "bc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:bc", "exit:a",
@@ -26597,6 +26870,7 @@ test "upstream Sets OptionalSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ac")
   assert_eq(printed.to_string(), "ac\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:c", "exit:a",
@@ -26671,6 +26945,7 @@ test "upstream Sets OptionalSingleElement" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "bc")
   assert_eq(printed.to_string(), "bc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:b", "token:c", "exit:a",
@@ -26745,6 +27020,7 @@ test "upstream Sets ParserNotSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "zz")
   assert_eq(printed.to_string(), "z\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:z", "token:z", "exit:a",
@@ -26819,6 +27095,7 @@ test "upstream Sets ParserNotToken" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "zz")
   assert_eq(printed.to_string(), "zz\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:z", "token:z", "exit:a",
@@ -26893,6 +27170,7 @@ test "upstream Sets ParserNotTokenWithLabel" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "zz")
   assert_eq(printed.to_string(), "z\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:z", "token:z", "exit:a",
@@ -26967,6 +27245,7 @@ test "upstream Sets ParserSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "x")
   assert_eq(printed.to_string(), "x\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:x", "exit:a",
@@ -27037,6 +27316,7 @@ test "upstream Sets PlusLexerSingleElement" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "bbbbc")
   assert_eq(printed.to_string(), "bbbbc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:bbbbc", "exit:a",
@@ -27107,6 +27387,7 @@ test "upstream Sets PlusSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abaac")
   assert_eq(printed.to_string(), "abaac\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "token:a", "token:a", "token:c", "exit:a",
@@ -27184,6 +27465,7 @@ test "upstream Sets RuleAsSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "b")
   assert_eq(printed.to_string(), "b\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:b", "exit:a",
@@ -27254,6 +27536,7 @@ test "upstream Sets SeqDoesNotBecomeSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "34")
   assert_eq(printed.to_string(), "34\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:34", "exit:a",
@@ -27324,6 +27607,7 @@ test "upstream Sets StarLexerSingleElement_1" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "bbbbc")
   assert_eq(printed.to_string(), "bbbbc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:bbbbc", "exit:a",
@@ -27394,6 +27678,7 @@ test "upstream Sets StarLexerSingleElement_2" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "c")
   assert_eq(printed.to_string(), "c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:c", "exit:a",
@@ -27464,6 +27749,7 @@ test "upstream Sets StarSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abaac")
   assert_eq(printed.to_string(), "abaac\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:b", "token:a", "token:a", "token:c", "exit:a",
@@ -27546,6 +27832,7 @@ test "upstream Sets UnicodeEscapedBMPRangeSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aáäáâåd")
   assert_eq(printed.to_string(), "aáäáâåd\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:á", "token:ä", "token:á", "token:â", "token:å",
@@ -27628,6 +27915,7 @@ test "upstream Sets UnicodeEscapedBMPSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aäあ亜c")
   assert_eq(printed.to_string(), "aäあ亜c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:aäあ亜c", "exit:a",
@@ -27703,6 +27991,7 @@ test "upstream Sets UnicodeEscapedSMPRangeSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a😉🥂🜀d")
   assert_eq(printed.to_string(), "a😉🥂🜀d\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:😉", "token:🥂", "token:🜀", "token:d", "exit:a",
@@ -27785,6 +28074,7 @@ test "upstream Sets UnicodeEscapedSMPRangeSetMismatch" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "ad")
   assert_eq(printed.to_string(), "ad\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:d", "exit:a",
@@ -27861,6 +28151,7 @@ test "upstream Sets UnicodeEscapedSMPSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a𝗂𝗎𝖺c")
   assert_eq(printed.to_string(), "a𝗂𝗎𝖺c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a𝗂𝗎𝖺c", "exit:a",
@@ -27934,6 +28225,7 @@ test "upstream Sets UnicodeNegatedBMPSetIncludesSMPCodePoints" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "a😳😡😝🤓c")
   assert_eq(printed.to_string(), "a😳😡😝🤓c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a😳😡😝🤓c", "exit:a",
@@ -28004,6 +28296,7 @@ test "upstream Sets UnicodeNegatedSMPSetIncludesBMPCodePoints" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "abc")
   assert_eq(printed.to_string(), "abc\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:abc", "exit:a",
@@ -28079,6 +28372,7 @@ test "upstream Sets UnicodeUnescapedBMPRangeSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aáäáâåd")
   assert_eq(printed.to_string(), "aáäáâåd\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:a", "token:á", "token:ä", "token:á", "token:â", "token:å",
@@ -28161,6 +28455,7 @@ test "upstream Sets UnicodeUnescapedBMPSet" {
     bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
+  assert_eq(parsed.context.get_text(), "aäあ亜c")
   assert_eq(printed.to_string(), "aäあ亜c\n")
   @debug.assert_eq(bound_listener_events(parsed.tree), [
     "enter:a", "token:aäあ亜c", "exit:a",

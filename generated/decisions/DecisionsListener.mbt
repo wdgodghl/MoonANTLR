@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct DecisionsListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (DecisionsDocumentContext) -> Unit
   exit_document : (DecisionsDocumentContext) -> Unit
   enter_item : (DecisionsItemContext) -> Unit
@@ -26,9 +30,15 @@ pub(all) struct DecisionsListener {
 }
 
 ///|
-pub fn DecisionsListener::new() -> DecisionsListener {
+pub fn DecisionsListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> DecisionsListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_item: _ => (),
@@ -57,17 +67,21 @@ pub fn DecisionsListener::walk(
   self : DecisionsListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(DecisionsDocumentContext::{ node, })
-    "item" => (self.enter_item)(DecisionsItemContext::{ node, })
-    "choice" => (self.enter_choice)(DecisionsChoiceContext::{ node, })
-    "sequence" => (self.enter_sequence)(DecisionsSequenceContext::{ node, })
-    "longChoice" =>
-      (self.enter_longChoice)(DecisionsLongChoiceContext::{ node, })
-    "either" => (self.enter_either)(DecisionsEitherContext::{ node, })
-    "first" => (self.enter_first)(DecisionsFirstContext::{ node, })
-    "second" => (self.enter_second)(DecisionsSecondContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && ["choice"].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" => (self.enter_document)(DecisionsDocumentContext::{ node, })
+      "item" => (self.enter_item)(DecisionsItemContext::{ node, })
+      "choice" => (self.enter_choice)(DecisionsChoiceContext::{ node, })
+      "sequence" => (self.enter_sequence)(DecisionsSequenceContext::{ node, })
+      "longChoice" =>
+        (self.enter_longChoice)(DecisionsLongChoiceContext::{ node, })
+      "either" => (self.enter_either)(DecisionsEitherContext::{ node, })
+      "first" => (self.enter_first)(DecisionsFirstContext::{ node, })
+      "second" => (self.enter_second)(DecisionsSecondContext::{ node, })
+      _ => ()
+    }
   }
   if node.name == "choice" {
     if DecisionsChoiceContext::{ node, }.alternative() == Some("Long") {
@@ -79,9 +93,14 @@ pub fn DecisionsListener::walk(
       (self.enter_alt_Short)(DecisionsShortContext::{ node, })
     }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
@@ -95,16 +114,19 @@ pub fn DecisionsListener::walk(
       (self.exit_alt_Short)(DecisionsShortContext::{ node, })
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(DecisionsDocumentContext::{ node, })
-    "item" => (self.exit_item)(DecisionsItemContext::{ node, })
-    "choice" => (self.exit_choice)(DecisionsChoiceContext::{ node, })
-    "sequence" => (self.exit_sequence)(DecisionsSequenceContext::{ node, })
-    "longChoice" =>
-      (self.exit_longChoice)(DecisionsLongChoiceContext::{ node, })
-    "either" => (self.exit_either)(DecisionsEitherContext::{ node, })
-    "first" => (self.exit_first)(DecisionsFirstContext::{ node, })
-    "second" => (self.exit_second)(DecisionsSecondContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(DecisionsDocumentContext::{ node, })
+      "item" => (self.exit_item)(DecisionsItemContext::{ node, })
+      "choice" => (self.exit_choice)(DecisionsChoiceContext::{ node, })
+      "sequence" => (self.exit_sequence)(DecisionsSequenceContext::{ node, })
+      "longChoice" =>
+        (self.exit_longChoice)(DecisionsLongChoiceContext::{ node, })
+      "either" => (self.exit_either)(DecisionsEitherContext::{ node, })
+      "first" => (self.exit_first)(DecisionsFirstContext::{ node, })
+      "second" => (self.exit_second)(DecisionsSecondContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

@@ -51,13 +51,17 @@ pub fn AttributesLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn AttributesLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct AttributesListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (AttributesDocumentContext) -> Unit
   exit_document : (AttributesDocumentContext) -> Unit
   enter_number : (AttributesNumberContext) -> Unit
   exit_number : (AttributesNumberContext) -> Unit
 }
-pub fn AttributesListener::new() -> Self
+pub fn AttributesListener::new(antlr_dispatch? : Bool) -> Self
 pub fn AttributesListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct AttributesNumberContext {
@@ -85,10 +89,11 @@ pub fn AttributesParser::parse_number(Self, String, predicate? : (Int32, Int32, 
 
 pub(all) struct AttributesVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (AttributesDocumentContext, Array[T]) -> T
   visit_number : (AttributesNumberContext, Array[T]) -> T
 }
-pub fn[T] AttributesVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] AttributesVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] AttributesVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

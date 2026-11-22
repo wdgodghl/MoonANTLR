@@ -102,11 +102,15 @@ pub fn LLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn LLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct LListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_a : (LAContext) -> Unit
   exit_a : (LAContext) -> Unit
 }
-pub fn LListener::new() -> Self
+pub fn LListener::new(antlr_dispatch? : Bool) -> Self
 pub fn LListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct LParser {

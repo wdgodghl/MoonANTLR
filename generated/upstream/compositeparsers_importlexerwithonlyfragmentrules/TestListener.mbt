@@ -2,14 +2,26 @@
 
 ///|
 pub(all) struct TestListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_program : (TestProgramContext) -> Unit
   exit_program : (TestProgramContext) -> Unit
 }
 
 ///|
-pub fn TestListener::new() -> TestListener {
-  { terminal: _ => (), enter_program: _ => (), exit_program: _ => (), }
+pub fn TestListener::new(antlr_dispatch~ : Bool = true) -> TestListener {
+  {
+    antlr_dispatch,
+    terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
+    enter_program: _ => (),
+    exit_program: _ => (),
+  }
 }
 
 ///|
@@ -17,18 +29,30 @@ pub fn TestListener::walk(
   self : TestListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "program" => (self.enter_program)(TestProgramContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "program" => (self.enter_program)(TestProgramContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "program" => (self.exit_program)(TestProgramContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "program" => (self.exit_program)(TestProgramContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

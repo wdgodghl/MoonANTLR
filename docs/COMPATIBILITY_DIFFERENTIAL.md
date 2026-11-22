@@ -8,10 +8,11 @@ Java 代码生成目标与运行时。期望结果由 Java 独立执行生成，
 | Parser 组合输入 | 1008 | 左递归表达式、优先级、左右结合、可空分支、调用上下文、非贪婪路径；分别使用 SLL、LL、精确歧义模式 |
 | Lexer 边界输入 | 84 | Unicode 标量位置、隐藏通道、注释、词法模式、more、未闭合字符串、非法字符及 EOF |
 | 谓词与参数 | 126 | 真假配置、连续谓词、Token 后的谓词、规则参数、失败路径；同时比较谓词调用顺序 |
+| 标号备选分支派发 | 8 | 通过 Java 生成的 Listener 接口代理记录实际通用回调、规则／备选分支回调及错误节点回调，比较完整次序 |
 
-Parser 对照比较完整恢复树、诊断位置、剩余 Token，以及决策编号、起止位置、候选分支和
+Parser 对照比较完整恢复树、Java `getText()` 上下文文本、诊断位置、剩余 Token，以及决策编号、起止位置、候选分支和
 精确性等预测事件。Lexer 对照比较完整 Token 元数据与词法诊断位置。谓词对照另外比较
-Java 宿主打印的调用轨迹。三类合计 1218 项，记录于 `tests/differential-manifest.json`。
+Java 宿主打印的调用轨迹。四类合计 1226 项，记录于 `tests/differential-manifest.json`。
 
 ## 已修复的差异
 
@@ -21,10 +22,18 @@ Java 宿主打印的调用轨迹。三类合计 1218 项，记录于 `tests/diff
 2. 预测到错误输入时，仅检查已完成路径的谓词，遗漏了上游对候选配置进行语义有效性
    分区的步骤。现在先检查配置的语义条件，再优先选择已完成的有效路径；无有效路径时
    才考虑已完成的无效路径，以保持错误定位和谓词观察顺序。
+3. 补充 `RuleContext.get_text()`，提供 Java `ParseTree.getText()` 的拼接行为，包含 EOF
+   和错误节点文本。原有 `text()` 保留排除 EOF 的接口约定。此行为同时加入所有固定
+   上游 Parser 描述用例，覆盖关闭树构建及错误恢复。
+4. 恢复节点在规则上下文中保留 `error_children` 标记，生成的 Listener／Visitor 可分别
+   绑定 `error` 与 `terminal`。Listener 增加通用 `enter`／`exit` 回调，并默认采用 Java
+   对标号备选分支的派发方式。旧的双重回调扩展通过 `antlr_dispatch=false` 显式启用。
+   差分验证同时执行实际生成的 Listener 和 Visitor，覆盖恢复树的错误节点。
 
-对应实现位于 `adaptive_prediction.mbt` 与 `prediction.mbt`，参考上游
+预测实现位于 `adaptive_prediction.mbt` 与 `prediction.mbt`，参考上游
 `ParserATNSimulator.applyPrecedenceFilter`、`splitAccordingToSemanticValidity` 和
 `getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule`，保留 BSD-3-Clause 来源声明。
+上下文及遍历实现位于 `context.mbt`、`default_parser.mbt` 与原生目标生成器中。
 
 ## 复现
 

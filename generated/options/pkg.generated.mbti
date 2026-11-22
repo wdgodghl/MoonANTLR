@@ -52,21 +52,26 @@ pub fn OptionsParserDocumentContext::label_values(Self) -> Array[OptionsParserAt
 pub fn OptionsParserDocumentContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct OptionsParserListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (OptionsParserDocumentContext) -> Unit
   exit_document : (OptionsParserDocumentContext) -> Unit
   enter_atom : (OptionsParserAtomContext) -> Unit
   exit_atom : (OptionsParserAtomContext) -> Unit
 }
-pub fn OptionsParserListener::new() -> Self
+pub fn OptionsParserListener::new(antlr_dispatch? : Bool) -> Self
 pub fn OptionsParserListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub(all) struct OptionsParserVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (OptionsParserDocumentContext, Array[T]) -> T
   visit_atom : (OptionsParserAtomContext, Array[T]) -> T
 }
-pub fn[T] OptionsParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] OptionsParserVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] OptionsParserVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

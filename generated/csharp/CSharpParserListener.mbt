@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct CSharpParserListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_compilation_unit : (CSharpParserCompilation_unitContext) -> Unit
   exit_compilation_unit : (CSharpParserCompilation_unitContext) -> Unit
   enter_namespace_or_type_name : (CSharpParserNamespace_or_type_nameContext) -> Unit
@@ -704,9 +708,15 @@ pub(all) struct CSharpParserListener {
 }
 
 ///|
-pub fn CSharpParserListener::new() -> CSharpParserListener {
+pub fn CSharpParserListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> CSharpParserListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_compilation_unit: _ => (),
     exit_compilation_unit: _ => (),
     enter_namespace_or_type_name: _ => (),
@@ -1233,741 +1243,770 @@ pub fn CSharpParserListener::walk(
   self : CSharpParserListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "compilation_unit" =>
-      (self.enter_compilation_unit)(CSharpParserCompilation_unitContext::{
-        node,
-      })
-    "namespace_or_type_name" =>
-      (self.enter_namespace_or_type_name)(CSharpParserNamespace_or_type_nameContext::{
-        node,
-      })
-    "type_" => (self.enter_type_)(CSharpParserType_Context::{ node, })
-    "base_type" =>
-      (self.enter_base_type)(CSharpParserBase_typeContext::{ node, })
-    "tuple_type" =>
-      (self.enter_tuple_type)(CSharpParserTuple_typeContext::{ node, })
-    "tuple_element" =>
-      (self.enter_tuple_element)(CSharpParserTuple_elementContext::{ node, })
-    "simple_type" =>
-      (self.enter_simple_type)(CSharpParserSimple_typeContext::{ node, })
-    "numeric_type" =>
-      (self.enter_numeric_type)(CSharpParserNumeric_typeContext::{ node, })
-    "integral_type" =>
-      (self.enter_integral_type)(CSharpParserIntegral_typeContext::{ node, })
-    "floating_point_type" =>
-      (self.enter_floating_point_type)(CSharpParserFloating_point_typeContext::{
-        node,
-      })
-    "class_type" =>
-      (self.enter_class_type)(CSharpParserClass_typeContext::{ node, })
-    "type_argument_list" =>
-      (self.enter_type_argument_list)(CSharpParserType_argument_listContext::{
-        node,
-      })
-    "argument_list" =>
-      (self.enter_argument_list)(CSharpParserArgument_listContext::{ node, })
-    "argument" => (self.enter_argument)(CSharpParserArgumentContext::{ node, })
-    "expression" =>
-      (self.enter_expression)(CSharpParserExpressionContext::{ node, })
-    "non_assignment_expression" =>
-      (self.enter_non_assignment_expression)(CSharpParserNon_assignment_expressionContext::{
-        node,
-      })
-    "assignment" =>
-      (self.enter_assignment)(CSharpParserAssignmentContext::{ node, })
-    "assignment_operator" =>
-      (self.enter_assignment_operator)(CSharpParserAssignment_operatorContext::{
-        node,
-      })
-    "conditional_expression" =>
-      (self.enter_conditional_expression)(CSharpParserConditional_expressionContext::{
-        node,
-      })
-    "null_coalescing_expression" =>
-      (self.enter_null_coalescing_expression)(CSharpParserNull_coalescing_expressionContext::{
-        node,
-      })
-    "conditional_or_expression" =>
-      (self.enter_conditional_or_expression)(CSharpParserConditional_or_expressionContext::{
-        node,
-      })
-    "conditional_and_expression" =>
-      (self.enter_conditional_and_expression)(CSharpParserConditional_and_expressionContext::{
-        node,
-      })
-    "inclusive_or_expression" =>
-      (self.enter_inclusive_or_expression)(CSharpParserInclusive_or_expressionContext::{
-        node,
-      })
-    "exclusive_or_expression" =>
-      (self.enter_exclusive_or_expression)(CSharpParserExclusive_or_expressionContext::{
-        node,
-      })
-    "and_expression" =>
-      (self.enter_and_expression)(CSharpParserAnd_expressionContext::{ node, })
-    "equality_expression" =>
-      (self.enter_equality_expression)(CSharpParserEquality_expressionContext::{
-        node,
-      })
-    "relational_expression" =>
-      (self.enter_relational_expression)(CSharpParserRelational_expressionContext::{
-        node,
-      })
-    "shift_expression" =>
-      (self.enter_shift_expression)(CSharpParserShift_expressionContext::{
-        node,
-      })
-    "additive_expression" =>
-      (self.enter_additive_expression)(CSharpParserAdditive_expressionContext::{
-        node,
-      })
-    "multiplicative_expression" =>
-      (self.enter_multiplicative_expression)(CSharpParserMultiplicative_expressionContext::{
-        node,
-      })
-    "switch_expression" =>
-      (self.enter_switch_expression)(CSharpParserSwitch_expressionContext::{
-        node,
-      })
-    "switch_expression_arms" =>
-      (self.enter_switch_expression_arms)(CSharpParserSwitch_expression_armsContext::{
-        node,
-      })
-    "switch_expression_arm" =>
-      (self.enter_switch_expression_arm)(CSharpParserSwitch_expression_armContext::{
-        node,
-      })
-    "range_expression" =>
-      (self.enter_range_expression)(CSharpParserRange_expressionContext::{
-        node,
-      })
-    "unary_expression" =>
-      (self.enter_unary_expression)(CSharpParserUnary_expressionContext::{
-        node,
-      })
-    "cast_expression" =>
-      (self.enter_cast_expression)(CSharpParserCast_expressionContext::{ node, })
-    "primary_expression" =>
-      (self.enter_primary_expression)(CSharpParserPrimary_expressionContext::{
-        node,
-      })
-    "primary_expression_start" =>
-      (self.enter_primary_expression_start)(CSharpParserPrimary_expression_startContext::{
-        node,
-      })
-    "throwable_expression" =>
-      (self.enter_throwable_expression)(CSharpParserThrowable_expressionContext::{
-        node,
-      })
-    "throw_expression" =>
-      (self.enter_throw_expression)(CSharpParserThrow_expressionContext::{
-        node,
-      })
-    "member_access" =>
-      (self.enter_member_access)(CSharpParserMember_accessContext::{ node, })
-    "bracket_expression" =>
-      (self.enter_bracket_expression)(CSharpParserBracket_expressionContext::{
-        node,
-      })
-    "indexer_argument" =>
-      (self.enter_indexer_argument)(CSharpParserIndexer_argumentContext::{
-        node,
-      })
-    "predefined_type" =>
-      (self.enter_predefined_type)(CSharpParserPredefined_typeContext::{ node, })
-    "expression_list" =>
-      (self.enter_expression_list)(CSharpParserExpression_listContext::{ node, })
-    "object_or_collection_initializer" =>
-      (self.enter_object_or_collection_initializer)(CSharpParserObject_or_collection_initializerContext::{
-        node,
-      })
-    "object_initializer" =>
-      (self.enter_object_initializer)(CSharpParserObject_initializerContext::{
-        node,
-      })
-    "member_initializer_list" =>
-      (self.enter_member_initializer_list)(CSharpParserMember_initializer_listContext::{
-        node,
-      })
-    "member_initializer" =>
-      (self.enter_member_initializer)(CSharpParserMember_initializerContext::{
-        node,
-      })
-    "initializer_value" =>
-      (self.enter_initializer_value)(CSharpParserInitializer_valueContext::{
-        node,
-      })
-    "collection_initializer" =>
-      (self.enter_collection_initializer)(CSharpParserCollection_initializerContext::{
-        node,
-      })
-    "element_initializer" =>
-      (self.enter_element_initializer)(CSharpParserElement_initializerContext::{
-        node,
-      })
-    "anonymous_object_initializer" =>
-      (self.enter_anonymous_object_initializer)(CSharpParserAnonymous_object_initializerContext::{
-        node,
-      })
-    "member_declarator_list" =>
-      (self.enter_member_declarator_list)(CSharpParserMember_declarator_listContext::{
-        node,
-      })
-    "member_declarator" =>
-      (self.enter_member_declarator)(CSharpParserMember_declaratorContext::{
-        node,
-      })
-    "unbound_type_name" =>
-      (self.enter_unbound_type_name)(CSharpParserUnbound_type_nameContext::{
-        node,
-      })
-    "generic_dimension_specifier" =>
-      (self.enter_generic_dimension_specifier)(CSharpParserGeneric_dimension_specifierContext::{
-        node,
-      })
-    "isType" => (self.enter_isType)(CSharpParserIsTypeContext::{ node, })
-    "isTypePatternArms" =>
-      (self.enter_isTypePatternArms)(CSharpParserIsTypePatternArmsContext::{
-        node,
-      })
-    "isTypePatternArm" =>
-      (self.enter_isTypePatternArm)(CSharpParserIsTypePatternArmContext::{
-        node,
-      })
-    "lambda_expression" =>
-      (self.enter_lambda_expression)(CSharpParserLambda_expressionContext::{
-        node,
-      })
-    "anonymous_function_signature" =>
-      (self.enter_anonymous_function_signature)(CSharpParserAnonymous_function_signatureContext::{
-        node,
-      })
-    "explicit_anonymous_function_parameter_list" =>
-      (self.enter_explicit_anonymous_function_parameter_list)(CSharpParserExplicit_anonymous_function_parameter_listContext::{
-        node,
-      })
-    "explicit_anonymous_function_parameter" =>
-      (self.enter_explicit_anonymous_function_parameter)(CSharpParserExplicit_anonymous_function_parameterContext::{
-        node,
-      })
-    "implicit_anonymous_function_parameter_list" =>
-      (self.enter_implicit_anonymous_function_parameter_list)(CSharpParserImplicit_anonymous_function_parameter_listContext::{
-        node,
-      })
-    "anonymous_function_body" =>
-      (self.enter_anonymous_function_body)(CSharpParserAnonymous_function_bodyContext::{
-        node,
-      })
-    "query_expression" =>
-      (self.enter_query_expression)(CSharpParserQuery_expressionContext::{
-        node,
-      })
-    "from_clause" =>
-      (self.enter_from_clause)(CSharpParserFrom_clauseContext::{ node, })
-    "query_body" =>
-      (self.enter_query_body)(CSharpParserQuery_bodyContext::{ node, })
-    "query_body_clause" =>
-      (self.enter_query_body_clause)(CSharpParserQuery_body_clauseContext::{
-        node,
-      })
-    "let_clause" =>
-      (self.enter_let_clause)(CSharpParserLet_clauseContext::{ node, })
-    "where_clause" =>
-      (self.enter_where_clause)(CSharpParserWhere_clauseContext::{ node, })
-    "combined_join_clause" =>
-      (self.enter_combined_join_clause)(CSharpParserCombined_join_clauseContext::{
-        node,
-      })
-    "orderby_clause" =>
-      (self.enter_orderby_clause)(CSharpParserOrderby_clauseContext::{ node, })
-    "ordering" => (self.enter_ordering)(CSharpParserOrderingContext::{ node, })
-    "select_or_group_clause" =>
-      (self.enter_select_or_group_clause)(CSharpParserSelect_or_group_clauseContext::{
-        node,
-      })
-    "query_continuation" =>
-      (self.enter_query_continuation)(CSharpParserQuery_continuationContext::{
-        node,
-      })
-    "statement" =>
-      (self.enter_statement)(CSharpParserStatementContext::{ node, })
-    "declarationStatement" =>
-      (self.enter_declarationStatement)(CSharpParserDeclarationStatementContext::{
-        node,
-      })
-    "local_function_declaration" =>
-      (self.enter_local_function_declaration)(CSharpParserLocal_function_declarationContext::{
-        node,
-      })
-    "local_function_header" =>
-      (self.enter_local_function_header)(CSharpParserLocal_function_headerContext::{
-        node,
-      })
-    "local_function_modifiers" =>
-      (self.enter_local_function_modifiers)(CSharpParserLocal_function_modifiersContext::{
-        node,
-      })
-    "local_function_body" =>
-      (self.enter_local_function_body)(CSharpParserLocal_function_bodyContext::{
-        node,
-      })
-    "labeled_Statement" =>
-      (self.enter_labeled_Statement)(CSharpParserLabeled_StatementContext::{
-        node,
-      })
-    "embedded_statement" =>
-      (self.enter_embedded_statement)(CSharpParserEmbedded_statementContext::{
-        node,
-      })
-    "simple_embedded_statement" =>
-      (self.enter_simple_embedded_statement)(CSharpParserSimple_embedded_statementContext::{
-        node,
-      })
-    "block" => (self.enter_block)(CSharpParserBlockContext::{ node, })
-    "local_variable_declaration" =>
-      (self.enter_local_variable_declaration)(CSharpParserLocal_variable_declarationContext::{
-        node,
-      })
-    "local_variable_type" =>
-      (self.enter_local_variable_type)(CSharpParserLocal_variable_typeContext::{
-        node,
-      })
-    "local_variable_declarator" =>
-      (self.enter_local_variable_declarator)(CSharpParserLocal_variable_declaratorContext::{
-        node,
-      })
-    "local_variable_initializer" =>
-      (self.enter_local_variable_initializer)(CSharpParserLocal_variable_initializerContext::{
-        node,
-      })
-    "local_constant_declaration" =>
-      (self.enter_local_constant_declaration)(CSharpParserLocal_constant_declarationContext::{
-        node,
-      })
-    "if_body" => (self.enter_if_body)(CSharpParserIf_bodyContext::{ node, })
-    "switch_section" =>
-      (self.enter_switch_section)(CSharpParserSwitch_sectionContext::{ node, })
-    "switch_label" =>
-      (self.enter_switch_label)(CSharpParserSwitch_labelContext::{ node, })
-    "case_guard" =>
-      (self.enter_case_guard)(CSharpParserCase_guardContext::{ node, })
-    "statement_list" =>
-      (self.enter_statement_list)(CSharpParserStatement_listContext::{ node, })
-    "for_initializer" =>
-      (self.enter_for_initializer)(CSharpParserFor_initializerContext::{ node, })
-    "for_iterator" =>
-      (self.enter_for_iterator)(CSharpParserFor_iteratorContext::{ node, })
-    "catch_clauses" =>
-      (self.enter_catch_clauses)(CSharpParserCatch_clausesContext::{ node, })
-    "specific_catch_clause" =>
-      (self.enter_specific_catch_clause)(CSharpParserSpecific_catch_clauseContext::{
-        node,
-      })
-    "general_catch_clause" =>
-      (self.enter_general_catch_clause)(CSharpParserGeneral_catch_clauseContext::{
-        node,
-      })
-    "exception_filter" =>
-      (self.enter_exception_filter)(CSharpParserException_filterContext::{
-        node,
-      })
-    "finally_clause" =>
-      (self.enter_finally_clause)(CSharpParserFinally_clauseContext::{ node, })
-    "resource_acquisition" =>
-      (self.enter_resource_acquisition)(CSharpParserResource_acquisitionContext::{
-        node,
-      })
-    "namespace_declaration" =>
-      (self.enter_namespace_declaration)(CSharpParserNamespace_declarationContext::{
-        node,
-      })
-    "qualified_identifier" =>
-      (self.enter_qualified_identifier)(CSharpParserQualified_identifierContext::{
-        node,
-      })
-    "namespace_body" =>
-      (self.enter_namespace_body)(CSharpParserNamespace_bodyContext::{ node, })
-    "extern_alias_directives" =>
-      (self.enter_extern_alias_directives)(CSharpParserExtern_alias_directivesContext::{
-        node,
-      })
-    "extern_alias_directive" =>
-      (self.enter_extern_alias_directive)(CSharpParserExtern_alias_directiveContext::{
-        node,
-      })
-    "using_directives" =>
-      (self.enter_using_directives)(CSharpParserUsing_directivesContext::{
-        node,
-      })
-    "using_directive" =>
-      (self.enter_using_directive)(CSharpParserUsing_directiveContext::{ node, })
-    "namespace_member_declarations" =>
-      (self.enter_namespace_member_declarations)(CSharpParserNamespace_member_declarationsContext::{
-        node,
-      })
-    "namespace_member_declaration" =>
-      (self.enter_namespace_member_declaration)(CSharpParserNamespace_member_declarationContext::{
-        node,
-      })
-    "type_declaration" =>
-      (self.enter_type_declaration)(CSharpParserType_declarationContext::{
-        node,
-      })
-    "qualified_alias_member" =>
-      (self.enter_qualified_alias_member)(CSharpParserQualified_alias_memberContext::{
-        node,
-      })
-    "type_parameter_list" =>
-      (self.enter_type_parameter_list)(CSharpParserType_parameter_listContext::{
-        node,
-      })
-    "type_parameter" =>
-      (self.enter_type_parameter)(CSharpParserType_parameterContext::{ node, })
-    "class_base" =>
-      (self.enter_class_base)(CSharpParserClass_baseContext::{ node, })
-    "interface_type_list" =>
-      (self.enter_interface_type_list)(CSharpParserInterface_type_listContext::{
-        node,
-      })
-    "type_parameter_constraints_clauses" =>
-      (self.enter_type_parameter_constraints_clauses)(CSharpParserType_parameter_constraints_clausesContext::{
-        node,
-      })
-    "type_parameter_constraints_clause" =>
-      (self.enter_type_parameter_constraints_clause)(CSharpParserType_parameter_constraints_clauseContext::{
-        node,
-      })
-    "type_parameter_constraints" =>
-      (self.enter_type_parameter_constraints)(CSharpParserType_parameter_constraintsContext::{
-        node,
-      })
-    "primary_constraint" =>
-      (self.enter_primary_constraint)(CSharpParserPrimary_constraintContext::{
-        node,
-      })
-    "secondary_constraints" =>
-      (self.enter_secondary_constraints)(CSharpParserSecondary_constraintsContext::{
-        node,
-      })
-    "constructor_constraint" =>
-      (self.enter_constructor_constraint)(CSharpParserConstructor_constraintContext::{
-        node,
-      })
-    "class_body" =>
-      (self.enter_class_body)(CSharpParserClass_bodyContext::{ node, })
-    "class_member_declarations" =>
-      (self.enter_class_member_declarations)(CSharpParserClass_member_declarationsContext::{
-        node,
-      })
-    "class_member_declaration" =>
-      (self.enter_class_member_declaration)(CSharpParserClass_member_declarationContext::{
-        node,
-      })
-    "all_member_modifiers" =>
-      (self.enter_all_member_modifiers)(CSharpParserAll_member_modifiersContext::{
-        node,
-      })
-    "all_member_modifier" =>
-      (self.enter_all_member_modifier)(CSharpParserAll_member_modifierContext::{
-        node,
-      })
-    "common_member_declaration" =>
-      (self.enter_common_member_declaration)(CSharpParserCommon_member_declarationContext::{
-        node,
-      })
-    "typed_member_declaration" =>
-      (self.enter_typed_member_declaration)(CSharpParserTyped_member_declarationContext::{
-        node,
-      })
-    "constant_declarators" =>
-      (self.enter_constant_declarators)(CSharpParserConstant_declaratorsContext::{
-        node,
-      })
-    "constant_declarator" =>
-      (self.enter_constant_declarator)(CSharpParserConstant_declaratorContext::{
-        node,
-      })
-    "variable_declarators" =>
-      (self.enter_variable_declarators)(CSharpParserVariable_declaratorsContext::{
-        node,
-      })
-    "variable_declarator" =>
-      (self.enter_variable_declarator)(CSharpParserVariable_declaratorContext::{
-        node,
-      })
-    "variable_initializer" =>
-      (self.enter_variable_initializer)(CSharpParserVariable_initializerContext::{
-        node,
-      })
-    "return_type" =>
-      (self.enter_return_type)(CSharpParserReturn_typeContext::{ node, })
-    "member_name" =>
-      (self.enter_member_name)(CSharpParserMember_nameContext::{ node, })
-    "method_body" =>
-      (self.enter_method_body)(CSharpParserMethod_bodyContext::{ node, })
-    "formal_parameter_list" =>
-      (self.enter_formal_parameter_list)(CSharpParserFormal_parameter_listContext::{
-        node,
-      })
-    "fixed_parameters" =>
-      (self.enter_fixed_parameters)(CSharpParserFixed_parametersContext::{
-        node,
-      })
-    "fixed_parameter" =>
-      (self.enter_fixed_parameter)(CSharpParserFixed_parameterContext::{ node, })
-    "parameter_modifier" =>
-      (self.enter_parameter_modifier)(CSharpParserParameter_modifierContext::{
-        node,
-      })
-    "parameter_array" =>
-      (self.enter_parameter_array)(CSharpParserParameter_arrayContext::{ node, })
-    "accessor_declarations" =>
-      (self.enter_accessor_declarations)(CSharpParserAccessor_declarationsContext::{
-        node,
-      })
-    "get_accessor_declaration" =>
-      (self.enter_get_accessor_declaration)(CSharpParserGet_accessor_declarationContext::{
-        node,
-      })
-    "set_accessor_declaration" =>
-      (self.enter_set_accessor_declaration)(CSharpParserSet_accessor_declarationContext::{
-        node,
-      })
-    "accessor_modifier" =>
-      (self.enter_accessor_modifier)(CSharpParserAccessor_modifierContext::{
-        node,
-      })
-    "accessor_body" =>
-      (self.enter_accessor_body)(CSharpParserAccessor_bodyContext::{ node, })
-    "event_accessor_declarations" =>
-      (self.enter_event_accessor_declarations)(CSharpParserEvent_accessor_declarationsContext::{
-        node,
-      })
-    "add_accessor_declaration" =>
-      (self.enter_add_accessor_declaration)(CSharpParserAdd_accessor_declarationContext::{
-        node,
-      })
-    "remove_accessor_declaration" =>
-      (self.enter_remove_accessor_declaration)(CSharpParserRemove_accessor_declarationContext::{
-        node,
-      })
-    "overloadable_operator" =>
-      (self.enter_overloadable_operator)(CSharpParserOverloadable_operatorContext::{
-        node,
-      })
-    "conversion_operator_declarator" =>
-      (self.enter_conversion_operator_declarator)(CSharpParserConversion_operator_declaratorContext::{
-        node,
-      })
-    "constructor_initializer" =>
-      (self.enter_constructor_initializer)(CSharpParserConstructor_initializerContext::{
-        node,
-      })
-    "body" => (self.enter_body)(CSharpParserBodyContext::{ node, })
-    "struct_interfaces" =>
-      (self.enter_struct_interfaces)(CSharpParserStruct_interfacesContext::{
-        node,
-      })
-    "struct_body" =>
-      (self.enter_struct_body)(CSharpParserStruct_bodyContext::{ node, })
-    "struct_member_declaration" =>
-      (self.enter_struct_member_declaration)(CSharpParserStruct_member_declarationContext::{
-        node,
-      })
-    "array_type" =>
-      (self.enter_array_type)(CSharpParserArray_typeContext::{ node, })
-    "rank_specifier" =>
-      (self.enter_rank_specifier)(CSharpParserRank_specifierContext::{ node, })
-    "array_initializer" =>
-      (self.enter_array_initializer)(CSharpParserArray_initializerContext::{
-        node,
-      })
-    "variant_type_parameter_list" =>
-      (self.enter_variant_type_parameter_list)(CSharpParserVariant_type_parameter_listContext::{
-        node,
-      })
-    "variant_type_parameter" =>
-      (self.enter_variant_type_parameter)(CSharpParserVariant_type_parameterContext::{
-        node,
-      })
-    "variance_annotation" =>
-      (self.enter_variance_annotation)(CSharpParserVariance_annotationContext::{
-        node,
-      })
-    "interface_base" =>
-      (self.enter_interface_base)(CSharpParserInterface_baseContext::{ node, })
-    "interface_body" =>
-      (self.enter_interface_body)(CSharpParserInterface_bodyContext::{ node, })
-    "interface_member_declaration" =>
-      (self.enter_interface_member_declaration)(CSharpParserInterface_member_declarationContext::{
-        node,
-      })
-    "interface_accessors" =>
-      (self.enter_interface_accessors)(CSharpParserInterface_accessorsContext::{
-        node,
-      })
-    "enum_base" =>
-      (self.enter_enum_base)(CSharpParserEnum_baseContext::{ node, })
-    "enum_body" =>
-      (self.enter_enum_body)(CSharpParserEnum_bodyContext::{ node, })
-    "enum_member_declaration" =>
-      (self.enter_enum_member_declaration)(CSharpParserEnum_member_declarationContext::{
-        node,
-      })
-    "global_attribute_section" =>
-      (self.enter_global_attribute_section)(CSharpParserGlobal_attribute_sectionContext::{
-        node,
-      })
-    "global_attribute_target" =>
-      (self.enter_global_attribute_target)(CSharpParserGlobal_attribute_targetContext::{
-        node,
-      })
-    "attributes" =>
-      (self.enter_attributes)(CSharpParserAttributesContext::{ node, })
-    "attribute_section" =>
-      (self.enter_attribute_section)(CSharpParserAttribute_sectionContext::{
-        node,
-      })
-    "attribute_target" =>
-      (self.enter_attribute_target)(CSharpParserAttribute_targetContext::{
-        node,
-      })
-    "attribute_list" =>
-      (self.enter_attribute_list)(CSharpParserAttribute_listContext::{ node, })
-    "attribute" =>
-      (self.enter_attribute)(CSharpParserAttributeContext::{ node, })
-    "attribute_argument" =>
-      (self.enter_attribute_argument)(CSharpParserAttribute_argumentContext::{
-        node,
-      })
-    "pointer_type" =>
-      (self.enter_pointer_type)(CSharpParserPointer_typeContext::{ node, })
-    "fixed_pointer_declarators" =>
-      (self.enter_fixed_pointer_declarators)(CSharpParserFixed_pointer_declaratorsContext::{
-        node,
-      })
-    "fixed_pointer_declarator" =>
-      (self.enter_fixed_pointer_declarator)(CSharpParserFixed_pointer_declaratorContext::{
-        node,
-      })
-    "fixed_pointer_initializer" =>
-      (self.enter_fixed_pointer_initializer)(CSharpParserFixed_pointer_initializerContext::{
-        node,
-      })
-    "fixed_size_buffer_declarator" =>
-      (self.enter_fixed_size_buffer_declarator)(CSharpParserFixed_size_buffer_declaratorContext::{
-        node,
-      })
-    "stackalloc_initializer" =>
-      (self.enter_stackalloc_initializer)(CSharpParserStackalloc_initializerContext::{
-        node,
-      })
-    "right_arrow" =>
-      (self.enter_right_arrow)(CSharpParserRight_arrowContext::{ node, })
-    "right_shift" =>
-      (self.enter_right_shift)(CSharpParserRight_shiftContext::{ node, })
-    "right_shift_assignment" =>
-      (self.enter_right_shift_assignment)(CSharpParserRight_shift_assignmentContext::{
-        node,
-      })
-    "literal" => (self.enter_literal)(CSharpParserLiteralContext::{ node, })
-    "boolean_literal" =>
-      (self.enter_boolean_literal)(CSharpParserBoolean_literalContext::{ node, })
-    "string_literal" =>
-      (self.enter_string_literal)(CSharpParserString_literalContext::{ node, })
-    "interpolated_regular_string" =>
-      (self.enter_interpolated_regular_string)(CSharpParserInterpolated_regular_stringContext::{
-        node,
-      })
-    "interpolated_verbatium_string" =>
-      (self.enter_interpolated_verbatium_string)(CSharpParserInterpolated_verbatium_stringContext::{
-        node,
-      })
-    "interpolated_regular_string_part" =>
-      (self.enter_interpolated_regular_string_part)(CSharpParserInterpolated_regular_string_partContext::{
-        node,
-      })
-    "interpolated_verbatium_string_part" =>
-      (self.enter_interpolated_verbatium_string_part)(CSharpParserInterpolated_verbatium_string_partContext::{
-        node,
-      })
-    "interpolated_string_expression" =>
-      (self.enter_interpolated_string_expression)(CSharpParserInterpolated_string_expressionContext::{
-        node,
-      })
-    "keyword" => (self.enter_keyword)(CSharpParserKeywordContext::{ node, })
-    "class_definition" =>
-      (self.enter_class_definition)(CSharpParserClass_definitionContext::{
-        node,
-      })
-    "struct_definition" =>
-      (self.enter_struct_definition)(CSharpParserStruct_definitionContext::{
-        node,
-      })
-    "interface_definition" =>
-      (self.enter_interface_definition)(CSharpParserInterface_definitionContext::{
-        node,
-      })
-    "enum_definition" =>
-      (self.enter_enum_definition)(CSharpParserEnum_definitionContext::{ node, })
-    "delegate_definition" =>
-      (self.enter_delegate_definition)(CSharpParserDelegate_definitionContext::{
-        node,
-      })
-    "event_declaration" =>
-      (self.enter_event_declaration)(CSharpParserEvent_declarationContext::{
-        node,
-      })
-    "field_declaration" =>
-      (self.enter_field_declaration)(CSharpParserField_declarationContext::{
-        node,
-      })
-    "property_declaration" =>
-      (self.enter_property_declaration)(CSharpParserProperty_declarationContext::{
-        node,
-      })
-    "constant_declaration" =>
-      (self.enter_constant_declaration)(CSharpParserConstant_declarationContext::{
-        node,
-      })
-    "indexer_declaration" =>
-      (self.enter_indexer_declaration)(CSharpParserIndexer_declarationContext::{
-        node,
-      })
-    "destructor_definition" =>
-      (self.enter_destructor_definition)(CSharpParserDestructor_definitionContext::{
-        node,
-      })
-    "constructor_declaration" =>
-      (self.enter_constructor_declaration)(CSharpParserConstructor_declarationContext::{
-        node,
-      })
-    "method_declaration" =>
-      (self.enter_method_declaration)(CSharpParserMethod_declarationContext::{
-        node,
-      })
-    "method_member_name" =>
-      (self.enter_method_member_name)(CSharpParserMethod_member_nameContext::{
-        node,
-      })
-    "operator_declaration" =>
-      (self.enter_operator_declaration)(CSharpParserOperator_declarationContext::{
-        node,
-      })
-    "arg_declaration" =>
-      (self.enter_arg_declaration)(CSharpParserArg_declarationContext::{ node, })
-    "method_invocation" =>
-      (self.enter_method_invocation)(CSharpParserMethod_invocationContext::{
-        node,
-      })
-    "object_creation_expression" =>
-      (self.enter_object_creation_expression)(CSharpParserObject_creation_expressionContext::{
-        node,
-      })
-    "identifier" =>
-      (self.enter_identifier)(CSharpParserIdentifierContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch &&
+    ["primary_expression_start", "simple_embedded_statement", "using_directive"].contains(
+      node.name,
+    )
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "compilation_unit" =>
+        (self.enter_compilation_unit)(CSharpParserCompilation_unitContext::{
+          node,
+        })
+      "namespace_or_type_name" =>
+        (self.enter_namespace_or_type_name)(CSharpParserNamespace_or_type_nameContext::{
+          node,
+        })
+      "type_" => (self.enter_type_)(CSharpParserType_Context::{ node, })
+      "base_type" =>
+        (self.enter_base_type)(CSharpParserBase_typeContext::{ node, })
+      "tuple_type" =>
+        (self.enter_tuple_type)(CSharpParserTuple_typeContext::{ node, })
+      "tuple_element" =>
+        (self.enter_tuple_element)(CSharpParserTuple_elementContext::{ node, })
+      "simple_type" =>
+        (self.enter_simple_type)(CSharpParserSimple_typeContext::{ node, })
+      "numeric_type" =>
+        (self.enter_numeric_type)(CSharpParserNumeric_typeContext::{ node, })
+      "integral_type" =>
+        (self.enter_integral_type)(CSharpParserIntegral_typeContext::{ node, })
+      "floating_point_type" =>
+        (self.enter_floating_point_type)(CSharpParserFloating_point_typeContext::{
+          node,
+        })
+      "class_type" =>
+        (self.enter_class_type)(CSharpParserClass_typeContext::{ node, })
+      "type_argument_list" =>
+        (self.enter_type_argument_list)(CSharpParserType_argument_listContext::{
+          node,
+        })
+      "argument_list" =>
+        (self.enter_argument_list)(CSharpParserArgument_listContext::{ node, })
+      "argument" =>
+        (self.enter_argument)(CSharpParserArgumentContext::{ node, })
+      "expression" =>
+        (self.enter_expression)(CSharpParserExpressionContext::{ node, })
+      "non_assignment_expression" =>
+        (self.enter_non_assignment_expression)(CSharpParserNon_assignment_expressionContext::{
+          node,
+        })
+      "assignment" =>
+        (self.enter_assignment)(CSharpParserAssignmentContext::{ node, })
+      "assignment_operator" =>
+        (self.enter_assignment_operator)(CSharpParserAssignment_operatorContext::{
+          node,
+        })
+      "conditional_expression" =>
+        (self.enter_conditional_expression)(CSharpParserConditional_expressionContext::{
+          node,
+        })
+      "null_coalescing_expression" =>
+        (self.enter_null_coalescing_expression)(CSharpParserNull_coalescing_expressionContext::{
+          node,
+        })
+      "conditional_or_expression" =>
+        (self.enter_conditional_or_expression)(CSharpParserConditional_or_expressionContext::{
+          node,
+        })
+      "conditional_and_expression" =>
+        (self.enter_conditional_and_expression)(CSharpParserConditional_and_expressionContext::{
+          node,
+        })
+      "inclusive_or_expression" =>
+        (self.enter_inclusive_or_expression)(CSharpParserInclusive_or_expressionContext::{
+          node,
+        })
+      "exclusive_or_expression" =>
+        (self.enter_exclusive_or_expression)(CSharpParserExclusive_or_expressionContext::{
+          node,
+        })
+      "and_expression" =>
+        (self.enter_and_expression)(CSharpParserAnd_expressionContext::{ node, })
+      "equality_expression" =>
+        (self.enter_equality_expression)(CSharpParserEquality_expressionContext::{
+          node,
+        })
+      "relational_expression" =>
+        (self.enter_relational_expression)(CSharpParserRelational_expressionContext::{
+          node,
+        })
+      "shift_expression" =>
+        (self.enter_shift_expression)(CSharpParserShift_expressionContext::{
+          node,
+        })
+      "additive_expression" =>
+        (self.enter_additive_expression)(CSharpParserAdditive_expressionContext::{
+          node,
+        })
+      "multiplicative_expression" =>
+        (self.enter_multiplicative_expression)(CSharpParserMultiplicative_expressionContext::{
+          node,
+        })
+      "switch_expression" =>
+        (self.enter_switch_expression)(CSharpParserSwitch_expressionContext::{
+          node,
+        })
+      "switch_expression_arms" =>
+        (self.enter_switch_expression_arms)(CSharpParserSwitch_expression_armsContext::{
+          node,
+        })
+      "switch_expression_arm" =>
+        (self.enter_switch_expression_arm)(CSharpParserSwitch_expression_armContext::{
+          node,
+        })
+      "range_expression" =>
+        (self.enter_range_expression)(CSharpParserRange_expressionContext::{
+          node,
+        })
+      "unary_expression" =>
+        (self.enter_unary_expression)(CSharpParserUnary_expressionContext::{
+          node,
+        })
+      "cast_expression" =>
+        (self.enter_cast_expression)(CSharpParserCast_expressionContext::{
+          node,
+        })
+      "primary_expression" =>
+        (self.enter_primary_expression)(CSharpParserPrimary_expressionContext::{
+          node,
+        })
+      "primary_expression_start" =>
+        (self.enter_primary_expression_start)(CSharpParserPrimary_expression_startContext::{
+          node,
+        })
+      "throwable_expression" =>
+        (self.enter_throwable_expression)(CSharpParserThrowable_expressionContext::{
+          node,
+        })
+      "throw_expression" =>
+        (self.enter_throw_expression)(CSharpParserThrow_expressionContext::{
+          node,
+        })
+      "member_access" =>
+        (self.enter_member_access)(CSharpParserMember_accessContext::{ node, })
+      "bracket_expression" =>
+        (self.enter_bracket_expression)(CSharpParserBracket_expressionContext::{
+          node,
+        })
+      "indexer_argument" =>
+        (self.enter_indexer_argument)(CSharpParserIndexer_argumentContext::{
+          node,
+        })
+      "predefined_type" =>
+        (self.enter_predefined_type)(CSharpParserPredefined_typeContext::{
+          node,
+        })
+      "expression_list" =>
+        (self.enter_expression_list)(CSharpParserExpression_listContext::{
+          node,
+        })
+      "object_or_collection_initializer" =>
+        (self.enter_object_or_collection_initializer)(CSharpParserObject_or_collection_initializerContext::{
+          node,
+        })
+      "object_initializer" =>
+        (self.enter_object_initializer)(CSharpParserObject_initializerContext::{
+          node,
+        })
+      "member_initializer_list" =>
+        (self.enter_member_initializer_list)(CSharpParserMember_initializer_listContext::{
+          node,
+        })
+      "member_initializer" =>
+        (self.enter_member_initializer)(CSharpParserMember_initializerContext::{
+          node,
+        })
+      "initializer_value" =>
+        (self.enter_initializer_value)(CSharpParserInitializer_valueContext::{
+          node,
+        })
+      "collection_initializer" =>
+        (self.enter_collection_initializer)(CSharpParserCollection_initializerContext::{
+          node,
+        })
+      "element_initializer" =>
+        (self.enter_element_initializer)(CSharpParserElement_initializerContext::{
+          node,
+        })
+      "anonymous_object_initializer" =>
+        (self.enter_anonymous_object_initializer)(CSharpParserAnonymous_object_initializerContext::{
+          node,
+        })
+      "member_declarator_list" =>
+        (self.enter_member_declarator_list)(CSharpParserMember_declarator_listContext::{
+          node,
+        })
+      "member_declarator" =>
+        (self.enter_member_declarator)(CSharpParserMember_declaratorContext::{
+          node,
+        })
+      "unbound_type_name" =>
+        (self.enter_unbound_type_name)(CSharpParserUnbound_type_nameContext::{
+          node,
+        })
+      "generic_dimension_specifier" =>
+        (self.enter_generic_dimension_specifier)(CSharpParserGeneric_dimension_specifierContext::{
+          node,
+        })
+      "isType" => (self.enter_isType)(CSharpParserIsTypeContext::{ node, })
+      "isTypePatternArms" =>
+        (self.enter_isTypePatternArms)(CSharpParserIsTypePatternArmsContext::{
+          node,
+        })
+      "isTypePatternArm" =>
+        (self.enter_isTypePatternArm)(CSharpParserIsTypePatternArmContext::{
+          node,
+        })
+      "lambda_expression" =>
+        (self.enter_lambda_expression)(CSharpParserLambda_expressionContext::{
+          node,
+        })
+      "anonymous_function_signature" =>
+        (self.enter_anonymous_function_signature)(CSharpParserAnonymous_function_signatureContext::{
+          node,
+        })
+      "explicit_anonymous_function_parameter_list" =>
+        (self.enter_explicit_anonymous_function_parameter_list)(CSharpParserExplicit_anonymous_function_parameter_listContext::{
+          node,
+        })
+      "explicit_anonymous_function_parameter" =>
+        (self.enter_explicit_anonymous_function_parameter)(CSharpParserExplicit_anonymous_function_parameterContext::{
+          node,
+        })
+      "implicit_anonymous_function_parameter_list" =>
+        (self.enter_implicit_anonymous_function_parameter_list)(CSharpParserImplicit_anonymous_function_parameter_listContext::{
+          node,
+        })
+      "anonymous_function_body" =>
+        (self.enter_anonymous_function_body)(CSharpParserAnonymous_function_bodyContext::{
+          node,
+        })
+      "query_expression" =>
+        (self.enter_query_expression)(CSharpParserQuery_expressionContext::{
+          node,
+        })
+      "from_clause" =>
+        (self.enter_from_clause)(CSharpParserFrom_clauseContext::{ node, })
+      "query_body" =>
+        (self.enter_query_body)(CSharpParserQuery_bodyContext::{ node, })
+      "query_body_clause" =>
+        (self.enter_query_body_clause)(CSharpParserQuery_body_clauseContext::{
+          node,
+        })
+      "let_clause" =>
+        (self.enter_let_clause)(CSharpParserLet_clauseContext::{ node, })
+      "where_clause" =>
+        (self.enter_where_clause)(CSharpParserWhere_clauseContext::{ node, })
+      "combined_join_clause" =>
+        (self.enter_combined_join_clause)(CSharpParserCombined_join_clauseContext::{
+          node,
+        })
+      "orderby_clause" =>
+        (self.enter_orderby_clause)(CSharpParserOrderby_clauseContext::{ node, })
+      "ordering" =>
+        (self.enter_ordering)(CSharpParserOrderingContext::{ node, })
+      "select_or_group_clause" =>
+        (self.enter_select_or_group_clause)(CSharpParserSelect_or_group_clauseContext::{
+          node,
+        })
+      "query_continuation" =>
+        (self.enter_query_continuation)(CSharpParserQuery_continuationContext::{
+          node,
+        })
+      "statement" =>
+        (self.enter_statement)(CSharpParserStatementContext::{ node, })
+      "declarationStatement" =>
+        (self.enter_declarationStatement)(CSharpParserDeclarationStatementContext::{
+          node,
+        })
+      "local_function_declaration" =>
+        (self.enter_local_function_declaration)(CSharpParserLocal_function_declarationContext::{
+          node,
+        })
+      "local_function_header" =>
+        (self.enter_local_function_header)(CSharpParserLocal_function_headerContext::{
+          node,
+        })
+      "local_function_modifiers" =>
+        (self.enter_local_function_modifiers)(CSharpParserLocal_function_modifiersContext::{
+          node,
+        })
+      "local_function_body" =>
+        (self.enter_local_function_body)(CSharpParserLocal_function_bodyContext::{
+          node,
+        })
+      "labeled_Statement" =>
+        (self.enter_labeled_Statement)(CSharpParserLabeled_StatementContext::{
+          node,
+        })
+      "embedded_statement" =>
+        (self.enter_embedded_statement)(CSharpParserEmbedded_statementContext::{
+          node,
+        })
+      "simple_embedded_statement" =>
+        (self.enter_simple_embedded_statement)(CSharpParserSimple_embedded_statementContext::{
+          node,
+        })
+      "block" => (self.enter_block)(CSharpParserBlockContext::{ node, })
+      "local_variable_declaration" =>
+        (self.enter_local_variable_declaration)(CSharpParserLocal_variable_declarationContext::{
+          node,
+        })
+      "local_variable_type" =>
+        (self.enter_local_variable_type)(CSharpParserLocal_variable_typeContext::{
+          node,
+        })
+      "local_variable_declarator" =>
+        (self.enter_local_variable_declarator)(CSharpParserLocal_variable_declaratorContext::{
+          node,
+        })
+      "local_variable_initializer" =>
+        (self.enter_local_variable_initializer)(CSharpParserLocal_variable_initializerContext::{
+          node,
+        })
+      "local_constant_declaration" =>
+        (self.enter_local_constant_declaration)(CSharpParserLocal_constant_declarationContext::{
+          node,
+        })
+      "if_body" => (self.enter_if_body)(CSharpParserIf_bodyContext::{ node, })
+      "switch_section" =>
+        (self.enter_switch_section)(CSharpParserSwitch_sectionContext::{ node, })
+      "switch_label" =>
+        (self.enter_switch_label)(CSharpParserSwitch_labelContext::{ node, })
+      "case_guard" =>
+        (self.enter_case_guard)(CSharpParserCase_guardContext::{ node, })
+      "statement_list" =>
+        (self.enter_statement_list)(CSharpParserStatement_listContext::{ node, })
+      "for_initializer" =>
+        (self.enter_for_initializer)(CSharpParserFor_initializerContext::{
+          node,
+        })
+      "for_iterator" =>
+        (self.enter_for_iterator)(CSharpParserFor_iteratorContext::{ node, })
+      "catch_clauses" =>
+        (self.enter_catch_clauses)(CSharpParserCatch_clausesContext::{ node, })
+      "specific_catch_clause" =>
+        (self.enter_specific_catch_clause)(CSharpParserSpecific_catch_clauseContext::{
+          node,
+        })
+      "general_catch_clause" =>
+        (self.enter_general_catch_clause)(CSharpParserGeneral_catch_clauseContext::{
+          node,
+        })
+      "exception_filter" =>
+        (self.enter_exception_filter)(CSharpParserException_filterContext::{
+          node,
+        })
+      "finally_clause" =>
+        (self.enter_finally_clause)(CSharpParserFinally_clauseContext::{ node, })
+      "resource_acquisition" =>
+        (self.enter_resource_acquisition)(CSharpParserResource_acquisitionContext::{
+          node,
+        })
+      "namespace_declaration" =>
+        (self.enter_namespace_declaration)(CSharpParserNamespace_declarationContext::{
+          node,
+        })
+      "qualified_identifier" =>
+        (self.enter_qualified_identifier)(CSharpParserQualified_identifierContext::{
+          node,
+        })
+      "namespace_body" =>
+        (self.enter_namespace_body)(CSharpParserNamespace_bodyContext::{ node, })
+      "extern_alias_directives" =>
+        (self.enter_extern_alias_directives)(CSharpParserExtern_alias_directivesContext::{
+          node,
+        })
+      "extern_alias_directive" =>
+        (self.enter_extern_alias_directive)(CSharpParserExtern_alias_directiveContext::{
+          node,
+        })
+      "using_directives" =>
+        (self.enter_using_directives)(CSharpParserUsing_directivesContext::{
+          node,
+        })
+      "using_directive" =>
+        (self.enter_using_directive)(CSharpParserUsing_directiveContext::{
+          node,
+        })
+      "namespace_member_declarations" =>
+        (self.enter_namespace_member_declarations)(CSharpParserNamespace_member_declarationsContext::{
+          node,
+        })
+      "namespace_member_declaration" =>
+        (self.enter_namespace_member_declaration)(CSharpParserNamespace_member_declarationContext::{
+          node,
+        })
+      "type_declaration" =>
+        (self.enter_type_declaration)(CSharpParserType_declarationContext::{
+          node,
+        })
+      "qualified_alias_member" =>
+        (self.enter_qualified_alias_member)(CSharpParserQualified_alias_memberContext::{
+          node,
+        })
+      "type_parameter_list" =>
+        (self.enter_type_parameter_list)(CSharpParserType_parameter_listContext::{
+          node,
+        })
+      "type_parameter" =>
+        (self.enter_type_parameter)(CSharpParserType_parameterContext::{ node, })
+      "class_base" =>
+        (self.enter_class_base)(CSharpParserClass_baseContext::{ node, })
+      "interface_type_list" =>
+        (self.enter_interface_type_list)(CSharpParserInterface_type_listContext::{
+          node,
+        })
+      "type_parameter_constraints_clauses" =>
+        (self.enter_type_parameter_constraints_clauses)(CSharpParserType_parameter_constraints_clausesContext::{
+          node,
+        })
+      "type_parameter_constraints_clause" =>
+        (self.enter_type_parameter_constraints_clause)(CSharpParserType_parameter_constraints_clauseContext::{
+          node,
+        })
+      "type_parameter_constraints" =>
+        (self.enter_type_parameter_constraints)(CSharpParserType_parameter_constraintsContext::{
+          node,
+        })
+      "primary_constraint" =>
+        (self.enter_primary_constraint)(CSharpParserPrimary_constraintContext::{
+          node,
+        })
+      "secondary_constraints" =>
+        (self.enter_secondary_constraints)(CSharpParserSecondary_constraintsContext::{
+          node,
+        })
+      "constructor_constraint" =>
+        (self.enter_constructor_constraint)(CSharpParserConstructor_constraintContext::{
+          node,
+        })
+      "class_body" =>
+        (self.enter_class_body)(CSharpParserClass_bodyContext::{ node, })
+      "class_member_declarations" =>
+        (self.enter_class_member_declarations)(CSharpParserClass_member_declarationsContext::{
+          node,
+        })
+      "class_member_declaration" =>
+        (self.enter_class_member_declaration)(CSharpParserClass_member_declarationContext::{
+          node,
+        })
+      "all_member_modifiers" =>
+        (self.enter_all_member_modifiers)(CSharpParserAll_member_modifiersContext::{
+          node,
+        })
+      "all_member_modifier" =>
+        (self.enter_all_member_modifier)(CSharpParserAll_member_modifierContext::{
+          node,
+        })
+      "common_member_declaration" =>
+        (self.enter_common_member_declaration)(CSharpParserCommon_member_declarationContext::{
+          node,
+        })
+      "typed_member_declaration" =>
+        (self.enter_typed_member_declaration)(CSharpParserTyped_member_declarationContext::{
+          node,
+        })
+      "constant_declarators" =>
+        (self.enter_constant_declarators)(CSharpParserConstant_declaratorsContext::{
+          node,
+        })
+      "constant_declarator" =>
+        (self.enter_constant_declarator)(CSharpParserConstant_declaratorContext::{
+          node,
+        })
+      "variable_declarators" =>
+        (self.enter_variable_declarators)(CSharpParserVariable_declaratorsContext::{
+          node,
+        })
+      "variable_declarator" =>
+        (self.enter_variable_declarator)(CSharpParserVariable_declaratorContext::{
+          node,
+        })
+      "variable_initializer" =>
+        (self.enter_variable_initializer)(CSharpParserVariable_initializerContext::{
+          node,
+        })
+      "return_type" =>
+        (self.enter_return_type)(CSharpParserReturn_typeContext::{ node, })
+      "member_name" =>
+        (self.enter_member_name)(CSharpParserMember_nameContext::{ node, })
+      "method_body" =>
+        (self.enter_method_body)(CSharpParserMethod_bodyContext::{ node, })
+      "formal_parameter_list" =>
+        (self.enter_formal_parameter_list)(CSharpParserFormal_parameter_listContext::{
+          node,
+        })
+      "fixed_parameters" =>
+        (self.enter_fixed_parameters)(CSharpParserFixed_parametersContext::{
+          node,
+        })
+      "fixed_parameter" =>
+        (self.enter_fixed_parameter)(CSharpParserFixed_parameterContext::{
+          node,
+        })
+      "parameter_modifier" =>
+        (self.enter_parameter_modifier)(CSharpParserParameter_modifierContext::{
+          node,
+        })
+      "parameter_array" =>
+        (self.enter_parameter_array)(CSharpParserParameter_arrayContext::{
+          node,
+        })
+      "accessor_declarations" =>
+        (self.enter_accessor_declarations)(CSharpParserAccessor_declarationsContext::{
+          node,
+        })
+      "get_accessor_declaration" =>
+        (self.enter_get_accessor_declaration)(CSharpParserGet_accessor_declarationContext::{
+          node,
+        })
+      "set_accessor_declaration" =>
+        (self.enter_set_accessor_declaration)(CSharpParserSet_accessor_declarationContext::{
+          node,
+        })
+      "accessor_modifier" =>
+        (self.enter_accessor_modifier)(CSharpParserAccessor_modifierContext::{
+          node,
+        })
+      "accessor_body" =>
+        (self.enter_accessor_body)(CSharpParserAccessor_bodyContext::{ node, })
+      "event_accessor_declarations" =>
+        (self.enter_event_accessor_declarations)(CSharpParserEvent_accessor_declarationsContext::{
+          node,
+        })
+      "add_accessor_declaration" =>
+        (self.enter_add_accessor_declaration)(CSharpParserAdd_accessor_declarationContext::{
+          node,
+        })
+      "remove_accessor_declaration" =>
+        (self.enter_remove_accessor_declaration)(CSharpParserRemove_accessor_declarationContext::{
+          node,
+        })
+      "overloadable_operator" =>
+        (self.enter_overloadable_operator)(CSharpParserOverloadable_operatorContext::{
+          node,
+        })
+      "conversion_operator_declarator" =>
+        (self.enter_conversion_operator_declarator)(CSharpParserConversion_operator_declaratorContext::{
+          node,
+        })
+      "constructor_initializer" =>
+        (self.enter_constructor_initializer)(CSharpParserConstructor_initializerContext::{
+          node,
+        })
+      "body" => (self.enter_body)(CSharpParserBodyContext::{ node, })
+      "struct_interfaces" =>
+        (self.enter_struct_interfaces)(CSharpParserStruct_interfacesContext::{
+          node,
+        })
+      "struct_body" =>
+        (self.enter_struct_body)(CSharpParserStruct_bodyContext::{ node, })
+      "struct_member_declaration" =>
+        (self.enter_struct_member_declaration)(CSharpParserStruct_member_declarationContext::{
+          node,
+        })
+      "array_type" =>
+        (self.enter_array_type)(CSharpParserArray_typeContext::{ node, })
+      "rank_specifier" =>
+        (self.enter_rank_specifier)(CSharpParserRank_specifierContext::{ node, })
+      "array_initializer" =>
+        (self.enter_array_initializer)(CSharpParserArray_initializerContext::{
+          node,
+        })
+      "variant_type_parameter_list" =>
+        (self.enter_variant_type_parameter_list)(CSharpParserVariant_type_parameter_listContext::{
+          node,
+        })
+      "variant_type_parameter" =>
+        (self.enter_variant_type_parameter)(CSharpParserVariant_type_parameterContext::{
+          node,
+        })
+      "variance_annotation" =>
+        (self.enter_variance_annotation)(CSharpParserVariance_annotationContext::{
+          node,
+        })
+      "interface_base" =>
+        (self.enter_interface_base)(CSharpParserInterface_baseContext::{ node, })
+      "interface_body" =>
+        (self.enter_interface_body)(CSharpParserInterface_bodyContext::{ node, })
+      "interface_member_declaration" =>
+        (self.enter_interface_member_declaration)(CSharpParserInterface_member_declarationContext::{
+          node,
+        })
+      "interface_accessors" =>
+        (self.enter_interface_accessors)(CSharpParserInterface_accessorsContext::{
+          node,
+        })
+      "enum_base" =>
+        (self.enter_enum_base)(CSharpParserEnum_baseContext::{ node, })
+      "enum_body" =>
+        (self.enter_enum_body)(CSharpParserEnum_bodyContext::{ node, })
+      "enum_member_declaration" =>
+        (self.enter_enum_member_declaration)(CSharpParserEnum_member_declarationContext::{
+          node,
+        })
+      "global_attribute_section" =>
+        (self.enter_global_attribute_section)(CSharpParserGlobal_attribute_sectionContext::{
+          node,
+        })
+      "global_attribute_target" =>
+        (self.enter_global_attribute_target)(CSharpParserGlobal_attribute_targetContext::{
+          node,
+        })
+      "attributes" =>
+        (self.enter_attributes)(CSharpParserAttributesContext::{ node, })
+      "attribute_section" =>
+        (self.enter_attribute_section)(CSharpParserAttribute_sectionContext::{
+          node,
+        })
+      "attribute_target" =>
+        (self.enter_attribute_target)(CSharpParserAttribute_targetContext::{
+          node,
+        })
+      "attribute_list" =>
+        (self.enter_attribute_list)(CSharpParserAttribute_listContext::{ node, })
+      "attribute" =>
+        (self.enter_attribute)(CSharpParserAttributeContext::{ node, })
+      "attribute_argument" =>
+        (self.enter_attribute_argument)(CSharpParserAttribute_argumentContext::{
+          node,
+        })
+      "pointer_type" =>
+        (self.enter_pointer_type)(CSharpParserPointer_typeContext::{ node, })
+      "fixed_pointer_declarators" =>
+        (self.enter_fixed_pointer_declarators)(CSharpParserFixed_pointer_declaratorsContext::{
+          node,
+        })
+      "fixed_pointer_declarator" =>
+        (self.enter_fixed_pointer_declarator)(CSharpParserFixed_pointer_declaratorContext::{
+          node,
+        })
+      "fixed_pointer_initializer" =>
+        (self.enter_fixed_pointer_initializer)(CSharpParserFixed_pointer_initializerContext::{
+          node,
+        })
+      "fixed_size_buffer_declarator" =>
+        (self.enter_fixed_size_buffer_declarator)(CSharpParserFixed_size_buffer_declaratorContext::{
+          node,
+        })
+      "stackalloc_initializer" =>
+        (self.enter_stackalloc_initializer)(CSharpParserStackalloc_initializerContext::{
+          node,
+        })
+      "right_arrow" =>
+        (self.enter_right_arrow)(CSharpParserRight_arrowContext::{ node, })
+      "right_shift" =>
+        (self.enter_right_shift)(CSharpParserRight_shiftContext::{ node, })
+      "right_shift_assignment" =>
+        (self.enter_right_shift_assignment)(CSharpParserRight_shift_assignmentContext::{
+          node,
+        })
+      "literal" => (self.enter_literal)(CSharpParserLiteralContext::{ node, })
+      "boolean_literal" =>
+        (self.enter_boolean_literal)(CSharpParserBoolean_literalContext::{
+          node,
+        })
+      "string_literal" =>
+        (self.enter_string_literal)(CSharpParserString_literalContext::{ node, })
+      "interpolated_regular_string" =>
+        (self.enter_interpolated_regular_string)(CSharpParserInterpolated_regular_stringContext::{
+          node,
+        })
+      "interpolated_verbatium_string" =>
+        (self.enter_interpolated_verbatium_string)(CSharpParserInterpolated_verbatium_stringContext::{
+          node,
+        })
+      "interpolated_regular_string_part" =>
+        (self.enter_interpolated_regular_string_part)(CSharpParserInterpolated_regular_string_partContext::{
+          node,
+        })
+      "interpolated_verbatium_string_part" =>
+        (self.enter_interpolated_verbatium_string_part)(CSharpParserInterpolated_verbatium_string_partContext::{
+          node,
+        })
+      "interpolated_string_expression" =>
+        (self.enter_interpolated_string_expression)(CSharpParserInterpolated_string_expressionContext::{
+          node,
+        })
+      "keyword" => (self.enter_keyword)(CSharpParserKeywordContext::{ node, })
+      "class_definition" =>
+        (self.enter_class_definition)(CSharpParserClass_definitionContext::{
+          node,
+        })
+      "struct_definition" =>
+        (self.enter_struct_definition)(CSharpParserStruct_definitionContext::{
+          node,
+        })
+      "interface_definition" =>
+        (self.enter_interface_definition)(CSharpParserInterface_definitionContext::{
+          node,
+        })
+      "enum_definition" =>
+        (self.enter_enum_definition)(CSharpParserEnum_definitionContext::{
+          node,
+        })
+      "delegate_definition" =>
+        (self.enter_delegate_definition)(CSharpParserDelegate_definitionContext::{
+          node,
+        })
+      "event_declaration" =>
+        (self.enter_event_declaration)(CSharpParserEvent_declarationContext::{
+          node,
+        })
+      "field_declaration" =>
+        (self.enter_field_declaration)(CSharpParserField_declarationContext::{
+          node,
+        })
+      "property_declaration" =>
+        (self.enter_property_declaration)(CSharpParserProperty_declarationContext::{
+          node,
+        })
+      "constant_declaration" =>
+        (self.enter_constant_declaration)(CSharpParserConstant_declarationContext::{
+          node,
+        })
+      "indexer_declaration" =>
+        (self.enter_indexer_declaration)(CSharpParserIndexer_declarationContext::{
+          node,
+        })
+      "destructor_definition" =>
+        (self.enter_destructor_definition)(CSharpParserDestructor_definitionContext::{
+          node,
+        })
+      "constructor_declaration" =>
+        (self.enter_constructor_declaration)(CSharpParserConstructor_declarationContext::{
+          node,
+        })
+      "method_declaration" =>
+        (self.enter_method_declaration)(CSharpParserMethod_declarationContext::{
+          node,
+        })
+      "method_member_name" =>
+        (self.enter_method_member_name)(CSharpParserMethod_member_nameContext::{
+          node,
+        })
+      "operator_declaration" =>
+        (self.enter_operator_declaration)(CSharpParserOperator_declarationContext::{
+          node,
+        })
+      "arg_declaration" =>
+        (self.enter_arg_declaration)(CSharpParserArg_declarationContext::{
+          node,
+        })
+      "method_invocation" =>
+        (self.enter_method_invocation)(CSharpParserMethod_invocationContext::{
+          node,
+        })
+      "object_creation_expression" =>
+        (self.enter_object_creation_expression)(CSharpParserObject_creation_expressionContext::{
+          node,
+        })
+      "identifier" =>
+        (self.enter_identifier)(CSharpParserIdentifierContext::{ node, })
+      _ => ()
+    }
   }
   if node.name == "primary_expression_start" {
     if CSharpParserPrimary_expression_startContext::{ node, }.alternative() ==
@@ -2277,9 +2316,14 @@ pub fn CSharpParserListener::walk(
       })
     }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
@@ -2591,740 +2635,763 @@ pub fn CSharpParserListener::walk(
       })
     }
   }
-  match node.name {
-    "compilation_unit" =>
-      (self.exit_compilation_unit)(CSharpParserCompilation_unitContext::{
-        node,
-      })
-    "namespace_or_type_name" =>
-      (self.exit_namespace_or_type_name)(CSharpParserNamespace_or_type_nameContext::{
-        node,
-      })
-    "type_" => (self.exit_type_)(CSharpParserType_Context::{ node, })
-    "base_type" =>
-      (self.exit_base_type)(CSharpParserBase_typeContext::{ node, })
-    "tuple_type" =>
-      (self.exit_tuple_type)(CSharpParserTuple_typeContext::{ node, })
-    "tuple_element" =>
-      (self.exit_tuple_element)(CSharpParserTuple_elementContext::{ node, })
-    "simple_type" =>
-      (self.exit_simple_type)(CSharpParserSimple_typeContext::{ node, })
-    "numeric_type" =>
-      (self.exit_numeric_type)(CSharpParserNumeric_typeContext::{ node, })
-    "integral_type" =>
-      (self.exit_integral_type)(CSharpParserIntegral_typeContext::{ node, })
-    "floating_point_type" =>
-      (self.exit_floating_point_type)(CSharpParserFloating_point_typeContext::{
-        node,
-      })
-    "class_type" =>
-      (self.exit_class_type)(CSharpParserClass_typeContext::{ node, })
-    "type_argument_list" =>
-      (self.exit_type_argument_list)(CSharpParserType_argument_listContext::{
-        node,
-      })
-    "argument_list" =>
-      (self.exit_argument_list)(CSharpParserArgument_listContext::{ node, })
-    "argument" => (self.exit_argument)(CSharpParserArgumentContext::{ node, })
-    "expression" =>
-      (self.exit_expression)(CSharpParserExpressionContext::{ node, })
-    "non_assignment_expression" =>
-      (self.exit_non_assignment_expression)(CSharpParserNon_assignment_expressionContext::{
-        node,
-      })
-    "assignment" =>
-      (self.exit_assignment)(CSharpParserAssignmentContext::{ node, })
-    "assignment_operator" =>
-      (self.exit_assignment_operator)(CSharpParserAssignment_operatorContext::{
-        node,
-      })
-    "conditional_expression" =>
-      (self.exit_conditional_expression)(CSharpParserConditional_expressionContext::{
-        node,
-      })
-    "null_coalescing_expression" =>
-      (self.exit_null_coalescing_expression)(CSharpParserNull_coalescing_expressionContext::{
-        node,
-      })
-    "conditional_or_expression" =>
-      (self.exit_conditional_or_expression)(CSharpParserConditional_or_expressionContext::{
-        node,
-      })
-    "conditional_and_expression" =>
-      (self.exit_conditional_and_expression)(CSharpParserConditional_and_expressionContext::{
-        node,
-      })
-    "inclusive_or_expression" =>
-      (self.exit_inclusive_or_expression)(CSharpParserInclusive_or_expressionContext::{
-        node,
-      })
-    "exclusive_or_expression" =>
-      (self.exit_exclusive_or_expression)(CSharpParserExclusive_or_expressionContext::{
-        node,
-      })
-    "and_expression" =>
-      (self.exit_and_expression)(CSharpParserAnd_expressionContext::{ node, })
-    "equality_expression" =>
-      (self.exit_equality_expression)(CSharpParserEquality_expressionContext::{
-        node,
-      })
-    "relational_expression" =>
-      (self.exit_relational_expression)(CSharpParserRelational_expressionContext::{
-        node,
-      })
-    "shift_expression" =>
-      (self.exit_shift_expression)(CSharpParserShift_expressionContext::{
-        node,
-      })
-    "additive_expression" =>
-      (self.exit_additive_expression)(CSharpParserAdditive_expressionContext::{
-        node,
-      })
-    "multiplicative_expression" =>
-      (self.exit_multiplicative_expression)(CSharpParserMultiplicative_expressionContext::{
-        node,
-      })
-    "switch_expression" =>
-      (self.exit_switch_expression)(CSharpParserSwitch_expressionContext::{
-        node,
-      })
-    "switch_expression_arms" =>
-      (self.exit_switch_expression_arms)(CSharpParserSwitch_expression_armsContext::{
-        node,
-      })
-    "switch_expression_arm" =>
-      (self.exit_switch_expression_arm)(CSharpParserSwitch_expression_armContext::{
-        node,
-      })
-    "range_expression" =>
-      (self.exit_range_expression)(CSharpParserRange_expressionContext::{
-        node,
-      })
-    "unary_expression" =>
-      (self.exit_unary_expression)(CSharpParserUnary_expressionContext::{
-        node,
-      })
-    "cast_expression" =>
-      (self.exit_cast_expression)(CSharpParserCast_expressionContext::{ node, })
-    "primary_expression" =>
-      (self.exit_primary_expression)(CSharpParserPrimary_expressionContext::{
-        node,
-      })
-    "primary_expression_start" =>
-      (self.exit_primary_expression_start)(CSharpParserPrimary_expression_startContext::{
-        node,
-      })
-    "throwable_expression" =>
-      (self.exit_throwable_expression)(CSharpParserThrowable_expressionContext::{
-        node,
-      })
-    "throw_expression" =>
-      (self.exit_throw_expression)(CSharpParserThrow_expressionContext::{
-        node,
-      })
-    "member_access" =>
-      (self.exit_member_access)(CSharpParserMember_accessContext::{ node, })
-    "bracket_expression" =>
-      (self.exit_bracket_expression)(CSharpParserBracket_expressionContext::{
-        node,
-      })
-    "indexer_argument" =>
-      (self.exit_indexer_argument)(CSharpParserIndexer_argumentContext::{
-        node,
-      })
-    "predefined_type" =>
-      (self.exit_predefined_type)(CSharpParserPredefined_typeContext::{ node, })
-    "expression_list" =>
-      (self.exit_expression_list)(CSharpParserExpression_listContext::{ node, })
-    "object_or_collection_initializer" =>
-      (self.exit_object_or_collection_initializer)(CSharpParserObject_or_collection_initializerContext::{
-        node,
-      })
-    "object_initializer" =>
-      (self.exit_object_initializer)(CSharpParserObject_initializerContext::{
-        node,
-      })
-    "member_initializer_list" =>
-      (self.exit_member_initializer_list)(CSharpParserMember_initializer_listContext::{
-        node,
-      })
-    "member_initializer" =>
-      (self.exit_member_initializer)(CSharpParserMember_initializerContext::{
-        node,
-      })
-    "initializer_value" =>
-      (self.exit_initializer_value)(CSharpParserInitializer_valueContext::{
-        node,
-      })
-    "collection_initializer" =>
-      (self.exit_collection_initializer)(CSharpParserCollection_initializerContext::{
-        node,
-      })
-    "element_initializer" =>
-      (self.exit_element_initializer)(CSharpParserElement_initializerContext::{
-        node,
-      })
-    "anonymous_object_initializer" =>
-      (self.exit_anonymous_object_initializer)(CSharpParserAnonymous_object_initializerContext::{
-        node,
-      })
-    "member_declarator_list" =>
-      (self.exit_member_declarator_list)(CSharpParserMember_declarator_listContext::{
-        node,
-      })
-    "member_declarator" =>
-      (self.exit_member_declarator)(CSharpParserMember_declaratorContext::{
-        node,
-      })
-    "unbound_type_name" =>
-      (self.exit_unbound_type_name)(CSharpParserUnbound_type_nameContext::{
-        node,
-      })
-    "generic_dimension_specifier" =>
-      (self.exit_generic_dimension_specifier)(CSharpParserGeneric_dimension_specifierContext::{
-        node,
-      })
-    "isType" => (self.exit_isType)(CSharpParserIsTypeContext::{ node, })
-    "isTypePatternArms" =>
-      (self.exit_isTypePatternArms)(CSharpParserIsTypePatternArmsContext::{
-        node,
-      })
-    "isTypePatternArm" =>
-      (self.exit_isTypePatternArm)(CSharpParserIsTypePatternArmContext::{
-        node,
-      })
-    "lambda_expression" =>
-      (self.exit_lambda_expression)(CSharpParserLambda_expressionContext::{
-        node,
-      })
-    "anonymous_function_signature" =>
-      (self.exit_anonymous_function_signature)(CSharpParserAnonymous_function_signatureContext::{
-        node,
-      })
-    "explicit_anonymous_function_parameter_list" =>
-      (self.exit_explicit_anonymous_function_parameter_list)(CSharpParserExplicit_anonymous_function_parameter_listContext::{
-        node,
-      })
-    "explicit_anonymous_function_parameter" =>
-      (self.exit_explicit_anonymous_function_parameter)(CSharpParserExplicit_anonymous_function_parameterContext::{
-        node,
-      })
-    "implicit_anonymous_function_parameter_list" =>
-      (self.exit_implicit_anonymous_function_parameter_list)(CSharpParserImplicit_anonymous_function_parameter_listContext::{
-        node,
-      })
-    "anonymous_function_body" =>
-      (self.exit_anonymous_function_body)(CSharpParserAnonymous_function_bodyContext::{
-        node,
-      })
-    "query_expression" =>
-      (self.exit_query_expression)(CSharpParserQuery_expressionContext::{
-        node,
-      })
-    "from_clause" =>
-      (self.exit_from_clause)(CSharpParserFrom_clauseContext::{ node, })
-    "query_body" =>
-      (self.exit_query_body)(CSharpParserQuery_bodyContext::{ node, })
-    "query_body_clause" =>
-      (self.exit_query_body_clause)(CSharpParserQuery_body_clauseContext::{
-        node,
-      })
-    "let_clause" =>
-      (self.exit_let_clause)(CSharpParserLet_clauseContext::{ node, })
-    "where_clause" =>
-      (self.exit_where_clause)(CSharpParserWhere_clauseContext::{ node, })
-    "combined_join_clause" =>
-      (self.exit_combined_join_clause)(CSharpParserCombined_join_clauseContext::{
-        node,
-      })
-    "orderby_clause" =>
-      (self.exit_orderby_clause)(CSharpParserOrderby_clauseContext::{ node, })
-    "ordering" => (self.exit_ordering)(CSharpParserOrderingContext::{ node, })
-    "select_or_group_clause" =>
-      (self.exit_select_or_group_clause)(CSharpParserSelect_or_group_clauseContext::{
-        node,
-      })
-    "query_continuation" =>
-      (self.exit_query_continuation)(CSharpParserQuery_continuationContext::{
-        node,
-      })
-    "statement" =>
-      (self.exit_statement)(CSharpParserStatementContext::{ node, })
-    "declarationStatement" =>
-      (self.exit_declarationStatement)(CSharpParserDeclarationStatementContext::{
-        node,
-      })
-    "local_function_declaration" =>
-      (self.exit_local_function_declaration)(CSharpParserLocal_function_declarationContext::{
-        node,
-      })
-    "local_function_header" =>
-      (self.exit_local_function_header)(CSharpParserLocal_function_headerContext::{
-        node,
-      })
-    "local_function_modifiers" =>
-      (self.exit_local_function_modifiers)(CSharpParserLocal_function_modifiersContext::{
-        node,
-      })
-    "local_function_body" =>
-      (self.exit_local_function_body)(CSharpParserLocal_function_bodyContext::{
-        node,
-      })
-    "labeled_Statement" =>
-      (self.exit_labeled_Statement)(CSharpParserLabeled_StatementContext::{
-        node,
-      })
-    "embedded_statement" =>
-      (self.exit_embedded_statement)(CSharpParserEmbedded_statementContext::{
-        node,
-      })
-    "simple_embedded_statement" =>
-      (self.exit_simple_embedded_statement)(CSharpParserSimple_embedded_statementContext::{
-        node,
-      })
-    "block" => (self.exit_block)(CSharpParserBlockContext::{ node, })
-    "local_variable_declaration" =>
-      (self.exit_local_variable_declaration)(CSharpParserLocal_variable_declarationContext::{
-        node,
-      })
-    "local_variable_type" =>
-      (self.exit_local_variable_type)(CSharpParserLocal_variable_typeContext::{
-        node,
-      })
-    "local_variable_declarator" =>
-      (self.exit_local_variable_declarator)(CSharpParserLocal_variable_declaratorContext::{
-        node,
-      })
-    "local_variable_initializer" =>
-      (self.exit_local_variable_initializer)(CSharpParserLocal_variable_initializerContext::{
-        node,
-      })
-    "local_constant_declaration" =>
-      (self.exit_local_constant_declaration)(CSharpParserLocal_constant_declarationContext::{
-        node,
-      })
-    "if_body" => (self.exit_if_body)(CSharpParserIf_bodyContext::{ node, })
-    "switch_section" =>
-      (self.exit_switch_section)(CSharpParserSwitch_sectionContext::{ node, })
-    "switch_label" =>
-      (self.exit_switch_label)(CSharpParserSwitch_labelContext::{ node, })
-    "case_guard" =>
-      (self.exit_case_guard)(CSharpParserCase_guardContext::{ node, })
-    "statement_list" =>
-      (self.exit_statement_list)(CSharpParserStatement_listContext::{ node, })
-    "for_initializer" =>
-      (self.exit_for_initializer)(CSharpParserFor_initializerContext::{ node, })
-    "for_iterator" =>
-      (self.exit_for_iterator)(CSharpParserFor_iteratorContext::{ node, })
-    "catch_clauses" =>
-      (self.exit_catch_clauses)(CSharpParserCatch_clausesContext::{ node, })
-    "specific_catch_clause" =>
-      (self.exit_specific_catch_clause)(CSharpParserSpecific_catch_clauseContext::{
-        node,
-      })
-    "general_catch_clause" =>
-      (self.exit_general_catch_clause)(CSharpParserGeneral_catch_clauseContext::{
-        node,
-      })
-    "exception_filter" =>
-      (self.exit_exception_filter)(CSharpParserException_filterContext::{
-        node,
-      })
-    "finally_clause" =>
-      (self.exit_finally_clause)(CSharpParserFinally_clauseContext::{ node, })
-    "resource_acquisition" =>
-      (self.exit_resource_acquisition)(CSharpParserResource_acquisitionContext::{
-        node,
-      })
-    "namespace_declaration" =>
-      (self.exit_namespace_declaration)(CSharpParserNamespace_declarationContext::{
-        node,
-      })
-    "qualified_identifier" =>
-      (self.exit_qualified_identifier)(CSharpParserQualified_identifierContext::{
-        node,
-      })
-    "namespace_body" =>
-      (self.exit_namespace_body)(CSharpParserNamespace_bodyContext::{ node, })
-    "extern_alias_directives" =>
-      (self.exit_extern_alias_directives)(CSharpParserExtern_alias_directivesContext::{
-        node,
-      })
-    "extern_alias_directive" =>
-      (self.exit_extern_alias_directive)(CSharpParserExtern_alias_directiveContext::{
-        node,
-      })
-    "using_directives" =>
-      (self.exit_using_directives)(CSharpParserUsing_directivesContext::{
-        node,
-      })
-    "using_directive" =>
-      (self.exit_using_directive)(CSharpParserUsing_directiveContext::{ node, })
-    "namespace_member_declarations" =>
-      (self.exit_namespace_member_declarations)(CSharpParserNamespace_member_declarationsContext::{
-        node,
-      })
-    "namespace_member_declaration" =>
-      (self.exit_namespace_member_declaration)(CSharpParserNamespace_member_declarationContext::{
-        node,
-      })
-    "type_declaration" =>
-      (self.exit_type_declaration)(CSharpParserType_declarationContext::{
-        node,
-      })
-    "qualified_alias_member" =>
-      (self.exit_qualified_alias_member)(CSharpParserQualified_alias_memberContext::{
-        node,
-      })
-    "type_parameter_list" =>
-      (self.exit_type_parameter_list)(CSharpParserType_parameter_listContext::{
-        node,
-      })
-    "type_parameter" =>
-      (self.exit_type_parameter)(CSharpParserType_parameterContext::{ node, })
-    "class_base" =>
-      (self.exit_class_base)(CSharpParserClass_baseContext::{ node, })
-    "interface_type_list" =>
-      (self.exit_interface_type_list)(CSharpParserInterface_type_listContext::{
-        node,
-      })
-    "type_parameter_constraints_clauses" =>
-      (self.exit_type_parameter_constraints_clauses)(CSharpParserType_parameter_constraints_clausesContext::{
-        node,
-      })
-    "type_parameter_constraints_clause" =>
-      (self.exit_type_parameter_constraints_clause)(CSharpParserType_parameter_constraints_clauseContext::{
-        node,
-      })
-    "type_parameter_constraints" =>
-      (self.exit_type_parameter_constraints)(CSharpParserType_parameter_constraintsContext::{
-        node,
-      })
-    "primary_constraint" =>
-      (self.exit_primary_constraint)(CSharpParserPrimary_constraintContext::{
-        node,
-      })
-    "secondary_constraints" =>
-      (self.exit_secondary_constraints)(CSharpParserSecondary_constraintsContext::{
-        node,
-      })
-    "constructor_constraint" =>
-      (self.exit_constructor_constraint)(CSharpParserConstructor_constraintContext::{
-        node,
-      })
-    "class_body" =>
-      (self.exit_class_body)(CSharpParserClass_bodyContext::{ node, })
-    "class_member_declarations" =>
-      (self.exit_class_member_declarations)(CSharpParserClass_member_declarationsContext::{
-        node,
-      })
-    "class_member_declaration" =>
-      (self.exit_class_member_declaration)(CSharpParserClass_member_declarationContext::{
-        node,
-      })
-    "all_member_modifiers" =>
-      (self.exit_all_member_modifiers)(CSharpParserAll_member_modifiersContext::{
-        node,
-      })
-    "all_member_modifier" =>
-      (self.exit_all_member_modifier)(CSharpParserAll_member_modifierContext::{
-        node,
-      })
-    "common_member_declaration" =>
-      (self.exit_common_member_declaration)(CSharpParserCommon_member_declarationContext::{
-        node,
-      })
-    "typed_member_declaration" =>
-      (self.exit_typed_member_declaration)(CSharpParserTyped_member_declarationContext::{
-        node,
-      })
-    "constant_declarators" =>
-      (self.exit_constant_declarators)(CSharpParserConstant_declaratorsContext::{
-        node,
-      })
-    "constant_declarator" =>
-      (self.exit_constant_declarator)(CSharpParserConstant_declaratorContext::{
-        node,
-      })
-    "variable_declarators" =>
-      (self.exit_variable_declarators)(CSharpParserVariable_declaratorsContext::{
-        node,
-      })
-    "variable_declarator" =>
-      (self.exit_variable_declarator)(CSharpParserVariable_declaratorContext::{
-        node,
-      })
-    "variable_initializer" =>
-      (self.exit_variable_initializer)(CSharpParserVariable_initializerContext::{
-        node,
-      })
-    "return_type" =>
-      (self.exit_return_type)(CSharpParserReturn_typeContext::{ node, })
-    "member_name" =>
-      (self.exit_member_name)(CSharpParserMember_nameContext::{ node, })
-    "method_body" =>
-      (self.exit_method_body)(CSharpParserMethod_bodyContext::{ node, })
-    "formal_parameter_list" =>
-      (self.exit_formal_parameter_list)(CSharpParserFormal_parameter_listContext::{
-        node,
-      })
-    "fixed_parameters" =>
-      (self.exit_fixed_parameters)(CSharpParserFixed_parametersContext::{
-        node,
-      })
-    "fixed_parameter" =>
-      (self.exit_fixed_parameter)(CSharpParserFixed_parameterContext::{ node, })
-    "parameter_modifier" =>
-      (self.exit_parameter_modifier)(CSharpParserParameter_modifierContext::{
-        node,
-      })
-    "parameter_array" =>
-      (self.exit_parameter_array)(CSharpParserParameter_arrayContext::{ node, })
-    "accessor_declarations" =>
-      (self.exit_accessor_declarations)(CSharpParserAccessor_declarationsContext::{
-        node,
-      })
-    "get_accessor_declaration" =>
-      (self.exit_get_accessor_declaration)(CSharpParserGet_accessor_declarationContext::{
-        node,
-      })
-    "set_accessor_declaration" =>
-      (self.exit_set_accessor_declaration)(CSharpParserSet_accessor_declarationContext::{
-        node,
-      })
-    "accessor_modifier" =>
-      (self.exit_accessor_modifier)(CSharpParserAccessor_modifierContext::{
-        node,
-      })
-    "accessor_body" =>
-      (self.exit_accessor_body)(CSharpParserAccessor_bodyContext::{ node, })
-    "event_accessor_declarations" =>
-      (self.exit_event_accessor_declarations)(CSharpParserEvent_accessor_declarationsContext::{
-        node,
-      })
-    "add_accessor_declaration" =>
-      (self.exit_add_accessor_declaration)(CSharpParserAdd_accessor_declarationContext::{
-        node,
-      })
-    "remove_accessor_declaration" =>
-      (self.exit_remove_accessor_declaration)(CSharpParserRemove_accessor_declarationContext::{
-        node,
-      })
-    "overloadable_operator" =>
-      (self.exit_overloadable_operator)(CSharpParserOverloadable_operatorContext::{
-        node,
-      })
-    "conversion_operator_declarator" =>
-      (self.exit_conversion_operator_declarator)(CSharpParserConversion_operator_declaratorContext::{
-        node,
-      })
-    "constructor_initializer" =>
-      (self.exit_constructor_initializer)(CSharpParserConstructor_initializerContext::{
-        node,
-      })
-    "body" => (self.exit_body)(CSharpParserBodyContext::{ node, })
-    "struct_interfaces" =>
-      (self.exit_struct_interfaces)(CSharpParserStruct_interfacesContext::{
-        node,
-      })
-    "struct_body" =>
-      (self.exit_struct_body)(CSharpParserStruct_bodyContext::{ node, })
-    "struct_member_declaration" =>
-      (self.exit_struct_member_declaration)(CSharpParserStruct_member_declarationContext::{
-        node,
-      })
-    "array_type" =>
-      (self.exit_array_type)(CSharpParserArray_typeContext::{ node, })
-    "rank_specifier" =>
-      (self.exit_rank_specifier)(CSharpParserRank_specifierContext::{ node, })
-    "array_initializer" =>
-      (self.exit_array_initializer)(CSharpParserArray_initializerContext::{
-        node,
-      })
-    "variant_type_parameter_list" =>
-      (self.exit_variant_type_parameter_list)(CSharpParserVariant_type_parameter_listContext::{
-        node,
-      })
-    "variant_type_parameter" =>
-      (self.exit_variant_type_parameter)(CSharpParserVariant_type_parameterContext::{
-        node,
-      })
-    "variance_annotation" =>
-      (self.exit_variance_annotation)(CSharpParserVariance_annotationContext::{
-        node,
-      })
-    "interface_base" =>
-      (self.exit_interface_base)(CSharpParserInterface_baseContext::{ node, })
-    "interface_body" =>
-      (self.exit_interface_body)(CSharpParserInterface_bodyContext::{ node, })
-    "interface_member_declaration" =>
-      (self.exit_interface_member_declaration)(CSharpParserInterface_member_declarationContext::{
-        node,
-      })
-    "interface_accessors" =>
-      (self.exit_interface_accessors)(CSharpParserInterface_accessorsContext::{
-        node,
-      })
-    "enum_base" =>
-      (self.exit_enum_base)(CSharpParserEnum_baseContext::{ node, })
-    "enum_body" =>
-      (self.exit_enum_body)(CSharpParserEnum_bodyContext::{ node, })
-    "enum_member_declaration" =>
-      (self.exit_enum_member_declaration)(CSharpParserEnum_member_declarationContext::{
-        node,
-      })
-    "global_attribute_section" =>
-      (self.exit_global_attribute_section)(CSharpParserGlobal_attribute_sectionContext::{
-        node,
-      })
-    "global_attribute_target" =>
-      (self.exit_global_attribute_target)(CSharpParserGlobal_attribute_targetContext::{
-        node,
-      })
-    "attributes" =>
-      (self.exit_attributes)(CSharpParserAttributesContext::{ node, })
-    "attribute_section" =>
-      (self.exit_attribute_section)(CSharpParserAttribute_sectionContext::{
-        node,
-      })
-    "attribute_target" =>
-      (self.exit_attribute_target)(CSharpParserAttribute_targetContext::{
-        node,
-      })
-    "attribute_list" =>
-      (self.exit_attribute_list)(CSharpParserAttribute_listContext::{ node, })
-    "attribute" =>
-      (self.exit_attribute)(CSharpParserAttributeContext::{ node, })
-    "attribute_argument" =>
-      (self.exit_attribute_argument)(CSharpParserAttribute_argumentContext::{
-        node,
-      })
-    "pointer_type" =>
-      (self.exit_pointer_type)(CSharpParserPointer_typeContext::{ node, })
-    "fixed_pointer_declarators" =>
-      (self.exit_fixed_pointer_declarators)(CSharpParserFixed_pointer_declaratorsContext::{
-        node,
-      })
-    "fixed_pointer_declarator" =>
-      (self.exit_fixed_pointer_declarator)(CSharpParserFixed_pointer_declaratorContext::{
-        node,
-      })
-    "fixed_pointer_initializer" =>
-      (self.exit_fixed_pointer_initializer)(CSharpParserFixed_pointer_initializerContext::{
-        node,
-      })
-    "fixed_size_buffer_declarator" =>
-      (self.exit_fixed_size_buffer_declarator)(CSharpParserFixed_size_buffer_declaratorContext::{
-        node,
-      })
-    "stackalloc_initializer" =>
-      (self.exit_stackalloc_initializer)(CSharpParserStackalloc_initializerContext::{
-        node,
-      })
-    "right_arrow" =>
-      (self.exit_right_arrow)(CSharpParserRight_arrowContext::{ node, })
-    "right_shift" =>
-      (self.exit_right_shift)(CSharpParserRight_shiftContext::{ node, })
-    "right_shift_assignment" =>
-      (self.exit_right_shift_assignment)(CSharpParserRight_shift_assignmentContext::{
-        node,
-      })
-    "literal" => (self.exit_literal)(CSharpParserLiteralContext::{ node, })
-    "boolean_literal" =>
-      (self.exit_boolean_literal)(CSharpParserBoolean_literalContext::{ node, })
-    "string_literal" =>
-      (self.exit_string_literal)(CSharpParserString_literalContext::{ node, })
-    "interpolated_regular_string" =>
-      (self.exit_interpolated_regular_string)(CSharpParserInterpolated_regular_stringContext::{
-        node,
-      })
-    "interpolated_verbatium_string" =>
-      (self.exit_interpolated_verbatium_string)(CSharpParserInterpolated_verbatium_stringContext::{
-        node,
-      })
-    "interpolated_regular_string_part" =>
-      (self.exit_interpolated_regular_string_part)(CSharpParserInterpolated_regular_string_partContext::{
-        node,
-      })
-    "interpolated_verbatium_string_part" =>
-      (self.exit_interpolated_verbatium_string_part)(CSharpParserInterpolated_verbatium_string_partContext::{
-        node,
-      })
-    "interpolated_string_expression" =>
-      (self.exit_interpolated_string_expression)(CSharpParserInterpolated_string_expressionContext::{
-        node,
-      })
-    "keyword" => (self.exit_keyword)(CSharpParserKeywordContext::{ node, })
-    "class_definition" =>
-      (self.exit_class_definition)(CSharpParserClass_definitionContext::{
-        node,
-      })
-    "struct_definition" =>
-      (self.exit_struct_definition)(CSharpParserStruct_definitionContext::{
-        node,
-      })
-    "interface_definition" =>
-      (self.exit_interface_definition)(CSharpParserInterface_definitionContext::{
-        node,
-      })
-    "enum_definition" =>
-      (self.exit_enum_definition)(CSharpParserEnum_definitionContext::{ node, })
-    "delegate_definition" =>
-      (self.exit_delegate_definition)(CSharpParserDelegate_definitionContext::{
-        node,
-      })
-    "event_declaration" =>
-      (self.exit_event_declaration)(CSharpParserEvent_declarationContext::{
-        node,
-      })
-    "field_declaration" =>
-      (self.exit_field_declaration)(CSharpParserField_declarationContext::{
-        node,
-      })
-    "property_declaration" =>
-      (self.exit_property_declaration)(CSharpParserProperty_declarationContext::{
-        node,
-      })
-    "constant_declaration" =>
-      (self.exit_constant_declaration)(CSharpParserConstant_declarationContext::{
-        node,
-      })
-    "indexer_declaration" =>
-      (self.exit_indexer_declaration)(CSharpParserIndexer_declarationContext::{
-        node,
-      })
-    "destructor_definition" =>
-      (self.exit_destructor_definition)(CSharpParserDestructor_definitionContext::{
-        node,
-      })
-    "constructor_declaration" =>
-      (self.exit_constructor_declaration)(CSharpParserConstructor_declarationContext::{
-        node,
-      })
-    "method_declaration" =>
-      (self.exit_method_declaration)(CSharpParserMethod_declarationContext::{
-        node,
-      })
-    "method_member_name" =>
-      (self.exit_method_member_name)(CSharpParserMethod_member_nameContext::{
-        node,
-      })
-    "operator_declaration" =>
-      (self.exit_operator_declaration)(CSharpParserOperator_declarationContext::{
-        node,
-      })
-    "arg_declaration" =>
-      (self.exit_arg_declaration)(CSharpParserArg_declarationContext::{ node, })
-    "method_invocation" =>
-      (self.exit_method_invocation)(CSharpParserMethod_invocationContext::{
-        node,
-      })
-    "object_creation_expression" =>
-      (self.exit_object_creation_expression)(CSharpParserObject_creation_expressionContext::{
-        node,
-      })
-    "identifier" =>
-      (self.exit_identifier)(CSharpParserIdentifierContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "compilation_unit" =>
+        (self.exit_compilation_unit)(CSharpParserCompilation_unitContext::{
+          node,
+        })
+      "namespace_or_type_name" =>
+        (self.exit_namespace_or_type_name)(CSharpParserNamespace_or_type_nameContext::{
+          node,
+        })
+      "type_" => (self.exit_type_)(CSharpParserType_Context::{ node, })
+      "base_type" =>
+        (self.exit_base_type)(CSharpParserBase_typeContext::{ node, })
+      "tuple_type" =>
+        (self.exit_tuple_type)(CSharpParserTuple_typeContext::{ node, })
+      "tuple_element" =>
+        (self.exit_tuple_element)(CSharpParserTuple_elementContext::{ node, })
+      "simple_type" =>
+        (self.exit_simple_type)(CSharpParserSimple_typeContext::{ node, })
+      "numeric_type" =>
+        (self.exit_numeric_type)(CSharpParserNumeric_typeContext::{ node, })
+      "integral_type" =>
+        (self.exit_integral_type)(CSharpParserIntegral_typeContext::{ node, })
+      "floating_point_type" =>
+        (self.exit_floating_point_type)(CSharpParserFloating_point_typeContext::{
+          node,
+        })
+      "class_type" =>
+        (self.exit_class_type)(CSharpParserClass_typeContext::{ node, })
+      "type_argument_list" =>
+        (self.exit_type_argument_list)(CSharpParserType_argument_listContext::{
+          node,
+        })
+      "argument_list" =>
+        (self.exit_argument_list)(CSharpParserArgument_listContext::{ node, })
+      "argument" => (self.exit_argument)(CSharpParserArgumentContext::{ node, })
+      "expression" =>
+        (self.exit_expression)(CSharpParserExpressionContext::{ node, })
+      "non_assignment_expression" =>
+        (self.exit_non_assignment_expression)(CSharpParserNon_assignment_expressionContext::{
+          node,
+        })
+      "assignment" =>
+        (self.exit_assignment)(CSharpParserAssignmentContext::{ node, })
+      "assignment_operator" =>
+        (self.exit_assignment_operator)(CSharpParserAssignment_operatorContext::{
+          node,
+        })
+      "conditional_expression" =>
+        (self.exit_conditional_expression)(CSharpParserConditional_expressionContext::{
+          node,
+        })
+      "null_coalescing_expression" =>
+        (self.exit_null_coalescing_expression)(CSharpParserNull_coalescing_expressionContext::{
+          node,
+        })
+      "conditional_or_expression" =>
+        (self.exit_conditional_or_expression)(CSharpParserConditional_or_expressionContext::{
+          node,
+        })
+      "conditional_and_expression" =>
+        (self.exit_conditional_and_expression)(CSharpParserConditional_and_expressionContext::{
+          node,
+        })
+      "inclusive_or_expression" =>
+        (self.exit_inclusive_or_expression)(CSharpParserInclusive_or_expressionContext::{
+          node,
+        })
+      "exclusive_or_expression" =>
+        (self.exit_exclusive_or_expression)(CSharpParserExclusive_or_expressionContext::{
+          node,
+        })
+      "and_expression" =>
+        (self.exit_and_expression)(CSharpParserAnd_expressionContext::{ node, })
+      "equality_expression" =>
+        (self.exit_equality_expression)(CSharpParserEquality_expressionContext::{
+          node,
+        })
+      "relational_expression" =>
+        (self.exit_relational_expression)(CSharpParserRelational_expressionContext::{
+          node,
+        })
+      "shift_expression" =>
+        (self.exit_shift_expression)(CSharpParserShift_expressionContext::{
+          node,
+        })
+      "additive_expression" =>
+        (self.exit_additive_expression)(CSharpParserAdditive_expressionContext::{
+          node,
+        })
+      "multiplicative_expression" =>
+        (self.exit_multiplicative_expression)(CSharpParserMultiplicative_expressionContext::{
+          node,
+        })
+      "switch_expression" =>
+        (self.exit_switch_expression)(CSharpParserSwitch_expressionContext::{
+          node,
+        })
+      "switch_expression_arms" =>
+        (self.exit_switch_expression_arms)(CSharpParserSwitch_expression_armsContext::{
+          node,
+        })
+      "switch_expression_arm" =>
+        (self.exit_switch_expression_arm)(CSharpParserSwitch_expression_armContext::{
+          node,
+        })
+      "range_expression" =>
+        (self.exit_range_expression)(CSharpParserRange_expressionContext::{
+          node,
+        })
+      "unary_expression" =>
+        (self.exit_unary_expression)(CSharpParserUnary_expressionContext::{
+          node,
+        })
+      "cast_expression" =>
+        (self.exit_cast_expression)(CSharpParserCast_expressionContext::{
+          node,
+        })
+      "primary_expression" =>
+        (self.exit_primary_expression)(CSharpParserPrimary_expressionContext::{
+          node,
+        })
+      "primary_expression_start" =>
+        (self.exit_primary_expression_start)(CSharpParserPrimary_expression_startContext::{
+          node,
+        })
+      "throwable_expression" =>
+        (self.exit_throwable_expression)(CSharpParserThrowable_expressionContext::{
+          node,
+        })
+      "throw_expression" =>
+        (self.exit_throw_expression)(CSharpParserThrow_expressionContext::{
+          node,
+        })
+      "member_access" =>
+        (self.exit_member_access)(CSharpParserMember_accessContext::{ node, })
+      "bracket_expression" =>
+        (self.exit_bracket_expression)(CSharpParserBracket_expressionContext::{
+          node,
+        })
+      "indexer_argument" =>
+        (self.exit_indexer_argument)(CSharpParserIndexer_argumentContext::{
+          node,
+        })
+      "predefined_type" =>
+        (self.exit_predefined_type)(CSharpParserPredefined_typeContext::{
+          node,
+        })
+      "expression_list" =>
+        (self.exit_expression_list)(CSharpParserExpression_listContext::{
+          node,
+        })
+      "object_or_collection_initializer" =>
+        (self.exit_object_or_collection_initializer)(CSharpParserObject_or_collection_initializerContext::{
+          node,
+        })
+      "object_initializer" =>
+        (self.exit_object_initializer)(CSharpParserObject_initializerContext::{
+          node,
+        })
+      "member_initializer_list" =>
+        (self.exit_member_initializer_list)(CSharpParserMember_initializer_listContext::{
+          node,
+        })
+      "member_initializer" =>
+        (self.exit_member_initializer)(CSharpParserMember_initializerContext::{
+          node,
+        })
+      "initializer_value" =>
+        (self.exit_initializer_value)(CSharpParserInitializer_valueContext::{
+          node,
+        })
+      "collection_initializer" =>
+        (self.exit_collection_initializer)(CSharpParserCollection_initializerContext::{
+          node,
+        })
+      "element_initializer" =>
+        (self.exit_element_initializer)(CSharpParserElement_initializerContext::{
+          node,
+        })
+      "anonymous_object_initializer" =>
+        (self.exit_anonymous_object_initializer)(CSharpParserAnonymous_object_initializerContext::{
+          node,
+        })
+      "member_declarator_list" =>
+        (self.exit_member_declarator_list)(CSharpParserMember_declarator_listContext::{
+          node,
+        })
+      "member_declarator" =>
+        (self.exit_member_declarator)(CSharpParserMember_declaratorContext::{
+          node,
+        })
+      "unbound_type_name" =>
+        (self.exit_unbound_type_name)(CSharpParserUnbound_type_nameContext::{
+          node,
+        })
+      "generic_dimension_specifier" =>
+        (self.exit_generic_dimension_specifier)(CSharpParserGeneric_dimension_specifierContext::{
+          node,
+        })
+      "isType" => (self.exit_isType)(CSharpParserIsTypeContext::{ node, })
+      "isTypePatternArms" =>
+        (self.exit_isTypePatternArms)(CSharpParserIsTypePatternArmsContext::{
+          node,
+        })
+      "isTypePatternArm" =>
+        (self.exit_isTypePatternArm)(CSharpParserIsTypePatternArmContext::{
+          node,
+        })
+      "lambda_expression" =>
+        (self.exit_lambda_expression)(CSharpParserLambda_expressionContext::{
+          node,
+        })
+      "anonymous_function_signature" =>
+        (self.exit_anonymous_function_signature)(CSharpParserAnonymous_function_signatureContext::{
+          node,
+        })
+      "explicit_anonymous_function_parameter_list" =>
+        (self.exit_explicit_anonymous_function_parameter_list)(CSharpParserExplicit_anonymous_function_parameter_listContext::{
+          node,
+        })
+      "explicit_anonymous_function_parameter" =>
+        (self.exit_explicit_anonymous_function_parameter)(CSharpParserExplicit_anonymous_function_parameterContext::{
+          node,
+        })
+      "implicit_anonymous_function_parameter_list" =>
+        (self.exit_implicit_anonymous_function_parameter_list)(CSharpParserImplicit_anonymous_function_parameter_listContext::{
+          node,
+        })
+      "anonymous_function_body" =>
+        (self.exit_anonymous_function_body)(CSharpParserAnonymous_function_bodyContext::{
+          node,
+        })
+      "query_expression" =>
+        (self.exit_query_expression)(CSharpParserQuery_expressionContext::{
+          node,
+        })
+      "from_clause" =>
+        (self.exit_from_clause)(CSharpParserFrom_clauseContext::{ node, })
+      "query_body" =>
+        (self.exit_query_body)(CSharpParserQuery_bodyContext::{ node, })
+      "query_body_clause" =>
+        (self.exit_query_body_clause)(CSharpParserQuery_body_clauseContext::{
+          node,
+        })
+      "let_clause" =>
+        (self.exit_let_clause)(CSharpParserLet_clauseContext::{ node, })
+      "where_clause" =>
+        (self.exit_where_clause)(CSharpParserWhere_clauseContext::{ node, })
+      "combined_join_clause" =>
+        (self.exit_combined_join_clause)(CSharpParserCombined_join_clauseContext::{
+          node,
+        })
+      "orderby_clause" =>
+        (self.exit_orderby_clause)(CSharpParserOrderby_clauseContext::{ node, })
+      "ordering" => (self.exit_ordering)(CSharpParserOrderingContext::{ node, })
+      "select_or_group_clause" =>
+        (self.exit_select_or_group_clause)(CSharpParserSelect_or_group_clauseContext::{
+          node,
+        })
+      "query_continuation" =>
+        (self.exit_query_continuation)(CSharpParserQuery_continuationContext::{
+          node,
+        })
+      "statement" =>
+        (self.exit_statement)(CSharpParserStatementContext::{ node, })
+      "declarationStatement" =>
+        (self.exit_declarationStatement)(CSharpParserDeclarationStatementContext::{
+          node,
+        })
+      "local_function_declaration" =>
+        (self.exit_local_function_declaration)(CSharpParserLocal_function_declarationContext::{
+          node,
+        })
+      "local_function_header" =>
+        (self.exit_local_function_header)(CSharpParserLocal_function_headerContext::{
+          node,
+        })
+      "local_function_modifiers" =>
+        (self.exit_local_function_modifiers)(CSharpParserLocal_function_modifiersContext::{
+          node,
+        })
+      "local_function_body" =>
+        (self.exit_local_function_body)(CSharpParserLocal_function_bodyContext::{
+          node,
+        })
+      "labeled_Statement" =>
+        (self.exit_labeled_Statement)(CSharpParserLabeled_StatementContext::{
+          node,
+        })
+      "embedded_statement" =>
+        (self.exit_embedded_statement)(CSharpParserEmbedded_statementContext::{
+          node,
+        })
+      "simple_embedded_statement" =>
+        (self.exit_simple_embedded_statement)(CSharpParserSimple_embedded_statementContext::{
+          node,
+        })
+      "block" => (self.exit_block)(CSharpParserBlockContext::{ node, })
+      "local_variable_declaration" =>
+        (self.exit_local_variable_declaration)(CSharpParserLocal_variable_declarationContext::{
+          node,
+        })
+      "local_variable_type" =>
+        (self.exit_local_variable_type)(CSharpParserLocal_variable_typeContext::{
+          node,
+        })
+      "local_variable_declarator" =>
+        (self.exit_local_variable_declarator)(CSharpParserLocal_variable_declaratorContext::{
+          node,
+        })
+      "local_variable_initializer" =>
+        (self.exit_local_variable_initializer)(CSharpParserLocal_variable_initializerContext::{
+          node,
+        })
+      "local_constant_declaration" =>
+        (self.exit_local_constant_declaration)(CSharpParserLocal_constant_declarationContext::{
+          node,
+        })
+      "if_body" => (self.exit_if_body)(CSharpParserIf_bodyContext::{ node, })
+      "switch_section" =>
+        (self.exit_switch_section)(CSharpParserSwitch_sectionContext::{ node, })
+      "switch_label" =>
+        (self.exit_switch_label)(CSharpParserSwitch_labelContext::{ node, })
+      "case_guard" =>
+        (self.exit_case_guard)(CSharpParserCase_guardContext::{ node, })
+      "statement_list" =>
+        (self.exit_statement_list)(CSharpParserStatement_listContext::{ node, })
+      "for_initializer" =>
+        (self.exit_for_initializer)(CSharpParserFor_initializerContext::{
+          node,
+        })
+      "for_iterator" =>
+        (self.exit_for_iterator)(CSharpParserFor_iteratorContext::{ node, })
+      "catch_clauses" =>
+        (self.exit_catch_clauses)(CSharpParserCatch_clausesContext::{ node, })
+      "specific_catch_clause" =>
+        (self.exit_specific_catch_clause)(CSharpParserSpecific_catch_clauseContext::{
+          node,
+        })
+      "general_catch_clause" =>
+        (self.exit_general_catch_clause)(CSharpParserGeneral_catch_clauseContext::{
+          node,
+        })
+      "exception_filter" =>
+        (self.exit_exception_filter)(CSharpParserException_filterContext::{
+          node,
+        })
+      "finally_clause" =>
+        (self.exit_finally_clause)(CSharpParserFinally_clauseContext::{ node, })
+      "resource_acquisition" =>
+        (self.exit_resource_acquisition)(CSharpParserResource_acquisitionContext::{
+          node,
+        })
+      "namespace_declaration" =>
+        (self.exit_namespace_declaration)(CSharpParserNamespace_declarationContext::{
+          node,
+        })
+      "qualified_identifier" =>
+        (self.exit_qualified_identifier)(CSharpParserQualified_identifierContext::{
+          node,
+        })
+      "namespace_body" =>
+        (self.exit_namespace_body)(CSharpParserNamespace_bodyContext::{ node, })
+      "extern_alias_directives" =>
+        (self.exit_extern_alias_directives)(CSharpParserExtern_alias_directivesContext::{
+          node,
+        })
+      "extern_alias_directive" =>
+        (self.exit_extern_alias_directive)(CSharpParserExtern_alias_directiveContext::{
+          node,
+        })
+      "using_directives" =>
+        (self.exit_using_directives)(CSharpParserUsing_directivesContext::{
+          node,
+        })
+      "using_directive" =>
+        (self.exit_using_directive)(CSharpParserUsing_directiveContext::{
+          node,
+        })
+      "namespace_member_declarations" =>
+        (self.exit_namespace_member_declarations)(CSharpParserNamespace_member_declarationsContext::{
+          node,
+        })
+      "namespace_member_declaration" =>
+        (self.exit_namespace_member_declaration)(CSharpParserNamespace_member_declarationContext::{
+          node,
+        })
+      "type_declaration" =>
+        (self.exit_type_declaration)(CSharpParserType_declarationContext::{
+          node,
+        })
+      "qualified_alias_member" =>
+        (self.exit_qualified_alias_member)(CSharpParserQualified_alias_memberContext::{
+          node,
+        })
+      "type_parameter_list" =>
+        (self.exit_type_parameter_list)(CSharpParserType_parameter_listContext::{
+          node,
+        })
+      "type_parameter" =>
+        (self.exit_type_parameter)(CSharpParserType_parameterContext::{ node, })
+      "class_base" =>
+        (self.exit_class_base)(CSharpParserClass_baseContext::{ node, })
+      "interface_type_list" =>
+        (self.exit_interface_type_list)(CSharpParserInterface_type_listContext::{
+          node,
+        })
+      "type_parameter_constraints_clauses" =>
+        (self.exit_type_parameter_constraints_clauses)(CSharpParserType_parameter_constraints_clausesContext::{
+          node,
+        })
+      "type_parameter_constraints_clause" =>
+        (self.exit_type_parameter_constraints_clause)(CSharpParserType_parameter_constraints_clauseContext::{
+          node,
+        })
+      "type_parameter_constraints" =>
+        (self.exit_type_parameter_constraints)(CSharpParserType_parameter_constraintsContext::{
+          node,
+        })
+      "primary_constraint" =>
+        (self.exit_primary_constraint)(CSharpParserPrimary_constraintContext::{
+          node,
+        })
+      "secondary_constraints" =>
+        (self.exit_secondary_constraints)(CSharpParserSecondary_constraintsContext::{
+          node,
+        })
+      "constructor_constraint" =>
+        (self.exit_constructor_constraint)(CSharpParserConstructor_constraintContext::{
+          node,
+        })
+      "class_body" =>
+        (self.exit_class_body)(CSharpParserClass_bodyContext::{ node, })
+      "class_member_declarations" =>
+        (self.exit_class_member_declarations)(CSharpParserClass_member_declarationsContext::{
+          node,
+        })
+      "class_member_declaration" =>
+        (self.exit_class_member_declaration)(CSharpParserClass_member_declarationContext::{
+          node,
+        })
+      "all_member_modifiers" =>
+        (self.exit_all_member_modifiers)(CSharpParserAll_member_modifiersContext::{
+          node,
+        })
+      "all_member_modifier" =>
+        (self.exit_all_member_modifier)(CSharpParserAll_member_modifierContext::{
+          node,
+        })
+      "common_member_declaration" =>
+        (self.exit_common_member_declaration)(CSharpParserCommon_member_declarationContext::{
+          node,
+        })
+      "typed_member_declaration" =>
+        (self.exit_typed_member_declaration)(CSharpParserTyped_member_declarationContext::{
+          node,
+        })
+      "constant_declarators" =>
+        (self.exit_constant_declarators)(CSharpParserConstant_declaratorsContext::{
+          node,
+        })
+      "constant_declarator" =>
+        (self.exit_constant_declarator)(CSharpParserConstant_declaratorContext::{
+          node,
+        })
+      "variable_declarators" =>
+        (self.exit_variable_declarators)(CSharpParserVariable_declaratorsContext::{
+          node,
+        })
+      "variable_declarator" =>
+        (self.exit_variable_declarator)(CSharpParserVariable_declaratorContext::{
+          node,
+        })
+      "variable_initializer" =>
+        (self.exit_variable_initializer)(CSharpParserVariable_initializerContext::{
+          node,
+        })
+      "return_type" =>
+        (self.exit_return_type)(CSharpParserReturn_typeContext::{ node, })
+      "member_name" =>
+        (self.exit_member_name)(CSharpParserMember_nameContext::{ node, })
+      "method_body" =>
+        (self.exit_method_body)(CSharpParserMethod_bodyContext::{ node, })
+      "formal_parameter_list" =>
+        (self.exit_formal_parameter_list)(CSharpParserFormal_parameter_listContext::{
+          node,
+        })
+      "fixed_parameters" =>
+        (self.exit_fixed_parameters)(CSharpParserFixed_parametersContext::{
+          node,
+        })
+      "fixed_parameter" =>
+        (self.exit_fixed_parameter)(CSharpParserFixed_parameterContext::{
+          node,
+        })
+      "parameter_modifier" =>
+        (self.exit_parameter_modifier)(CSharpParserParameter_modifierContext::{
+          node,
+        })
+      "parameter_array" =>
+        (self.exit_parameter_array)(CSharpParserParameter_arrayContext::{
+          node,
+        })
+      "accessor_declarations" =>
+        (self.exit_accessor_declarations)(CSharpParserAccessor_declarationsContext::{
+          node,
+        })
+      "get_accessor_declaration" =>
+        (self.exit_get_accessor_declaration)(CSharpParserGet_accessor_declarationContext::{
+          node,
+        })
+      "set_accessor_declaration" =>
+        (self.exit_set_accessor_declaration)(CSharpParserSet_accessor_declarationContext::{
+          node,
+        })
+      "accessor_modifier" =>
+        (self.exit_accessor_modifier)(CSharpParserAccessor_modifierContext::{
+          node,
+        })
+      "accessor_body" =>
+        (self.exit_accessor_body)(CSharpParserAccessor_bodyContext::{ node, })
+      "event_accessor_declarations" =>
+        (self.exit_event_accessor_declarations)(CSharpParserEvent_accessor_declarationsContext::{
+          node,
+        })
+      "add_accessor_declaration" =>
+        (self.exit_add_accessor_declaration)(CSharpParserAdd_accessor_declarationContext::{
+          node,
+        })
+      "remove_accessor_declaration" =>
+        (self.exit_remove_accessor_declaration)(CSharpParserRemove_accessor_declarationContext::{
+          node,
+        })
+      "overloadable_operator" =>
+        (self.exit_overloadable_operator)(CSharpParserOverloadable_operatorContext::{
+          node,
+        })
+      "conversion_operator_declarator" =>
+        (self.exit_conversion_operator_declarator)(CSharpParserConversion_operator_declaratorContext::{
+          node,
+        })
+      "constructor_initializer" =>
+        (self.exit_constructor_initializer)(CSharpParserConstructor_initializerContext::{
+          node,
+        })
+      "body" => (self.exit_body)(CSharpParserBodyContext::{ node, })
+      "struct_interfaces" =>
+        (self.exit_struct_interfaces)(CSharpParserStruct_interfacesContext::{
+          node,
+        })
+      "struct_body" =>
+        (self.exit_struct_body)(CSharpParserStruct_bodyContext::{ node, })
+      "struct_member_declaration" =>
+        (self.exit_struct_member_declaration)(CSharpParserStruct_member_declarationContext::{
+          node,
+        })
+      "array_type" =>
+        (self.exit_array_type)(CSharpParserArray_typeContext::{ node, })
+      "rank_specifier" =>
+        (self.exit_rank_specifier)(CSharpParserRank_specifierContext::{ node, })
+      "array_initializer" =>
+        (self.exit_array_initializer)(CSharpParserArray_initializerContext::{
+          node,
+        })
+      "variant_type_parameter_list" =>
+        (self.exit_variant_type_parameter_list)(CSharpParserVariant_type_parameter_listContext::{
+          node,
+        })
+      "variant_type_parameter" =>
+        (self.exit_variant_type_parameter)(CSharpParserVariant_type_parameterContext::{
+          node,
+        })
+      "variance_annotation" =>
+        (self.exit_variance_annotation)(CSharpParserVariance_annotationContext::{
+          node,
+        })
+      "interface_base" =>
+        (self.exit_interface_base)(CSharpParserInterface_baseContext::{ node, })
+      "interface_body" =>
+        (self.exit_interface_body)(CSharpParserInterface_bodyContext::{ node, })
+      "interface_member_declaration" =>
+        (self.exit_interface_member_declaration)(CSharpParserInterface_member_declarationContext::{
+          node,
+        })
+      "interface_accessors" =>
+        (self.exit_interface_accessors)(CSharpParserInterface_accessorsContext::{
+          node,
+        })
+      "enum_base" =>
+        (self.exit_enum_base)(CSharpParserEnum_baseContext::{ node, })
+      "enum_body" =>
+        (self.exit_enum_body)(CSharpParserEnum_bodyContext::{ node, })
+      "enum_member_declaration" =>
+        (self.exit_enum_member_declaration)(CSharpParserEnum_member_declarationContext::{
+          node,
+        })
+      "global_attribute_section" =>
+        (self.exit_global_attribute_section)(CSharpParserGlobal_attribute_sectionContext::{
+          node,
+        })
+      "global_attribute_target" =>
+        (self.exit_global_attribute_target)(CSharpParserGlobal_attribute_targetContext::{
+          node,
+        })
+      "attributes" =>
+        (self.exit_attributes)(CSharpParserAttributesContext::{ node, })
+      "attribute_section" =>
+        (self.exit_attribute_section)(CSharpParserAttribute_sectionContext::{
+          node,
+        })
+      "attribute_target" =>
+        (self.exit_attribute_target)(CSharpParserAttribute_targetContext::{
+          node,
+        })
+      "attribute_list" =>
+        (self.exit_attribute_list)(CSharpParserAttribute_listContext::{ node, })
+      "attribute" =>
+        (self.exit_attribute)(CSharpParserAttributeContext::{ node, })
+      "attribute_argument" =>
+        (self.exit_attribute_argument)(CSharpParserAttribute_argumentContext::{
+          node,
+        })
+      "pointer_type" =>
+        (self.exit_pointer_type)(CSharpParserPointer_typeContext::{ node, })
+      "fixed_pointer_declarators" =>
+        (self.exit_fixed_pointer_declarators)(CSharpParserFixed_pointer_declaratorsContext::{
+          node,
+        })
+      "fixed_pointer_declarator" =>
+        (self.exit_fixed_pointer_declarator)(CSharpParserFixed_pointer_declaratorContext::{
+          node,
+        })
+      "fixed_pointer_initializer" =>
+        (self.exit_fixed_pointer_initializer)(CSharpParserFixed_pointer_initializerContext::{
+          node,
+        })
+      "fixed_size_buffer_declarator" =>
+        (self.exit_fixed_size_buffer_declarator)(CSharpParserFixed_size_buffer_declaratorContext::{
+          node,
+        })
+      "stackalloc_initializer" =>
+        (self.exit_stackalloc_initializer)(CSharpParserStackalloc_initializerContext::{
+          node,
+        })
+      "right_arrow" =>
+        (self.exit_right_arrow)(CSharpParserRight_arrowContext::{ node, })
+      "right_shift" =>
+        (self.exit_right_shift)(CSharpParserRight_shiftContext::{ node, })
+      "right_shift_assignment" =>
+        (self.exit_right_shift_assignment)(CSharpParserRight_shift_assignmentContext::{
+          node,
+        })
+      "literal" => (self.exit_literal)(CSharpParserLiteralContext::{ node, })
+      "boolean_literal" =>
+        (self.exit_boolean_literal)(CSharpParserBoolean_literalContext::{
+          node,
+        })
+      "string_literal" =>
+        (self.exit_string_literal)(CSharpParserString_literalContext::{ node, })
+      "interpolated_regular_string" =>
+        (self.exit_interpolated_regular_string)(CSharpParserInterpolated_regular_stringContext::{
+          node,
+        })
+      "interpolated_verbatium_string" =>
+        (self.exit_interpolated_verbatium_string)(CSharpParserInterpolated_verbatium_stringContext::{
+          node,
+        })
+      "interpolated_regular_string_part" =>
+        (self.exit_interpolated_regular_string_part)(CSharpParserInterpolated_regular_string_partContext::{
+          node,
+        })
+      "interpolated_verbatium_string_part" =>
+        (self.exit_interpolated_verbatium_string_part)(CSharpParserInterpolated_verbatium_string_partContext::{
+          node,
+        })
+      "interpolated_string_expression" =>
+        (self.exit_interpolated_string_expression)(CSharpParserInterpolated_string_expressionContext::{
+          node,
+        })
+      "keyword" => (self.exit_keyword)(CSharpParserKeywordContext::{ node, })
+      "class_definition" =>
+        (self.exit_class_definition)(CSharpParserClass_definitionContext::{
+          node,
+        })
+      "struct_definition" =>
+        (self.exit_struct_definition)(CSharpParserStruct_definitionContext::{
+          node,
+        })
+      "interface_definition" =>
+        (self.exit_interface_definition)(CSharpParserInterface_definitionContext::{
+          node,
+        })
+      "enum_definition" =>
+        (self.exit_enum_definition)(CSharpParserEnum_definitionContext::{
+          node,
+        })
+      "delegate_definition" =>
+        (self.exit_delegate_definition)(CSharpParserDelegate_definitionContext::{
+          node,
+        })
+      "event_declaration" =>
+        (self.exit_event_declaration)(CSharpParserEvent_declarationContext::{
+          node,
+        })
+      "field_declaration" =>
+        (self.exit_field_declaration)(CSharpParserField_declarationContext::{
+          node,
+        })
+      "property_declaration" =>
+        (self.exit_property_declaration)(CSharpParserProperty_declarationContext::{
+          node,
+        })
+      "constant_declaration" =>
+        (self.exit_constant_declaration)(CSharpParserConstant_declarationContext::{
+          node,
+        })
+      "indexer_declaration" =>
+        (self.exit_indexer_declaration)(CSharpParserIndexer_declarationContext::{
+          node,
+        })
+      "destructor_definition" =>
+        (self.exit_destructor_definition)(CSharpParserDestructor_definitionContext::{
+          node,
+        })
+      "constructor_declaration" =>
+        (self.exit_constructor_declaration)(CSharpParserConstructor_declarationContext::{
+          node,
+        })
+      "method_declaration" =>
+        (self.exit_method_declaration)(CSharpParserMethod_declarationContext::{
+          node,
+        })
+      "method_member_name" =>
+        (self.exit_method_member_name)(CSharpParserMethod_member_nameContext::{
+          node,
+        })
+      "operator_declaration" =>
+        (self.exit_operator_declaration)(CSharpParserOperator_declarationContext::{
+          node,
+        })
+      "arg_declaration" =>
+        (self.exit_arg_declaration)(CSharpParserArg_declarationContext::{
+          node,
+        })
+      "method_invocation" =>
+        (self.exit_method_invocation)(CSharpParserMethod_invocationContext::{
+          node,
+        })
+      "object_creation_expression" =>
+        (self.exit_object_creation_expression)(CSharpParserObject_creation_expressionContext::{
+          node,
+        })
+      "identifier" =>
+        (self.exit_identifier)(CSharpParserIdentifierContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

@@ -43,13 +43,17 @@ pub fn LexActionsLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn LexActionsLexer::tokenize(Self, String, lexer_action? : (@moonantlr.LexerActionEvent, String) -> Unit raise @moonantlr.RuntimeError) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct LexActionsListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_document : (LexActionsDocumentContext) -> Unit
   exit_document : (LexActionsDocumentContext) -> Unit
   enter_unit : (LexActionsUnitContext) -> Unit
   exit_unit : (LexActionsUnitContext) -> Unit
 }
-pub fn LexActionsListener::new() -> Self
+pub fn LexActionsListener::new(antlr_dispatch? : Bool) -> Self
 pub fn LexActionsListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct LexActionsParser {
@@ -70,10 +74,11 @@ pub fn LexActionsUnitContext::raw(Self) -> @moonantlr.RuleContext
 
 pub(all) struct LexActionsVisitor[T] {
   terminal : (@moonantlr.Token) -> T
+  error : (@moonantlr.Token) -> T
   visit_document : (LexActionsDocumentContext, Array[T]) -> T
   visit_unit : (LexActionsUnitContext, Array[T]) -> T
 }
-pub fn[T] LexActionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] LexActionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T, error? : (@moonantlr.Token) -> T) -> Self[T]
 pub fn[T] LexActionsVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
 
 // Type aliases

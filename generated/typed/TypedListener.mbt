@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct TypedListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (TypedDocumentContext) -> Unit
   exit_document : (TypedDocumentContext) -> Unit
   enter_entry : (TypedEntryContext) -> Unit
@@ -22,9 +26,13 @@ pub(all) struct TypedListener {
 }
 
 ///|
-pub fn TypedListener::new() -> TypedListener {
+pub fn TypedListener::new(antlr_dispatch~ : Bool = true) -> TypedListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_entry: _ => (),
@@ -49,11 +57,15 @@ pub fn TypedListener::walk(
   self : TypedListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(TypedDocumentContext::{ node, })
-    "entry" => (self.enter_entry)(TypedEntryContext::{ node, })
-    "expression" => (self.enter_expression)(TypedExpressionContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && ["expression"].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" => (self.enter_document)(TypedDocumentContext::{ node, })
+      "entry" => (self.enter_entry)(TypedEntryContext::{ node, })
+      "expression" => (self.enter_expression)(TypedExpressionContext::{ node, })
+      _ => ()
+    }
   }
   if node.name == "expression" {
     if TypedExpressionContext::{ node, }.alternative() == Some("Group") {
@@ -80,9 +92,14 @@ pub fn TypedListener::walk(
       (self.enter_alt_Sum)(TypedSumContext::{ node, })
     }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
@@ -111,10 +128,13 @@ pub fn TypedListener::walk(
       (self.exit_alt_Sum)(TypedSumContext::{ node, })
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(TypedDocumentContext::{ node, })
-    "entry" => (self.exit_entry)(TypedEntryContext::{ node, })
-    "expression" => (self.exit_expression)(TypedExpressionContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(TypedDocumentContext::{ node, })
+      "entry" => (self.exit_entry)(TypedEntryContext::{ node, })
+      "expression" => (self.exit_expression)(TypedExpressionContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

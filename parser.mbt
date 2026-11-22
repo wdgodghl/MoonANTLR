@@ -158,6 +158,7 @@ fn parse_rule(
         sources: [],
         path: [],
         recovered_captures: Map([]),
+        error_children: [],
         build_tree: true,
         labels: [],
       },
@@ -267,6 +268,7 @@ fn parse_rule(
               sources: [-1],
               path: [],
               recovered_captures: Map([]),
+              error_children: [],
               build_tree: true,
               labels: [(-1, RuleChild(cfg.context))],
             }

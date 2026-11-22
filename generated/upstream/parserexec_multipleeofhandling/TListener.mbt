@@ -2,30 +2,54 @@
 
 ///|
 pub(all) struct TListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_prog : (TProgContext) -> Unit
   exit_prog : (TProgContext) -> Unit
 }
 
 ///|
-pub fn TListener::new() -> TListener {
-  { terminal: _ => (), enter_prog: _ => (), exit_prog: _ => (), }
+pub fn TListener::new(antlr_dispatch~ : Bool = true) -> TListener {
+  {
+    antlr_dispatch,
+    terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
+    enter_prog: _ => (),
+    exit_prog: _ => (),
+  }
 }
 
 ///|
 pub fn TListener::walk(self : TListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "prog" => (self.enter_prog)(TProgContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "prog" => (self.enter_prog)(TProgContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "prog" => (self.exit_prog)(TProgContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "prog" => (self.exit_prog)(TProgContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

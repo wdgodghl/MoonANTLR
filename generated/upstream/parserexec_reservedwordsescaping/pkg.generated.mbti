@@ -96,7 +96,11 @@ pub fn GLexer::new() -> Self raise @moonantlr.RuntimeError
 pub fn GLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
 
 pub(all) struct GListener {
+  antlr_dispatch : Bool
   terminal : (@moonantlr.Token) -> Unit
+  error : (@moonantlr.Token) -> Unit
+  enter : (@moonantlr.RuleContext) -> Unit
+  exit : (@moonantlr.RuleContext) -> Unit
   enter_root : (GRootContext) -> Unit
   exit_root : (GRootContext) -> Unit
   enter_continue : (GContinueContext) -> Unit
@@ -112,7 +116,7 @@ pub(all) struct GListener {
   enter_alt_int : (GIntContext) -> Unit
   exit_alt_int : (GIntContext) -> Unit
 }
-pub fn GListener::new() -> Self
+pub fn GListener::new(antlr_dispatch? : Bool) -> Self
 pub fn GListener::walk(Self, @moonantlr.RuleContext) -> Unit
 
 pub struct GParser {

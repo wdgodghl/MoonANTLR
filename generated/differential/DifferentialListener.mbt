@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct DifferentialListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (DifferentialDocumentContext) -> Unit
   exit_document : (DifferentialDocumentContext) -> Unit
   enter_expression : (DifferentialExpressionContext) -> Unit
@@ -34,9 +38,15 @@ pub(all) struct DifferentialListener {
 }
 
 ///|
-pub fn DifferentialListener::new() -> DifferentialListener {
+pub fn DifferentialListener::new(
+  antlr_dispatch~ : Bool = true,
+) -> DifferentialListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_expression: _ => (),
@@ -73,52 +83,67 @@ pub fn DifferentialListener::walk(
   self : DifferentialListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(DifferentialDocumentContext::{ node, })
-    "expression" =>
-      (self.enter_expression)(DifferentialExpressionContext::{ node, })
-    "choice" => (self.enter_choice)(DifferentialChoiceContext::{ node, })
-    "item" => (self.enter_item)(DifferentialItemContext::{ node, })
-    "nullable" => (self.enter_nullable)(DifferentialNullableContext::{ node, })
-    "maybe" => (self.enter_maybe)(DifferentialMaybeContext::{ node, })
-    "following" =>
-      (self.enter_following)(DifferentialFollowingContext::{ node, })
-    "prefix" => (self.enter_prefix)(DifferentialPrefixContext::{ node, })
-    "ambiguous" =>
-      (self.enter_ambiguous)(DifferentialAmbiguousContext::{ node, })
-    "first" => (self.enter_first)(DifferentialFirstContext::{ node, })
-    "second" => (self.enter_second)(DifferentialSecondContext::{ node, })
-    "reluctant" =>
-      (self.enter_reluctant)(DifferentialReluctantContext::{ node, })
-    "contexts" => (self.enter_contexts)(DifferentialContextsContext::{ node, })
-    "inner" => (self.enter_inner)(DifferentialInnerContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" =>
+        (self.enter_document)(DifferentialDocumentContext::{ node, })
+      "expression" =>
+        (self.enter_expression)(DifferentialExpressionContext::{ node, })
+      "choice" => (self.enter_choice)(DifferentialChoiceContext::{ node, })
+      "item" => (self.enter_item)(DifferentialItemContext::{ node, })
+      "nullable" =>
+        (self.enter_nullable)(DifferentialNullableContext::{ node, })
+      "maybe" => (self.enter_maybe)(DifferentialMaybeContext::{ node, })
+      "following" =>
+        (self.enter_following)(DifferentialFollowingContext::{ node, })
+      "prefix" => (self.enter_prefix)(DifferentialPrefixContext::{ node, })
+      "ambiguous" =>
+        (self.enter_ambiguous)(DifferentialAmbiguousContext::{ node, })
+      "first" => (self.enter_first)(DifferentialFirstContext::{ node, })
+      "second" => (self.enter_second)(DifferentialSecondContext::{ node, })
+      "reluctant" =>
+        (self.enter_reluctant)(DifferentialReluctantContext::{ node, })
+      "contexts" =>
+        (self.enter_contexts)(DifferentialContextsContext::{ node, })
+      "inner" => (self.enter_inner)(DifferentialInnerContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(DifferentialDocumentContext::{ node, })
-    "expression" =>
-      (self.exit_expression)(DifferentialExpressionContext::{ node, })
-    "choice" => (self.exit_choice)(DifferentialChoiceContext::{ node, })
-    "item" => (self.exit_item)(DifferentialItemContext::{ node, })
-    "nullable" => (self.exit_nullable)(DifferentialNullableContext::{ node, })
-    "maybe" => (self.exit_maybe)(DifferentialMaybeContext::{ node, })
-    "following" =>
-      (self.exit_following)(DifferentialFollowingContext::{ node, })
-    "prefix" => (self.exit_prefix)(DifferentialPrefixContext::{ node, })
-    "ambiguous" =>
-      (self.exit_ambiguous)(DifferentialAmbiguousContext::{ node, })
-    "first" => (self.exit_first)(DifferentialFirstContext::{ node, })
-    "second" => (self.exit_second)(DifferentialSecondContext::{ node, })
-    "reluctant" =>
-      (self.exit_reluctant)(DifferentialReluctantContext::{ node, })
-    "contexts" => (self.exit_contexts)(DifferentialContextsContext::{ node, })
-    "inner" => (self.exit_inner)(DifferentialInnerContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(DifferentialDocumentContext::{ node, })
+      "expression" =>
+        (self.exit_expression)(DifferentialExpressionContext::{ node, })
+      "choice" => (self.exit_choice)(DifferentialChoiceContext::{ node, })
+      "item" => (self.exit_item)(DifferentialItemContext::{ node, })
+      "nullable" => (self.exit_nullable)(DifferentialNullableContext::{ node, })
+      "maybe" => (self.exit_maybe)(DifferentialMaybeContext::{ node, })
+      "following" =>
+        (self.exit_following)(DifferentialFollowingContext::{ node, })
+      "prefix" => (self.exit_prefix)(DifferentialPrefixContext::{ node, })
+      "ambiguous" =>
+        (self.exit_ambiguous)(DifferentialAmbiguousContext::{ node, })
+      "first" => (self.exit_first)(DifferentialFirstContext::{ node, })
+      "second" => (self.exit_second)(DifferentialSecondContext::{ node, })
+      "reluctant" =>
+        (self.exit_reluctant)(DifferentialReluctantContext::{ node, })
+      "contexts" => (self.exit_contexts)(DifferentialContextsContext::{ node, })
+      "inner" => (self.exit_inner)(DifferentialInnerContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

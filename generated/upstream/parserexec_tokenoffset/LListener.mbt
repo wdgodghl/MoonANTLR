@@ -2,30 +2,54 @@
 
 ///|
 pub(all) struct LListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_a : (LAContext) -> Unit
   exit_a : (LAContext) -> Unit
 }
 
 ///|
-pub fn LListener::new() -> LListener {
-  { terminal: _ => (), enter_a: _ => (), exit_a: _ => (), }
+pub fn LListener::new(antlr_dispatch~ : Bool = true) -> LListener {
+  {
+    antlr_dispatch,
+    terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
+    enter_a: _ => (),
+    exit_a: _ => (),
+  }
 }
 
 ///|
 pub fn LListener::walk(self : LListener, node : @runtime.RuleContext) -> Unit {
-  match node.name {
-    "a" => (self.enter_a)(LAContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "a" => (self.enter_a)(LAContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "a" => (self.exit_a)(LAContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "a" => (self.exit_a)(LAContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

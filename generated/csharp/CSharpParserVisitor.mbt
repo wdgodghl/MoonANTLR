@@ -3,6 +3,7 @@
 ///|
 pub(all) struct CSharpParserVisitor[T] {
   terminal : (@runtime.Token) -> T
+  error : (@runtime.Token) -> T
   visit_compilation_unit : (CSharpParserCompilation_unitContext, Array[T]) -> T
   visit_namespace_or_type_name : (
     CSharpParserNamespace_or_type_nameContext,
@@ -607,9 +608,11 @@ pub(all) struct CSharpParserVisitor[T] {
 pub fn[T] CSharpParserVisitor::new(
   terminal~ : (@runtime.Token) -> T,
   rule~ : (@runtime.RuleContext, Array[T]) -> T,
+  error? : (@runtime.Token) -> T,
 ) -> CSharpParserVisitor[T] {
   {
     terminal,
+    error: error.unwrap_or(terminal),
     visit_compilation_unit: (context, children) => rule(context.raw(), children),
     visit_namespace_or_type_name: (context, children) => {
       rule(context.raw(), children)
@@ -1153,9 +1156,14 @@ pub fn[T] CSharpParserVisitor::visit(
   self : CSharpParserVisitor[T],
   node : @runtime.RuleContext,
 ) -> T {
-  let values = node.children.map(child => {
+  let values = node.children.mapi((index, child) => {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.visit(context)
     }
   })

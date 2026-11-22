@@ -2,7 +2,11 @@
 
 ///|
 pub(all) struct ControlListener {
+  antlr_dispatch : Bool
   terminal : (@runtime.Token) -> Unit
+  error : (@runtime.Token) -> Unit
+  enter : (@runtime.RuleContext) -> Unit
+  exit : (@runtime.RuleContext) -> Unit
   enter_document : (ControlDocumentContext) -> Unit
   exit_document : (ControlDocumentContext) -> Unit
   enter_branch : (ControlBranchContext) -> Unit
@@ -18,9 +22,13 @@ pub(all) struct ControlListener {
 }
 
 ///|
-pub fn ControlListener::new() -> ControlListener {
+pub fn ControlListener::new(antlr_dispatch~ : Bool = true) -> ControlListener {
   {
+    antlr_dispatch,
     terminal: _ => (),
+    error: _ => (),
+    enter: _ => (),
+    exit: _ => (),
     enter_document: _ => (),
     exit_document: _ => (),
     enter_branch: _ => (),
@@ -41,28 +49,42 @@ pub fn ControlListener::walk(
   self : ControlListener,
   node : @runtime.RuleContext,
 ) -> Unit {
-  match node.name {
-    "document" => (self.enter_document)(ControlDocumentContext::{ node, })
-    "branch" => (self.enter_branch)(ControlBranchContext::{ node, })
-    "toggle" => (self.enter_toggle)(ControlToggleContext::{ node, })
-    "child" => (self.enter_child)(ControlChildContext::{ node, })
-    "boundaries" => (self.enter_boundaries)(ControlBoundariesContext::{ node, })
-    "empty" => (self.enter_empty)(ControlEmptyContext::{ node, })
-    _ => ()
+  let labelled = self.antlr_dispatch && [].contains(node.name)
+  (self.enter)(node)
+  if !labelled {
+    match node.name {
+      "document" => (self.enter_document)(ControlDocumentContext::{ node, })
+      "branch" => (self.enter_branch)(ControlBranchContext::{ node, })
+      "toggle" => (self.enter_toggle)(ControlToggleContext::{ node, })
+      "child" => (self.enter_child)(ControlChildContext::{ node, })
+      "boundaries" =>
+        (self.enter_boundaries)(ControlBoundariesContext::{ node, })
+      "empty" => (self.enter_empty)(ControlEmptyContext::{ node, })
+      _ => ()
+    }
   }
-  for child in node.children {
+  for index, child in node.children {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.walk(context)
     }
   }
-  match node.name {
-    "document" => (self.exit_document)(ControlDocumentContext::{ node, })
-    "branch" => (self.exit_branch)(ControlBranchContext::{ node, })
-    "toggle" => (self.exit_toggle)(ControlToggleContext::{ node, })
-    "child" => (self.exit_child)(ControlChildContext::{ node, })
-    "boundaries" => (self.exit_boundaries)(ControlBoundariesContext::{ node, })
-    "empty" => (self.exit_empty)(ControlEmptyContext::{ node, })
-    _ => ()
+  if !labelled {
+    match node.name {
+      "document" => (self.exit_document)(ControlDocumentContext::{ node, })
+      "branch" => (self.exit_branch)(ControlBranchContext::{ node, })
+      "toggle" => (self.exit_toggle)(ControlToggleContext::{ node, })
+      "child" => (self.exit_child)(ControlChildContext::{ node, })
+      "boundaries" =>
+        (self.exit_boundaries)(ControlBoundariesContext::{ node, })
+      "empty" => (self.exit_empty)(ControlEmptyContext::{ node, })
+      _ => ()
+    }
   }
+  (self.exit)(node)
 }

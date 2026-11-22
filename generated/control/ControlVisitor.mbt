@@ -3,6 +3,7 @@
 ///|
 pub(all) struct ControlVisitor[T] {
   terminal : (@runtime.Token) -> T
+  error : (@runtime.Token) -> T
   visit_document : (ControlDocumentContext, Array[T]) -> T
   visit_branch : (ControlBranchContext, Array[T]) -> T
   visit_toggle : (ControlToggleContext, Array[T]) -> T
@@ -15,9 +16,11 @@ pub(all) struct ControlVisitor[T] {
 pub fn[T] ControlVisitor::new(
   terminal~ : (@runtime.Token) -> T,
   rule~ : (@runtime.RuleContext, Array[T]) -> T,
+  error? : (@runtime.Token) -> T,
 ) -> ControlVisitor[T] {
   {
     terminal,
+    error: error.unwrap_or(terminal),
     visit_document: (context, children) => rule(context.raw(), children),
     visit_branch: (context, children) => rule(context.raw(), children),
     visit_toggle: (context, children) => rule(context.raw(), children),
@@ -32,9 +35,14 @@ pub fn[T] ControlVisitor::visit(
   self : ControlVisitor[T],
   node : @runtime.RuleContext,
 ) -> T {
-  let values = node.children.map(child => {
+  let values = node.children.mapi((index, child) => {
     match child {
-      @runtime.TokenChild(token) => (self.terminal)(token)
+      @runtime.TokenChild(token) =>
+        if node.error_children.contains(index) {
+          (self.error)(token)
+        } else {
+          (self.terminal)(token)
+        }
       @runtime.RuleChild(context) => self.visit(context)
     }
   })
