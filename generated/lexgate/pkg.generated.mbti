@@ -48,7 +48,7 @@ pub struct LexGateParser {
   grammar : @moonantlr.Grammar
 }
 pub fn LexGateParser::new() -> Self raise @moonantlr.RuntimeError
-pub fn LexGateParser::parse_document(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool) -> LexGateDocumentContext raise @moonantlr.RuntimeError
+pub fn LexGateParser::parse_document(Self, String, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (@moonantlr.LexerPredicateEvent) -> Bool) -> LexGateDocumentContext raise @moonantlr.RuntimeError
 
 pub(all) struct LexGateVisitor[T] {
   terminal : (@moonantlr.Token) -> T

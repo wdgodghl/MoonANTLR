@@ -251,6 +251,18 @@ public final class MoonBitTarget extends JavaTarget {
         }
         if (!bodies.isEmpty()) block(out, "pub fn parser_action_sources() -> Array[String] { " + bodies + " }");
         String actionBinding = parserActions.isEmpty() ? "" : ".with_parser_action_sites(parser_action_sites())";
+        List<String> exceptions = new ArrayList<>();
+        List<Integer> exceptionRules = new ArrayList<>();
+        for (Rule rule : g.rules.values()) {
+            for (GrammarAST handler : rule.exceptions) {
+                exceptions.add("("+rule.index+", "+q(handler.getChild(0).getText())+", "+q(handler.getChild(1).getText())+")");
+            }
+            if (!rule.exceptions.isEmpty()) exceptionRules.add(rule.index);
+        }
+        if (!exceptions.isEmpty()) {
+            block(out, "pub fn rule_exception_sources() -> Array[(Int, String, String)] { ["+String.join(", ",exceptions)+"] }");
+            actionBinding += ".with_rule_exception_rules("+exceptionRules+")";
+        }
         if (!parserActions.isEmpty()) block(out, "pub fn parser_action_sites() -> Array[Int] { " + parserActions + " }");
         if (!lifecycle.isEmpty()) {
             block(out, "pub fn rule_action_sites() -> Array[(Int, String, Int)] { [" + String.join(", ", lifecycle) + "] }");
@@ -272,7 +284,7 @@ public final class MoonBitTarget extends JavaTarget {
             block(out, "pub struct " + ctx + " { node : @runtime.RuleContext }");
             block(out, "pub fn " + ctx + "::raw(self : " + ctx + ") -> @runtime.RuleContext { self.node }");
             block(out, "pub fn " + ctx + "::from_raw(node : @runtime.RuleContext) -> " + ctx + "? { if node.name == " + q(rule.name) + " { Some({node,}) } else { None } }");
-            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate" : "") + (lexerActions ? ", lexer_action? : @runtime.LexerAction" : "") + (bodies.isEmpty() ? "" : ", parser_action? : @runtime.ParserAction") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?" : "") + (lexerActions ? ", lexer_action?" : "") + (bodies.isEmpty() ? "" : ", parser_action?") + ")} }");
+            block(out, "pub fn " + recognizer + "::parse_" + rule.name + "(self : " + recognizer + ", source : String" + (hasPredicates ? ", predicate? : @runtime.ParserPredicate" : "") + (lexerPredicates ? ", lexer_predicate? : @runtime.LexerPredicate, lexer_context_predicate? : @runtime.LexerContextPredicate" : "") + (lexerActions ? ", lexer_action? : @runtime.LexerAction" : "") + (bodies.isEmpty() ? "" : ", parser_action? : @runtime.ParserAction") + ") -> " + ctx + " raise @runtime.RuntimeError { {node: self.grammar.parse_context(source, start_rule=" + rule.index + (hasPredicates ? ", predicate?" : "") + (lexerPredicates ? ", lexer_predicate?, lexer_context_predicate?" : "") + (lexerActions ? ", lexer_action?" : "") + (bodies.isEmpty() ? "" : ", parser_action?") + ")} }");
             Set<String> refs = new TreeSet<>();
             for (GrammarAST ref : rule.ast.getNodesWithType(ANTLRParser.RULE_REF))
                 if (g.getRule(ref.getText()) != null) refs.add(ref.getText());

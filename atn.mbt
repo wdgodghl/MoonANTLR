@@ -102,6 +102,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     actions: [],
     parser_actions: Map([]),
     rule_actions: Map([]),
+    rule_exceptions: [],
   }
   let nnon_greedy = rd.count()
   for (source_kind, target) in links {
@@ -314,7 +315,11 @@ fn Atn::validate_supported(
   custom_lexer_actions~ : Bool = false,
   custom_parser_actions~ : Bool = false,
   contextual_predicates~ : Bool = false,
+  rule_exceptions~ : Bool = false,
 ) -> Unit raise RuntimeError {
+  if !self.rule_exceptions.is_empty() && !rule_exceptions {
+    raise Unsupported("rule exception bindings required")
+  }
   if !self.rule_actions.is_empty() && !custom_parser_actions {
     raise Unsupported("rule lifecycle actions")
   }
@@ -341,6 +346,24 @@ fn Atn::validate_supported(
       raise Unsupported("custom lexer actions")
     }
   }
+}
+
+///|
+pub fn Atn::with_rule_exception_rules(
+  self : Atn,
+  rules : Array[Int32],
+) -> Atn raise RuntimeError {
+  if self.kind != 1 {
+    raise InvalidAtn("parser ATN expected")
+  }
+  let checked : Array[Int32] = []
+  for rule in rules {
+    if rule < 0 || rule >= self.starts.length() || checked.contains(rule) {
+      raise InvalidAtn("invalid or duplicate rule exception binding")
+    }
+    checked.push(rule)
+  }
+  { ..self, rule_exceptions: checked, }
 }
 
 ///|

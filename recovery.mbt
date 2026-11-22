@@ -48,6 +48,7 @@ pub fn Grammar::parse_recovering(
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
   recover_lexer~ : Bool = false,
 ) -> RecoveryResult raise RuntimeError {
@@ -59,6 +60,7 @@ pub fn Grammar::parse_recovering(
       source,
       work_limit~,
       lexer_predicate?,
+      lexer_context_predicate?,
       lexer_action?,
     )
     for error in lexed.errors {
@@ -66,7 +68,13 @@ pub fn Grammar::parse_recovering(
     }
     lexed.tokens
   } else {
-    self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?)
+    self.tokenize(
+      source,
+      work_limit~,
+      lexer_predicate?,
+      lexer_context_predicate?,
+      lexer_action?,
+    )
   }
   let mut tokens = TokenStream::new(emitted).visible_tokens()
   let mut attempt = self.try_tokens(tokens, start_rule, budget, predicate)

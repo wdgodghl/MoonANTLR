@@ -201,6 +201,11 @@ def main():
         cli.error('Pinned functional descriptor inventory differs from the 350-case corpus')
     def process(pair):
         index,path=pair;data=sections(path);key=path.parent.name.lower()+'_'+path.stem.lower();directory=scratch/key;directory.mkdir(exist_ok=True)
+        flags=data.get('flags','').splitlines()
+        allowed={'notBuildParseTree','predictionMode=SLL','predictionMode=LL','showDFA','showDiagnosticErrors'}
+        if set(flags)-allowed:raise ValueError('Unsupported descriptor flags: '+repr(set(flags)-allowed))
+        build_tree='notBuildParseTree' not in flags
+        prediction_mode='SLL' if 'predictionMode=SLL' in flags else 'LL'
         name=re.search(r'\bgrammar\s+(\w+)\s*;',data['grammar']).group(1)
         grammar=directory/(name+'.g4')
         package=package_key(key)
@@ -264,7 +269,7 @@ def main():
         else:
             declarations=exported(native_parser,'attribute_declarations')
             specification=','.join(str(rule)+':'+field for rule,_,field,_,_ in declarations)
-            reference=run([args.java,'-Dfile.encoding=UTF-8','-Dmoonantlr.attributes='+specification,'-cp',classpath,'Oracle',name,data['start'],'default'],input=payload)
+            reference=run([args.java,'-Dfile.encoding=UTF-8','-Dmoonantlr.attributes='+specification,'-Dmoonantlr.buildTree='+str(build_tree).lower(),'-Dmoonantlr.predictionMode='+prediction_mode,'-cp',classpath,'Oracle',name,data['start'],'default'],input=payload)
             row=json.loads(reference.stdout[reference.stdout.rfind('{"tree":'):])
             rules=read_interp(directory/(name+'.interp'))[1];start=rules.index(data['start'])
             positions=', '.join(f'(Some({line}), Some({col}))' for line,col in row['parserErrors'])
@@ -272,20 +277,23 @@ def main():
             bindings,shared=parser_bindings(native_parser,original,tokens)
             trace=[(int(ordinal),int(offset)) for ordinal,offset in re.findall(r'MOON_ACTION:(\d+):(\d+)',reference.stderr)]
             out += bindings
-            out += ['  let actions : Array[(Int,Int)] = []',f'  let grammar = {alias}.grammar()',f'  let parsed = grammar.parse_default({quoted(data["input"])}, start_rule={start}, semantics=bindings, shared={shared}, lexer_action=(_, _) => (), parser_action=event => actions.push((event.action,event.next_token.start)))',
+            options=f', build_tree={str(build_tree).lower()}, prediction_mode=@runtime.{prediction_mode}'
+            out += ['  let actions : Array[(Int,Int)] = []',f'  let grammar = {alias}.grammar()',f'  let parsed = grammar.parse_default({quoted(data["input"])}{options}, start_rule={start}, semantics=bindings, shared={shared}, lexer_action=(_, _) => (), parser_action=event => actions.push((event.action,event.next_token.start)))',
                 f'  @debug.assert_eq(actions, [{tuples(trace)}])',
                 f'  assert_eq(parsed.tree.to_sexpr(), {quoted(row["tree"])})',f'  @debug.assert_eq(parsed.diagnostics.map(d => (d.line, d.column)), [{positions}])',
                 f'  @debug.assert_eq(parsed.tree.error_tokens().map(t => (t.kind,t.text,t.start,t.end,t.line,t.column,t.channel)), [{tuples(row["errorTokens"])}])',
                 f'  assert_eq(parsed.next_token.kind, {row["nextKind"]})',f'  assert_eq(parsed.next_token.text, {quoted(row["nextText"])})',
                 f'  let lexed = grammar.tokenize_recovering({quoted(data["input"])}, lexer_action=(_, _) => ())']
-            out += [f'  assert_eq(bound_frame_json(parsed.frame.unwrap()), @json.parse({quoted(json.dumps(row["frame"],ensure_ascii=False,separators=(",",":")))}))']
+            out += [f'  assert_eq(bound_frame_json(parsed.frame.unwrap(), build_tree={str(build_tree).lower()}), @json.parse({quoted(json.dumps(row["frame"],ensure_ascii=False,separators=(",",":")))}))']
+            if not build_tree:out += ['  assert_true(parsed.context.children.is_empty())']
+            if prediction_mode=='SLL':out += ['  assert_eq(parsed.prediction.full_context_fallbacks, 0)']
             out += [f'  @debug.assert_eq(bound_listener_events(parsed.tree), {quoted(row["events"])})']
             for field,value in row['shared'].items():
                 out += [f'  assert_eq(parsed.frame.unwrap().shared.get({quoted(field)}), Some(@json.parse({quoted(json.dumps(value,ensure_ascii=False))})))']
         positions=', '.join(f'({line}, {col})' for line,col in lex['errors'])
         out += [f'  @debug.assert_eq(lexed.tokens.map(t => (t.kind,t.text,t.start,t.end,t.line,t.column,t.channel)), [{tuples(lex["tokens"])}])',
             f'  @debug.assert_eq(lexed.errors.map(e => match e {{ @runtime.LexicalError(line,col,_) => (line,col); _ => (-1,-1) }}), [{positions}])','}','']
-        return index,package,out,{'group':path.parent.name,'name':path.stem,'descriptor_sha256':hashlib.sha256(path.read_text(encoding="utf8").encode("utf8")).hexdigest(),'mode':'Java tokens, trees, diagnostics, actions and attribute frames'}
+        return index,package,out,{'group':path.parent.name,'name':path.stem,'descriptor_sha256':hashlib.sha256(path.read_text(encoding="utf8").encode("utf8")).hexdigest(),'mode':'Java tokens, trees, diagnostics, actions and attribute frames','flags':flags,'build_tree':build_tree,'prediction_mode':prediction_mode}
     rows=[];failures=[]
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
         pending={pool.submit(process,pair):pair[1] for pair in enumerate(paths)}

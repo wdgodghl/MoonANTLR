@@ -66,6 +66,8 @@ public final class Oracle {
             Parser parser = (Parser) Class.forName(grammar + "Parser").getConstructor(TokenStream.class).newInstance(stream);
             parser.removeErrorListeners();
             parser.addErrorListener(listener);
+            parser.setBuildParseTree(Boolean.parseBoolean(System.getProperty("moonantlr.buildTree", "true")));
+            parser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.valueOf(System.getProperty("moonantlr.predictionMode", "LL")));
             ParseTree parsed = (ParseTree) parser.getClass().getMethod(rule).invoke(parser);
             boolean accepted = errors[0] == 0 && (args.length > 1 || parser.getCurrentToken().getType() == Token.EOF);
             StringBuilder out = new StringBuilder("{\"accepted\":").append(accepted).append(",\"tree\":").append(quote(tree(parsed, parser), false)).append(",\"tokens\":[");
@@ -131,7 +133,7 @@ public final class Oracle {
         }
     }
 
-    private static String errorTree(ParseTree node, Parser parser) {
+    static String errorTree(ParseTree node, Parser parser) {
         if (node instanceof ErrorNode) return "(error " + quote(node.getText(), true) + ")";
         if (node instanceof TerminalNode) {
             Token token = ((TerminalNode) node).getSymbol();

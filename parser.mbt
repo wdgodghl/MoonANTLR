@@ -150,6 +150,8 @@ fn parse_rule(
         sources: [],
         path: [],
         recovered_captures: Map([]),
+        build_tree: true,
+        labels: [],
       },
       visited: [],
       actions: [],
@@ -241,6 +243,8 @@ fn parse_rule(
               sources: [-1],
               path: [],
               recovered_captures: Map([]),
+              build_tree: true,
+              labels: [],
             }
           } else {
             cfg.context
@@ -375,11 +379,18 @@ pub fn Grammar::parse_detailed(
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
   parser_action? : ParserAction,
 ) -> ParseResult raise RuntimeError {
   let tokens = TokenStream::new(
-    self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?),
+    self.tokenize(
+      source,
+      work_limit~,
+      lexer_predicate?,
+      lexer_context_predicate?,
+      lexer_action?,
+    ),
   ).visible_tokens()
   self.parse_tokens(
     tokens,
@@ -407,11 +418,18 @@ pub fn Grammar::parse_prefix(
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
   parser_action? : ParserAction,
 ) -> PrefixResult raise RuntimeError {
   let tokens = TokenStream::new(
-    self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?),
+    self.tokenize(
+      source,
+      work_limit~,
+      lexer_predicate?,
+      lexer_context_predicate?,
+      lexer_action?,
+    ),
   ).visible_tokens()
   self.parse_tokens(
     tokens,
@@ -537,8 +555,24 @@ pub fn Grammar::parse(
   source : String,
   start_rule~ : Int32 = 0,
   work_limit~ : Int32 = 1_000_000,
+  predicate? : ParserPredicate,
+  lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
+  lexer_action? : LexerAction,
+  parser_action? : ParserAction,
 ) -> ParseTree raise RuntimeError {
-  self.parse_context(source, start_rule~, work_limit~).to_tree()
+  self
+  .parse_context(
+    source,
+    start_rule~,
+    work_limit~,
+    predicate?,
+    lexer_predicate?,
+    lexer_context_predicate?,
+    lexer_action?,
+    parser_action?,
+  )
+  .to_tree()
 }
 
 ///|
@@ -550,6 +584,7 @@ pub fn Grammar::parse_context(
   work_limit~ : Int32 = 1_000_000,
   predicate? : ParserPredicate,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
   parser_action? : ParserAction,
 ) -> RuleContext raise RuntimeError {
@@ -559,6 +594,7 @@ pub fn Grammar::parse_context(
     work_limit~,
     predicate?,
     lexer_predicate?,
+    lexer_context_predicate?,
     lexer_action?,
     parser_action?,
   ).context

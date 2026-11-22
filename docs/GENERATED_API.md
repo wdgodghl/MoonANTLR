@@ -224,3 +224,30 @@ it to retain arguments and initialize declared return/local defaults. The previo
 context is its first child. `LexerContextPredicate` and
 `SemanticEvent.lookahead(one_based_offset)` support text, position and dynamic
 lookahead-dependent host predicates. Prediction bindings must remain pure.
+
+## Committed configuration and exception clauses
+
+`parse_default` and `parse_default_tokens` accept `prediction_mode` (`SLL` or
+`LL`, default `LL`) and `build_tree` (default `true`). SLL forbids contextual
+LL fallback. Without tree construction, child traversal is empty while element
+labels and source spans remain available through separate captures. Semantic
+invocation frames retain attributes independently of visible tree children.
+
+`rule_exception_sources()` retains rule indices, exception declarations and
+handler bodies. Bind `RuleSemantics.handle_exception` to map source-language
+exception types, return a handled frame or rethrow an unmatched exception.
+Missing bindings are rejected. Unrecoverable recognition failures reach custom
+handlers before default reporting; inline repairs retain normal recovery.
+
+Initialization runs before the rule's protected body, matching generated Java.
+Normal completion runs after then finally. Body, after or catch failures unwind
+finally from inner to outer; a failing finally executes once and replaces the
+prior exception. Pure snapshot parsing remains separate from committed host
+exception handling.
+
+`RecognitionError(kind, line, column, expected)` distinguishes
+`InputMismatchException`, `NoViableAltException` and `FailedPredicateException`
+for source-language catch dispatch. Actions and handlers receive committed
+frames: writes before a thrown exception remain visible to catch/finally, and
+Parser member state is shared by nested invocations. An exceptionally exited
+child remains in the partial tree; its call-site element label remains unset.

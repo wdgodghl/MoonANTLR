@@ -69,9 +69,20 @@ pub(all) struct LifecycleListener {
   exit_set_sequence : (LifecycleSet_sequenceContext) -> Unit
   enter_set_loop : (LifecycleSet_loopContext) -> Unit
   exit_set_loop : (LifecycleSet_loopContext) -> Unit
+  enter_nested : (LifecycleNestedContext) -> Unit
+  exit_nested : (LifecycleNestedContext) -> Unit
 }
 pub fn LifecycleListener::new() -> Self
 pub fn LifecycleListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct LifecycleNestedContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LifecycleNestedContext::alternative(Self) -> String?
+pub fn LifecycleNestedContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LifecycleNestedContext::get_document(Self) -> Array[LifecycleDocumentContext]
+pub fn LifecycleNestedContext::get_nested(Self) -> Array[Self]
+pub fn LifecycleNestedContext::raw(Self) -> @moonantlr.RuleContext
 
 pub struct LifecycleParser {
   grammar : @moonantlr.Grammar
@@ -79,6 +90,7 @@ pub struct LifecycleParser {
 pub fn LifecycleParser::new() -> Self raise @moonantlr.RuntimeError
 pub fn LifecycleParser::parse_broken(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleBrokenContext raise @moonantlr.RuntimeError
 pub fn LifecycleParser::parse_document(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleDocumentContext raise @moonantlr.RuntimeError
+pub fn LifecycleParser::parse_nested(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleNestedContext raise @moonantlr.RuntimeError
 pub fn LifecycleParser::parse_set_loop(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleSet_loopContext raise @moonantlr.RuntimeError
 pub fn LifecycleParser::parse_set_sequence(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleSet_sequenceContext raise @moonantlr.RuntimeError
 
@@ -119,6 +131,7 @@ pub(all) struct LifecycleVisitor[T] {
   visit_broken : (LifecycleBrokenContext, Array[T]) -> T
   visit_set_sequence : (LifecycleSet_sequenceContext, Array[T]) -> T
   visit_set_loop : (LifecycleSet_loopContext, Array[T]) -> T
+  visit_nested : (LifecycleNestedContext, Array[T]) -> T
 }
 pub fn[T] LifecycleVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
 pub fn[T] LifecycleVisitor::visit(Self[T], @moonantlr.RuleContext) -> T

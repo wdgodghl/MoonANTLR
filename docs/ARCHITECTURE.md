@@ -114,7 +114,11 @@ documented in [conformance/README.md](../conformance/README.md).
 
 The emitter retains inline actions and `@init`, `@after` and `finally` sites.
 Committed parsing runs init once at rule entry, after on successful completion,
-and finally on normal or recovered exit. Snapshot parsing uses pure bindings
+and finally on normal, recovered or exceptional exit from the protected body.
+Initialization precedes that body, matching Java. Committed frames share Parser
+member state across calls and retain writes made before an exception. Unwinding
+preserves partial rule trees without assigning a failed call's element label.
+Snapshot parsing uses pure bindings
 and replays only the accepted path. `RuleSemantics.wrap` creates the fresh
 attribute scope for each left-recursive context; bindings initialize defaults
 and preserve formal arguments explicitly. Hidden set-insertion captures retain

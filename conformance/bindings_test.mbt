@@ -76,11 +76,18 @@ fn bound_token_int(event : @runtime.SemanticEvent, kind : Int32) -> Int32 {
 }
 
 ///|
-fn bound_frame_json(frame : @runtime.RuleFrame) -> Json {
+fn bound_frame_json(
+  frame : @runtime.RuleFrame,
+  build_tree~ : Bool = true,
+) -> Json {
   {
     "values": Json::object(frame.values),
     "children": Json::array(
-      frame.children.map(child => bound_frame_json(child)),
+      if build_tree {
+        frame.children.map(child => bound_frame_json(child))
+      } else {
+        []
+      },
     ),
   }
 }

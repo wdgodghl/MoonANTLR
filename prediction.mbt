@@ -1,4 +1,10 @@
 ///|
+pub(all) enum PredictionMode {
+  SLL
+  LL
+}
+
+///|
 /// Observable counters for one parse; DFA storage is isolated per parse.
 pub(all) struct PredictionStatistics {
   decisions : Int32
@@ -59,6 +65,7 @@ priv struct Predictor {
   mut hits : Int32
   mut max_lookahead : Int32
   mut failure_pos : Int32
+  mut mode : PredictionMode
 }
 
 ///|
@@ -86,6 +93,7 @@ fn Predictor::new(atn : Atn, budget : Budget) -> Predictor {
     hits: 0,
     max_lookahead: 0,
     failure_pos: 0,
+    mode: LL,
   }
 }
 
@@ -393,7 +401,8 @@ fn Predictor::predict(
       }
     }
     let caller = self.start(state, precedence, context)
-    let caller_accepts = context != 0 &&
+    let caller_accepts = self.mode is LL &&
+      context != 0 &&
       self.states[caller].configs.any(cfg => {
         self.states[immediate].accepted.contains(cfg.alt) &&
         self.atn.matches(self.atn.states[cfg.state].edges[cfg.edge], token)
@@ -405,7 +414,7 @@ fn Predictor::predict(
     }
   }
   let sll = self.simulate(start, tokens, pos, sll=true)
-  if sll.length() <= 1 || context == 0 {
+  if self.mode is SLL || sll.length() <= 1 || context == 0 {
     return sll
   }
   self.fallbacks += 1

@@ -58,8 +58,16 @@ pub fn LexGateParser::parse_document(
   self : LexGateParser,
   source : String,
   lexer_predicate? : @runtime.LexerPredicate,
+  lexer_context_predicate? : @runtime.LexerContextPredicate,
 ) -> LexGateDocumentContext raise @runtime.RuntimeError {
-  { node: self.grammar.parse_context(source, start_rule=0, lexer_predicate?), }
+  {
+    node: self.grammar.parse_context(
+      source,
+      start_rule=0,
+      lexer_predicate?,
+      lexer_context_predicate?,
+    ),
+  }
 }
 
 ///|

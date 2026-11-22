@@ -7,6 +7,7 @@ pub(all) suberror RuntimeError {
   Unsupported(String)
   LexicalError(Int32, Int32, String)
   SyntaxError(Int32, Int32, Array[Int32])
+  RecognitionError(String, Int32, Int32, Array[Int32])
   LimitExceeded(String)
 }
 
@@ -42,6 +43,7 @@ pub struct Atn {
   actions : Array[(Int32, Int32, Int32)]
   parser_actions : Map[Int32, Int32]
   rule_actions : Map[(Int32, String), Int32]
+  rule_exceptions : Array[Int32]
 }
 
 ///|

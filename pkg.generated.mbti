@@ -17,6 +17,7 @@ pub(all) suberror RuntimeError {
   Unsupported(String)
   LexicalError(Int32, Int32, String)
   SyntaxError(Int32, Int32, Array[Int32])
+  RecognitionError(String, Int32, Int32, Array[Int32])
   LimitExceeded(String)
 }
 pub fn RuntimeError::diagnostic(Self, Grammar) -> Diagnostic
@@ -34,12 +35,14 @@ pub struct Atn {
   actions : Array[(Int32, Int32, Int32)]
   parser_actions : Map[Int32, Int32]
   rule_actions : Map[(Int32, String), Int32]
+  rule_exceptions : Array[Int32]
 }
 pub fn Atn::lexer_cursor(Self, String, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, recover? : Bool) -> LexerCursor raise RuntimeError
 pub fn Atn::tokenize(Self, String, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError) -> Array[Token] raise RuntimeError
 pub fn Atn::tokenize_recovering(Self, String, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError) -> LexResult raise RuntimeError
 pub fn Atn::with_parser_action_sites(Self, Array[Int32]) -> Self raise RuntimeError
 pub fn Atn::with_rule_action_sites(Self, Array[(Int32, String, Int32)]) -> Self raise RuntimeError
+pub fn Atn::with_rule_exception_rules(Self, Array[Int32]) -> Self raise RuntimeError
 
 type Budget
 
@@ -77,15 +80,15 @@ pub(all) struct Grammar {
   vocabulary : Array[String]
 }
 pub fn Grammar::lexer_cursor(Self, String, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, recover? : Bool) -> LexerCursor raise RuntimeError
-pub fn Grammar::parse(Self, String, start_rule? : Int32, work_limit? : Int32) -> ParseTree raise RuntimeError
-pub fn Grammar::parse_context(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> RuleContext raise RuntimeError
-pub fn Grammar::parse_default(Self, String, start_rule? : Int32, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit, predicate? : (Int32, Int32, Token) -> Bool, semantics? : RuleSemantics, arguments? : Map[String, @json.Json], shared? : Map[String, @json.Json]) -> DefaultParseResult raise RuntimeError
-pub fn Grammar::parse_default_tokens(Self, Array[Token], original_tokens? : Array[Token], channel? : Int32, start_rule? : Int32, work_limit? : Int32, parser_action? : (ParserActionEvent) -> Unit, predicate? : (Int32, Int32, Token) -> Bool, semantics? : RuleSemantics, arguments? : Map[String, @json.Json], shared? : Map[String, @json.Json]) -> DefaultParseResult raise RuntimeError
-pub fn Grammar::parse_detailed(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> ParseResult raise RuntimeError
-pub fn Grammar::parse_prefix(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> PrefixResult raise RuntimeError
-pub fn Grammar::parse_prefix_lazy(Self, String, start_rule? : Int32, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> PrefixResult raise RuntimeError
-pub fn Grammar::parse_recovering(Self, String, start_rule? : Int32, sync_tokens? : Array[Int32], max_repairs? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, recover_lexer? : Bool) -> RecoveryResult raise RuntimeError
-pub fn Grammar::parse_semantic(Self, String, RuleSemantics, arguments? : Map[String, @json.Json], shared? : Map[String, @json.Json], start_rule? : Int32, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError) -> ParseResult raise RuntimeError
+pub fn Grammar::parse(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> ParseTree raise RuntimeError
+pub fn Grammar::parse_context(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> RuleContext raise RuntimeError
+pub fn Grammar::parse_default(Self, String, prediction_mode? : PredictionMode, build_tree? : Bool, start_rule? : Int32, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit, predicate? : (Int32, Int32, Token) -> Bool, semantics? : RuleSemantics, arguments? : Map[String, @json.Json], shared? : Map[String, @json.Json]) -> DefaultParseResult raise RuntimeError
+pub fn Grammar::parse_default_tokens(Self, Array[Token], original_tokens? : Array[Token], channel? : Int32, prediction_mode? : PredictionMode, build_tree? : Bool, start_rule? : Int32, work_limit? : Int32, parser_action? : (ParserActionEvent) -> Unit, predicate? : (Int32, Int32, Token) -> Bool, semantics? : RuleSemantics, arguments? : Map[String, @json.Json], shared? : Map[String, @json.Json]) -> DefaultParseResult raise RuntimeError
+pub fn Grammar::parse_detailed(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> ParseResult raise RuntimeError
+pub fn Grammar::parse_prefix(Self, String, start_rule? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> PrefixResult raise RuntimeError
+pub fn Grammar::parse_prefix_lazy(Self, String, start_rule? : Int32, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, parser_action? : (ParserActionEvent) -> Unit) -> PrefixResult raise RuntimeError
+pub fn Grammar::parse_recovering(Self, String, start_rule? : Int32, sync_tokens? : Array[Int32], max_repairs? : Int32, work_limit? : Int32, predicate? : (Int32, Int32, Token) -> Bool, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError, recover_lexer? : Bool) -> RecoveryResult raise RuntimeError
+pub fn Grammar::parse_semantic(Self, String, RuleSemantics, arguments? : Map[String, @json.Json], shared? : Map[String, @json.Json], start_rule? : Int32, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError) -> ParseResult raise RuntimeError
 pub fn Grammar::parse_semantic_tokens(Self, Array[Token], RuleSemantics, channel? : Int32, start_rule? : Int32, arguments? : Map[String, @json.Json], shared? : Map[String, @json.Json], complete? : Bool, work_limit? : Int32, original_tokens? : Array[Token]) -> PrefixResult raise RuntimeError
 pub fn Grammar::token_name(Self, Int32) -> String
 pub fn Grammar::tokenize(Self, String, work_limit? : Int32, lexer_predicate? : (Int32, Int32, Int32, String) -> Bool, lexer_context_predicate? : (LexerPredicateEvent) -> Bool, lexer_action? : (LexerActionEvent, String) -> Unit raise RuntimeError) -> Array[Token] raise RuntimeError
@@ -185,6 +188,11 @@ pub(all) struct ParserActionEvent {
   context : RuleContext
 }
 
+pub(all) enum PredictionMode {
+  SLL
+  LL
+}
+
 pub(all) struct PredictionStatistics {
   decisions : Int32
   full_context_fallbacks : Int32
@@ -242,6 +250,8 @@ pub(all) struct RuleContext {
   children : Array[ContextChild]
   sources : Array[Int32]
   path : Array[Int32]
+  build_tree : Bool
+  labels : Array[(Int32, ContextChild)]
   recovered_captures : Map[Int32, Array[(Int32, Token)]]
 }
 pub fn RuleContext::rules(Self, String, states? : Array[Int32]) -> Array[Self]
@@ -267,6 +277,7 @@ pub(all) struct RuleSemantics {
   arguments : (SemanticEvent, Int32) -> Map[String, @json.Json]
   action : (SemanticEvent, Int32) -> RuleFrame raise RuntimeError
   predicate : (SemanticEvent, Int32) -> Bool raise RuntimeError
+  handle_exception : ((SemanticEvent, RuntimeError) -> RuleFrame raise RuntimeError)?
 }
 pub fn RuleSemantics::new() -> Self
 

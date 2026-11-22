@@ -1,0 +1,135 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/exceptions"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+pub fn rule_exception_sources() -> Array[(Int32, String, String)]
+
+// Errors
+
+// Types and methods
+pub struct ExceptionsCaughtContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExceptionsCaughtContext::alternative(Self) -> String?
+pub fn ExceptionsCaughtContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExceptionsCaughtContext::get_caught(Self) -> Array[Self]
+pub fn ExceptionsCaughtContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsCaughtContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsCaughtContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExceptionsCaught_hostContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExceptionsCaught_hostContext::alternative(Self) -> String?
+pub fn ExceptionsCaught_hostContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExceptionsCaught_hostContext::get_caught_host(Self) -> Array[Self]
+pub fn ExceptionsCaught_hostContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsCaught_hostContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExceptionsLexer {
+  atn : @moonantlr.Atn
+}
+pub fn ExceptionsLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn ExceptionsLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct ExceptionsListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_caught : (ExceptionsCaughtContext) -> Unit
+  exit_caught : (ExceptionsCaughtContext) -> Unit
+  enter_caught_host : (ExceptionsCaught_hostContext) -> Unit
+  exit_caught_host : (ExceptionsCaught_hostContext) -> Unit
+  enter_specific : (ExceptionsSpecificContext) -> Unit
+  exit_specific : (ExceptionsSpecificContext) -> Unit
+  enter_predicate_failure : (ExceptionsPredicate_failureContext) -> Unit
+  exit_predicate_failure : (ExceptionsPredicate_failureContext) -> Unit
+  enter_outer : (ExceptionsOuterContext) -> Unit
+  exit_outer : (ExceptionsOuterContext) -> Unit
+  enter_nested_callee : (ExceptionsNested_calleeContext) -> Unit
+  exit_nested_callee : (ExceptionsNested_calleeContext) -> Unit
+}
+pub fn ExceptionsListener::new() -> Self
+pub fn ExceptionsListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct ExceptionsNested_calleeContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExceptionsNested_calleeContext::alternative(Self) -> String?
+pub fn ExceptionsNested_calleeContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExceptionsNested_calleeContext::get_nested_callee(Self) -> Array[Self]
+pub fn ExceptionsNested_calleeContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsNested_calleeContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExceptionsOuterContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExceptionsOuterContext::alternative(Self) -> String?
+pub fn ExceptionsOuterContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExceptionsOuterContext::get_nested_callee(Self) -> Array[ExceptionsNested_calleeContext]
+pub fn ExceptionsOuterContext::get_outer(Self) -> Array[Self]
+pub fn ExceptionsOuterContext::label_child(Self) -> Array[ExceptionsNested_calleeContext]
+pub fn ExceptionsOuterContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExceptionsParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn ExceptionsParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn ExceptionsParser::parse_caught(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ExceptionsCaughtContext raise @moonantlr.RuntimeError
+pub fn ExceptionsParser::parse_caught_host(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ExceptionsCaught_hostContext raise @moonantlr.RuntimeError
+pub fn ExceptionsParser::parse_nested_callee(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ExceptionsNested_calleeContext raise @moonantlr.RuntimeError
+pub fn ExceptionsParser::parse_outer(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ExceptionsOuterContext raise @moonantlr.RuntimeError
+pub fn ExceptionsParser::parse_predicate_failure(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ExceptionsPredicate_failureContext raise @moonantlr.RuntimeError
+pub fn ExceptionsParser::parse_specific(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ExceptionsSpecificContext raise @moonantlr.RuntimeError
+
+pub struct ExceptionsPredicate_failureContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExceptionsPredicate_failureContext::alternative(Self) -> String?
+pub fn ExceptionsPredicate_failureContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExceptionsPredicate_failureContext::get_predicate_failure(Self) -> Array[Self]
+pub fn ExceptionsPredicate_failureContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsPredicate_failureContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ExceptionsSpecificContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ExceptionsSpecificContext::alternative(Self) -> String?
+pub fn ExceptionsSpecificContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ExceptionsSpecificContext::get_specific(Self) -> Array[Self]
+pub fn ExceptionsSpecificContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsSpecificContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsSpecificContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ExceptionsSpecificContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct ExceptionsVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_caught : (ExceptionsCaughtContext, Array[T]) -> T
+  visit_caught_host : (ExceptionsCaught_hostContext, Array[T]) -> T
+  visit_specific : (ExceptionsSpecificContext, Array[T]) -> T
+  visit_predicate_failure : (ExceptionsPredicate_failureContext, Array[T]) -> T
+  visit_outer : (ExceptionsOuterContext, Array[T]) -> T
+  visit_nested_callee : (ExceptionsNested_calleeContext, Array[T]) -> T
+}
+pub fn[T] ExceptionsVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] ExceptionsVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

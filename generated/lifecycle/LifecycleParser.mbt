@@ -34,18 +34,20 @@ pub fn attribute_declarations() -> Array[
 ///|
 pub fn parser_action_sources() -> Array[String] {
   [
+    "{ $total += 100; failIf(\"inline\"); offsets.add(10000 + getCurrentToken().getStartIndex()); }",
     "{ $total += 100; offsets.add(10000 + getCurrentToken().getStartIndex()); }",
-    "{ $total += 100; offsets.add(10000 + getCurrentToken().getStartIndex()); }",
+    "{ failIf(\"init\"); $total = 1; offsets.add(100 + getCurrentToken().getStartIndex()); }",
+    "{ $total += 10; failIf(\"after\"); offsets.add(1000 + getCurrentToken().getStartIndex()); }",
+    "{ $total += 1000; totals.add($total); failIf(\"finally\"); offsets.add(100000 + getCurrentToken().getStartIndex()); }",
     "{ $total = 1; offsets.add(100 + getCurrentToken().getStartIndex()); }", "{ $total += 10; offsets.add(1000 + getCurrentToken().getStartIndex()); }",
     "{ $total += 1000; offsets.add(100000 + getCurrentToken().getStartIndex()); }",
-    "{ $total = 1; offsets.add(100 + getCurrentToken().getStartIndex()); }", "{ $total += 10; offsets.add(1000 + getCurrentToken().getStartIndex()); }",
-    "{ $total += 1000; offsets.add(100000 + getCurrentToken().getStartIndex()); }",
+    "{ failIf(\"outer-init\"); }", "{ failIf(\"outer-after\"); }", "{ failIf(\"outer-finally\"); }",
   ]
 }
 
 ///|
 pub fn parser_action_sites() -> Array[Int32] {
-  [9, 14]
+  [11, 16]
 }
 
 ///|
@@ -57,23 +59,27 @@ pub fn rule_action_sites() -> Array[(Int32, String, Int32)] {
     (1, "init", 5),
     (1, "after", 6),
     (1, "finally", 7),
+    (4, "init", 8),
+    (4, "after", 9),
+    (4, "finally", 10),
   ]
 }
 
 ///|
 pub fn parser_data() -> Array[Int32] {
   [
-    4, 1, 9, 32, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 1, 0, 1, 0, 1, 0,
-    1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3,
-    5, 3, 25, 8, 3, 10, 3, 12, 3, 28, 9, 3, 1, 3, 1, 3, 1, 3, 0, 0, 4, 0, 2, 4, 6,
-    0, 3, 1, 0, 2, 3, 1, 0, 4, 5, 1, 0, 6, 7, 28, 0, 8, 1, 0, 0, 0, 2, 12, 1, 0,
-    0, 0, 4, 16, 1, 0, 0, 0, 6, 21, 1, 0, 0, 0, 8, 9, 5, 1, 0, 0, 9, 10, 6, 0, -1,
-    0, 10, 11, 5, 0, 0, 1, 11, 1, 1, 0, 0, 0, 12, 13, 5, 2, 0, 0, 13, 14, 5, 3, 0,
-    0, 14, 15, 6, 1, -1, 0, 15, 3, 1, 0, 0, 0, 16, 17, 7, 0, 0, 0, 17, 18, 7, 1,
-    0, 0, 18, 19, 7, 2, 0, 0, 19, 20, 5, 0, 0, 1, 20, 5, 1, 0, 0, 0, 21, 26, 7, 0,
-    0, 0, 22, 23, 5, 8, 0, 0, 23, 25, 7, 1, 0, 0, 24, 22, 1, 0, 0, 0, 25, 28, 1,
-    0, 0, 0, 26, 24, 1, 0, 0, 0, 26, 27, 1, 0, 0, 0, 27, 29, 1, 0, 0, 0, 28, 26,
-    1, 0, 0, 0, 29, 30, 5, 0, 0, 1, 30, 7, 1, 0, 0, 0, 1, 26,
+    4, 1, 9, 36, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4, 1, 0,
+    1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 3,
+    1, 3, 1, 3, 5, 3, 27, 8, 3, 10, 3, 12, 3, 30, 9, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1,
+    4, 0, 0, 5, 0, 2, 4, 6, 8, 0, 3, 1, 0, 2, 3, 1, 0, 4, 5, 1, 0, 6, 7, 31, 0, 10,
+    1, 0, 0, 0, 2, 14, 1, 0, 0, 0, 4, 18, 1, 0, 0, 0, 6, 23, 1, 0, 0, 0, 8, 33, 1,
+    0, 0, 0, 10, 11, 5, 1, 0, 0, 11, 12, 6, 0, -1, 0, 12, 13, 5, 0, 0, 1, 13, 1,
+    1, 0, 0, 0, 14, 15, 5, 2, 0, 0, 15, 16, 5, 3, 0, 0, 16, 17, 6, 1, -1, 0, 17,
+    3, 1, 0, 0, 0, 18, 19, 7, 0, 0, 0, 19, 20, 7, 1, 0, 0, 20, 21, 7, 2, 0, 0, 21,
+    22, 5, 0, 0, 1, 22, 5, 1, 0, 0, 0, 23, 28, 7, 0, 0, 0, 24, 25, 5, 8, 0, 0, 25,
+    27, 7, 1, 0, 0, 26, 24, 1, 0, 0, 0, 27, 30, 1, 0, 0, 0, 28, 26, 1, 0, 0, 0, 28,
+    29, 1, 0, 0, 0, 29, 31, 1, 0, 0, 0, 30, 28, 1, 0, 0, 0, 31, 32, 5, 0, 0, 1, 32,
+    7, 1, 0, 0, 0, 33, 34, 3, 0, 0, 0, 34, 9, 1, 0, 0, 0, 1, 28,
   ]
 }
 
@@ -84,7 +90,7 @@ pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
     parser: @runtime.deserialize(parser_data())
     .with_parser_action_sites(parser_action_sites())
     .with_rule_action_sites(rule_action_sites()),
-    rules: ["document", "broken", "set_sequence", "set_loop"],
+    rules: ["document", "broken", "set_sequence", "set_loop", "nested"],
     vocabulary: [
       "0", "'x'", "'a'", "'b'", "'c'", "'d'", "'e'", "'f'", "','", "WS",
     ],
@@ -317,7 +323,7 @@ pub fn LifecycleSet_sequenceContext::get_token_EOF(
 pub fn LifecycleSet_sequenceContext::label_values(
   self : LifecycleSet_sequenceContext,
 ) -> Array[@runtime.Token] {
-  self.node.select_tokens([16, 17, 18])
+  self.node.select_tokens([18, 19, 20])
 }
 
 ///|
@@ -413,12 +419,66 @@ pub fn LifecycleSet_loopContext::get_token_EOF(
 pub fn LifecycleSet_loopContext::label_values(
   self : LifecycleSet_loopContext,
 ) -> Array[@runtime.Token] {
-  self.node.select_tokens([21, 23])
+  self.node.select_tokens([23, 25])
 }
 
 ///|
 pub fn LifecycleSet_loopContext::alternative(
   self : LifecycleSet_loopContext,
+) -> String? {
+  ignore(self)
+  None
+}
+
+///|
+pub struct LifecycleNestedContext {
+  node : @runtime.RuleContext
+}
+
+///|
+pub fn LifecycleNestedContext::raw(
+  self : LifecycleNestedContext,
+) -> @runtime.RuleContext {
+  self.node
+}
+
+///|
+pub fn LifecycleNestedContext::from_raw(
+  node : @runtime.RuleContext,
+) -> LifecycleNestedContext? {
+  if node.name == "nested" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
+pub fn LifecycleParser::parse_nested(
+  self : LifecycleParser,
+  source : String,
+  parser_action? : @runtime.ParserAction,
+) -> LifecycleNestedContext raise @runtime.RuntimeError {
+  { node: self.grammar.parse_context(source, start_rule=4, parser_action?), }
+}
+
+///|
+pub fn LifecycleNestedContext::get_document(
+  self : LifecycleNestedContext,
+) -> Array[LifecycleDocumentContext] {
+  self.node.rules("document").map(node => LifecycleDocumentContext::{ node, })
+}
+
+///|
+pub fn LifecycleNestedContext::get_nested(
+  self : LifecycleNestedContext,
+) -> Array[LifecycleNestedContext] {
+  self.node.rules("nested").map(node => LifecycleNestedContext::{ node, })
+}
+
+///|
+pub fn LifecycleNestedContext::alternative(
+  self : LifecycleNestedContext,
 ) -> String? {
   ignore(self)
   None

@@ -7,6 +7,7 @@ pub(all) struct LifecycleVisitor[T] {
   visit_broken : (LifecycleBrokenContext, Array[T]) -> T
   visit_set_sequence : (LifecycleSet_sequenceContext, Array[T]) -> T
   visit_set_loop : (LifecycleSet_loopContext, Array[T]) -> T
+  visit_nested : (LifecycleNestedContext, Array[T]) -> T
 }
 
 ///|
@@ -20,6 +21,7 @@ pub fn[T] LifecycleVisitor::new(
     visit_broken: (context, children) => rule(context.raw(), children),
     visit_set_sequence: (context, children) => rule(context.raw(), children),
     visit_set_loop: (context, children) => rule(context.raw(), children),
+    visit_nested: (context, children) => rule(context.raw(), children),
   }
 }
 
@@ -50,6 +52,10 @@ pub fn[T] LifecycleVisitor::visit(
     "set_loop" => {
       let context = LifecycleSet_loopContext::{ node, }
       (self.visit_set_loop)(context, values)
+    }
+    "nested" => {
+      let context = LifecycleNestedContext::{ node, }
+      (self.visit_nested)(context, values)
     }
     _ => abort("foreign rule context")
   }

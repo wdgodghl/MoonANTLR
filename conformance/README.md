@@ -47,9 +47,11 @@ positions, error Token intervals, the remaining Token, action order/offsets,
 every declared attribute in every rule frame and observable Parser member
 state. Generated Visitor/Listener behavior also has dedicated API tests.
 JVM-specific debug-DFA text and Java reflection/type spelling are not compared
-as text. The driver compares the resulting structure with tree construction
-enabled, including the descriptor that originally disables tree building;
-debug-print flags do not change the structural comparison. Original expected
+as text. Original `predictionMode=SLL`, `predictionMode=LL` and
+`notBuildParseTree` flags configure both targets. Forced SLL asserts no LL
+fallback; disabled tree building asserts absent context children. The manifest
+retains original flags and effective settings. Unknown flags fail generation.
+Debug-print flags are recorded as presentation options. Original expected
 stdout is preserved in the descriptors rather than asserted verbatim.
 This is a functional descriptor migration, not a port of every Java
 runtime API or proof for every possible grammar/host program.

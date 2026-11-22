@@ -28,6 +28,7 @@ pub(all) struct RuleSemantics {
   arguments : (SemanticEvent, Int32) -> Map[String, Json]
   action : (SemanticEvent, Int32) -> RuleFrame raise RuntimeError
   predicate : (SemanticEvent, Int32) -> Bool raise RuntimeError
+  handle_exception : ((SemanticEvent, RuntimeError) -> RuleFrame raise RuntimeError)?
 }
 
 ///|
@@ -54,6 +55,7 @@ pub fn RuleSemantics::new() -> RuleSemantics {
     arguments: (_, _) => Map([]),
     action: (event, _) => event.frame,
     predicate: (_, _) => true,
+    handle_exception: None,
   }
 }
 
@@ -134,10 +136,17 @@ pub fn Grammar::parse_semantic(
   start_rule~ : Int32 = 0,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
 ) -> ParseResult raise RuntimeError {
   let tokens = TokenStream::new(
-    self.tokenize(source, work_limit~, lexer_predicate?, lexer_action?),
+    self.tokenize(
+      source,
+      work_limit~,
+      lexer_predicate?,
+      lexer_context_predicate?,
+      lexer_action?,
+    ),
   ).visible_tokens()
   self.parse_tokens(
     tokens,

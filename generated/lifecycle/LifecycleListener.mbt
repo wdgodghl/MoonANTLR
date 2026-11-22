@@ -11,6 +11,8 @@ pub(all) struct LifecycleListener {
   exit_set_sequence : (LifecycleSet_sequenceContext) -> Unit
   enter_set_loop : (LifecycleSet_loopContext) -> Unit
   exit_set_loop : (LifecycleSet_loopContext) -> Unit
+  enter_nested : (LifecycleNestedContext) -> Unit
+  exit_nested : (LifecycleNestedContext) -> Unit
 }
 
 ///|
@@ -25,6 +27,8 @@ pub fn LifecycleListener::new() -> LifecycleListener {
     exit_set_sequence: _ => (),
     enter_set_loop: _ => (),
     exit_set_loop: _ => (),
+    enter_nested: _ => (),
+    exit_nested: _ => (),
   }
 }
 
@@ -39,6 +43,7 @@ pub fn LifecycleListener::walk(
     "set_sequence" =>
       (self.enter_set_sequence)(LifecycleSet_sequenceContext::{ node, })
     "set_loop" => (self.enter_set_loop)(LifecycleSet_loopContext::{ node, })
+    "nested" => (self.enter_nested)(LifecycleNestedContext::{ node, })
     _ => ()
   }
   for child in node.children {
@@ -53,6 +58,7 @@ pub fn LifecycleListener::walk(
     "set_sequence" =>
       (self.exit_set_sequence)(LifecycleSet_sequenceContext::{ node, })
     "set_loop" => (self.exit_set_loop)(LifecycleSet_loopContext::{ node, })
+    "nested" => (self.exit_nested)(LifecycleNestedContext::{ node, })
     _ => ()
   }
 }

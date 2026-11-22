@@ -65,6 +65,8 @@ pub fn RuntimeError::diagnostic(
         column: Some(column),
         expected: [],
       }
+    RecognitionError(_, line, column, expected) =>
+      SyntaxError(line, column, expected).diagnostic(grammar)
     SyntaxError(line, column, expected) => {
       let names = expected.map(kind => grammar.token_name(kind))
       let out = StringBuilder()

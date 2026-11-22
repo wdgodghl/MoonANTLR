@@ -122,6 +122,7 @@ moon run examples/typed
 - [ANTLR 4.13.2 完整兼容目标与验收](docs/ANTLR_CONFORMANCE.md)
 - [C# 真实语法迁移案例与接入成本](docs/CSHARP_MIGRATION.md)
 - [验证与测试重现](docs/VERIFICATION.md)
+- [申报功能逐项验收清单](docs/DELIVERY_CHECKLIST.md)
 - [ANTLR 4.13.2](https://github.com/antlr/antlr4/tree/4.13.2)
 - [ANTLR 新语言目标开发指南](https://github.com/antlr/antlr4/blob/dev/doc/creating-a-language-target.md)
 

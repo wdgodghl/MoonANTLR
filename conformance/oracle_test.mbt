@@ -58,6 +58,8 @@ test "upstream CompositeParsers BringInLiteralsFromDelegate" {
   let grammar = @u002.grammar()
   let parsed = grammar.parse_default(
     "=a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -77,7 +79,7 @@ test "upstream CompositeParsers BringInLiteralsFromDelegate" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("=a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -113,6 +115,8 @@ test "upstream CompositeParsers CombinedImportsCombined" {
   let grammar = @u003.grammar()
   let parsed = grammar.parse_default(
     "x 34 9",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -132,7 +136,7 @@ test "upstream CompositeParsers CombinedImportsCombined" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x 34 9", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -169,6 +173,8 @@ test "upstream CompositeParsers DelegatesSeeSameTokenType" {
   let grammar = @u004.grammar()
   let parsed = grammar.parse_default(
     "aa",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -188,7 +194,7 @@ test "upstream CompositeParsers DelegatesSeeSameTokenType" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aa", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -224,6 +230,8 @@ test "upstream CompositeParsers DelegatorAccessesDelegateMembers" {
   let grammar = @u005.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -243,7 +251,7 @@ test "upstream CompositeParsers DelegatorAccessesDelegateMembers" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -273,6 +281,8 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRule" {
   let grammar = @u006.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -292,7 +302,7 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRule" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -363,6 +373,8 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRuleWithArgs" {
   let grammar = @u007.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -382,7 +394,7 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRuleWithArgs" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"x\":3,\"y\":1000},\"children\":[]}]}",
     ),
@@ -414,6 +426,8 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRuleWithReturnStruct" {
   let grammar = @u008.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -433,7 +447,7 @@ test "upstream CompositeParsers DelegatorInvokesDelegateRuleWithReturnStruct" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -465,6 +479,8 @@ test "upstream CompositeParsers DelegatorInvokesFirstVersionOfDelegateRule" {
   let grammar = @u009.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -484,7 +500,7 @@ test "upstream CompositeParsers DelegatorInvokesFirstVersionOfDelegateRule" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -516,6 +532,8 @@ test "upstream CompositeParsers DelegatorRuleOverridesDelegate" {
   let grammar = @u010.grammar()
   let parsed = grammar.parse_default(
     "c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -535,7 +553,7 @@ test "upstream CompositeParsers DelegatorRuleOverridesDelegate" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -567,6 +585,8 @@ test "upstream CompositeParsers DelegatorRuleOverridesDelegates" {
   let grammar = @u011.grammar()
   let parsed = grammar.parse_default(
     "c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -586,7 +606,7 @@ test "upstream CompositeParsers DelegatorRuleOverridesDelegates" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -618,6 +638,8 @@ test "upstream CompositeParsers DelegatorRuleOverridesLookaheadInDelegate" {
   let grammar = @u012.grammar()
   let parsed = grammar.parse_default(
     "float x = 3;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -642,7 +664,7 @@ test "upstream CompositeParsers DelegatorRuleOverridesLookaheadInDelegate" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -682,6 +704,8 @@ test "upstream CompositeParsers ImportedGrammarWithEmptyOptions" {
   let grammar = @u013.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -701,7 +725,7 @@ test "upstream CompositeParsers ImportedGrammarWithEmptyOptions" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -733,6 +757,8 @@ test "upstream CompositeParsers ImportedRuleWithAction" {
   let grammar = @u014.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -752,7 +778,7 @@ test "upstream CompositeParsers ImportedRuleWithAction" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -784,6 +810,8 @@ test "upstream CompositeParsers ImportLexerWithOnlyFragmentRules" {
   let grammar = @u015.grammar()
   let parsed = grammar.parse_default(
     "test test",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -803,7 +831,7 @@ test "upstream CompositeParsers ImportLexerWithOnlyFragmentRules" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("test test", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -837,6 +865,8 @@ test "upstream CompositeParsers KeywordVSIDOrder" {
   let grammar = @u016.grammar()
   let parsed = grammar.parse_default(
     "abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -856,7 +886,7 @@ test "upstream CompositeParsers KeywordVSIDOrder" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -886,6 +916,8 @@ test "upstream FullContextParsing AmbiguityNoLoop" {
   let grammar = @u017.grammar()
   let parsed = grammar.parse_default(
     "a@",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -905,7 +937,7 @@ test "upstream FullContextParsing AmbiguityNoLoop" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a@", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -942,6 +974,8 @@ test "upstream FullContextParsing AmbigYieldsCtxSensitiveDFA" {
   let grammar = @u018.grammar()
   let parsed = grammar.parse_default(
     "abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -961,7 +995,7 @@ test "upstream FullContextParsing AmbigYieldsCtxSensitiveDFA" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -991,6 +1025,8 @@ test "upstream FullContextParsing CtxSensitiveDFA_1" {
   let grammar = @u019.grammar()
   let parsed = grammar.parse_default(
     "$ 34 abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1010,7 +1046,7 @@ test "upstream FullContextParsing CtxSensitiveDFA_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("$ 34 abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -1048,6 +1084,8 @@ test "upstream FullContextParsing CtxSensitiveDFA_2" {
   let grammar = @u020.grammar()
   let parsed = grammar.parse_default(
     "@ 34 abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1067,7 +1105,7 @@ test "upstream FullContextParsing CtxSensitiveDFA_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("@ 34 abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -1105,6 +1143,8 @@ test "upstream FullContextParsing CtxSensitiveDFATwoDiffInput" {
   let grammar = @u021.grammar()
   let parsed = grammar.parse_default(
     "$ 34 abc @ 34 abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1130,7 +1170,7 @@ test "upstream FullContextParsing CtxSensitiveDFATwoDiffInput" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -1208,6 +1248,8 @@ test "upstream FullContextParsing ExprAmbiguity_1" {
   let grammar = @u022.grammar()
   let parsed = grammar.parse_default(
     "a+b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1227,7 +1269,7 @@ test "upstream FullContextParsing ExprAmbiguity_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a+b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"_p\":0},\"children\":[{\"values\":{\"_p\":5},\"children\":[]}]}]}",
     ),
@@ -1301,6 +1343,8 @@ test "upstream FullContextParsing ExprAmbiguity_2" {
   let grammar = @u023.grammar()
   let parsed = grammar.parse_default(
     "a+b*c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1323,7 +1367,7 @@ test "upstream FullContextParsing ExprAmbiguity_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a+b*c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"_p\":0},\"children\":[{\"values\":{\"_p\":5},\"children\":[{\"values\":{\"_p\":6},\"children\":[]}]}]}]}",
     ),
@@ -1363,6 +1407,8 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_1" {
   let grammar = @u024.grammar()
   let parsed = grammar.parse_default(
     "{ if x then return }",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1388,7 +1434,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_1" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -1429,6 +1475,8 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_2" {
   let grammar = @u025.grammar()
   let parsed = grammar.parse_default(
     "{ if x then return else foo }",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1454,7 +1502,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_2" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -1498,6 +1546,8 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_3" {
   let grammar = @u026.grammar()
   let parsed = grammar.parse_default(
     "{ if x then if y then return else foo }",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1523,7 +1573,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_3" {
     lexer_action=(_, _) => (),
   )
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -1570,6 +1620,8 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_4" {
   let grammar = @u027.grammar()
   let parsed = grammar.parse_default(
     "{ if x then if y then return else foo else bar }",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1595,7 +1647,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_4" {
     lexer_action=(_, _) => (),
   )
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -1645,6 +1697,8 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_5" {
   let grammar = @u028.grammar()
   let parsed = grammar.parse_default(
     "{ if x then return else foo\nif x then if y then return else foo }\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1670,7 +1724,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_5" {
     lexer_action=(_, _) => (),
   )
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -1725,6 +1779,8 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_6" {
   let grammar = @u029.grammar()
   let parsed = grammar.parse_default(
     "{ if x then return else foo\nif x then if y then return else foo }\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1750,7 +1806,7 @@ test "upstream FullContextParsing FullContextIF_THEN_ELSEParse_6" {
     lexer_action=(_, _) => (),
   )
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -1805,6 +1861,8 @@ test "upstream FullContextParsing LoopsSimulateTailRecursion" {
   let grammar = @u030.grammar()
   let parsed = grammar.parse_default(
     "a(i)<-x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1827,7 +1885,7 @@ test "upstream FullContextParsing LoopsSimulateTailRecursion" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a(i)<-x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -1869,6 +1927,8 @@ test "upstream FullContextParsing SLLSeesEOFInLLGrammar" {
   let grammar = @u031.grammar()
   let parsed = grammar.parse_default(
     "34 abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1888,7 +1948,7 @@ test "upstream FullContextParsing SLLSeesEOFInLLGrammar" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("34 abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -1925,6 +1985,8 @@ test "upstream LeftRecursion AmbigLR_1" {
   let grammar = @u032.grammar()
   let parsed = grammar.parse_default(
     "1\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -1944,7 +2006,7 @@ test "upstream LeftRecursion AmbigLR_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1\n", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -1981,6 +2043,8 @@ test "upstream LeftRecursion AmbigLR_2" {
   let grammar = @u033.grammar()
   let parsed = grammar.parse_default(
     "a = 5\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2003,7 +2067,7 @@ test "upstream LeftRecursion AmbigLR_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a = 5\n", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -2042,6 +2106,8 @@ test "upstream LeftRecursion AmbigLR_3" {
   let grammar = @u034.grammar()
   let parsed = grammar.parse_default(
     "b = 6\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2064,7 +2130,7 @@ test "upstream LeftRecursion AmbigLR_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b = 6\n", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -2103,6 +2169,8 @@ test "upstream LeftRecursion AmbigLR_4" {
   let grammar = @u035.grammar()
   let parsed = grammar.parse_default(
     "a+b*2\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2125,7 +2193,7 @@ test "upstream LeftRecursion AmbigLR_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a+b*2\n", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
@@ -2167,6 +2235,8 @@ test "upstream LeftRecursion AmbigLR_5" {
   let grammar = @u036.grammar()
   let parsed = grammar.parse_default(
     "(1+2)*3\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2189,7 +2259,7 @@ test "upstream LeftRecursion AmbigLR_5" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(1+2)*3\n", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -2234,6 +2304,8 @@ test "upstream LeftRecursion Declarations_1" {
   let grammar = @u037.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2253,7 +2325,7 @@ test "upstream LeftRecursion Declarations_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -2285,6 +2357,8 @@ test "upstream LeftRecursion Declarations_10" {
   let grammar = @u038.grammar()
   let parsed = grammar.parse_default(
     "(*a)[]",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2307,7 +2381,7 @@ test "upstream LeftRecursion Declarations_10" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(*a)[]", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
@@ -2350,6 +2424,8 @@ test "upstream LeftRecursion Declarations_2" {
   let grammar = @u039.grammar()
   let parsed = grammar.parse_default(
     "*a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2372,7 +2448,7 @@ test "upstream LeftRecursion Declarations_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("*a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -2409,6 +2485,8 @@ test "upstream LeftRecursion Declarations_3" {
   let grammar = @u040.grammar()
   let parsed = grammar.parse_default(
     "**a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2431,7 +2509,7 @@ test "upstream LeftRecursion Declarations_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("**a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -2470,6 +2548,8 @@ test "upstream LeftRecursion Declarations_4" {
   let grammar = @u041.grammar()
   let parsed = grammar.parse_default(
     "a[3]",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2492,7 +2572,7 @@ test "upstream LeftRecursion Declarations_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a[3]", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -2532,6 +2612,8 @@ test "upstream LeftRecursion Declarations_5" {
   let grammar = @u042.grammar()
   let parsed = grammar.parse_default(
     "b[]",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2554,7 +2636,7 @@ test "upstream LeftRecursion Declarations_5" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b[]", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -2592,6 +2674,8 @@ test "upstream LeftRecursion Declarations_6" {
   let grammar = @u043.grammar()
   let parsed = grammar.parse_default(
     "(a)",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2614,7 +2698,7 @@ test "upstream LeftRecursion Declarations_6" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(a)", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -2652,6 +2736,8 @@ test "upstream LeftRecursion Declarations_7" {
   let grammar = @u044.grammar()
   let parsed = grammar.parse_default(
     "a[]()",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2674,7 +2760,7 @@ test "upstream LeftRecursion Declarations_7" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a[]()", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -2715,6 +2801,8 @@ test "upstream LeftRecursion Declarations_8" {
   let grammar = @u045.grammar()
   let parsed = grammar.parse_default(
     "a[][]",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2737,7 +2825,7 @@ test "upstream LeftRecursion Declarations_8" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a[][]", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -2778,6 +2866,8 @@ test "upstream LeftRecursion Declarations_9" {
   let grammar = @u046.grammar()
   let parsed = grammar.parse_default(
     "*a[]",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2800,7 +2890,7 @@ test "upstream LeftRecursion Declarations_9" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("*a[]", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -2840,6 +2930,8 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_1" {
   let grammar = @u047.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2859,7 +2951,7 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -2889,6 +2981,8 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_2" {
   let grammar = @u048.grammar()
   let parsed = grammar.parse_default(
     "x y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2908,7 +3002,7 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -2944,6 +3038,8 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_3" {
   let grammar = @u049.grammar()
   let parsed = grammar.parse_default(
     "x y z",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -2963,7 +3059,7 @@ test "upstream LeftRecursion DirectCallToLeftRecursiveRule_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y z", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3001,6 +3097,8 @@ test "upstream LeftRecursion Expressions_1" {
   let grammar = @u050.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3020,7 +3118,7 @@ test "upstream LeftRecursion Expressions_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -3052,6 +3150,8 @@ test "upstream LeftRecursion Expressions_2" {
   let grammar = @u051.grammar()
   let parsed = grammar.parse_default(
     "1",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3071,7 +3171,7 @@ test "upstream LeftRecursion Expressions_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -3103,6 +3203,8 @@ test "upstream LeftRecursion Expressions_3" {
   let grammar = @u052.grammar()
   let parsed = grammar.parse_default(
     "a-1",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3122,7 +3224,7 @@ test "upstream LeftRecursion Expressions_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a-1", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3160,6 +3262,8 @@ test "upstream LeftRecursion Expressions_4" {
   let grammar = @u053.grammar()
   let parsed = grammar.parse_default(
     "a.b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3179,7 +3283,7 @@ test "upstream LeftRecursion Expressions_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a.b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3217,6 +3321,8 @@ test "upstream LeftRecursion Expressions_5" {
   let grammar = @u054.grammar()
   let parsed = grammar.parse_default(
     "a.this",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3236,7 +3342,7 @@ test "upstream LeftRecursion Expressions_5" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a.this", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3274,6 +3380,8 @@ test "upstream LeftRecursion Expressions_6" {
   let grammar = @u055.grammar()
   let parsed = grammar.parse_default(
     "-a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3293,7 +3401,7 @@ test "upstream LeftRecursion Expressions_6" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("-a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3330,6 +3438,8 @@ test "upstream LeftRecursion Expressions_7" {
   let grammar = @u056.grammar()
   let parsed = grammar.parse_default(
     "-a+b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3352,7 +3462,7 @@ test "upstream LeftRecursion Expressions_7" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("-a+b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3391,6 +3501,8 @@ test "upstream LeftRecursion JavaExpressions_1" {
   let grammar = @u057.grammar()
   let parsed = grammar.parse_default(
     "a|b&c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3413,7 +3525,7 @@ test "upstream LeftRecursion JavaExpressions_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a|b&c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -3454,6 +3566,8 @@ test "upstream LeftRecursion JavaExpressions_10" {
   let grammar = @u058.grammar()
   let parsed = grammar.parse_default(
     "a.f(x)==T.c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3478,7 +3592,7 @@ test "upstream LeftRecursion JavaExpressions_10" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -3526,6 +3640,8 @@ test "upstream LeftRecursion JavaExpressions_11" {
   let grammar = @u059.grammar()
   let parsed = grammar.parse_default(
     "a.f().g(x,1)",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3550,7 +3666,7 @@ test "upstream LeftRecursion JavaExpressions_11" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -3600,6 +3716,8 @@ test "upstream LeftRecursion JavaExpressions_12" {
   let grammar = @u060.grammar()
   let parsed = grammar.parse_default(
     "new T[((n-1) * x) + 1]",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3625,7 +3743,7 @@ test "upstream LeftRecursion JavaExpressions_12" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -3679,6 +3797,8 @@ test "upstream LeftRecursion JavaExpressions_2" {
   let grammar = @u061.grammar()
   let parsed = grammar.parse_default(
     "(a|b)&c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3701,7 +3821,7 @@ test "upstream LeftRecursion JavaExpressions_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(a|b)&c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3744,6 +3864,8 @@ test "upstream LeftRecursion JavaExpressions_3" {
   let grammar = @u062.grammar()
   let parsed = grammar.parse_default(
     "a > b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3763,7 +3885,7 @@ test "upstream LeftRecursion JavaExpressions_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a > b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3801,6 +3923,8 @@ test "upstream LeftRecursion JavaExpressions_4" {
   let grammar = @u063.grammar()
   let parsed = grammar.parse_default(
     "a >> b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3820,7 +3944,7 @@ test "upstream LeftRecursion JavaExpressions_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a >> b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -3858,6 +3982,8 @@ test "upstream LeftRecursion JavaExpressions_5" {
   let grammar = @u064.grammar()
   let parsed = grammar.parse_default(
     "a=b=c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3880,7 +4006,7 @@ test "upstream LeftRecursion JavaExpressions_5" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a=b=c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -3921,6 +4047,8 @@ test "upstream LeftRecursion JavaExpressions_6" {
   let grammar = @u065.grammar()
   let parsed = grammar.parse_default(
     "a^b^c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -3943,7 +4071,7 @@ test "upstream LeftRecursion JavaExpressions_6" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a^b^c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -3984,6 +4112,8 @@ test "upstream LeftRecursion JavaExpressions_7" {
   let grammar = @u066.grammar()
   let parsed = grammar.parse_default(
     "(T)x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4006,7 +4136,7 @@ test "upstream LeftRecursion JavaExpressions_7" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(T)x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -4045,6 +4175,8 @@ test "upstream LeftRecursion JavaExpressions_8" {
   let grammar = @u067.grammar()
   let parsed = grammar.parse_default(
     "new A().b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4067,7 +4199,7 @@ test "upstream LeftRecursion JavaExpressions_8" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("new A().b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -4109,6 +4241,8 @@ test "upstream LeftRecursion JavaExpressions_9" {
   let grammar = @u068.grammar()
   let parsed = grammar.parse_default(
     "(T)t.f()",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4131,7 +4265,7 @@ test "upstream LeftRecursion JavaExpressions_9" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(T)t.f()", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
@@ -4175,6 +4309,8 @@ test "upstream LeftRecursion LabelsOnOpSubrule_1" {
   let grammar = @u069.grammar()
   let parsed = grammar.parse_default(
     "4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4194,7 +4330,7 @@ test "upstream LeftRecursion LabelsOnOpSubrule_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -4226,6 +4362,8 @@ test "upstream LeftRecursion LabelsOnOpSubrule_2" {
   let grammar = @u070.grammar()
   let parsed = grammar.parse_default(
     "1*2/3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4248,7 +4386,7 @@ test "upstream LeftRecursion LabelsOnOpSubrule_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1*2/3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -4289,6 +4427,8 @@ test "upstream LeftRecursion LabelsOnOpSubrule_3" {
   let grammar = @u071.grammar()
   let parsed = grammar.parse_default(
     "(1/2)*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4319,7 +4459,7 @@ test "upstream LeftRecursion LabelsOnOpSubrule_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(1/2)*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -4362,6 +4502,8 @@ test "upstream LeftRecursion MultipleActions_1" {
   let grammar = @u072.grammar()
   let parsed = grammar.parse_default(
     "4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4381,7 +4523,7 @@ test "upstream LeftRecursion MultipleActions_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -4413,6 +4555,8 @@ test "upstream LeftRecursion MultipleActions_2" {
   let grammar = @u073.grammar()
   let parsed = grammar.parse_default(
     "1*2/3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4447,7 +4591,7 @@ test "upstream LeftRecursion MultipleActions_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1*2/3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -4488,6 +4632,8 @@ test "upstream LeftRecursion MultipleActions_3" {
   let grammar = @u074.grammar()
   let parsed = grammar.parse_default(
     "(1/2)*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4524,7 +4670,7 @@ test "upstream LeftRecursion MultipleActions_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(1/2)*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -4577,6 +4723,8 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_1" {
   let grammar = @u075.grammar()
   let parsed = grammar.parse_default(
     "4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4596,7 +4744,7 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -4638,6 +4786,8 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_2" {
   let grammar = @u076.grammar()
   let parsed = grammar.parse_default(
     "1*2/3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4670,7 +4820,7 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1*2/3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -4721,6 +4871,8 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_3" {
   let grammar = @u077.grammar()
   let parsed = grammar.parse_default(
     "(1/2)*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4755,7 +4907,7 @@ test "upstream LeftRecursion MultipleActionsPredicatesOptions_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(1/2)*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -4846,6 +4998,8 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_1" {
   let grammar = @u078.grammar()
   let parsed = grammar.parse_default(
     "4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4865,7 +5019,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":4},\"children\":[]}]}",
     ),
@@ -4945,6 +5099,8 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_2" {
   let grammar = @u079.grammar()
   let parsed = grammar.parse_default(
     "1+2",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -4964,7 +5120,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1+2", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":3},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":2},\"children\":[]}]}]}",
     ),
@@ -5050,6 +5206,8 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_3" {
   let grammar = @u080.grammar()
   let parsed = grammar.parse_default(
     "1+2*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5072,7 +5230,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1+2*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":7},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":6},\"children\":[{\"values\":{\"v\":2},\"children\":[]},{\"values\":{\"v\":3},\"children\":[]}]}]}]}",
     ),
@@ -5161,6 +5319,8 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_4" {
   let grammar = @u081.grammar()
   let parsed = grammar.parse_default(
     "i++*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5183,7 +5343,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("i++*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":12},\"children\":[{\"values\":{\"v\":4},\"children\":[{\"values\":{\"v\":3},\"children\":[]}]},{\"values\":{\"v\":3},\"children\":[]}]}]}",
     ),
@@ -5270,6 +5430,8 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_5" {
   let grammar = @u082.grammar()
   let parsed = grammar.parse_default(
     "(99)+3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5292,7 +5454,7 @@ test "upstream LeftRecursion MultipleAlternativesWithCommonLabel_5" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(99)+3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":102},\"children\":[{\"values\":{\"v\":99},\"children\":[{\"values\":{\"v\":99},\"children\":[]}]},{\"values\":{\"v\":3},\"children\":[]}]}]}",
     ),
@@ -5332,6 +5494,8 @@ test "upstream LeftRecursion PrecedenceFilterConsidersContext" {
   let grammar = @u083.grammar()
   let parsed = grammar.parse_default(
     "aa",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5354,7 +5518,7 @@ test "upstream LeftRecursion PrecedenceFilterConsidersContext" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aa", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -5392,6 +5556,8 @@ test "upstream LeftRecursion PrefixAndOtherAlt_1" {
   let grammar = @u084.grammar()
   let parsed = grammar.parse_default(
     "-1",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5411,7 +5577,7 @@ test "upstream LeftRecursion PrefixAndOtherAlt_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("-1", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -5448,6 +5614,8 @@ test "upstream LeftRecursion PrefixAndOtherAlt_2" {
   let grammar = @u085.grammar()
   let parsed = grammar.parse_default(
     "-1 + -1",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5470,7 +5638,7 @@ test "upstream LeftRecursion PrefixAndOtherAlt_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("-1 + -1", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -5553,6 +5721,8 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_1" {
   let grammar = @u086.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5572,7 +5742,7 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"result\":\"a\"},\"children\":[]}]}",
     ),
@@ -5645,6 +5815,8 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_2" {
   let grammar = @u087.grammar()
   let parsed = grammar.parse_default(
     "a+b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5664,7 +5836,7 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a+b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"result\":\"(a+b)\"},\"children\":[{\"values\":{\"result\":\"a\"},\"children\":[]},{\"values\":{\"result\":\"b\"},\"children\":[]}]}]}",
     ),
@@ -5743,6 +5915,8 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_3" {
   let grammar = @u088.grammar()
   let parsed = grammar.parse_default(
     "a=b+c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5765,7 +5939,7 @@ test "upstream LeftRecursion PrefixOpWithActionAndLabel_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a=b+c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"result\":\"((a=b)+c)\"},\"children\":[{\"values\":{\"result\":\"(a=b)\"},\"children\":[{\"values\":{\"result\":\"b\"},\"children\":[]}]},{\"values\":{\"result\":\"c\"},\"children\":[]}]}]}",
     ),
@@ -5850,6 +6024,8 @@ test "upstream LeftRecursion ReturnValueAndActions_1" {
   let grammar = @u089.grammar()
   let parsed = grammar.parse_default(
     "4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5869,7 +6045,7 @@ test "upstream LeftRecursion ReturnValueAndActions_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":4},\"children\":[]}]}",
     ),
@@ -5946,6 +6122,8 @@ test "upstream LeftRecursion ReturnValueAndActions_2" {
   let grammar = @u090.grammar()
   let parsed = grammar.parse_default(
     "1+2",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -5965,7 +6143,7 @@ test "upstream LeftRecursion ReturnValueAndActions_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1+2", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":3},\"children\":[{\"values\":{\"ignored\":null,\"v\":1},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":2},\"children\":[]}]}]}",
     ),
@@ -6048,6 +6226,8 @@ test "upstream LeftRecursion ReturnValueAndActions_3" {
   let grammar = @u091.grammar()
   let parsed = grammar.parse_default(
     "1+2*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6070,7 +6250,7 @@ test "upstream LeftRecursion ReturnValueAndActions_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1+2*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":7},\"children\":[{\"values\":{\"ignored\":null,\"v\":1},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":6},\"children\":[{\"values\":{\"ignored\":null,\"v\":2},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":3},\"children\":[]}]}]}]}",
     ),
@@ -6156,6 +6336,8 @@ test "upstream LeftRecursion ReturnValueAndActions_4" {
   let grammar = @u092.grammar()
   let parsed = grammar.parse_default(
     "(1+2)*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6186,7 +6368,7 @@ test "upstream LeftRecursion ReturnValueAndActions_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("(1+2)*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"ignored\":null,\"v\":9},\"children\":[{\"values\":{\"ignored\":null,\"v\":3},\"children\":[{\"values\":{\"ignored\":null,\"v\":3},\"children\":[{\"values\":{\"ignored\":null,\"v\":1},\"children\":[]},{\"values\":{\"ignored\":null,\"v\":2},\"children\":[]}]}]},{\"values\":{\"ignored\":null,\"v\":3},\"children\":[]}]}]}",
     ),
@@ -6273,6 +6455,8 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_1" {
   let grammar = @u093.grammar()
   let parsed = grammar.parse_default(
     "4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6292,7 +6476,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":4},\"children\":[]}]}",
     ),
@@ -6368,6 +6552,8 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_2" {
   let grammar = @u094.grammar()
   let parsed = grammar.parse_default(
     "1+2",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6387,7 +6573,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1+2", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":3},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":2},\"children\":[]}]}]}",
     ),
@@ -6469,6 +6655,8 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_3" {
   let grammar = @u095.grammar()
   let parsed = grammar.parse_default(
     "1+2*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6491,7 +6679,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1+2*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":7},\"children\":[{\"values\":{\"v\":1},\"children\":[]},{\"values\":{\"v\":6},\"children\":[{\"values\":{\"v\":2},\"children\":[]},{\"values\":{\"v\":3},\"children\":[]}]}]}]}",
     ),
@@ -6576,6 +6764,8 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_4" {
   let grammar = @u096.grammar()
   let parsed = grammar.parse_default(
     "i++*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6598,7 +6788,7 @@ test "upstream LeftRecursion ReturnValueAndActionsAndLabels_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("i++*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"v\":12},\"children\":[{\"values\":{\"v\":4},\"children\":[{\"values\":{\"v\":3},\"children\":[]}]},{\"values\":{\"v\":3},\"children\":[]}]}]}",
     ),
@@ -6637,6 +6827,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_1" {
   let grammar = @u097.grammar()
   let parsed = grammar.parse_default(
     "a*b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6659,7 +6851,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a*b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -6697,6 +6889,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_2" {
   let grammar = @u098.grammar()
   let parsed = grammar.parse_default(
     "a,c>>x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6719,7 +6913,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a,c>>x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -6760,6 +6954,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_3" {
   let grammar = @u099.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6779,7 +6975,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -6811,6 +7007,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_4" {
   let grammar = @u100.grammar()
   let parsed = grammar.parse_default(
     "a*b,c,x*y>>r",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6835,7 +7033,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList1_4" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -6884,6 +7082,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_1" {
   let grammar = @u101.grammar()
   let parsed = grammar.parse_default(
     "a*b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6906,7 +7106,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a*b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -6944,6 +7144,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_2" {
   let grammar = @u102.grammar()
   let parsed = grammar.parse_default(
     "a,c>>x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -6966,7 +7168,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a,c>>x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7007,6 +7209,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_3" {
   let grammar = @u103.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7026,7 +7230,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -7058,6 +7262,8 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_4" {
   let grammar = @u104.grammar()
   let parsed = grammar.parse_default(
     "a*b,c,x*y>>r",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7082,7 +7288,7 @@ test "upstream LeftRecursion ReturnValueAndActionsList2_4" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7141,6 +7347,8 @@ test "upstream LeftRecursion SemPred" {
   let grammar = @u105.grammar()
   let parsed = grammar.parse_default(
     "x y z",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7160,7 +7368,7 @@ test "upstream LeftRecursion SemPred" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y z", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -7207,6 +7415,8 @@ test "upstream LeftRecursion SemPredFailOption" {
   let grammar = @u106.grammar()
   let parsed = grammar.parse_default(
     "x y z",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7228,7 +7438,7 @@ test "upstream LeftRecursion SemPredFailOption" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y z", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7266,6 +7476,8 @@ test "upstream LeftRecursion Simple_1" {
   let grammar = @u107.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7285,7 +7497,7 @@ test "upstream LeftRecursion Simple_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -7317,6 +7529,8 @@ test "upstream LeftRecursion Simple_2" {
   let grammar = @u108.grammar()
   let parsed = grammar.parse_default(
     "x y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7336,7 +7550,7 @@ test "upstream LeftRecursion Simple_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7372,6 +7586,8 @@ test "upstream LeftRecursion Simple_3" {
   let grammar = @u109.grammar()
   let parsed = grammar.parse_default(
     "x y z",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7391,7 +7607,7 @@ test "upstream LeftRecursion Simple_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y z", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -7429,6 +7645,8 @@ test "upstream LeftRecursion TernaryExpr_1" {
   let grammar = @u110.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7448,7 +7666,7 @@ test "upstream LeftRecursion TernaryExpr_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -7480,6 +7698,8 @@ test "upstream LeftRecursion TernaryExpr_2" {
   let grammar = @u111.grammar()
   let parsed = grammar.parse_default(
     "a+b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7499,7 +7719,7 @@ test "upstream LeftRecursion TernaryExpr_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a+b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7537,6 +7757,8 @@ test "upstream LeftRecursion TernaryExpr_3" {
   let grammar = @u112.grammar()
   let parsed = grammar.parse_default(
     "a*b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7556,7 +7778,7 @@ test "upstream LeftRecursion TernaryExpr_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a*b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7594,6 +7816,8 @@ test "upstream LeftRecursion TernaryExpr_4" {
   let grammar = @u113.grammar()
   let parsed = grammar.parse_default(
     "a?b:c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7616,7 +7840,7 @@ test "upstream LeftRecursion TernaryExpr_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a?b:c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7657,6 +7881,8 @@ test "upstream LeftRecursion TernaryExpr_5" {
   let grammar = @u114.grammar()
   let parsed = grammar.parse_default(
     "a=b=c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7679,7 +7905,7 @@ test "upstream LeftRecursion TernaryExpr_5" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a=b=c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -7720,6 +7946,8 @@ test "upstream LeftRecursion TernaryExpr_6" {
   let grammar = @u115.grammar()
   let parsed = grammar.parse_default(
     "a?b+c:d",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7742,7 +7970,7 @@ test "upstream LeftRecursion TernaryExpr_6" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a?b+c:d", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7785,6 +8013,8 @@ test "upstream LeftRecursion TernaryExpr_7" {
   let grammar = @u116.grammar()
   let parsed = grammar.parse_default(
     "a?b=c:d",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7807,7 +8037,7 @@ test "upstream LeftRecursion TernaryExpr_7" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a?b=c:d", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7850,6 +8080,8 @@ test "upstream LeftRecursion TernaryExpr_8" {
   let grammar = @u117.grammar()
   let parsed = grammar.parse_default(
     "a? b?c:d : e",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7874,7 +8106,7 @@ test "upstream LeftRecursion TernaryExpr_8" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -7920,6 +8152,8 @@ test "upstream LeftRecursion TernaryExpr_9" {
   let grammar = @u118.grammar()
   let parsed = grammar.parse_default(
     "a?b: c?d:e",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -7944,7 +8178,7 @@ test "upstream LeftRecursion TernaryExpr_9" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -7990,6 +8224,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_1" {
   let grammar = @u119.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8009,7 +8245,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -8041,6 +8277,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_2" {
   let grammar = @u120.grammar()
   let parsed = grammar.parse_default(
     "a+b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8060,7 +8298,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a+b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -8098,6 +8336,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_3" {
   let grammar = @u121.grammar()
   let parsed = grammar.parse_default(
     "a*b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8117,7 +8357,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a*b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -8155,6 +8395,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_4" {
   let grammar = @u122.grammar()
   let parsed = grammar.parse_default(
     "a?b:c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8177,7 +8419,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a?b:c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -8218,6 +8460,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_5" {
   let grammar = @u123.grammar()
   let parsed = grammar.parse_default(
     "a=b=c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8240,7 +8484,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_5" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a=b=c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -8281,6 +8525,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_6" {
   let grammar = @u124.grammar()
   let parsed = grammar.parse_default(
     "a?b+c:d",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8303,7 +8549,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_6" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a?b+c:d", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -8346,6 +8592,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_7" {
   let grammar = @u125.grammar()
   let parsed = grammar.parse_default(
     "a?b=c:d",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8368,7 +8616,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_7" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a?b=c:d", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -8411,6 +8659,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_8" {
   let grammar = @u126.grammar()
   let parsed = grammar.parse_default(
     "a? b?c:d : e",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8435,7 +8685,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_8" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -8481,6 +8731,8 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_9" {
   let grammar = @u127.grammar()
   let parsed = grammar.parse_default(
     "a?b: c?d:e",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8505,7 +8757,7 @@ test "upstream LeftRecursion TernaryExprExplicitAssociativity_9" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -8551,6 +8803,8 @@ test "upstream LeftRecursion WhitespaceInfluence_1" {
   let grammar = @u128.grammar()
   let parsed = grammar.parse_default(
     "Test(1,3)",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8573,7 +8827,7 @@ test "upstream LeftRecursion WhitespaceInfluence_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("Test(1,3)", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -8615,6 +8869,8 @@ test "upstream LeftRecursion WhitespaceInfluence_2" {
   let grammar = @u129.grammar()
   let parsed = grammar.parse_default(
     "Test(1, 3)",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -8639,7 +8895,7 @@ test "upstream LeftRecursion WhitespaceInfluence_2" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -10062,6 +10318,8 @@ test "upstream Listeners Basic" {
   let grammar = @u184.grammar()
   let parsed = grammar.parse_default(
     "1 2",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10081,7 +10339,7 @@ test "upstream Listeners Basic" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1 2", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -10117,6 +10375,8 @@ test "upstream Listeners LR" {
   let grammar = @u185.grammar()
   let parsed = grammar.parse_default(
     "1+2*3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10139,7 +10399,7 @@ test "upstream Listeners LR" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1+2*3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -10180,6 +10440,8 @@ test "upstream Listeners LRWithLabels" {
   let grammar = @u186.grammar()
   let parsed = grammar.parse_default(
     "1(2,3)",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10202,7 +10464,7 @@ test "upstream Listeners LRWithLabels" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1(2,3)", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -10244,6 +10506,8 @@ test "upstream Listeners RuleGetters_1" {
   let grammar = @u187.grammar()
   let parsed = grammar.parse_default(
     "1 2",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10263,7 +10527,7 @@ test "upstream Listeners RuleGetters_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1 2", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -10300,6 +10564,8 @@ test "upstream Listeners RuleGetters_2" {
   let grammar = @u188.grammar()
   let parsed = grammar.parse_default(
     "abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10319,7 +10585,7 @@ test "upstream Listeners RuleGetters_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -10351,6 +10617,8 @@ test "upstream Listeners TokenGetters_1" {
   let grammar = @u189.grammar()
   let parsed = grammar.parse_default(
     "1 2",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10370,7 +10638,7 @@ test "upstream Listeners TokenGetters_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("1 2", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -10406,6 +10674,8 @@ test "upstream Listeners TokenGetters_2" {
   let grammar = @u190.grammar()
   let parsed = grammar.parse_default(
     "abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10425,7 +10695,7 @@ test "upstream Listeners TokenGetters_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -10457,6 +10727,8 @@ test "upstream ParserErrors ConjuringUpToken" {
   let grammar = @u191.grammar()
   let parsed = grammar.parse_default(
     "ac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10478,7 +10750,7 @@ test "upstream ParserErrors ConjuringUpToken" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -10512,6 +10784,8 @@ test "upstream ParserErrors ConjuringUpTokenFromSet" {
   let grammar = @u192.grammar()
   let parsed = grammar.parse_default(
     "ad",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10533,7 +10807,7 @@ test "upstream ParserErrors ConjuringUpTokenFromSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ad", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -10567,6 +10841,8 @@ test "upstream ParserErrors ContextListGetters" {
   let grammar = @u193.grammar()
   let parsed = grammar.parse_default(
     "abab",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10589,7 +10865,7 @@ test "upstream ParserErrors ContextListGetters" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abab", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -10628,6 +10904,8 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_1" {
   let grammar = @u194.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10647,7 +10925,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -10679,6 +10957,8 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_2" {
   let grammar = @u195.grammar()
   let parsed = grammar.parse_default(
     "xx",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10701,7 +10981,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xx", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -10738,6 +11018,8 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_3" {
   let grammar = @u196.grammar()
   let parsed = grammar.parse_default(
     "xxx",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10760,7 +11042,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xxx", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -10799,6 +11081,8 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_4" {
   let grammar = @u197.grammar()
   let parsed = grammar.parse_default(
     "xxxx",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10821,7 +11105,7 @@ test "upstream ParserErrors DuplicatedLeftRecursiveCall_4" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xxxx", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -10862,6 +11146,8 @@ test "upstream ParserErrors ExtraneousInput" {
   let grammar = @u198.grammar()
   let parsed = grammar.parse_default(
     "baa",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=2,
     semantics=bindings,
     shared=Map([]),
@@ -10886,7 +11172,7 @@ test "upstream ParserErrors ExtraneousInput" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("baa", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -10923,6 +11209,8 @@ test "upstream ParserErrors InvalidATNStateRemoval" {
   let grammar = @u199.grammar()
   let parsed = grammar.parse_default(
     "x:x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -10945,7 +11233,7 @@ test "upstream ParserErrors InvalidATNStateRemoval" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x:x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -10983,6 +11271,8 @@ test "upstream ParserErrors InvalidEmptyInput" {
   let grammar = @u200.grammar()
   let parsed = grammar.parse_default(
     "",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11004,7 +11294,7 @@ test "upstream ParserErrors InvalidEmptyInput" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11034,6 +11324,8 @@ test "upstream ParserErrors LL1ErrorInfo" {
   let grammar = @u201.grammar()
   let parsed = grammar.parse_default(
     "dog and software",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11059,7 +11351,7 @@ test "upstream ParserErrors LL1ErrorInfo" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -11098,6 +11390,8 @@ test "upstream ParserErrors LL2" {
   let grammar = @u202.grammar()
   let parsed = grammar.parse_default(
     "ae",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11119,7 +11413,7 @@ test "upstream ParserErrors LL2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ae", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11153,6 +11447,8 @@ test "upstream ParserErrors LL3" {
   let grammar = @u203.grammar()
   let parsed = grammar.parse_default(
     "abe",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11177,7 +11473,7 @@ test "upstream ParserErrors LL3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abe", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11212,6 +11508,8 @@ test "upstream ParserErrors LLStar" {
   let grammar = @u204.grammar()
   let parsed = grammar.parse_default(
     "aaae",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11241,7 +11539,7 @@ test "upstream ParserErrors LLStar" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aaae", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11277,6 +11575,8 @@ test "upstream ParserErrors MultiTokenDeletionBeforeLoop" {
   let grammar = @u205.grammar()
   let parsed = grammar.parse_default(
     "aacabc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11298,7 +11598,7 @@ test "upstream ParserErrors MultiTokenDeletionBeforeLoop" {
   assert_eq(parsed.next_token.text, "a")
   let lexed = grammar.tokenize_recovering("aacabc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11336,6 +11636,8 @@ test "upstream ParserErrors MultiTokenDeletionBeforeLoop2" {
   let grammar = @u206.grammar()
   let parsed = grammar.parse_default(
     "aacabc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11357,7 +11659,7 @@ test "upstream ParserErrors MultiTokenDeletionBeforeLoop2" {
   assert_eq(parsed.next_token.text, "a")
   let lexed = grammar.tokenize_recovering("aacabc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11395,6 +11697,8 @@ test "upstream ParserErrors MultiTokenDeletionDuringLoop" {
   let grammar = @u207.grammar()
   let parsed = grammar.parse_default(
     "abaaababc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11425,7 +11729,7 @@ test "upstream ParserErrors MultiTokenDeletionDuringLoop" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abaaababc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11467,6 +11771,8 @@ test "upstream ParserErrors MultiTokenDeletionDuringLoop2" {
   let grammar = @u208.grammar()
   let parsed = grammar.parse_default(
     "abaaababc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11497,7 +11803,7 @@ test "upstream ParserErrors MultiTokenDeletionDuringLoop2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abaaababc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11539,6 +11845,8 @@ test "upstream ParserErrors NoViableAltAvoidance" {
   let grammar = @u209.grammar()
   let parsed = grammar.parse_default(
     "a.",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11560,7 +11868,7 @@ test "upstream ParserErrors NoViableAltAvoidance" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a.", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -11596,6 +11904,8 @@ test "upstream ParserErrors SingleSetInsertion" {
   let grammar = @u210.grammar()
   let parsed = grammar.parse_default(
     "ad",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11617,7 +11927,7 @@ test "upstream ParserErrors SingleSetInsertion" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ad", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11651,6 +11961,8 @@ test "upstream ParserErrors SingleSetInsertionConsumption" {
   let grammar = @u211.grammar()
   let parsed = grammar.parse_default(
     "ad",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -11672,7 +11984,7 @@ test "upstream ParserErrors SingleSetInsertionConsumption" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ad", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -11708,6 +12020,8 @@ test "upstream ParserErrors SingleTokenDeletion" {
   let grammar = @u212.grammar()
   let parsed = grammar.parse_default(
     "aab",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11729,7 +12043,7 @@ test "upstream ParserErrors SingleTokenDeletion" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aab", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11764,6 +12078,8 @@ test "upstream ParserErrors SingleTokenDeletionBeforeAlt" {
   let grammar = @u213.grammar()
   let parsed = grammar.parse_default(
     "ac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11785,7 +12101,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforeAlt" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11819,6 +12135,8 @@ test "upstream ParserErrors SingleTokenDeletionBeforeLoop" {
   let grammar = @u214.grammar()
   let parsed = grammar.parse_default(
     "aabc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11841,7 +12159,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforeLoop" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aabc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11876,6 +12194,8 @@ test "upstream ParserErrors SingleTokenDeletionBeforeLoop2" {
   let grammar = @u215.grammar()
   let parsed = grammar.parse_default(
     "aabc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11898,7 +12218,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforeLoop2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aabc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11933,6 +12253,8 @@ test "upstream ParserErrors SingleTokenDeletionBeforePredict" {
   let grammar = @u216.grammar()
   let parsed = grammar.parse_default(
     "caaab",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -11954,7 +12276,7 @@ test "upstream ParserErrors SingleTokenDeletionBeforePredict" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("caaab", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -11991,6 +12313,8 @@ test "upstream ParserErrors SingleTokenDeletionConsumption" {
   let grammar = @u217.grammar()
   let parsed = grammar.parse_default(
     "aabd",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -12015,7 +12339,7 @@ test "upstream ParserErrors SingleTokenDeletionConsumption" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aabd", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -12054,6 +12378,8 @@ test "upstream ParserErrors SingleTokenDeletionDuringLoop" {
   let grammar = @u218.grammar()
   let parsed = grammar.parse_default(
     "ababbc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12078,7 +12404,7 @@ test "upstream ParserErrors SingleTokenDeletionDuringLoop" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ababbc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12117,6 +12443,8 @@ test "upstream ParserErrors SingleTokenDeletionDuringLoop2" {
   let grammar = @u219.grammar()
   let parsed = grammar.parse_default(
     "ababbc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12141,7 +12469,7 @@ test "upstream ParserErrors SingleTokenDeletionDuringLoop2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ababbc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12180,6 +12508,8 @@ test "upstream ParserErrors SingleTokenDeletionExpectingSet" {
   let grammar = @u220.grammar()
   let parsed = grammar.parse_default(
     "aab",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12201,7 +12531,7 @@ test "upstream ParserErrors SingleTokenDeletionExpectingSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aab", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12236,6 +12566,8 @@ test "upstream ParserErrors SingleTokenInsertion" {
   let grammar = @u221.grammar()
   let parsed = grammar.parse_default(
     "ac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12257,7 +12589,7 @@ test "upstream ParserErrors SingleTokenInsertion" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12291,6 +12623,8 @@ test "upstream ParserErrors TokenMismatch" {
   let grammar = @u222.grammar()
   let parsed = grammar.parse_default(
     "aa",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12312,7 +12646,7 @@ test "upstream ParserErrors TokenMismatch" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("aa", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12346,6 +12680,8 @@ test "upstream ParserErrors TokenMismatch2" {
   let grammar = @u223.grammar()
   let parsed = grammar.parse_default(
     "( ~FORCE_ERROR~ ",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12370,7 +12706,7 @@ test "upstream ParserErrors TokenMismatch2" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12404,6 +12740,8 @@ test "upstream ParserErrors TokenMismatch3" {
   let grammar = @u224.grammar()
   let parsed = grammar.parse_default(
     "",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12425,7 +12763,7 @@ test "upstream ParserErrors TokenMismatch3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -12457,6 +12795,8 @@ test "upstream ParserExec AorAPlus" {
   let grammar = @u225.grammar()
   let parsed = grammar.parse_default(
     "a b c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12476,7 +12816,7 @@ test "upstream ParserExec AorAPlus" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a b c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12511,6 +12851,8 @@ test "upstream ParserExec AorAStar_1" {
   let grammar = @u226.grammar()
   let parsed = grammar.parse_default(
     "",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12530,7 +12872,7 @@ test "upstream ParserExec AorAStar_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
@@ -12558,6 +12900,8 @@ test "upstream ParserExec AorAStar_2" {
   let grammar = @u227.grammar()
   let parsed = grammar.parse_default(
     "a b c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12577,7 +12921,7 @@ test "upstream ParserExec AorAStar_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a b c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12612,6 +12956,8 @@ test "upstream ParserExec AorB" {
   let grammar = @u228.grammar()
   let parsed = grammar.parse_default(
     "34",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12631,7 +12977,7 @@ test "upstream ParserExec AorB" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("34", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12661,6 +13007,8 @@ test "upstream ParserExec AorBPlus" {
   let grammar = @u229.grammar()
   let parsed = grammar.parse_default(
     "a 34 c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12680,7 +13028,7 @@ test "upstream ParserExec AorBPlus" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a 34 c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12715,6 +13063,8 @@ test "upstream ParserExec AorBStar_1" {
   let grammar = @u230.grammar()
   let parsed = grammar.parse_default(
     "",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12734,7 +13084,7 @@ test "upstream ParserExec AorBStar_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
@@ -12762,6 +13112,8 @@ test "upstream ParserExec AorBStar_2" {
   let grammar = @u231.grammar()
   let parsed = grammar.parse_default(
     "a 34 c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12781,7 +13133,7 @@ test "upstream ParserExec AorBStar_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a 34 c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12816,6 +13168,8 @@ test "upstream ParserExec APlus" {
   let grammar = @u232.grammar()
   let parsed = grammar.parse_default(
     "a b c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12835,7 +13189,7 @@ test "upstream ParserExec APlus" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a b c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12870,6 +13224,8 @@ test "upstream ParserExec AStar_1" {
   let grammar = @u233.grammar()
   let parsed = grammar.parse_default(
     "",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12889,7 +13245,7 @@ test "upstream ParserExec AStar_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
@@ -12917,6 +13273,8 @@ test "upstream ParserExec AStar_2" {
   let grammar = @u234.grammar()
   let parsed = grammar.parse_default(
     "a b c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12936,7 +13294,7 @@ test "upstream ParserExec AStar_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a b c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -12971,6 +13329,8 @@ test "upstream ParserExec Basic" {
   let grammar = @u235.grammar()
   let parsed = grammar.parse_default(
     "abc 34",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -12990,7 +13350,7 @@ test "upstream ParserExec Basic" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc 34", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -13024,6 +13384,8 @@ test "upstream ParserExec BuildParseTree_FALSE" {
   let grammar = @u236.grammar()
   let parsed = grammar.parse_default(
     "A B",
+    build_tree=false,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13031,7 +13393,7 @@ test "upstream ParserExec BuildParseTree_FALSE" {
     parser_action=event => actions.push((event.action, event.next_token.start)),
   )
   @debug.assert_eq(actions, [(0, 3)])
-  assert_eq(parsed.tree.to_sexpr(), "(r (a \"A\") (b \"B\"))")
+  assert_eq(parsed.tree.to_sexpr(), "(r)")
   @debug.assert_eq(parsed.diagnostics.map(d => (d.line, d.column)), [])
   @debug.assert_eq(
     parsed.tree
@@ -13043,14 +13405,11 @@ test "upstream ParserExec BuildParseTree_FALSE" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("A B", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
-    @json.parse(
-      "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
-    ),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=false),
+    @json.parse("{\"values\":{},\"children\":[]}"),
   )
-  @debug.assert_eq(bound_listener_events(parsed.tree), [
-    "enter:r", "enter:a", "token:A", "exit:a", "enter:b", "token:B", "exit:b", "exit:r",
-  ])
+  assert_true(parsed.context.children.is_empty())
+  @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:r", "exit:r"])
   @debug.assert_eq(
     lexed.tokens.map(t => {
       (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)
@@ -13079,6 +13438,8 @@ test "upstream ParserExec BuildParseTree_TRUE" {
   let grammar = @u237.grammar()
   let parsed = grammar.parse_default(
     "A B",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13098,7 +13459,7 @@ test "upstream ParserExec BuildParseTree_TRUE" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("A B", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13134,6 +13495,8 @@ test "upstream ParserExec IfIfElseGreedyBinding1" {
   let grammar = @u238.grammar()
   let parsed = grammar.parse_default(
     "if y if y x else x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13159,7 +13522,7 @@ test "upstream ParserExec IfIfElseGreedyBinding1" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}]}",
     ),
@@ -13209,6 +13572,8 @@ test "upstream ParserExec IfIfElseGreedyBinding2" {
   let grammar = @u239.grammar()
   let parsed = grammar.parse_default(
     "if y if y x else x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13234,7 +13599,7 @@ test "upstream ParserExec IfIfElseGreedyBinding2" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}]}",
     ),
@@ -13284,6 +13649,8 @@ test "upstream ParserExec IfIfElseNonGreedyBinding1" {
   let grammar = @u240.grammar()
   let parsed = grammar.parse_default(
     "if y if y x else x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13309,7 +13676,7 @@ test "upstream ParserExec IfIfElseNonGreedyBinding1" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -13360,6 +13727,8 @@ test "upstream ParserExec IfIfElseNonGreedyBinding2" {
   let grammar = @u241.grammar()
   let parsed = grammar.parse_default(
     "if y if y x else x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13385,7 +13754,7 @@ test "upstream ParserExec IfIfElseNonGreedyBinding2" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]},{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -13436,6 +13805,8 @@ test "upstream ParserExec Keyword_1" {
   let grammar = @u242.grammar()
   let parsed = grammar.parse_default(
     "break;continue;return;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13461,7 +13832,7 @@ test "upstream ParserExec Keyword_1" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13500,6 +13871,8 @@ test "upstream ParserExec Keyword_2" {
   let grammar = @u243.grammar()
   let parsed = grammar.parse_default(
     "break;continue;return;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13525,7 +13898,7 @@ test "upstream ParserExec Keyword_2" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13564,6 +13937,8 @@ test "upstream ParserExec Keyword_3" {
   let grammar = @u244.grammar()
   let parsed = grammar.parse_default(
     "break;continue;return;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13589,7 +13964,7 @@ test "upstream ParserExec Keyword_3" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13628,6 +14003,8 @@ test "upstream ParserExec Keyword_4" {
   let grammar = @u245.grammar()
   let parsed = grammar.parse_default(
     "break;continue;return;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13653,7 +14030,7 @@ test "upstream ParserExec Keyword_4" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13692,6 +14069,8 @@ test "upstream ParserExec Keyword_5" {
   let grammar = @u246.grammar()
   let parsed = grammar.parse_default(
     "break;continue;return;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13717,7 +14096,7 @@ test "upstream ParserExec Keyword_5" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13756,6 +14135,8 @@ test "upstream ParserExec Keyword_6" {
   let grammar = @u247.grammar()
   let parsed = grammar.parse_default(
     "break;continue;return;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13781,7 +14162,7 @@ test "upstream ParserExec Keyword_6" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13820,6 +14201,8 @@ test "upstream ParserExec LabelAliasingAcrossLabeledAlternatives" {
   let grammar = @u248.grammar()
   let parsed = grammar.parse_default(
     "xy",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13842,7 +14225,7 @@ test "upstream ParserExec LabelAliasingAcrossLabeledAlternatives" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xy", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -13879,6 +14262,8 @@ test "upstream ParserExec Labels" {
   let grammar = @u249.grammar()
   let parsed = grammar.parse_default(
     "abc 34;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -13898,7 +14283,7 @@ test "upstream ParserExec Labels" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc 34;", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -13935,6 +14320,8 @@ test "upstream ParserExec ListLabelForClosureContext" {
   let grammar = @u250.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=2,
     semantics=bindings,
     shared=Map([]),
@@ -13954,7 +14341,7 @@ test "upstream ParserExec ListLabelForClosureContext" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -13984,6 +14371,8 @@ test "upstream ParserExec ListLabelsOnRuleRefStartOfAlt" {
   let grammar = @u251.grammar()
   let parsed = grammar.parse_default(
     "a and b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14006,7 +14395,7 @@ test "upstream ParserExec ListLabelsOnRuleRefStartOfAlt" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a and b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -14044,6 +14433,8 @@ test "upstream ParserExec ListLabelsOnSet" {
   let grammar = @u252.grammar()
   let parsed = grammar.parse_default(
     "abc 34;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14063,7 +14454,7 @@ test "upstream ParserExec ListLabelsOnSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc 34;", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -14100,6 +14491,8 @@ test "upstream ParserExec LL1OptionalBlock_1" {
   let grammar = @u253.grammar()
   let parsed = grammar.parse_default(
     "",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14119,7 +14512,7 @@ test "upstream ParserExec LL1OptionalBlock_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
@@ -14147,6 +14540,8 @@ test "upstream ParserExec LL1OptionalBlock_2" {
   let grammar = @u254.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14166,7 +14561,7 @@ test "upstream ParserExec LL1OptionalBlock_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -14196,6 +14591,8 @@ test "upstream ParserExec MultipleEOFHandling" {
   let grammar = @u255.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14215,7 +14612,7 @@ test "upstream ParserExec MultipleEOFHandling" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -14245,6 +14642,8 @@ test "upstream ParserExec OpenDeviceStatement_Case1" {
   let grammar = @u256.grammar()
   let parsed = grammar.parse_default(
     "OPEN DEVICE DEVICE",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -14270,7 +14669,7 @@ test "upstream ParserExec OpenDeviceStatement_Case1" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -14307,6 +14706,8 @@ test "upstream ParserExec OpenDeviceStatement_Case2" {
   let grammar = @u257.grammar()
   let parsed = grammar.parse_default(
     "OPEN DEVICE DEVICE",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -14332,7 +14733,7 @@ test "upstream ParserExec OpenDeviceStatement_Case2" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -14369,6 +14770,8 @@ test "upstream ParserExec OpenDeviceStatement_Case3" {
   let grammar = @u258.grammar()
   let parsed = grammar.parse_default(
     "OPEN DEVICE DEVICE.",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -14394,7 +14797,7 @@ test "upstream ParserExec OpenDeviceStatement_Case3" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -14432,6 +14835,8 @@ test "upstream ParserExec Optional_1" {
   let grammar = @u259.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14451,7 +14856,7 @@ test "upstream ParserExec Optional_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -14481,6 +14886,8 @@ test "upstream ParserExec Optional_2" {
   let grammar = @u260.grammar()
   let parsed = grammar.parse_default(
     "if x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14500,7 +14907,7 @@ test "upstream ParserExec Optional_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("if x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -14537,6 +14944,8 @@ test "upstream ParserExec Optional_3" {
   let grammar = @u261.grammar()
   let parsed = grammar.parse_default(
     "if x else x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14561,7 +14970,7 @@ test "upstream ParserExec Optional_3" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -14600,6 +15009,8 @@ test "upstream ParserExec Optional_4" {
   let grammar = @u262.grammar()
   let parsed = grammar.parse_default(
     "if if x else x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14624,7 +15035,7 @@ test "upstream ParserExec Optional_4" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}",
     ),
@@ -14665,6 +15076,8 @@ test "upstream ParserExec OrderingPredicates" {
   let grammar = @u263.grammar()
   let parsed = grammar.parse_default(
     "POINT AT X",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=1,
     semantics=bindings,
     shared=Map([]),
@@ -14686,7 +15099,7 @@ test "upstream ParserExec OrderingPredicates" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -14733,6 +15146,8 @@ test "upstream ParserExec ParserProperty" {
   let grammar = @u264.grammar()
   let parsed = grammar.parse_default(
     "abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14752,7 +15167,7 @@ test "upstream ParserExec ParserProperty" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -14791,6 +15206,8 @@ test "upstream ParserExec PredicatedIfIfElse" {
   let grammar = @u265.grammar()
   let parsed = grammar.parse_default(
     "if x if x a else b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14816,7 +15233,7 @@ test "upstream ParserExec PredicatedIfIfElse" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}]}]}]}]}",
     ),
@@ -14860,6 +15277,8 @@ test "upstream ParserExec PredictionIssue334" {
   let grammar = @u266.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14879,7 +15298,7 @@ test "upstream ParserExec PredictionIssue334" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -14911,6 +15330,8 @@ test "upstream ParserExec PredictionMode_LL" {
   let grammar = @u267.grammar()
   let parsed = grammar.parse_default(
     "X Y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14930,7 +15351,7 @@ test "upstream ParserExec PredictionMode_LL" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("X Y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -14967,6 +15388,8 @@ test "upstream ParserExec PredictionMode_SLL" {
   let grammar = @u268.grammar()
   let parsed = grammar.parse_default(
     "X Y",
+    build_tree=true,
+    prediction_mode=@runtime.SLL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -14974,26 +15397,32 @@ test "upstream ParserExec PredictionMode_SLL" {
     parser_action=event => actions.push((event.action, event.next_token.start)),
   )
   @debug.assert_eq(actions, [(0, 3)])
-  assert_eq(parsed.tree.to_sexpr(), "(r (a \"X\") (b \"Y\") <EOF>)")
-  @debug.assert_eq(parsed.diagnostics.map(d => (d.line, d.column)), [])
+  assert_eq(
+    parsed.tree.to_sexpr(),
+    "(r (a \"X\" \"Y\") (b (error \"<missing 'Y'>\")) <EOF>)",
+  )
+  @debug.assert_eq(parsed.diagnostics.map(d => (d.line, d.column)), [
+    (Some(1), Some(3)),
+  ])
   @debug.assert_eq(
     parsed.tree
     .error_tokens()
     .map(t => (t.kind, t.text, t.start, t.end, t.line, t.column, t.channel)),
-    [],
+    [(2, "<missing 'Y'>", -1, 0, 1, 2, 0)],
   )
   assert_eq(parsed.next_token.kind, -1)
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("X Y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
   )
+  assert_eq(parsed.prediction.full_context_fallbacks, 0)
   @debug.assert_eq(bound_listener_events(parsed.tree), [
-    "enter:r", "enter:a", "token:X", "exit:a", "enter:b", "token:Y", "exit:b", "token:<EOF>",
-    "exit:r",
+    "enter:r", "enter:a", "token:X", "token:Y", "exit:a", "enter:b", "error:<missing 'Y'>",
+    "exit:b", "token:<EOF>", "exit:r",
   ])
   @debug.assert_eq(
     lexed.tokens.map(t => {
@@ -15023,6 +15452,8 @@ test "upstream ParserExec ReferenceToATN_1" {
   let grammar = @u269.grammar()
   let parsed = grammar.parse_default(
     "",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15042,7 +15473,7 @@ test "upstream ParserExec ReferenceToATN_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), ["enter:a", "exit:a"])
@@ -15070,6 +15501,8 @@ test "upstream ParserExec ReferenceToATN_2" {
   let grammar = @u270.grammar()
   let parsed = grammar.parse_default(
     "a 34 c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15089,7 +15522,7 @@ test "upstream ParserExec ReferenceToATN_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a 34 c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -15171,6 +15604,8 @@ test "upstream ParserExec ReservedWordsEscaping" {
   let grammar = @u271.grammar()
   let parsed = grammar.parse_default(
     "for for break break for if if for continue",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15196,7 +15631,7 @@ test "upstream ParserExec ReservedWordsEscaping" {
     lexer_action=(_, _) => (),
   )
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"return\":0},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]},{\"values\":{\"return\":0},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{\"return\":0},\"children\":[]},{\"values\":{\"return\":0},\"children\":[{\"values\":{\"return\":0},\"children\":[{\"values\":{},\"children\":[]}]}]}]}",
     ),
@@ -15244,6 +15679,8 @@ test "upstream ParserExec TokenOffset" {
   let grammar = @u272.grammar()
   let parsed = grammar.parse_default(
     "12 34 56 66",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15265,7 +15702,7 @@ test "upstream ParserExec TokenOffset" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -15301,6 +15738,8 @@ test "upstream ParserExec uStartingCharDoesNotCauseIllegalUnicodeEscape" {
   let grammar = @u273.grammar()
   let parsed = grammar.parse_default(
     "u",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15320,7 +15759,7 @@ test "upstream ParserExec uStartingCharDoesNotCauseIllegalUnicodeEscape" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("u", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -15350,6 +15789,8 @@ test "upstream ParserExec Wildcard" {
   let grammar = @u274.grammar()
   let parsed = grammar.parse_default(
     "x=10; abc;;;; y=99;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15375,7 +15816,7 @@ test "upstream ParserExec Wildcard" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -15424,6 +15865,8 @@ test "upstream ParseTrees AltNum" {
   let grammar = @u275.grammar()
   let parsed = grammar.parse_default(
     "xyz",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15443,7 +15886,7 @@ test "upstream ParseTrees AltNum" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xyz", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -15481,6 +15924,8 @@ test "upstream ParseTrees ExtraToken" {
   let grammar = @u276.grammar()
   let parsed = grammar.parse_default(
     "xzy",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15502,7 +15947,7 @@ test "upstream ParseTrees ExtraToken" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xzy", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -15539,6 +15984,8 @@ test "upstream ParseTrees ExtraTokensAndAltLabels" {
   let grammar = @u277.grammar()
   let parsed = grammar.parse_default(
     "${ ? a ?}",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15564,7 +16011,7 @@ test "upstream ParseTrees ExtraTokensAndAltLabels" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("${ ? a ?}", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -15607,6 +16054,8 @@ test "upstream ParseTrees NoViableAlt" {
   let grammar = @u278.grammar()
   let parsed = grammar.parse_default(
     "z",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15628,7 +16077,7 @@ test "upstream ParseTrees NoViableAlt" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("z", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -15660,6 +16109,8 @@ test "upstream ParseTrees RuleRef" {
   let grammar = @u279.grammar()
   let parsed = grammar.parse_default(
     "yx",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15679,7 +16130,7 @@ test "upstream ParseTrees RuleRef" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("yx", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -15715,6 +16166,8 @@ test "upstream ParseTrees Sync" {
   let grammar = @u280.grammar()
   let parsed = grammar.parse_default(
     "xzyy!",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15739,7 +16192,7 @@ test "upstream ParseTrees Sync" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xzyy!", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -15779,6 +16232,8 @@ test "upstream ParseTrees Token2" {
   let grammar = @u281.grammar()
   let parsed = grammar.parse_default(
     "xy",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15798,7 +16253,7 @@ test "upstream ParseTrees Token2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xy", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -15834,6 +16289,8 @@ test "upstream ParseTrees TokenAndRuleContextString" {
   let grammar = @u282.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15853,7 +16310,7 @@ test "upstream ParseTrees TokenAndRuleContextString" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -15885,6 +16342,8 @@ test "upstream ParseTrees TwoAltLoop" {
   let grammar = @u283.grammar()
   let parsed = grammar.parse_default(
     "xyyxyxz",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15907,7 +16366,7 @@ test "upstream ParseTrees TwoAltLoop" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("xyyxyxz", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -15949,6 +16408,8 @@ test "upstream ParseTrees TwoAlts" {
   let grammar = @u284.grammar()
   let parsed = grammar.parse_default(
     "y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -15968,7 +16429,7 @@ test "upstream ParseTrees TwoAlts" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -16303,6 +16764,8 @@ test "upstream SemPredEvalParser ActionHidesPreds" {
   let grammar = @u293.grammar()
   let parsed = grammar.parse_default(
     "x x y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([("i", Json::number((0).to_double()))]),
@@ -16322,7 +16785,7 @@ test "upstream SemPredEvalParser ActionHidesPreds" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x x y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -16371,6 +16834,8 @@ test "upstream SemPredEvalParser ActionsHidePredsInGlobalFOLLOW" {
   let grammar = @u294.grammar()
   let parsed = grammar.parse_default(
     "a!",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16390,7 +16855,7 @@ test "upstream SemPredEvalParser ActionsHidePredsInGlobalFOLLOW" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a!", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -16460,6 +16925,8 @@ test "upstream SemPredEvalParser AtomWithClosureInTranslatedLRRule" {
   let grammar = @u295.grammar()
   let parsed = grammar.parse_default(
     "a+b+a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16482,7 +16949,7 @@ test "upstream SemPredEvalParser AtomWithClosureInTranslatedLRRule" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a+b+a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"_p\":0},\"children\":[{\"values\":{\"_p\":4},\"children\":[]},{\"values\":{\"_p\":4},\"children\":[]}]}]}",
     ),
@@ -16567,6 +17034,8 @@ test "upstream SemPredEvalParser DepedentPredsInGlobalFOLLOW" {
   let grammar = @u296.grammar()
   let parsed = grammar.parse_default(
     "a!",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16586,7 +17055,7 @@ test "upstream SemPredEvalParser DepedentPredsInGlobalFOLLOW" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a!", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"i\":99},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -16672,6 +17141,8 @@ test "upstream SemPredEvalParser DependentPredNotInOuterCtxShouldBeIgnored" {
   let grammar = @u297.grammar()
   let parsed = grammar.parse_default(
     "a;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16691,7 +17162,7 @@ test "upstream SemPredEvalParser DependentPredNotInOuterCtxShouldBeIgnored" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a;", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"i\":2},\"children\":[{\"values\":{\"i\":2},\"children\":[]}]}]}",
     ),
@@ -16736,6 +17207,8 @@ test "upstream SemPredEvalParser DisabledAlternative" {
   let grammar = @u298.grammar()
   let parsed = grammar.parse_default(
     "hello",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16758,7 +17231,7 @@ test "upstream SemPredEvalParser DisabledAlternative" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("hello", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -16812,6 +17285,8 @@ test "upstream SemPredEvalParser IndependentPredNotPassedOuterCtxToAvoidCastExce
   let grammar = @u299.grammar()
   let parsed = grammar.parse_default(
     "a;",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16831,7 +17306,7 @@ test "upstream SemPredEvalParser IndependentPredNotPassedOuterCtxToAvoidCastExce
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a;", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -16877,6 +17352,8 @@ test "upstream SemPredEvalParser NoTruePredsThrowsNoViableAlt" {
   let grammar = @u300.grammar()
   let parsed = grammar.parse_default(
     "y 3 x 4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16906,7 +17383,7 @@ test "upstream SemPredEvalParser NoTruePredsThrowsNoViableAlt" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("y 3 x 4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -16954,6 +17431,8 @@ test "upstream SemPredEvalParser Order" {
   let grammar = @u301.grammar()
   let parsed = grammar.parse_default(
     "x y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -16973,7 +17452,7 @@ test "upstream SemPredEvalParser Order" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -17018,6 +17497,8 @@ test "upstream SemPredEvalParser PredFromAltTestedInLoopBack_1" {
   let grammar = @u302.grammar()
   let parsed = grammar.parse_default(
     "s\n\n\nx\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17044,7 +17525,7 @@ test "upstream SemPredEvalParser PredFromAltTestedInLoopBack_1" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -17095,6 +17576,8 @@ test "upstream SemPredEvalParser PredFromAltTestedInLoopBack_2" {
   let grammar = @u303.grammar()
   let parsed = grammar.parse_default(
     "s\n\n\nx\n\n",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17119,7 +17602,7 @@ test "upstream SemPredEvalParser PredFromAltTestedInLoopBack_2" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]},{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}]}",
     ),
@@ -17198,6 +17681,8 @@ test "upstream SemPredEvalParser PredicateDependentOnArg" {
   let grammar = @u304.grammar()
   let parsed = grammar.parse_default(
     "a b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([("i", Json::number((0).to_double()))]),
@@ -17217,7 +17702,7 @@ test "upstream SemPredEvalParser PredicateDependentOnArg" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"i\":2},\"children\":[]},{\"values\":{\"i\":1},\"children\":[]}]}",
     ),
@@ -17289,6 +17774,8 @@ test "upstream SemPredEvalParser PredicateDependentOnArg2" {
   let grammar = @u305.grammar()
   let parsed = grammar.parse_default(
     "a b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([("i", Json::number((0).to_double()))]),
@@ -17308,7 +17795,7 @@ test "upstream SemPredEvalParser PredicateDependentOnArg2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{\"i\":2},\"children\":[]},{\"values\":{\"i\":1},\"children\":[]}]}",
     ),
@@ -17355,6 +17842,8 @@ test "upstream SemPredEvalParser PredsInGlobalFOLLOW" {
   let grammar = @u306.grammar()
   let parsed = grammar.parse_default(
     "a!",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17374,7 +17863,7 @@ test "upstream SemPredEvalParser PredsInGlobalFOLLOW" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a!", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -17419,6 +17908,8 @@ test "upstream SemPredEvalParser PredTestedEvenWhenUnAmbig_1" {
   let grammar = @u307.grammar()
   let parsed = grammar.parse_default(
     "abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([("enumKeyword", Json::boolean(true))]),
@@ -17438,7 +17929,7 @@ test "upstream SemPredEvalParser PredTestedEvenWhenUnAmbig_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -17481,6 +17972,8 @@ test "upstream SemPredEvalParser PredTestedEvenWhenUnAmbig_2" {
   let grammar = @u308.grammar()
   let parsed = grammar.parse_default(
     "enum",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([("enumKeyword", Json::boolean(true))]),
@@ -17502,7 +17995,7 @@ test "upstream SemPredEvalParser PredTestedEvenWhenUnAmbig_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("enum", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -17546,6 +18039,8 @@ test "upstream SemPredEvalParser RewindBeforePredEval" {
   let grammar = @u309.grammar()
   let parsed = grammar.parse_default(
     "y 3 x 4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17565,7 +18060,7 @@ test "upstream SemPredEvalParser RewindBeforePredEval" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("y 3 x 4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -17614,6 +18109,8 @@ test "upstream SemPredEvalParser Simple" {
   let grammar = @u310.grammar()
   let parsed = grammar.parse_default(
     "x y 3",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17633,7 +18130,7 @@ test "upstream SemPredEvalParser Simple" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x y 3", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -17681,6 +18178,8 @@ test "upstream SemPredEvalParser SimpleValidate" {
   let grammar = @u311.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17702,7 +18201,7 @@ test "upstream SemPredEvalParser SimpleValidate" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -17744,6 +18243,8 @@ test "upstream SemPredEvalParser SimpleValidate2" {
   let grammar = @u312.grammar()
   let parsed = grammar.parse_default(
     "3 4 x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17765,7 +18266,7 @@ test "upstream SemPredEvalParser SimpleValidate2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("3 4 x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -17813,6 +18314,8 @@ test "upstream SemPredEvalParser ToLeft" {
   let grammar = @u313.grammar()
   let parsed = grammar.parse_default(
     "x x y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17832,7 +18335,7 @@ test "upstream SemPredEvalParser ToLeft" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x x y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -17890,6 +18393,8 @@ test "upstream SemPredEvalParser ToLeftWithVaryingPredicate" {
   let grammar = @u314.grammar()
   let parsed = grammar.parse_default(
     "x x y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([("i", Json::number((0).to_double()))]),
@@ -17909,7 +18414,7 @@ test "upstream SemPredEvalParser ToLeftWithVaryingPredicate" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x x y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -17957,6 +18462,8 @@ test "upstream SemPredEvalParser TwoUnpredicatedAlts" {
   let grammar = @u315.grammar()
   let parsed = grammar.parse_default(
     "x; y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -17976,7 +18483,7 @@ test "upstream SemPredEvalParser TwoUnpredicatedAlts" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x; y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -18023,6 +18530,8 @@ test "upstream SemPredEvalParser TwoUnpredicatedAltsAndOneOrthogonalAlt" {
   let grammar = @u316.grammar()
   let parsed = grammar.parse_default(
     "34; x; y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18045,7 +18554,7 @@ test "upstream SemPredEvalParser TwoUnpredicatedAltsAndOneOrthogonalAlt" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("34; x; y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -18094,6 +18603,8 @@ test "upstream SemPredEvalParser UnpredicatedPathsInAlt" {
   let grammar = @u317.grammar()
   let parsed = grammar.parse_default(
     "x 4",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18113,7 +18624,7 @@ test "upstream SemPredEvalParser UnpredicatedPathsInAlt" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x 4", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]}]}",
     ),
@@ -18159,6 +18670,8 @@ test "upstream SemPredEvalParser ValidateInDFA" {
   let grammar = @u318.grammar()
   let parsed = grammar.parse_default(
     "x ; y",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18184,7 +18697,7 @@ test "upstream SemPredEvalParser ValidateInDFA" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x ; y", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse(
       "{\"values\":{},\"children\":[{\"values\":{},\"children\":[]},{\"values\":{},\"children\":[]}]}",
     ),
@@ -18222,6 +18735,8 @@ test "upstream Sets CharSetLiteral" {
   let grammar = @u319.grammar()
   let parsed = grammar.parse_default(
     "A a B b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18241,7 +18756,7 @@ test "upstream Sets CharSetLiteral" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("A a B b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18277,6 +18792,8 @@ test "upstream Sets ComplementSet" {
   let grammar = @u320.grammar()
   let parsed = grammar.parse_default(
     "a",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18299,7 +18816,7 @@ test "upstream Sets ComplementSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("a", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18329,6 +18846,8 @@ test "upstream Sets LexerOptionalSet" {
   let grammar = @u321.grammar()
   let parsed = grammar.parse_default(
     "ac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18348,7 +18867,7 @@ test "upstream Sets LexerOptionalSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18378,6 +18897,8 @@ test "upstream Sets LexerPlusSet" {
   let grammar = @u322.grammar()
   let parsed = grammar.parse_default(
     "abaac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18397,7 +18918,7 @@ test "upstream Sets LexerPlusSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abaac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18427,6 +18948,8 @@ test "upstream Sets LexerStarSet" {
   let grammar = @u323.grammar()
   let parsed = grammar.parse_default(
     "abaac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18446,7 +18969,7 @@ test "upstream Sets LexerStarSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abaac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18476,6 +18999,8 @@ test "upstream Sets NotChar" {
   let grammar = @u324.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18495,7 +19020,7 @@ test "upstream Sets NotChar" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18525,6 +19050,8 @@ test "upstream Sets NotCharSet" {
   let grammar = @u325.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18544,7 +19071,7 @@ test "upstream Sets NotCharSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18574,6 +19101,8 @@ test "upstream Sets NotCharSetWithRuleRef3" {
   let grammar = @u326.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18593,7 +19122,7 @@ test "upstream Sets NotCharSetWithRuleRef3" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18623,6 +19152,8 @@ test "upstream Sets OptionalLexerSingleElement" {
   let grammar = @u327.grammar()
   let parsed = grammar.parse_default(
     "bc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18642,7 +19173,7 @@ test "upstream Sets OptionalLexerSingleElement" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("bc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18672,6 +19203,8 @@ test "upstream Sets OptionalSet" {
   let grammar = @u328.grammar()
   let parsed = grammar.parse_default(
     "ac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18691,7 +19224,7 @@ test "upstream Sets OptionalSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("ac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18725,6 +19258,8 @@ test "upstream Sets OptionalSingleElement" {
   let grammar = @u329.grammar()
   let parsed = grammar.parse_default(
     "bc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18744,7 +19279,7 @@ test "upstream Sets OptionalSingleElement" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("bc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18778,6 +19313,8 @@ test "upstream Sets ParserNotSet" {
   let grammar = @u330.grammar()
   let parsed = grammar.parse_default(
     "zz",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18797,7 +19334,7 @@ test "upstream Sets ParserNotSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("zz", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18831,6 +19368,8 @@ test "upstream Sets ParserNotToken" {
   let grammar = @u331.grammar()
   let parsed = grammar.parse_default(
     "zz",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18850,7 +19389,7 @@ test "upstream Sets ParserNotToken" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("zz", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18884,6 +19423,8 @@ test "upstream Sets ParserNotTokenWithLabel" {
   let grammar = @u332.grammar()
   let parsed = grammar.parse_default(
     "zz",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18903,7 +19444,7 @@ test "upstream Sets ParserNotTokenWithLabel" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("zz", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18937,6 +19478,8 @@ test "upstream Sets ParserSet" {
   let grammar = @u333.grammar()
   let parsed = grammar.parse_default(
     "x",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -18956,7 +19499,7 @@ test "upstream Sets ParserSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("x", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -18986,6 +19529,8 @@ test "upstream Sets PlusLexerSingleElement" {
   let grammar = @u334.grammar()
   let parsed = grammar.parse_default(
     "bbbbc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19005,7 +19550,7 @@ test "upstream Sets PlusLexerSingleElement" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("bbbbc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19035,6 +19580,8 @@ test "upstream Sets PlusSet" {
   let grammar = @u335.grammar()
   let parsed = grammar.parse_default(
     "abaac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19054,7 +19601,7 @@ test "upstream Sets PlusSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abaac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19091,6 +19638,8 @@ test "upstream Sets RuleAsSet" {
   let grammar = @u336.grammar()
   let parsed = grammar.parse_default(
     "b",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19110,7 +19659,7 @@ test "upstream Sets RuleAsSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("b", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19140,6 +19689,8 @@ test "upstream Sets SeqDoesNotBecomeSet" {
   let grammar = @u337.grammar()
   let parsed = grammar.parse_default(
     "34",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19159,7 +19710,7 @@ test "upstream Sets SeqDoesNotBecomeSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("34", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19189,6 +19740,8 @@ test "upstream Sets StarLexerSingleElement_1" {
   let grammar = @u338.grammar()
   let parsed = grammar.parse_default(
     "bbbbc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19208,7 +19761,7 @@ test "upstream Sets StarLexerSingleElement_1" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("bbbbc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19238,6 +19791,8 @@ test "upstream Sets StarLexerSingleElement_2" {
   let grammar = @u339.grammar()
   let parsed = grammar.parse_default(
     "c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19257,7 +19812,7 @@ test "upstream Sets StarLexerSingleElement_2" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("c", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19287,6 +19842,8 @@ test "upstream Sets StarSet" {
   let grammar = @u340.grammar()
   let parsed = grammar.parse_default(
     "abaac",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19306,7 +19863,7 @@ test "upstream Sets StarSet" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abaac", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19343,6 +19900,8 @@ test "upstream Sets UnicodeEscapedBMPRangeSet" {
   let grammar = @u341.grammar()
   let parsed = grammar.parse_default(
     "aáäáâåd",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19367,7 +19926,7 @@ test "upstream Sets UnicodeEscapedBMPRangeSet" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19407,6 +19966,8 @@ test "upstream Sets UnicodeEscapedBMPSet" {
   let grammar = @u342.grammar()
   let parsed = grammar.parse_default(
     "aäあ亜c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19428,7 +19989,7 @@ test "upstream Sets UnicodeEscapedBMPSet" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19458,6 +20019,8 @@ test "upstream Sets UnicodeEscapedSMPRangeSet" {
   let grammar = @u343.grammar()
   let parsed = grammar.parse_default(
     "a😉🥂🜀d",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19482,7 +20045,7 @@ test "upstream Sets UnicodeEscapedSMPRangeSet" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19519,6 +20082,8 @@ test "upstream Sets UnicodeEscapedSMPRangeSetMismatch" {
   let grammar = @u344.grammar()
   let parsed = grammar.parse_default(
     "a🗿🥄d",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19543,7 +20108,7 @@ test "upstream Sets UnicodeEscapedSMPRangeSetMismatch" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19577,6 +20142,8 @@ test "upstream Sets UnicodeEscapedSMPSet" {
   let grammar = @u345.grammar()
   let parsed = grammar.parse_default(
     "a𝗂𝗎𝖺c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19598,7 +20165,7 @@ test "upstream Sets UnicodeEscapedSMPSet" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19628,6 +20195,8 @@ test "upstream Sets UnicodeNegatedBMPSetIncludesSMPCodePoints" {
   let grammar = @u346.grammar()
   let parsed = grammar.parse_default(
     "a😳😡😝🤓c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19650,7 +20219,7 @@ test "upstream Sets UnicodeNegatedBMPSetIncludesSMPCodePoints" {
     _,
   ) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19680,6 +20249,8 @@ test "upstream Sets UnicodeNegatedSMPSetIncludesBMPCodePoints" {
   let grammar = @u347.grammar()
   let parsed = grammar.parse_default(
     "abc",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19699,7 +20270,7 @@ test "upstream Sets UnicodeNegatedSMPSetIncludesBMPCodePoints" {
   assert_eq(parsed.next_token.text, "<EOF>")
   let lexed = grammar.tokenize_recovering("abc", lexer_action=(_, _) => ())
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19729,6 +20300,8 @@ test "upstream Sets UnicodeUnescapedBMPRangeSet" {
   let grammar = @u348.grammar()
   let parsed = grammar.parse_default(
     "aáäáâåd",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19753,7 +20326,7 @@ test "upstream Sets UnicodeUnescapedBMPRangeSet" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [
@@ -19793,6 +20366,8 @@ test "upstream Sets UnicodeUnescapedBMPSet" {
   let grammar = @u349.grammar()
   let parsed = grammar.parse_default(
     "aäあ亜c",
+    build_tree=true,
+    prediction_mode=@runtime.LL,
     start_rule=0,
     semantics=bindings,
     shared=Map([]),
@@ -19814,7 +20389,7 @@ test "upstream Sets UnicodeUnescapedBMPSet" {
     ()
   })
   assert_eq(
-    bound_frame_json(parsed.frame.unwrap()),
+    bound_frame_json(parsed.frame.unwrap(), build_tree=true),
     @json.parse("{\"values\":{},\"children\":[]}"),
   )
   @debug.assert_eq(bound_listener_events(parsed.tree), [

@@ -6,6 +6,9 @@ pub(all) struct RuleContext {
   children : Array[ContextChild]
   sources : Array[Int32]
   path : Array[Int32]
+  build_tree : Bool
+  /// Element captures remain available to labelled accessors without a tree.
+  labels : Array[(Int32, ContextChild)]
   /// Label captures returned by inline recovery need not occur in the tree.
   recovered_captures : Map[Int32, Array[(Int32, Token)]]
 }
@@ -22,6 +25,11 @@ fn RuleContext::append(
   child : ContextChild,
   state : Int32,
 ) -> RuleContext {
+  if !self.build_tree {
+    let labels = self.labels.copy()
+    labels.push((state, child))
+    return { ..self, labels, }
+  }
   let children = self.children.copy()
   let sources = self.sources.copy()
   children.push(child)
@@ -57,6 +65,16 @@ pub fn RuleContext::rules(
   states~ : Array[Int32] = [],
 ) -> Array[RuleContext] {
   let found : Array[RuleContext] = []
+  if !self.build_tree && !states.is_empty() {
+    for (state, child) in self.labels {
+      if states.contains(state) &&
+        child is RuleChild(context) &&
+        context.name == name {
+        found.push(context)
+      }
+    }
+    return found
+  }
   for i, child in self.children {
     if states.is_empty() || states.contains(self.sources[i]) {
       match child {
@@ -76,6 +94,16 @@ pub fn RuleContext::tokens(
   states~ : Array[Int32] = [],
 ) -> Array[Token] {
   let found : Array[Token] = []
+  if !self.build_tree && !states.is_empty() {
+    for (state, child) in self.labels {
+      if states.contains(state) &&
+        child is TokenChild(token) &&
+        token.kind == kind {
+        found.push(token)
+      }
+    }
+    return found
+  }
   for i, child in self.children {
     if states.is_empty() || states.contains(self.sources[i]) {
       match child {
@@ -107,6 +135,13 @@ pub fn RuleContext::select_tokens(
   states : Array[Int32],
 ) -> Array[Token] {
   let found : Array[(Int32, Token)] = []
+  if !self.build_tree {
+    for i, (state, child) in self.labels {
+      if states.contains(state) && child is TokenChild(token) {
+        found.push((i * 2 + 1, token))
+      }
+    }
+  }
   for i, child in self.children {
     if states.contains(self.sources[i]) {
       match child {
@@ -131,7 +166,12 @@ pub fn RuleContext::select_tokens(
 pub fn RuleContext::span(self : RuleContext) -> (Int32, Int32)? {
   let mut first : Int32? = None
   let mut last = 0
-  for child in self.children {
+  let captured = if self.build_tree {
+    self.children
+  } else {
+    self.labels.map(pair => pair.1)
+  }
+  for child in captured {
     let span = match child {
       TokenChild(token) =>
         if token.kind == -1 {

@@ -35,6 +35,7 @@ pub fn Grammar::parse_prefix_lazy(
   start_rule~ : Int32 = 0,
   work_limit~ : Int32 = 1_000_000,
   lexer_predicate? : LexerPredicate,
+  lexer_context_predicate? : LexerContextPredicate,
   lexer_action? : LexerAction,
   parser_action? : ParserAction,
 ) -> PrefixResult raise RuntimeError {
@@ -42,6 +43,7 @@ pub fn Grammar::parse_prefix_lazy(
     source,
     work_limit~,
     lexer_predicate?,
+    lexer_context_predicate?,
     lexer_action?,
   )
   self.parse_tokens(
