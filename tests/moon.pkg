@@ -1,4 +1,8 @@
 import {
+  "moonbitlang/core/json" @reference_json,
+  "wdgodghl/moonantlr/generated/differential",
+  "wdgodghl/moonantlr/generated/unicode_modes_lexer",
+  "wdgodghl/moonantlr/generated/semantic_differential",
   "wdgodghl/moonantlr/generated/control",
   "wdgodghl/moonantlr/generated/exceptions",
   "wdgodghl/moonantlr/generated/lifecycle",

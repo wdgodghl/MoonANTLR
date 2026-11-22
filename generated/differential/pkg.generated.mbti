@@ -1,0 +1,257 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/differential"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct DifferentialAmbiguousContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialAmbiguousContext::alternative(Self) -> String?
+pub fn DifferentialAmbiguousContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialAmbiguousContext::get_ambiguous(Self) -> Array[Self]
+pub fn DifferentialAmbiguousContext::get_first(Self) -> Array[DifferentialFirstContext]
+pub fn DifferentialAmbiguousContext::get_second(Self) -> Array[DifferentialSecondContext]
+pub fn DifferentialAmbiguousContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialAmbiguousContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialChoiceContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialChoiceContext::alternative(Self) -> String?
+pub fn DifferentialChoiceContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialChoiceContext::get_choice(Self) -> Array[Self]
+pub fn DifferentialChoiceContext::get_item(Self) -> Array[DifferentialItemContext]
+pub fn DifferentialChoiceContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialChoiceContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialChoiceContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialChoiceContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialChoiceContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialContextsContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialContextsContext::alternative(Self) -> String?
+pub fn DifferentialContextsContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialContextsContext::get_contexts(Self) -> Array[Self]
+pub fn DifferentialContextsContext::get_inner(Self) -> Array[DifferentialInnerContext]
+pub fn DifferentialContextsContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialContextsContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialContextsContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialContextsContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialContextsContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialDocumentContext::alternative(Self) -> String?
+pub fn DifferentialDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialDocumentContext::get_document(Self) -> Array[Self]
+pub fn DifferentialDocumentContext::get_expression(Self) -> Array[DifferentialExpressionContext]
+pub fn DifferentialDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialExpressionContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialExpressionContext::alternative(Self) -> String?
+pub fn DifferentialExpressionContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialExpressionContext::get_expression(Self) -> Array[Self]
+pub fn DifferentialExpressionContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_literal_4(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_literal_5(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_literal_6(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::get_token_literal_7(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialExpressionContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialFirstContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialFirstContext::alternative(Self) -> String?
+pub fn DifferentialFirstContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialFirstContext::get_first(Self) -> Array[Self]
+pub fn DifferentialFirstContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialFirstContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialFollowingContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialFollowingContext::alternative(Self) -> String?
+pub fn DifferentialFollowingContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialFollowingContext::get_following(Self) -> Array[Self]
+pub fn DifferentialFollowingContext::get_prefix(Self) -> Array[DifferentialPrefixContext]
+pub fn DifferentialFollowingContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialFollowingContext::get_token_literal_11(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialFollowingContext::get_token_literal_12(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialFollowingContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialInnerContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialInnerContext::alternative(Self) -> String?
+pub fn DifferentialInnerContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialInnerContext::get_inner(Self) -> Array[Self]
+pub fn DifferentialInnerContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialInnerContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialItemContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialItemContext::alternative(Self) -> String?
+pub fn DifferentialItemContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialItemContext::get_item(Self) -> Array[Self]
+pub fn DifferentialItemContext::get_token_literal_11(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialItemContext::get_token_literal_12(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialItemContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialLexer {
+  atn : @moonantlr.Atn
+}
+pub fn DifferentialLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn DifferentialLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct DifferentialListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (DifferentialDocumentContext) -> Unit
+  exit_document : (DifferentialDocumentContext) -> Unit
+  enter_expression : (DifferentialExpressionContext) -> Unit
+  exit_expression : (DifferentialExpressionContext) -> Unit
+  enter_choice : (DifferentialChoiceContext) -> Unit
+  exit_choice : (DifferentialChoiceContext) -> Unit
+  enter_item : (DifferentialItemContext) -> Unit
+  exit_item : (DifferentialItemContext) -> Unit
+  enter_nullable : (DifferentialNullableContext) -> Unit
+  exit_nullable : (DifferentialNullableContext) -> Unit
+  enter_maybe : (DifferentialMaybeContext) -> Unit
+  exit_maybe : (DifferentialMaybeContext) -> Unit
+  enter_following : (DifferentialFollowingContext) -> Unit
+  exit_following : (DifferentialFollowingContext) -> Unit
+  enter_prefix : (DifferentialPrefixContext) -> Unit
+  exit_prefix : (DifferentialPrefixContext) -> Unit
+  enter_ambiguous : (DifferentialAmbiguousContext) -> Unit
+  exit_ambiguous : (DifferentialAmbiguousContext) -> Unit
+  enter_first : (DifferentialFirstContext) -> Unit
+  exit_first : (DifferentialFirstContext) -> Unit
+  enter_second : (DifferentialSecondContext) -> Unit
+  exit_second : (DifferentialSecondContext) -> Unit
+  enter_reluctant : (DifferentialReluctantContext) -> Unit
+  exit_reluctant : (DifferentialReluctantContext) -> Unit
+  enter_contexts : (DifferentialContextsContext) -> Unit
+  exit_contexts : (DifferentialContextsContext) -> Unit
+  enter_inner : (DifferentialInnerContext) -> Unit
+  exit_inner : (DifferentialInnerContext) -> Unit
+}
+pub fn DifferentialListener::new() -> Self
+pub fn DifferentialListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct DifferentialMaybeContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialMaybeContext::alternative(Self) -> String?
+pub fn DifferentialMaybeContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialMaybeContext::get_maybe(Self) -> Array[Self]
+pub fn DifferentialMaybeContext::get_token_literal_11(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialMaybeContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialNullableContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialNullableContext::alternative(Self) -> String?
+pub fn DifferentialNullableContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialNullableContext::get_maybe(Self) -> Array[DifferentialMaybeContext]
+pub fn DifferentialNullableContext::get_nullable(Self) -> Array[Self]
+pub fn DifferentialNullableContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialNullableContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialNullableContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialNullableContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn DifferentialParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_ambiguous(Self, String) -> DifferentialAmbiguousContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_choice(Self, String) -> DifferentialChoiceContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_contexts(Self, String) -> DifferentialContextsContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_document(Self, String) -> DifferentialDocumentContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_expression(Self, String) -> DifferentialExpressionContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_first(Self, String) -> DifferentialFirstContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_following(Self, String) -> DifferentialFollowingContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_inner(Self, String) -> DifferentialInnerContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_item(Self, String) -> DifferentialItemContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_maybe(Self, String) -> DifferentialMaybeContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_nullable(Self, String) -> DifferentialNullableContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_prefix(Self, String) -> DifferentialPrefixContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_reluctant(Self, String) -> DifferentialReluctantContext raise @moonantlr.RuntimeError
+pub fn DifferentialParser::parse_second(Self, String) -> DifferentialSecondContext raise @moonantlr.RuntimeError
+
+pub struct DifferentialPrefixContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialPrefixContext::alternative(Self) -> String?
+pub fn DifferentialPrefixContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialPrefixContext::get_prefix(Self) -> Array[Self]
+pub fn DifferentialPrefixContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialPrefixContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialPrefixContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialReluctantContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialReluctantContext::alternative(Self) -> String?
+pub fn DifferentialReluctantContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialReluctantContext::get_reluctant(Self) -> Array[Self]
+pub fn DifferentialReluctantContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialReluctantContext::get_token_literal_10(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialReluctantContext::get_token_literal_8(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialReluctantContext::get_token_literal_9(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialReluctantContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct DifferentialSecondContext {
+  node : @moonantlr.RuleContext
+}
+pub fn DifferentialSecondContext::alternative(Self) -> String?
+pub fn DifferentialSecondContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn DifferentialSecondContext::get_second(Self) -> Array[Self]
+pub fn DifferentialSecondContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn DifferentialSecondContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct DifferentialVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (DifferentialDocumentContext, Array[T]) -> T
+  visit_expression : (DifferentialExpressionContext, Array[T]) -> T
+  visit_choice : (DifferentialChoiceContext, Array[T]) -> T
+  visit_item : (DifferentialItemContext, Array[T]) -> T
+  visit_nullable : (DifferentialNullableContext, Array[T]) -> T
+  visit_maybe : (DifferentialMaybeContext, Array[T]) -> T
+  visit_following : (DifferentialFollowingContext, Array[T]) -> T
+  visit_prefix : (DifferentialPrefixContext, Array[T]) -> T
+  visit_ambiguous : (DifferentialAmbiguousContext, Array[T]) -> T
+  visit_first : (DifferentialFirstContext, Array[T]) -> T
+  visit_second : (DifferentialSecondContext, Array[T]) -> T
+  visit_reluctant : (DifferentialReluctantContext, Array[T]) -> T
+  visit_contexts : (DifferentialContextsContext, Array[T]) -> T
+  visit_inner : (DifferentialInnerContext, Array[T]) -> T
+}
+pub fn[T] DifferentialVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] DifferentialVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

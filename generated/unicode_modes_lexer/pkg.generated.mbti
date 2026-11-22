@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/unicode_modes_lexer"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn lexer_data() -> Array[Int32]
+
+// Errors
+
+// Types and methods
+pub struct UnicodeModesLexer {
+  atn : @moonantlr.Atn
+}
+pub fn UnicodeModesLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn UnicodeModesLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+// Type aliases
+
+// Traits

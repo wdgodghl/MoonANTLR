@@ -104,13 +104,21 @@ priv struct Predictor {
   mut mode : PredictionMode
   events : Array[PredictionEvent]
   adaptive_dfas : Map[Int32, AdaptiveDfa]
+  precedence_returns : Map[(Int32, Int32), Bool]
+  mut adaptive_rule : Int32
 }
 
 ///|
 fn Predictor::new(atn : Atn, budget : Budget) -> Predictor {
   let follows : Array[Array[Int32]] = Array::makei(atn.starts.length(), _ => [])
+  let precedence_returns : Map[(Int32, Int32), Bool] = Map([])
   for state in atn.states {
     for edge in state.edges {
+      if edge.kind == 3 &&
+        edge.c == 0 &&
+        atn.states[atn.starts[edge.b]].precedence {
+        precedence_returns[(edge.b, edge.target)] = true
+      }
       if edge.kind == 3 && !follows[edge.b].contains(edge.target) {
         follows[edge.b].push(edge.target)
       }
@@ -118,6 +126,8 @@ fn Predictor::new(atn : Atn, budget : Budget) -> Predictor {
   }
   {
     follows,
+    precedence_returns,
+    adaptive_rule: -1,
     check: None,
     atn,
     budget,

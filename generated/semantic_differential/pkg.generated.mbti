@@ -1,0 +1,155 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/semantic_differential"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)]
+
+pub fn argument_expressions() -> Array[(Int32, String)]
+
+pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)]
+
+// Errors
+
+// Types and methods
+pub struct SemanticDifferentialChildContext {
+  node : @moonantlr.RuleContext
+}
+pub fn SemanticDifferentialChildContext::alternative(Self) -> String?
+pub fn SemanticDifferentialChildContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn SemanticDifferentialChildContext::get_child(Self) -> Array[Self]
+pub fn SemanticDifferentialChildContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialChildContext::get_token_INT(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialChildContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct SemanticDifferentialChildContextAttributes {
+  attr_n : Int32?
+}
+pub fn SemanticDifferentialChildContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct SemanticDifferentialCombinedContext {
+  node : @moonantlr.RuleContext
+}
+pub fn SemanticDifferentialCombinedContext::alternative(Self) -> String?
+pub fn SemanticDifferentialCombinedContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn SemanticDifferentialCombinedContext::get_combined(Self) -> Array[Self]
+pub fn SemanticDifferentialCombinedContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialCombinedContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialCombinedContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct SemanticDifferentialEntryContext {
+  node : @moonantlr.RuleContext
+}
+pub fn SemanticDifferentialEntryContext::alternative(Self) -> String?
+pub fn SemanticDifferentialEntryContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn SemanticDifferentialEntryContext::get_entry(Self) -> Array[Self]
+pub fn SemanticDifferentialEntryContext::get_left(Self) -> Array[SemanticDifferentialLeftContext]
+pub fn SemanticDifferentialEntryContext::get_right(Self) -> Array[SemanticDifferentialRightContext]
+pub fn SemanticDifferentialEntryContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialEntryContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct SemanticDifferentialLeftContext {
+  node : @moonantlr.RuleContext
+}
+pub fn SemanticDifferentialLeftContext::alternative(Self) -> String?
+pub fn SemanticDifferentialLeftContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn SemanticDifferentialLeftContext::get_left(Self) -> Array[Self]
+pub fn SemanticDifferentialLeftContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialLeftContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct SemanticDifferentialLexer {
+  atn : @moonantlr.Atn
+}
+pub fn SemanticDifferentialLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct SemanticDifferentialListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_entry : (SemanticDifferentialEntryContext) -> Unit
+  exit_entry : (SemanticDifferentialEntryContext) -> Unit
+  enter_left : (SemanticDifferentialLeftContext) -> Unit
+  exit_left : (SemanticDifferentialLeftContext) -> Unit
+  enter_right : (SemanticDifferentialRightContext) -> Unit
+  exit_right : (SemanticDifferentialRightContext) -> Unit
+  enter_combined : (SemanticDifferentialCombinedContext) -> Unit
+  exit_combined : (SemanticDifferentialCombinedContext) -> Unit
+  enter_local : (SemanticDifferentialLocalContext) -> Unit
+  exit_local : (SemanticDifferentialLocalContext) -> Unit
+  enter_parameterized : (SemanticDifferentialParameterizedContext) -> Unit
+  exit_parameterized : (SemanticDifferentialParameterizedContext) -> Unit
+  enter_child : (SemanticDifferentialChildContext) -> Unit
+  exit_child : (SemanticDifferentialChildContext) -> Unit
+}
+pub fn SemanticDifferentialListener::new() -> Self
+pub fn SemanticDifferentialListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct SemanticDifferentialLocalContext {
+  node : @moonantlr.RuleContext
+}
+pub fn SemanticDifferentialLocalContext::alternative(Self) -> String?
+pub fn SemanticDifferentialLocalContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn SemanticDifferentialLocalContext::get_local(Self) -> Array[Self]
+pub fn SemanticDifferentialLocalContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialLocalContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialLocalContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialLocalContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialLocalContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct SemanticDifferentialParameterizedContext {
+  node : @moonantlr.RuleContext
+}
+pub fn SemanticDifferentialParameterizedContext::alternative(Self) -> String?
+pub fn SemanticDifferentialParameterizedContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn SemanticDifferentialParameterizedContext::get_child(Self) -> Array[SemanticDifferentialChildContext]
+pub fn SemanticDifferentialParameterizedContext::get_parameterized(Self) -> Array[Self]
+pub fn SemanticDifferentialParameterizedContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialParameterizedContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct SemanticDifferentialParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn SemanticDifferentialParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialParser::parse_child(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> SemanticDifferentialChildContext raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialParser::parse_combined(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> SemanticDifferentialCombinedContext raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialParser::parse_entry(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> SemanticDifferentialEntryContext raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialParser::parse_left(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> SemanticDifferentialLeftContext raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialParser::parse_local(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> SemanticDifferentialLocalContext raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialParser::parse_parameterized(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> SemanticDifferentialParameterizedContext raise @moonantlr.RuntimeError
+pub fn SemanticDifferentialParser::parse_right(Self, String, predicate? : (Int32, Int32, @moonantlr.Token) -> Bool) -> SemanticDifferentialRightContext raise @moonantlr.RuntimeError
+
+pub struct SemanticDifferentialRightContext {
+  node : @moonantlr.RuleContext
+}
+pub fn SemanticDifferentialRightContext::alternative(Self) -> String?
+pub fn SemanticDifferentialRightContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn SemanticDifferentialRightContext::get_right(Self) -> Array[Self]
+pub fn SemanticDifferentialRightContext::get_token_ID(Self) -> Array[@moonantlr.Token]
+pub fn SemanticDifferentialRightContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct SemanticDifferentialVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_entry : (SemanticDifferentialEntryContext, Array[T]) -> T
+  visit_left : (SemanticDifferentialLeftContext, Array[T]) -> T
+  visit_right : (SemanticDifferentialRightContext, Array[T]) -> T
+  visit_combined : (SemanticDifferentialCombinedContext, Array[T]) -> T
+  visit_local : (SemanticDifferentialLocalContext, Array[T]) -> T
+  visit_parameterized : (SemanticDifferentialParameterizedContext, Array[T]) -> T
+  visit_child : (SemanticDifferentialChildContext, Array[T]) -> T
+}
+pub fn[T] SemanticDifferentialVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] SemanticDifferentialVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

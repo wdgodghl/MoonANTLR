@@ -158,6 +158,7 @@ priv struct AdaptiveConfig {
   depth : Int32
   collect : Bool
   outside : Bool
+  filter_suppressed : Bool
 }
 
 ///|
@@ -167,7 +168,7 @@ fn AdaptiveConfig::semantic_key(self : AdaptiveConfig) -> String {
 
 ///|
 fn AdaptiveConfig::key(self : AdaptiveConfig) -> String {
-  "\{self.state}:\{self.alt}:\{self.context}:\{self.collect}:\{self.depth}:\{self.outside}:" +
+  "\{self.state}:\{self.alt}:\{self.context}:\{self.collect}:\{self.depth}:\{self.outside}:\{self.filter_suppressed}:" +
   self.semantic_key()
 }
 
@@ -283,7 +284,17 @@ fn Predictor::adaptive_closure(
         result.push(cfg)
       } else {
         for follow in self.follows[state.rule] {
-          work.push({ ..cfg, state: follow, outside: true, depth: -1, })
+          work.push({
+            ..cfg,
+            state: follow,
+            outside: true,
+            depth: -1,
+            filter_suppressed: cfg.filter_suppressed ||
+            (
+              state.rule == self.adaptive_rule &&
+              self.precedence_returns.contains((state.rule, follow))
+            ),
+          })
         }
       }
       continue
@@ -367,9 +378,59 @@ fn Predictor::adaptive_start(
       depth: 0,
       collect: true,
       outside: false,
+      filter_suppressed: false,
     })
   }
-  self.adaptive_closure(seeds, full, precedence, false)
+  let configs = self.adaptive_closure(seeds, full, precedence, false)
+  if !full && self.atn.is_precedence_decision(state) {
+    adaptive_precedence_filter(configs, precedence)
+  } else {
+    configs
+  }
+}
+
+///|
+// ParserATNSimulator.applyPrecedenceFilter: strip satisfied precedence predicates
+// from the recursive alternative and eliminate equivalent loop-exit contexts.
+fn adaptive_precedence_filter(
+  configs : Array[AdaptiveConfig],
+  precedence : Int32,
+) -> Array[AdaptiveConfig] {
+  let result : Array[AdaptiveConfig] = []
+  let first : Map[Int32, Array[Int32]] = Map([])
+  for cfg in configs {
+    if cfg.alt != 0 || cfg.predicates.any(p => p.0 == -1 && p.1 < precedence) {
+      continue
+    }
+    let contexts = first.get_or_init(cfg.state, () => [])
+    if !contexts.contains(cfg.context) {
+      contexts.push(cfg.context)
+    }
+    result.push({ ..cfg, predicates: cfg.predicates.filter(p => p.0 != -1), })
+  }
+  for cfg in configs {
+    if cfg.alt == 0 {
+      continue
+    }
+    let contexts = configs
+      .filter(c => c.alt == cfg.alt && c.state == cfg.state)
+      .map(c => c.context)
+    let same = first
+      .get(cfg.state)
+      .map(group => {
+        group.all(context => contexts.contains(context)) &&
+        contexts.all(context => group.contains(context))
+      })
+      .unwrap_or(false)
+    let suppressed = configs.any(c => {
+      c.alt == cfg.alt && c.state == cfg.state && c.filter_suppressed
+    })
+    if !suppressed && same {
+      continue
+    }
+    result.push(cfg)
+  }
+  result
 }
 
 ///|
@@ -450,11 +511,23 @@ fn Predictor::adaptive_finished(
   precedence : Int32,
 ) -> Array[Int32] raise RuntimeError {
   let finished : Array[Int32] = []
-  for cfg in configs {
-    if (cfg.outside || self.atn.states[cfg.state].kind == 7) &&
-      self.adaptive_test(cfg.predicates, precedence) &&
-      !finished.contains(cfg.alt) {
-      finished.push(cfg.alt)
+  let invalid : Array[Int32] = []
+  let ordered = configs.copy()
+  ordered.mut_view().stable_sort_by((a, b) => a.alt.compare(b.alt))
+  for cfg in ordered {
+    // Error localization partitions every configuration by semantic validity,
+    // including unfinished paths, before preferring a completed valid path.
+    let valid = self.adaptive_test(cfg.predicates, precedence)
+    if cfg.outside || self.atn.states[cfg.state].kind == 7 {
+      let candidates = if valid { finished } else { invalid }
+      if !candidates.contains(cfg.alt) {
+        candidates.push(cfg.alt)
+      }
+    }
+  }
+  if finished.is_empty() {
+    for alt in invalid {
+      finished.push(alt)
     }
   }
   finished.sort()
@@ -476,6 +549,7 @@ fn Predictor::adaptive_predict(
 ) -> Array[Int32] raise RuntimeError {
   self.decisions += 1
   self.failure_pos = pos
+  self.adaptive_rule = self.atn.states[state].rule
   let mut decision = -1
   for i, candidate in self.atn.decisions {
     if candidate == state {

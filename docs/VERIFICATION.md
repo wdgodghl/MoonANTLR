@@ -1,5 +1,10 @@
 # Verification
 
+An additional 1218 deterministic differential cases cover prediction modes,
+Unicode/mode Lexer boundaries, semantic predicates and rule parameters. See
+[expanded differential verification](COMPATIBILITY_DIFFERENTIAL.md) for provenance,
+reproduction and the compatibility differences fixed by these cases.
+
 ## Local commands
 
 ```sh
