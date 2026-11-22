@@ -93,7 +93,7 @@ def main():
             sources.extend(str(ROOT / "grammars" / (n + ".g4")) for n in names)
         sources.extend(str(ROOT / "grammars" / (name + ".g4")) for name in ["LexActions", "ParseActions", "Attributes", "Lifecycle"])
         run([args.java, "-Dfile.encoding=UTF-8", "-jar", str(jar), "-encoding", "UTF-8", "-Dlanguage=Java", "-Xexact-output-dir", "-lib", str(directory), "-o", str(directory)] + sources)
-        run([args.javac, "-encoding", "UTF-8", "-cp", str(jar), "-d", str(directory), str(ROOT / "tools" / "Oracle.java"), str(ROOT / "tools" / "UpstreamAttributes.java")] + [str(p) for p in directory.glob("*.java")])
+        run([args.javac, "-encoding", "UTF-8", "-cp", str(jar), "-d", str(directory), str(ROOT / "tools" / "Oracle.java"), str(ROOT / "tools" / "UpstreamAttributes.java"), str(ROOT / "tools" / "PredictionTrace.java")] + [str(p) for p in directory.glob("*.java")])
         for name, cases in corpus().items():
             payload = "".join(base64.b64encode(s.encode()).decode() + "\n" for s in cases)
             result = run([args.java, "-Dfile.encoding=UTF-8", "-cp", str(directory) + os.pathsep + str(jar), "Oracle", name], input=payload, capture_output=True)

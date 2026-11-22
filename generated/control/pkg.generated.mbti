@@ -1,0 +1,139 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wdgodghl/moonantlr/generated/control"
+
+import {
+  "wdgodghl/moonantlr",
+}
+
+// Values
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)]
+
+pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_data() -> Array[Int32]
+
+pub fn parser_action_sites() -> Array[Int32]
+
+pub fn parser_action_sources() -> Array[String]
+
+pub fn parser_data() -> Array[Int32]
+
+pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
+
+// Errors
+
+// Types and methods
+pub struct ControlBoundariesContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ControlBoundariesContext::alternative(Self) -> String?
+pub fn ControlBoundariesContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ControlBoundariesContext::get_boundaries(Self) -> Array[Self]
+pub fn ControlBoundariesContext::get_empty(Self) -> Array[ControlEmptyContext]
+pub fn ControlBoundariesContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn ControlBoundariesContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ControlBoundariesContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ControlBoundariesContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ControlBranchContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ControlBranchContext::alternative(Self) -> String?
+pub fn ControlBranchContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ControlBranchContext::get_branch(Self) -> Array[Self]
+pub fn ControlBranchContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn ControlBranchContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ControlBranchContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ControlBranchContext::get_token_literal_3(Self) -> Array[@moonantlr.Token]
+pub fn ControlBranchContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ControlChildContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ControlChildContext::alternative(Self) -> String?
+pub fn ControlChildContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ControlChildContext::get_child(Self) -> Array[Self]
+pub fn ControlChildContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ControlChildContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ControlDocumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ControlDocumentContext::alternative(Self) -> String?
+pub fn ControlDocumentContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ControlDocumentContext::get_document(Self) -> Array[Self]
+pub fn ControlDocumentContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn ControlDocumentContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn ControlDocumentContext::get_token_literal_2(Self) -> Array[@moonantlr.Token]
+pub fn ControlDocumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ControlEmptyContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ControlEmptyContext::alternative(Self) -> String?
+pub fn ControlEmptyContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ControlEmptyContext::get_empty(Self) -> Array[Self]
+pub fn ControlEmptyContext::raw(Self) -> @moonantlr.RuleContext
+
+pub struct ControlLexer {
+  atn : @moonantlr.Atn
+}
+pub fn ControlLexer::new() -> Self raise @moonantlr.RuntimeError
+pub fn ControlLexer::tokenize(Self, String) -> Array[@moonantlr.Token] raise @moonantlr.RuntimeError
+
+pub(all) struct ControlListener {
+  terminal : (@moonantlr.Token) -> Unit
+  enter_document : (ControlDocumentContext) -> Unit
+  exit_document : (ControlDocumentContext) -> Unit
+  enter_branch : (ControlBranchContext) -> Unit
+  exit_branch : (ControlBranchContext) -> Unit
+  enter_toggle : (ControlToggleContext) -> Unit
+  exit_toggle : (ControlToggleContext) -> Unit
+  enter_child : (ControlChildContext) -> Unit
+  exit_child : (ControlChildContext) -> Unit
+  enter_boundaries : (ControlBoundariesContext) -> Unit
+  exit_boundaries : (ControlBoundariesContext) -> Unit
+  enter_empty : (ControlEmptyContext) -> Unit
+  exit_empty : (ControlEmptyContext) -> Unit
+}
+pub fn ControlListener::new() -> Self
+pub fn ControlListener::walk(Self, @moonantlr.RuleContext) -> Unit
+
+pub struct ControlParser {
+  grammar : @moonantlr.Grammar
+}
+pub fn ControlParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn ControlParser::parse_boundaries(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ControlBoundariesContext raise @moonantlr.RuntimeError
+pub fn ControlParser::parse_branch(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ControlBranchContext raise @moonantlr.RuntimeError
+pub fn ControlParser::parse_child(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ControlChildContext raise @moonantlr.RuntimeError
+pub fn ControlParser::parse_document(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ControlDocumentContext raise @moonantlr.RuntimeError
+pub fn ControlParser::parse_empty(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ControlEmptyContext raise @moonantlr.RuntimeError
+pub fn ControlParser::parse_toggle(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> ControlToggleContext raise @moonantlr.RuntimeError
+
+pub struct ControlToggleContext {
+  node : @moonantlr.RuleContext
+}
+pub fn ControlToggleContext::alternative(Self) -> String?
+pub fn ControlToggleContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn ControlToggleContext::get_child(Self) -> Array[ControlChildContext]
+pub fn ControlToggleContext::get_toggle(Self) -> Array[Self]
+pub fn ControlToggleContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn ControlToggleContext::label_left(Self) -> Array[ControlChildContext]
+pub fn ControlToggleContext::label_right(Self) -> Array[ControlChildContext]
+pub fn ControlToggleContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct ControlVisitor[T] {
+  terminal : (@moonantlr.Token) -> T
+  visit_document : (ControlDocumentContext, Array[T]) -> T
+  visit_branch : (ControlBranchContext, Array[T]) -> T
+  visit_toggle : (ControlToggleContext, Array[T]) -> T
+  visit_child : (ControlChildContext, Array[T]) -> T
+  visit_boundaries : (ControlBoundariesContext, Array[T]) -> T
+  visit_empty : (ControlEmptyContext, Array[T]) -> T
+}
+pub fn[T] ControlVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
+pub fn[T] ControlVisitor::visit(Self[T], @moonantlr.RuleContext) -> T
+
+// Type aliases
+
+// Traits

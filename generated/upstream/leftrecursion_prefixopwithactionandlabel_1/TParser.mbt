@@ -28,6 +28,11 @@ pub fn parser_action_sources() -> Array[String] {
 }
 
 ///|
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)] {
+  [(15, 0), (24, 1)]
+}
+
+///|
 pub fn parser_action_sites() -> Array[Int32] {
   [5, 11, 14, 20]
 }
@@ -52,9 +57,9 @@ pub fn parser_data() -> Array[Int32] {
 pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
   {
     lexer: @runtime.deserialize(lexer_data()),
-    parser: @runtime.deserialize(parser_data()).with_parser_action_sites(
-      parser_action_sites(),
-    ),
+    parser: @runtime.deserialize(parser_data())
+    .with_parser_action_sites(parser_action_sites())
+    .with_adaptive_decision_sites(adaptive_decision_sites()),
     rules: ["s", "e"],
     vocabulary: ["0", "'='", "'+'", "ID", "INT", "WS"],
   }

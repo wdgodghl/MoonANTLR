@@ -223,6 +223,14 @@ public final class MoonBitTarget extends JavaTarget {
         if (g.isLexer()) {
             boolean predicates = hasPredicates(g);
             boolean actions = hasLexerActions(g);
+            List<String> actionSources = new ArrayList<>();
+            for (Map.Entry<ActionAST,Integer> entry : g.lexerActions.entrySet()) {
+                GrammarAST owner = (GrammarAST)entry.getKey().getAncestor(ANTLRParser.RULE);
+                if (owner == null) throw new IllegalStateException("Lexer action without rule");
+                Rule rule = g.getRule(owner.getChild(0).getText());
+                actionSources.add("(" + rule.index + ", " + entry.getValue() + ", " + q(entry.getKey().getText()) + ")");
+            }
+            if (!actionSources.isEmpty()) block(out, "pub fn lexer_action_sources() -> Array[(Int, Int, String)] { [" + String.join(", ", actionSources) + "] }");
             if (actions || predicates) {
                 List<String> lexerRules = Arrays.stream(g.getRuleNames()).map(MoonBitTarget::q).toList();
                 block(out, "pub fn lexer_rule_names() -> Array[String] { " + lexerRules + " }");
@@ -234,6 +242,15 @@ public final class MoonBitTarget extends JavaTarget {
             return;
         }
         emitAttributeMetadata(g, out);
+        if (g.getOptionString("contextSuperClass") != null) {
+            List<String> alternatives = new ArrayList<>();
+            for (Rule rule : g.rules.values()) for (int alt=1;alt<=rule.numberOfAlts;alt++) {
+                Set<Integer> sites = new TreeSet<>();
+                collectStates(rule.alt[alt].ast, sites);
+                alternatives.add("("+q(rule.name)+", "+alt+", "+sites+")");
+            }
+            block(out, "pub fn rule_alternative_sites() -> Array[(String, Int, Array[Int])] { [" + String.join(", ",alternatives) + "] }");
+        }
         List<Integer> parserActions = parserActionStates(g);
         Map<Integer,String> sources = new HashMap<>();
         for (Rule rule : g.rules.values()) for (GrammarAST action : atnActions(rule.ast))
@@ -251,6 +268,13 @@ public final class MoonBitTarget extends JavaTarget {
         }
         if (!bodies.isEmpty()) block(out, "pub fn parser_action_sources() -> Array[String] { " + bodies + " }");
         String actionBinding = parserActions.isEmpty() ? "" : ".with_parser_action_sites(parser_action_sites())";
+        List<String> adaptive = new ArrayList<>();
+        for (int i=0;i<g.atn.decisionToState.size();i++) {
+            if (!org.antlr.v4.analysis.AnalysisPipeline.disjoint(g.decisionLOOK.get(i)))
+                adaptive.add("("+g.atn.decisionToState.get(i).stateNumber+", "+i+")");
+        }
+        block(out,"pub fn adaptive_decision_sites() -> Array[(Int, Int)] { ["+String.join(", ",adaptive)+"] }");
+        actionBinding += ".with_adaptive_decision_sites(adaptive_decision_sites())";
         List<String> exceptions = new ArrayList<>();
         List<Integer> exceptionRules = new ArrayList<>();
         for (Rule rule : g.rules.values()) {

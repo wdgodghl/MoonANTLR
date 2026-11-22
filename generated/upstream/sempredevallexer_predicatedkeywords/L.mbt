@@ -6,6 +6,14 @@ pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)] {
 }
 
 ///|
+pub fn lexer_action_sources() -> Array[(Int32, Int32, String)] {
+  [
+    (0, 0, "{ System.out.println(\"enum!\"); }"),
+    (1, 1, "{ System.out.println(\"ID \" + this.getText()); }"),
+  ]
+}
+
+///|
 pub fn lexer_rule_names() -> Array[String] {
   ["ENUM", "ID", "WS"]
 }

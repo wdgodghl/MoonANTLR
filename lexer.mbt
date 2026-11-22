@@ -141,6 +141,7 @@ fn lex_match(
   predicate : LexerPredicate?,
   context_predicate : LexerContextPredicate?,
   token_start : Int32,
+  trace : LexerDfa?,
 ) -> (LexConfig?, Int32) raise RuntimeError {
   if mode < 0 || mode >= atn.modes.length() {
     raise InvalidAtn("unknown lexer mode")
@@ -170,8 +171,20 @@ fn lex_match(
   let mut farthest = start
   let mut next : Array[LexConfig] = []
   let accepted : Map[Int32, Bool] = Map([])
+  let mut observed : Array[LexConfig] = []
+  let mut semantic = false
+  let mut previous : Int32? = None
+  let mut position = start
   while !work.is_empty() || !next.is_empty() {
     if work.is_empty() {
+      if trace is Some(trace) {
+        previous = trace.record(
+          observed, atn, start, position, previous, semantic, chars,
+        )
+      }
+      observed = []
+      semantic = false
+      position += 1
       for i = next.length() - 1; i >= 0; i = i - 1 {
         work.push(next[i])
       }
@@ -197,6 +210,7 @@ fn lex_match(
     seen[key] = true
     if state.kind == 7 {
       if cfg.returns.is_empty() {
+        observed.push(cfg)
         accepted[cfg.root] = true
         match best {
           None => best = Some(cfg)
@@ -212,10 +226,20 @@ fn lex_match(
       }
       continue
     }
+    if state.edges.any(edge => {
+        edge.kind == 2 ||
+        edge.kind == 5 ||
+        edge.kind == 7 ||
+        edge.kind == 8 ||
+        edge.kind == 9
+      }) {
+      observed.push(cfg)
+    }
     for i = state.edges.length() - 1; i >= 0; i = i - 1 {
       let edge = state.edges[i]
       match edge.kind {
-        4 =>
+        4 => {
+          semantic = true
           if (if context_predicate is Some(check) {
               let mut token_line = 1
               let mut token_column = 0
@@ -254,6 +278,7 @@ fn lex_match(
             }) {
             work.push({ ..cfg, state: edge.target, })
           }
+        }
         1 => work.push({ ..cfg, state: edge.target, })
         3 => {
           let returns = cfg.returns.copy()
@@ -262,9 +287,11 @@ fn lex_match(
         }
         6 => {
           let actions = cfg.actions.copy()
-          actions.push(
-            (edge.b, if atn.actions[edge.b].0 == 1 { cfg.pos } else { -1 }),
-          )
+          if cfg.returns.is_empty() {
+            actions.push(
+              (edge.b, if atn.actions[edge.b].0 == 1 { cfg.pos } else { -1 }),
+            )
+          }
           work.push({ ..cfg, state: edge.target, actions, })
         }
         2 | 5 | 7 | 8 | 9 => {
@@ -284,6 +311,11 @@ fn lex_match(
         _ => raise Unsupported("unsupported lexer transition")
       }
     }
+  }
+  if trace is Some(trace) {
+    ignore(
+      trace.record(observed, atn, start, position, previous, semantic, chars),
+    )
   }
   (best, farthest)
 }
@@ -321,6 +353,7 @@ pub fn Atn::tokenize_recovering(
 ///|
 /// A demand-driven Lexer. Actions and diagnostics occur only when requested.
 pub struct LexerCursor {
+  mut dfa_trace : Map[Int32, LexerDfa]?
   atn : Atn
   source : String
   chars : Array[Char]
@@ -365,6 +398,7 @@ pub fn Atn::lexer_cursor(
   )
   {
     atn: self,
+    dfa_trace: None,
     source,
     chars: source.to_array(),
     budget: { remaining: work_limit, },
@@ -477,6 +511,13 @@ fn LexerCursor::advance(self : LexerCursor) -> Token raise RuntimeError {
       self.lexer_predicate,
       self.lexer_context_predicate,
       self.token_start,
+      self.dfa_trace.map(trace => {
+        trace.get_or_init(self.mode, () => {
+          states: [],
+          interned: Map([]),
+          start: None,
+        })
+      }),
     )
     let accepted = match candidate {
       Some(cfg) => cfg

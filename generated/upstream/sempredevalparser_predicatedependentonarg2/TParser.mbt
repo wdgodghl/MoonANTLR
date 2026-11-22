@@ -30,6 +30,11 @@ pub fn argument_expressions() -> Array[(Int32, String)] {
 }
 
 ///|
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)] {
+  [(11, 0)]
+}
+
+///|
 pub fn parser_data() -> Array[Int32] {
   [
     4, 1, 3, 14, 2, 0, 7, 0, 2, 1, 7, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -44,7 +49,9 @@ pub fn parser_data() -> Array[Int32] {
 pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
   {
     lexer: @runtime.deserialize(lexer_data()),
-    parser: @runtime.deserialize(parser_data()),
+    parser: @runtime.deserialize(parser_data()).with_adaptive_decision_sites(
+      adaptive_decision_sites(),
+    ),
     rules: ["s", "a"],
     vocabulary: ["0", "ID", "INT", "WS"],
   }

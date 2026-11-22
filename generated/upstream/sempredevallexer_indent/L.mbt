@@ -6,6 +6,11 @@ pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)] {
 }
 
 ///|
+pub fn lexer_action_sources() -> Array[(Int32, Int32, String)] {
+  [(1, 0, "{ System.out.println(\"INDENT\"); }")]
+}
+
+///|
 pub fn lexer_rule_names() -> Array[String] {
   ["ID", "INDENT", "NL", "WS"]
 }

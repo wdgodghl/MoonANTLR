@@ -23,12 +23,22 @@ public final class UpstreamLexerOracle {
         BufferedReader reader=new BufferedReader(new InputStreamReader(System.in,StandardCharsets.UTF_8));
         String source=new String(Base64.getDecoder().decode(reader.readLine()),StandardCharsets.UTF_8);
         Lexer lexer=(Lexer)Class.forName(args[0]).getConstructor(CharStream.class).newInstance(CharStreams.fromString(source));
-        List<String> errors=new ArrayList<>(); lexer.removeErrorListeners();
+        List<String> errors=new ArrayList<>(); List<String> messages=new ArrayList<>(); lexer.removeErrorListeners();
         lexer.addErrorListener(new BaseErrorListener(){
-            public void syntaxError(Recognizer<?,?> r,Object sym,int line,int col,String msg,RecognitionException e){errors.add("["+line+","+col+"]");}
+            public void syntaxError(Recognizer<?,?> r,Object sym,int line,int col,String msg,RecognitionException e){errors.add("["+line+","+col+"]");messages.add("line "+line+":"+col+" "+msg+"\n");}
         });
         List<String> tokens=new ArrayList<>();
-        for(;;){Token t=lexer.nextToken(); tokens.add("["+t.getType()+","+q(t.getText())+","+t.getStartIndex()+","+(t.getStopIndex()+1)+","+t.getLine()+","+t.getCharPositionInLine()+","+t.getChannel()+"]");if(t.getType()==Token.EOF)break;}
-        System.out.println("{\"tokens\":["+String.join(",",tokens)+"],\"errors\":["+String.join(",",errors)+"]}");
+        PrintStream original=System.out;
+        ByteArrayOutputStream captured=new ByteArrayOutputStream();
+        try {
+            System.setOut(new PrintStream(captured,true,StandardCharsets.UTF_8));
+            CommonTokenStream stream=new CommonTokenStream(lexer); stream.fill();
+            for(Token t:stream.getTokens()) {
+                tokens.add("["+t.getType()+","+q(t.getText())+","+t.getStartIndex()+","+(t.getStopIndex()+1)+","+t.getLine()+","+t.getCharPositionInLine()+","+t.getChannel()+"]");
+                System.out.println(t);
+            }
+            if(Boolean.getBoolean("moonantlr.showDFA")) System.out.print(lexer.getInterpreter().getDFA(Lexer.DEFAULT_MODE).toLexerString());
+        } finally { System.setOut(original); }
+        System.out.println("{\"tokens\":["+String.join(",",tokens)+"],\"errors\":["+String.join(",",errors)+"],\"stdout\":"+q(captured.toString(StandardCharsets.UTF_8).replace("\r\n","\n"))+",\"stderr\":"+q(String.join("",messages))+"}");
     }
 }

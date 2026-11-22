@@ -11,6 +11,20 @@ pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)] {
 }
 
 ///|
+pub fn lexer_action_sources() -> Array[(Int32, Int32, String)] {
+  [
+    (122, 0, "{ this.OnInterpolatedRegularStringStart(); }"),
+    (123, 1, "{ this.OnInterpolatedVerbatiumStringStart(); }"),
+    (124, 2, "{ this.OnOpenBrace(); }"),
+    (125, 3, "{ this.OnCloseBrace(); }"),
+    (132, 4, "{ this.OnColon(); }"),
+    (172, 5, "{ this.OpenBraceInside(); }"),
+    (175, 6, "{ this.OnDoubleQuoteInside(); }"),
+    (179, 7, "{ this.OnCloseBraceInside(); }"),
+  ]
+}
+
+///|
 pub fn lexer_rule_names() -> Array[String] {
   [
     "BYTE_ORDER_MARK", "SINGLE_LINE_DOC_COMMENT", "EMPTY_DELIMITED_DOC_COMMENT",

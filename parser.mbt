@@ -35,6 +35,7 @@ priv struct ParseConfig {
 
 ///|
 priv struct ParseContext {
+  rule_stack : Array[String]
   mut predicting : Bool
   semantics : RuleSemantics?
   prefix_mode : Bool
@@ -74,6 +75,9 @@ fn ParseConfig::lifecycle(
           frame: frame.snapshot(),
           next_token,
           tokens: ctx.source_tokens,
+          control: None,
+          rule_stack: ctx.rule_stack.copy().rev(),
+          expected_fn: None,
           lookahead_fn: offset => ctx.tokens.token(self.pos + offset - 1),
         },
         action,
@@ -135,6 +139,8 @@ fn parse_rule(
     raise Unsupported("left-recursive rule invocation")
   }
   ctx.active[key] = true
+  ctx.rule_stack.push(ctx.rules[rule])
+  defer ignore(ctx.rule_stack.pop())
   let frame = match (ctx.semantics, seed) {
     (Some(bindings), Some(frame)) =>
       Some((bindings.enter)(rule, frame.snapshot()))
@@ -146,6 +152,8 @@ fn parse_rule(
       pos,
       context: {
         name: ctx.rules[rule],
+        start_token: Some(ctx.tokens.token(pos)),
+        stop_token: None,
         children: [],
         sources: [],
         path: [],
@@ -169,6 +177,17 @@ fn parse_rule(
       partial.val = Some(cfg.context)
     }
     if state.kind == 7 {
+      let cfg = {
+        ..cfg,
+        context: {
+          ..cfg.context,
+          stop_token: if cfg.pos > 0 {
+            Some(ctx.tokens.token(cfg.pos - 1))
+          } else {
+            None
+          },
+        },
+      }
       let cfg = cfg
         .lifecycle(ctx, rule, "after")
         .lifecycle(ctx, rule, "finally")
@@ -198,6 +217,9 @@ fn parse_rule(
       next_token,
       frame: frame.snapshot(),
       tokens: ctx.source_tokens,
+      control: None,
+      rule_stack: ctx.rule_stack.copy().rev(),
+      expected_fn: None,
       lookahead_fn: offset => ctx.tokens.token(cfg.pos + offset - 1),
     })
     let predicted = if ctx.predicting && state.edges.length() > 1 {
@@ -239,12 +261,14 @@ fn parse_rule(
           let context = if recursive_iteration {
             {
               name: ctx.rules[rule],
+              start_token: Some(ctx.tokens.token(pos)),
+              stop_token: None,
               children: [RuleChild(cfg.context)],
               sources: [-1],
               path: [],
               recovered_captures: Map([]),
               build_tree: true,
-              labels: [],
+              labels: [(-1, RuleChild(cfg.context))],
             }
           } else {
             cfg.context
@@ -481,6 +505,7 @@ fn Grammar::parse_tokens(
   }
   let predictor = Predictor::new(self.parser, budget)
   let ctx : ParseContext = {
+    rule_stack: [],
     predicting: predicate is None && semantics is None,
     semantics,
     prefix_mode: !complete,

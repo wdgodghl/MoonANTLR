@@ -9,6 +9,14 @@ pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)] {
 }
 
 ///|
+pub fn lexer_action_sources() -> Array[(Int32, Int32, String)] {
+  [
+    (0, 0, "{ System.out.println(this.getText()); }"),
+    (1, 1, "{ System.out.println(this.getText()); }"),
+  ]
+}
+
+///|
 pub fn lexer_rule_names() -> Array[String] {
   ["WORD1", "WORD2", "ID1", "ID2", "WS"]
 }

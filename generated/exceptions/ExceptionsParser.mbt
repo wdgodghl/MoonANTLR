@@ -15,6 +15,11 @@ pub fn parser_action_sources() -> Array[String] {
 }
 
 ///|
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)] {
+  [(24, 0)]
+}
+
+///|
 pub fn rule_exception_sources() -> Array[(Int32, String, String)] {
   [
     (0, "RecognitionException error", "{ failIf(\"catch\"); }"),
@@ -65,6 +70,7 @@ pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
     lexer: @runtime.deserialize(lexer_data()),
     parser: @runtime.deserialize(parser_data())
     .with_parser_action_sites(parser_action_sites())
+    .with_adaptive_decision_sites(adaptive_decision_sites())
     .with_rule_exception_rules([0, 1, 2, 3, 4])
     .with_rule_action_sites(rule_action_sites()),
     rules: [

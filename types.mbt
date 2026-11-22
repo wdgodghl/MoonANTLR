@@ -8,6 +8,7 @@ pub(all) suberror RuntimeError {
   LexicalError(Int32, Int32, String)
   SyntaxError(Int32, Int32, Array[Int32])
   RecognitionError(String, Int32, Int32, Array[Int32])
+  ParseCancelled(String, Int32, Int32, Array[Int32])
   LimitExceeded(String)
 }
 
@@ -44,6 +45,10 @@ pub struct Atn {
   parser_actions : Map[Int32, Int32]
   rule_actions : Map[(Int32, String), Int32]
   rule_exceptions : Array[Int32]
+  decisions : Array[Int32]
+  adaptive_decisions : Array[Int32]
+  adaptive_metadata : Bool
+  adaptive_sites : Map[Int32, Int32]
 }
 
 ///|

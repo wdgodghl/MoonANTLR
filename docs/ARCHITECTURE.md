@@ -126,3 +126,23 @@ synthetic labels without adding a tree error node, matching generated Java.
 
 `LexerContextPredicate` exposes matched text, token-start and current positions.
 `SemanticEvent.lookahead` requests one-based visible lookahead on demand.
+
+## Prediction and observations
+
+The native emitter records actual adaptive decision sites separately from LL(1)
+switch decisions. Committed parsing executes SLL closure sets with deferred
+predicates, then retries conflicts in the real invocation context. Exact mode
+continues until conflicting alternative subsets agree. Prediction callbacks
+record decision index, source offsets, alternatives, exactness and resolution.
+`report_prediction=true` also creates DiagnosticErrorListener-style messages.
+
+`SemanticEvent.control` exposes live prediction mode, tree-building and Bail
+settings to committed actions. Invocation start/stop Token metadata, rule stacks
+and lazy expected-token queries support host observation adapters. Disabled-tree
+labels remain independent of visible children, including after dynamic toggles.
+
+Parser and opt-in Lexer DFA dumps serialize states and edges derived from actual
+ATN closure sets. Predicate-dependent Lexer edges and start states are not cached.
+Actions inside referenced Lexer rules are suppressed, matching Java. The pinned
+host adapters reject unknown action bodies and compare original stdout rather
+than returning strings taken from reference expectations.

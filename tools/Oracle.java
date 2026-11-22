@@ -50,10 +50,12 @@ public final class Oracle {
             java.util.List<String> lexerErrors = new java.util.ArrayList<>();
             java.util.List<String> parserErrors = new java.util.ArrayList<>();
             java.util.List<String> allErrors = new java.util.ArrayList<>();
+            java.util.List<String> messages = new java.util.ArrayList<>();
             BaseErrorListener listener = new BaseErrorListener() {
                 @Override public void syntaxError(Recognizer<?, ?> r, Object symbol, int row, int column, String message, RecognitionException e) {
                     errors[0]++;
                     allErrors.add("[" + row + "," + column + "]");
+                    messages.add("line "+row+":"+column+" "+message+"\n");
                     if (r instanceof Lexer) lexerErrors.add("[" + row + "," + column + "]");
                     else parserErrors.add("[" + row + "," + column + "]");
                 }
@@ -66,9 +68,17 @@ public final class Oracle {
             Parser parser = (Parser) Class.forName(grammar + "Parser").getConstructor(TokenStream.class).newInstance(stream);
             parser.removeErrorListeners();
             parser.addErrorListener(listener);
+            PredictionTrace trace = new PredictionTrace(Boolean.getBoolean("moonantlr.reportPrediction"));
+            parser.addErrorListener(trace);
             parser.setBuildParseTree(Boolean.parseBoolean(System.getProperty("moonantlr.buildTree", "true")));
             parser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.valueOf(System.getProperty("moonantlr.predictionMode", "LL")));
-            ParseTree parsed = (ParseTree) parser.getClass().getMethod(rule).invoke(parser);
+            java.io.PrintStream originalOutput=System.out;
+            java.io.ByteArrayOutputStream captured=new java.io.ByteArrayOutputStream();
+            ParseTree parsed;
+            try {
+                System.setOut(new java.io.PrintStream(captured,true,StandardCharsets.UTF_8));
+                parsed=(ParseTree) parser.getClass().getMethod(rule).invoke(parser);
+            } finally { System.setOut(originalOutput); }
             boolean accepted = errors[0] == 0 && (args.length > 1 || parser.getCurrentToken().getType() == Token.EOF);
             StringBuilder out = new StringBuilder("{\"accepted\":").append(accepted).append(",\"tree\":").append(quote(tree(parsed, parser), false)).append(",\"tokens\":[");
             Token next = parser.getCurrentToken();
@@ -87,7 +97,8 @@ public final class Oracle {
                 }, parsed);
                 System.out.println("{\"tree\":" + quote(errorTree(parsed, parser), false)
                     + ",\"parserErrors\":[" + String.join(",", allErrors)
-                    + "],\"events\":[" + String.join(",", events) + "],\"errorTokens\":[" + String.join(",", errorTokens) + "],\"offsets\":" + offsets + attributes + ",\"nextKind\":" + next.getType() + ",\"nextText\":" + quote(next.getText(), false) + "}");
+                    + "],\"events\":[" + String.join(",", events) + "],\"errorTokens\":[" + String.join(",", errorTokens) + "],\"offsets\":" + offsets + attributes + ",\"nextKind\":" + next.getType() + ",\"nextText\":" + quote(next.getText(), false)
+                    + ",\"predictionEvents\":["+String.join(",",trace.events)+"],\"stdout\":"+quote(captured.toString(StandardCharsets.UTF_8).replace("\r\n","\n"),false)+",\"stderr\":"+quote(String.join("",messages),false)+"}");
                 continue;
             }
             boolean first = true;

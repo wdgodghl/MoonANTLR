@@ -6,7 +6,8 @@
       "group": "CompositeLexers",
       "name": "LexerDelegatorInvokesDelegateRule",
       "descriptor_sha256": "89061fa9b9aa87ffa19fc5aa125e6ee701994254d0d083ff1383ddfcb657dcd3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -15,7 +16,8 @@
       "group": "CompositeLexers",
       "name": "LexerDelegatorRuleOverridesDelegate",
       "descriptor_sha256": "7aef57f77c146ec14d5cbf2e90e3320a0c1e80561758c0072f7bae664c6367df",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -24,7 +26,8 @@
       "group": "CompositeParsers",
       "name": "BringInLiteralsFromDelegate",
       "descriptor_sha256": "044bbd217e54622a16e788a0d5844b3c4a26edb6f4c825fba9f2896d63af8286",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -33,7 +36,8 @@
       "group": "CompositeParsers",
       "name": "CombinedImportsCombined",
       "descriptor_sha256": "736ac8f84bff7098a6ad5f068cc3b587d2437760571d59b6f7296aedaaed057f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -42,7 +46,8 @@
       "group": "CompositeParsers",
       "name": "DelegatesSeeSameTokenType",
       "descriptor_sha256": "52a8e72e04c3057217edd9bb9649d9940884c4567baa5d4dcb8cff2fd0c92ff0",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -51,7 +56,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorAccessesDelegateMembers",
       "descriptor_sha256": "bf8f82795f41f8811df9c17fbee46e4798f1b16099c8282da7ec0ece5535814c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -60,7 +66,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorInvokesDelegateRule",
       "descriptor_sha256": "962c907398756a42411b9f06e85bb298b93f52cb9829276cd14b785c2376efc8",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -69,7 +76,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorInvokesDelegateRuleWithArgs",
       "descriptor_sha256": "265e9944148968d0a6b6cfa34bddbca8741348a3b995538139b07885df218d30",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -78,7 +86,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorInvokesDelegateRuleWithReturnStruct",
       "descriptor_sha256": "be19357c11beaa911d21682a51b5f53368eb57a7925783813079ab271356e2fb",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -87,7 +96,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorInvokesFirstVersionOfDelegateRule",
       "descriptor_sha256": "4f607efd79c157e694b68fb79bc7e8fbf9c2ac7de0f24a04dd1731883f3136b8",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -96,7 +106,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorRuleOverridesDelegate",
       "descriptor_sha256": "6052563c79072d5262994af4d4cc2dcc5a30bb4ca4558e9bc274c2e3c61438aa",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -105,7 +116,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorRuleOverridesDelegates",
       "descriptor_sha256": "aab31b078e90e442df21595e3f3261d9f2015e95bb7218c7e09e83c549c205f4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -114,7 +126,8 @@
       "group": "CompositeParsers",
       "name": "DelegatorRuleOverridesLookaheadInDelegate",
       "descriptor_sha256": "c8df88a643a777a7d79a2e5c343cfd5ca95dd9411e1616a2c907fb1495d4c5e6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -123,7 +136,8 @@
       "group": "CompositeParsers",
       "name": "ImportedGrammarWithEmptyOptions",
       "descriptor_sha256": "3103577febcf9090650f6205a3b2b9c17112126daaf1b888f1cb520b584c3f10",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -132,7 +146,8 @@
       "group": "CompositeParsers",
       "name": "ImportedRuleWithAction",
       "descriptor_sha256": "6fb97d9b24deebe3bac1128ae3d5238b54a7f59469aae472b09d327525a0ff23",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -141,7 +156,8 @@
       "group": "CompositeParsers",
       "name": "ImportLexerWithOnlyFragmentRules",
       "descriptor_sha256": "d9d3635b3e4c8b475426ccafb332d24e8d7fd8a1dfd70fb48bbb1c9afe2f9569",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -150,7 +166,8 @@
       "group": "CompositeParsers",
       "name": "KeywordVSIDOrder",
       "descriptor_sha256": "e21629dac2dfe95f8dfb3c64c6c6f4309246e614d97abc24836bc27303a1c138",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -159,7 +176,8 @@
       "group": "FullContextParsing",
       "name": "AmbiguityNoLoop",
       "descriptor_sha256": "e4d8648cefc8359cc714fc6bed093a22242026cd39280fc0fdd0bd2a203f5bac",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -170,7 +188,8 @@
       "group": "FullContextParsing",
       "name": "AmbigYieldsCtxSensitiveDFA",
       "descriptor_sha256": "4cd00a126e319e3dbc56ab17c4599d2d45b2539de5fa8c27927a5bdf3976e060",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -181,7 +200,8 @@
       "group": "FullContextParsing",
       "name": "CtxSensitiveDFA_1",
       "descriptor_sha256": "8f29c342b5f46acf97a5c95a6b4c699b8852257279c88718204b9c51faad6b70",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -192,7 +212,8 @@
       "group": "FullContextParsing",
       "name": "CtxSensitiveDFA_2",
       "descriptor_sha256": "70ae8f3a590daefe9b1b0f06824737bd17aaa1a7f8b55778c114bb36688fe2e5",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -203,7 +224,8 @@
       "group": "FullContextParsing",
       "name": "CtxSensitiveDFATwoDiffInput",
       "descriptor_sha256": "200aa40e2582fd3dd793eb8628fed87d715c89ce64a7155b5097babdc722cf09",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -214,7 +236,8 @@
       "group": "FullContextParsing",
       "name": "ExprAmbiguity_1",
       "descriptor_sha256": "a817d67059e2f92c47268dbec790c78db13d84864a5a643a76a45ec04f2e2484",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -225,7 +248,8 @@
       "group": "FullContextParsing",
       "name": "ExprAmbiguity_2",
       "descriptor_sha256": "e4372a807b20ff1d3bc58c379ec99d6be4fe62710c04d325c76059570945a6aa",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -236,7 +260,8 @@
       "group": "FullContextParsing",
       "name": "FullContextIF_THEN_ELSEParse_1",
       "descriptor_sha256": "2ab6fa5b7a2d54353610fa9bb09539b3972b57b1ac671db6898c2e19679bd2f2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -247,7 +272,8 @@
       "group": "FullContextParsing",
       "name": "FullContextIF_THEN_ELSEParse_2",
       "descriptor_sha256": "721d3b9dfb5e9bc5cda7ab0767f180fec7c4b88e59df06b5dcd48b2e5bde46d1",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -258,7 +284,8 @@
       "group": "FullContextParsing",
       "name": "FullContextIF_THEN_ELSEParse_3",
       "descriptor_sha256": "98f277f9b8410344e4eaa34a8f90958de29dd96ae69ce71bcb9892196a1ccdc3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -269,7 +296,8 @@
       "group": "FullContextParsing",
       "name": "FullContextIF_THEN_ELSEParse_4",
       "descriptor_sha256": "aeb519e5adb54a303e94c099d61018a1205234b6d6a360d5f73a6d7c5c4156a4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -280,7 +308,8 @@
       "group": "FullContextParsing",
       "name": "FullContextIF_THEN_ELSEParse_5",
       "descriptor_sha256": "f4975dd61d16ebbe8e4e320973390da85581506f676da9c372ff4a2a37ae9cb2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -291,7 +320,8 @@
       "group": "FullContextParsing",
       "name": "FullContextIF_THEN_ELSEParse_6",
       "descriptor_sha256": "f4975dd61d16ebbe8e4e320973390da85581506f676da9c372ff4a2a37ae9cb2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -302,7 +332,8 @@
       "group": "FullContextParsing",
       "name": "LoopsSimulateTailRecursion",
       "descriptor_sha256": "4ff2b7525c247b5f839a3c171f9012c5534a76a722cb70186f8f326c1a116416",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -313,7 +344,8 @@
       "group": "FullContextParsing",
       "name": "SLLSeesEOFInLLGrammar",
       "descriptor_sha256": "0ca950bcf3fcb25522f291f6c1af0d9d6bd002279fec33d1a292033de450f7ab",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -324,7 +356,8 @@
       "group": "LeftRecursion",
       "name": "AmbigLR_1",
       "descriptor_sha256": "c815841ab308a0401c06d8c47f9f1d97279aa0a5a8572de06ed4f7b484c27215",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -333,7 +366,8 @@
       "group": "LeftRecursion",
       "name": "AmbigLR_2",
       "descriptor_sha256": "54681cc16675a64c00f4814d310253cff7bfed7d961937fb8ae17544194c5a42",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -342,7 +376,8 @@
       "group": "LeftRecursion",
       "name": "AmbigLR_3",
       "descriptor_sha256": "895599db935ddc45f305ce05d716501bee93a6a96dfe3c4c53d148fdc710f3b2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -351,7 +386,8 @@
       "group": "LeftRecursion",
       "name": "AmbigLR_4",
       "descriptor_sha256": "e4fff58e540a2f77bff52222c832951db7e42bea4829504ea849d7815bc77a66",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -360,7 +396,8 @@
       "group": "LeftRecursion",
       "name": "AmbigLR_5",
       "descriptor_sha256": "3ea8eb41ef7b2f058e6f8e6447b1f84a5fa259cf9d685a79132f295d0f2f4f2c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -369,7 +406,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_1",
       "descriptor_sha256": "f36461ca312abbd0c0f282b928a79a4d8d604d3b6a7e84e66e910b69c4439306",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -378,7 +416,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_10",
       "descriptor_sha256": "8077ceb19d4ca392af3d26fb3877a53f9ae297346f5c03bbc2fdb5ebbace59ea",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -387,7 +426,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_2",
       "descriptor_sha256": "258d028cf8e090e894b1bd9c758aeac805079a1b6bab8a6913470cfb39c195a6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -396,7 +436,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_3",
       "descriptor_sha256": "8969118322208166c212f35457a96624d69ad2898c17071a754268dbc0d1b831",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -405,7 +446,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_4",
       "descriptor_sha256": "695413b685b81341689d7c7deeee95104c56063c5449b327fc2ac4435adfc08d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -414,7 +456,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_5",
       "descriptor_sha256": "18e4dae34fd22cd2ac12264c78d47ca0c3469b3f53785a231c890bb67ec8ba5a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -423,7 +466,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_6",
       "descriptor_sha256": "ada0654fe7bb198eae4a2e1ab8796632d349f4a437960c3c4c4d3df80250341a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -432,7 +476,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_7",
       "descriptor_sha256": "b37ae65b396d41d385efa464a3179d264aef9524d617973f2ca7765ddd6a8304",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -441,7 +486,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_8",
       "descriptor_sha256": "cdc548de8158190723b37e49bb38204895456ff7c8b84163859d11624a1ec039",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -450,7 +496,8 @@
       "group": "LeftRecursion",
       "name": "Declarations_9",
       "descriptor_sha256": "fc9e5555f7d31995dd3cbcc17d40b4bed1a2785f73d412823549ca16c17b8e7d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -459,7 +506,8 @@
       "group": "LeftRecursion",
       "name": "DirectCallToLeftRecursiveRule_1",
       "descriptor_sha256": "000077e2a8194195a6a1221244c5be809d18592504803005eb20ec321bb3a0cd",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -468,7 +516,8 @@
       "group": "LeftRecursion",
       "name": "DirectCallToLeftRecursiveRule_2",
       "descriptor_sha256": "2358830129f887cd31a02356eb554409452432d5b9d21b10009937c5ca160ce8",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -477,7 +526,8 @@
       "group": "LeftRecursion",
       "name": "DirectCallToLeftRecursiveRule_3",
       "descriptor_sha256": "673ac8e931e42f8f38f87b9106aec908a00c77c431359aa26dcef67ca21cf9f4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -486,7 +536,8 @@
       "group": "LeftRecursion",
       "name": "Expressions_1",
       "descriptor_sha256": "70430d43c8fd6e180ac00796e78d7c566687e0f07ba1b6c4afe53c82b0033841",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -495,7 +546,8 @@
       "group": "LeftRecursion",
       "name": "Expressions_2",
       "descriptor_sha256": "34e4afe06f7431e690fd7b42f95f842370b6bf4b3445dd0b1b48869739f970fa",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -504,7 +556,8 @@
       "group": "LeftRecursion",
       "name": "Expressions_3",
       "descriptor_sha256": "aa6db3b84b15621ada3f07bc78b33c411b568b4986b876588e60a5999b87bd64",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -513,7 +566,8 @@
       "group": "LeftRecursion",
       "name": "Expressions_4",
       "descriptor_sha256": "e77b095425de5934036ae42b2571cbbf190d2b6f4b01464aa2b71c21741fd820",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -522,7 +576,8 @@
       "group": "LeftRecursion",
       "name": "Expressions_5",
       "descriptor_sha256": "a821db69d81a95204934bc1dc51feda495b17692f7506e6b3de3933168623631",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -531,7 +586,8 @@
       "group": "LeftRecursion",
       "name": "Expressions_6",
       "descriptor_sha256": "b72cde99a8d4eceb9a97a60361a85b252a49dcfba0612d572185082d85ad2163",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -540,7 +596,8 @@
       "group": "LeftRecursion",
       "name": "Expressions_7",
       "descriptor_sha256": "09a47311cc02a8a6e4deb38774c3ef12e590f0ce4c11218e428796ecc3739199",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -549,7 +606,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_1",
       "descriptor_sha256": "96532e91d8c8eb90e912b41e05880c4faafc75c6b9bc986091524da6ad5d7c73",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -558,7 +616,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_10",
       "descriptor_sha256": "044803fa31e494f22de349ea9c7c9fa381d716b45ea254314f1eb5e11e931334",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -567,7 +626,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_11",
       "descriptor_sha256": "b95d3f2dc8b06bc8d498f86537922204441ac5a8848168eb50038e722ececde0",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -576,7 +636,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_12",
       "descriptor_sha256": "4f514ed6d5388b25fd34b46135d46564f75545d989752b2409a02b5c24ad9305",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -585,7 +646,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_2",
       "descriptor_sha256": "01010e91eed4837545193478e6e51738a331cfd95b27c41e2772341e6685a2f3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -594,7 +656,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_3",
       "descriptor_sha256": "8d18e8fcc0f5b32e92ce07745d421bcbac226c7b261c0a299ff49143cd660ded",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -603,7 +666,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_4",
       "descriptor_sha256": "327cd05d3ec7e574d455e0a46d83c90876f0b40884c3e60dda94999f28b9ec92",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -612,7 +676,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_5",
       "descriptor_sha256": "dfa99e21cce200015221c53560ab88985bdb14eed3220088c2450906e5301d71",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -621,7 +686,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_6",
       "descriptor_sha256": "f2a42ee5312e379ef420cc2cde66d0c04d764eec86a23bc9c05ae08233ecb7b3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -630,7 +696,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_7",
       "descriptor_sha256": "b5ea1382b8a69496d3b1463b9239f72404752d48ea0eccee6f8f13a288865158",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -639,7 +706,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_8",
       "descriptor_sha256": "d06e3278ba31b1ac8f27138ccfa8adcba9a48fab33e783b74842ef1830bf33ef",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -648,7 +716,8 @@
       "group": "LeftRecursion",
       "name": "JavaExpressions_9",
       "descriptor_sha256": "502f8bb0b7b91e2cfc48c080e55cc68746f817b439fbbab3d50e4844f7127a78",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -657,7 +726,8 @@
       "group": "LeftRecursion",
       "name": "LabelsOnOpSubrule_1",
       "descriptor_sha256": "4c793a159c7d6c98b278e60175bb1a30403d5ae23ac5f486bea388d100794f1d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -666,7 +736,8 @@
       "group": "LeftRecursion",
       "name": "LabelsOnOpSubrule_2",
       "descriptor_sha256": "5ce5da46b0d58a48d42f7093cacdf986bfcc909a0c6717342dc197ebc57e9ca6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -675,7 +746,8 @@
       "group": "LeftRecursion",
       "name": "LabelsOnOpSubrule_3",
       "descriptor_sha256": "ff6ae2a94c0e5f497e0c65239aa908a7695f16ec01915ecea1fac0a35f413525",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -684,7 +756,8 @@
       "group": "LeftRecursion",
       "name": "MultipleActions_1",
       "descriptor_sha256": "1cbf5765876d643c3b99d45ed3be48c129213799e4534a901243265d1c1332c5",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -693,7 +766,8 @@
       "group": "LeftRecursion",
       "name": "MultipleActions_2",
       "descriptor_sha256": "7154f05fdeb18fa5ba148bf02e1ded6912dab5fb695afd9a07731c6c3d751d58",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -702,7 +776,8 @@
       "group": "LeftRecursion",
       "name": "MultipleActions_3",
       "descriptor_sha256": "22a578eadfc74da1ab70fc5baa400b8397947664c92f425777872f47fd1a0f47",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -711,7 +786,8 @@
       "group": "LeftRecursion",
       "name": "MultipleActionsPredicatesOptions_1",
       "descriptor_sha256": "254621ddd5d8909d6c4ce1df8fdb0181ce6eda5adc2e7d001ddd3be0098345bd",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -720,7 +796,8 @@
       "group": "LeftRecursion",
       "name": "MultipleActionsPredicatesOptions_2",
       "descriptor_sha256": "8d92baede962c63fd1f3ac1cd7811685914fa0a62bbf1a0e19c8666f720a0c96",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -729,7 +806,8 @@
       "group": "LeftRecursion",
       "name": "MultipleActionsPredicatesOptions_3",
       "descriptor_sha256": "9bf93410af26b0ccac352b7656c8a5216f8b88b0ec4421eed656f5bfb60d0ced",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -738,7 +816,8 @@
       "group": "LeftRecursion",
       "name": "MultipleAlternativesWithCommonLabel_1",
       "descriptor_sha256": "6b0c9ae8bf43f502bdd1ed28197ca42ba575c7c2caefc8794e9af155ba12ca1f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -747,7 +826,8 @@
       "group": "LeftRecursion",
       "name": "MultipleAlternativesWithCommonLabel_2",
       "descriptor_sha256": "017e203b1e8b7d4fe9b2d2f63e81e43b8d014b419b1f59b7387f5f7844829c6e",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -756,7 +836,8 @@
       "group": "LeftRecursion",
       "name": "MultipleAlternativesWithCommonLabel_3",
       "descriptor_sha256": "dd7735ef52972216b45a2fd936d4bfafe612381b285f8d032d0536d3827fa042",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -765,7 +846,8 @@
       "group": "LeftRecursion",
       "name": "MultipleAlternativesWithCommonLabel_4",
       "descriptor_sha256": "36520b634696d2b06a613134e6496127e3f4a49b7f0f8595b5336e81b258ceef",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -774,7 +856,8 @@
       "group": "LeftRecursion",
       "name": "MultipleAlternativesWithCommonLabel_5",
       "descriptor_sha256": "0ccf0edb5f9d89d23ab2bdd5fa24e396126ee6eeb902366000dd0ed77a17b0cb",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -783,7 +866,8 @@
       "group": "LeftRecursion",
       "name": "PrecedenceFilterConsidersContext",
       "descriptor_sha256": "410b3872f0fb288ca4f87fed3c5390ff16a5442e90d75335b607dcefb6130843",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -792,7 +876,8 @@
       "group": "LeftRecursion",
       "name": "PrefixAndOtherAlt_1",
       "descriptor_sha256": "af4b1393c88a512bab4c701a7953fab93098c254de73d1321a63b301438d1b89",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -801,7 +886,8 @@
       "group": "LeftRecursion",
       "name": "PrefixAndOtherAlt_2",
       "descriptor_sha256": "f6e9beadd571cacb3b284d34bdebf4525e80137cef7defcbbee7edbe1a52bf53",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -810,7 +896,8 @@
       "group": "LeftRecursion",
       "name": "PrefixOpWithActionAndLabel_1",
       "descriptor_sha256": "104eb2a58c9aec1ea3c83fe735af2c0307942973529f3fe339fa004c93fde34e",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -819,7 +906,8 @@
       "group": "LeftRecursion",
       "name": "PrefixOpWithActionAndLabel_2",
       "descriptor_sha256": "9af54329397e23b12485b567a8ce4844998686cd25970b39c44b35ca809c9b42",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -828,7 +916,8 @@
       "group": "LeftRecursion",
       "name": "PrefixOpWithActionAndLabel_3",
       "descriptor_sha256": "edcdf95ce91d38089c3f445c3c2c6fb4b857134b5b5ed585e22961763c11721d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -837,7 +926,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActions_1",
       "descriptor_sha256": "c50a36e21d3ae2b91186c23c3c0a01bebf9c90ee021dcc3450a940f7b1cbdfae",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -846,7 +936,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActions_2",
       "descriptor_sha256": "25b03b955c8a35bf233b6ccd694334008924354e07b7fef1f46534d6503c465b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -855,7 +946,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActions_3",
       "descriptor_sha256": "0e4c7e2c371c08930d359e9c94042b035174ad9eb4feef6b4abd64a556c33da4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -864,7 +956,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActions_4",
       "descriptor_sha256": "75faf809f9ad548e75d6abbe428cdac8bcdbb374335e5e15bfc87e940751198c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -873,7 +966,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsAndLabels_1",
       "descriptor_sha256": "c5c3e4b16ec03510b306b9d23a921071d433da696a4d4b0b37736cdd0afc8d7c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -882,7 +976,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsAndLabels_2",
       "descriptor_sha256": "3d3671b0bfed4d62bf388bfbf15e6593746bffde7f0eb7106ce6cca10b1dfc28",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -891,7 +986,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsAndLabels_3",
       "descriptor_sha256": "7a24e56e66e63e7481e0c26683c25e06b246066af30f25df8ce386525933350d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -900,7 +996,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsAndLabels_4",
       "descriptor_sha256": "c4435372090e329fd14ab6e703f1ea92ba3040cdd4332b5f11194bb85d050685",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -909,7 +1006,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList1_1",
       "descriptor_sha256": "e96fba36499f3428665ff7d72c7509f5c322dc8718f8f161b9ac5b832393b653",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -918,7 +1016,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList1_2",
       "descriptor_sha256": "575206adafbd7be0d556d711a804e4e79ac31646536cec3dea5da6ee69439efc",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -927,7 +1026,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList1_3",
       "descriptor_sha256": "a628ae1f2604b4020253273a90c48ed6e0f29fb22e3fd887225d853d5d6cc137",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -936,7 +1036,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList1_4",
       "descriptor_sha256": "7bd70a3dde4bb4139bac999dba58cde9200a354f005daa3c281f9bb7013b176b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -945,7 +1046,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList2_1",
       "descriptor_sha256": "b674768112d884c1b0bc69cb0092a75f6fc08ceab5125104d028d8fec446d22b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -954,7 +1056,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList2_2",
       "descriptor_sha256": "bf66ec3d3f2ffed049c5bad9cdec9f0c06e58e4b1b4802c88b6d4912e57a378d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -963,7 +1066,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList2_3",
       "descriptor_sha256": "13a941392652e3bd3d3a19cbb4bfb65dbf54940fee65795e75d1e058ba243c82",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -972,7 +1076,8 @@
       "group": "LeftRecursion",
       "name": "ReturnValueAndActionsList2_4",
       "descriptor_sha256": "ef41a64c003c5c8a1413997672a1bdf6418a76baf8a7e2b1d00984e8f892b402",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -981,7 +1086,8 @@
       "group": "LeftRecursion",
       "name": "SemPred",
       "descriptor_sha256": "85eda1fa92b1ff60041c51ea6e340d3ffda49fa6f9760de4f40bc5923732ee56",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -990,7 +1096,8 @@
       "group": "LeftRecursion",
       "name": "SemPredFailOption",
       "descriptor_sha256": "6c783f07104a3153ce3a2a6198cebdb4037ce686a812104df9b91d10aee72975",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -999,7 +1106,8 @@
       "group": "LeftRecursion",
       "name": "Simple_1",
       "descriptor_sha256": "ecf9c0d36a4be1e97f8c08c805398360ca905ff6282431d2c3bd1b5f6ebea8c2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1008,7 +1116,8 @@
       "group": "LeftRecursion",
       "name": "Simple_2",
       "descriptor_sha256": "960e4fa1c3eeca504b551c05df6271344920d108485b94f08e278992e34c1fe0",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1017,7 +1126,8 @@
       "group": "LeftRecursion",
       "name": "Simple_3",
       "descriptor_sha256": "402eb4f46ea87d3b4ef368a7113b7ed34166ba75a5955f4e6bc6216d209e3160",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1026,7 +1136,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_1",
       "descriptor_sha256": "57a82e6aeeceddca2fee92e85b32146d1e93a6137571dd6fa9bd9fb0b597a4b3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1035,7 +1146,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_2",
       "descriptor_sha256": "9e5d0c3374a7e78bd615a845c0ae49a0329b0123033bcc94d05b95366f212b0a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1044,7 +1156,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_3",
       "descriptor_sha256": "e5d17365275f2e19fb038c6215cc4ddec4683639dffd2a2704188d283cac88d4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1053,7 +1166,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_4",
       "descriptor_sha256": "c6a5b242dbd540cd885ff5be910118e933e345461a5d184f0542dc4b60cc1ea6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1062,7 +1176,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_5",
       "descriptor_sha256": "12436de5462e45f14ff1219f448d7462d93851e8ed72adcfd5397c9d4b8fedc2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1071,7 +1186,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_6",
       "descriptor_sha256": "a61d7008f9506aaee3439ae7007331f63a17ef40c62f4aaefec42810b8760d7a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1080,7 +1196,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_7",
       "descriptor_sha256": "e09a1c48334b326060e8141a88cc5f538d9ac7bc927cd5ba25ba28b529452ae6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1089,7 +1206,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_8",
       "descriptor_sha256": "652222a3fe979458d768a10e253b94141d215544462f6b0b2b4e33eecd9b3388",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1098,7 +1216,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExpr_9",
       "descriptor_sha256": "0e3cacfc8b81b608cf6b7ddc25994dcce3be40a25328ef26101cb81f62a3d37a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1107,7 +1226,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_1",
       "descriptor_sha256": "2be0052bb0b29b6ed18e576db67b54a173f2a1b632191bf0779f1c3850a552ec",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1116,7 +1236,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_2",
       "descriptor_sha256": "318a499a8353d3f81c6ee39f4192f648f902403e3d9a0db26272b9dc46198033",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1125,7 +1246,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_3",
       "descriptor_sha256": "d3eca8063c75014bb3d8b59c07e709e8af8bcbb8306a6aae541192d7f4dfc2c6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1134,7 +1256,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_4",
       "descriptor_sha256": "fb10d82ac188142021c3973c1a40fd7bf3ad538d14d17e91bc8bf8bc4da2deb2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1143,7 +1266,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_5",
       "descriptor_sha256": "95c5406f47e69eadb5d7eafb1e30db00a10929b39933e1837e76e2d5a1d9550b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1152,7 +1276,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_6",
       "descriptor_sha256": "f25882c39abbfce46d106825207990a55508738e5d9973d89001266f19babebe",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1161,7 +1286,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_7",
       "descriptor_sha256": "2c442bcd26ed2136b56cf0f0269f9c4f8e4432bb681395434849cffd6ea9b0a3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1170,7 +1296,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_8",
       "descriptor_sha256": "e3c2a289dfc0e94c87d930369d42e34425a4cc97094f17105259cecc4fd44aae",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1179,7 +1306,8 @@
       "group": "LeftRecursion",
       "name": "TernaryExprExplicitAssociativity_9",
       "descriptor_sha256": "a99a5d348cc5449015514205ce4a2757cfa14e60873b4435bc87a46452d93cf8",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1188,7 +1316,8 @@
       "group": "LeftRecursion",
       "name": "WhitespaceInfluence_1",
       "descriptor_sha256": "b4342fbc79451649c6485e3973d7cfb12ce1c9bebaadd03cf0172a77ebc93505",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1197,7 +1326,8 @@
       "group": "LeftRecursion",
       "name": "WhitespaceInfluence_2",
       "descriptor_sha256": "8f811bd3535144927bb946ab657deaca34f68d1b39a82ee518d3a003654fad84",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1206,7 +1336,8 @@
       "group": "LexerErrors",
       "name": "DFAToATNThatFailsBackToDFA",
       "descriptor_sha256": "706cc65ff23c136892bd0e8da607d32b932827a3869d92bf68420a5e54b37130",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1215,7 +1346,8 @@
       "group": "LexerErrors",
       "name": "DFAToATNThatMatchesThenFailsInATN",
       "descriptor_sha256": "b713a24fd37972ac52a5f38fb414c3e2cd1a051fd69d08ab59bbb53493c89b7a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1224,7 +1356,8 @@
       "group": "LexerErrors",
       "name": "EnforcedGreedyNestedBraces_1",
       "descriptor_sha256": "098092cf3a3b9e3e2f57f80a974ea605323f1bcc6749225283c1edbd9be18b0b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1233,7 +1366,8 @@
       "group": "LexerErrors",
       "name": "EnforcedGreedyNestedBraces_2",
       "descriptor_sha256": "765cbbc4b1234d37c9ea4e9266827592f998c6141a51133135986d08acea6392",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1242,7 +1376,8 @@
       "group": "LexerErrors",
       "name": "ErrorInMiddle",
       "descriptor_sha256": "eda388222fa3fda6e9ac9b378a12b868572c536a70c0801a0d4e0350ad993158",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1251,7 +1386,8 @@
       "group": "LexerErrors",
       "name": "InvalidCharAtStart",
       "descriptor_sha256": "b5f1daf9b1efc9af80ebdc667543b4cc97d743958d5df440fb853788ce05b9bd",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1260,7 +1396,8 @@
       "group": "LexerErrors",
       "name": "InvalidCharAtStartAfterDFACache",
       "descriptor_sha256": "1f62a75334f297bd0be69039d6c83d6c19cccfea6a3f20900d35147a2a63b0c8",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1269,7 +1406,8 @@
       "group": "LexerErrors",
       "name": "InvalidCharInToken",
       "descriptor_sha256": "9ef4953a9c792a88872cdac1b602eb9a612f1d4761ffc3b5f12e1721abd1b50f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1278,7 +1416,8 @@
       "group": "LexerErrors",
       "name": "InvalidCharInTokenAfterDFACache",
       "descriptor_sha256": "b152dfa20c007bf6408978d9a5f9b08831ee3b0188ac15ae03e66b910557e8ef",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1287,7 +1426,8 @@
       "group": "LexerErrors",
       "name": "LexerExecDFA",
       "descriptor_sha256": "e019bd7684baf5eca5c0347c7b38325fd650a0abf4c636868475b0852d7a7c8a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1296,7 +1436,8 @@
       "group": "LexerErrors",
       "name": "StringsEmbeddedInActions_1",
       "descriptor_sha256": "04ccfa62130d6d5b2d0ce2d7d19f8eeae2b54866968a7a877bb5722ce5871d6d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1305,7 +1446,8 @@
       "group": "LexerErrors",
       "name": "StringsEmbeddedInActions_2",
       "descriptor_sha256": "d99dc37d52b839cb28f5c1ae5eb3e438a472513b26e8fd4e17abbb44ede994d9",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1314,7 +1456,8 @@
       "group": "LexerExec",
       "name": "ActionPlacement",
       "descriptor_sha256": "0b105dba744344ad4da014aae9ada3e2daf825fb5951f4f1b38eaf1a59b356ce",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1323,7 +1466,8 @@
       "group": "LexerExec",
       "name": "CharSet",
       "descriptor_sha256": "7125ef1bb54f75d27148ec6edc6ababc9868d998f65ed8695558977a46f6da1f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1332,7 +1476,8 @@
       "group": "LexerExec",
       "name": "CharSetInSet",
       "descriptor_sha256": "46da110357470058bdd961b982450b7aabc6359f4ee2a780b1a8b70838d629ab",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1341,7 +1486,8 @@
       "group": "LexerExec",
       "name": "CharSetNot",
       "descriptor_sha256": "b98dcfe171615a0c5e6816960ffc069619ac29cc68a7d7d74531c104215eb299",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1350,7 +1496,8 @@
       "group": "LexerExec",
       "name": "CharSetPlus",
       "descriptor_sha256": "7e8e893757a30cf8f593bfce107deb32bab12aaad67bf2f2f4bcfb14b1f5d7f4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1359,7 +1506,8 @@
       "group": "LexerExec",
       "name": "CharSetRange",
       "descriptor_sha256": "0dfeed7a3f2e9e69cc8f370974ae245d03b6beb540ff0a98ceeef0423b5629bb",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1368,7 +1516,8 @@
       "group": "LexerExec",
       "name": "CharSetWithEscapedChar",
       "descriptor_sha256": "05d4a3670de25c8c70c4d5365594f39c439ae60e6ab2c40225517a5851ada39a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1377,7 +1526,8 @@
       "group": "LexerExec",
       "name": "CharSetWithMissingEscapeChar",
       "descriptor_sha256": "d77acd5f9fb260b5503eff823984232bad6d1bd2a497f283cb1756c28ef8ed17",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1386,7 +1536,8 @@
       "group": "LexerExec",
       "name": "CharSetWithQuote1",
       "descriptor_sha256": "890687f62ddc4709c5b37709c64ca856568a90027e4a334424173813407b23b9",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1395,7 +1546,8 @@
       "group": "LexerExec",
       "name": "CharSetWithQuote2",
       "descriptor_sha256": "66333ace4ba358e1c79a8c93e06c1fe5c2383464e826e8c9478fd0342d02df0f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1404,7 +1556,8 @@
       "group": "LexerExec",
       "name": "EOFByItself",
       "descriptor_sha256": "e41c4893263c545fb55cf0d4c4f8f9e9cdd1dfbcb2eb0c9c9fb3814f9c5f0579",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1413,7 +1566,8 @@
       "group": "LexerExec",
       "name": "EOFSuffixInFirstRule_1",
       "descriptor_sha256": "11eca98f4771d9d4a332d31ad6d5a7e06f52bbd3c5131d336964f85c9a20f434",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1422,7 +1576,8 @@
       "group": "LexerExec",
       "name": "EOFSuffixInFirstRule_2",
       "descriptor_sha256": "5aa2c90c919761d7898bd823f6a51ce7418355542852e6887a9f5a8802a1a04b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1431,7 +1586,8 @@
       "group": "LexerExec",
       "name": "EscapedCharacters",
       "descriptor_sha256": "32fd1e84757d2a03099bae4e7e7e36e525558f5ae2bf5247048c96ce220809d4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1440,7 +1596,8 @@
       "group": "LexerExec",
       "name": "EscapeTargetStringLiteral",
       "descriptor_sha256": "c2e2bfc593d30b44523fc5592b2dca4f84f514ffa5c5ad23c73daf6278f75179",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1449,7 +1606,8 @@
       "group": "LexerExec",
       "name": "GreedyClosure",
       "descriptor_sha256": "243103deb1904f48f37980dcae08b9b3d3144ea6d3b0f18e19d0655c61cb0e00",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1458,7 +1616,8 @@
       "group": "LexerExec",
       "name": "GreedyConfigs",
       "descriptor_sha256": "aff8ade3949200a3558bc81b0d428dee20a52baa05f2be78d60745ad93c929d6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1467,7 +1626,8 @@
       "group": "LexerExec",
       "name": "GreedyOptional",
       "descriptor_sha256": "64fb43433b96e40c4a998a1bd272414fa3d38ffc1274f926068c1a5a22185d6f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1476,7 +1636,8 @@
       "group": "LexerExec",
       "name": "GreedyPositiveClosure",
       "descriptor_sha256": "4ae08598bf4a90904909b2cf6f0d212d4f0114f35a8236eee2ae30a122dd9693",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1485,7 +1646,8 @@
       "group": "LexerExec",
       "name": "HexVsID",
       "descriptor_sha256": "cf13edd797af25b587d9fe5c3af74aabe473948fd3503e035390fcf745c89671",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1494,7 +1656,8 @@
       "group": "LexerExec",
       "name": "KeywordID",
       "descriptor_sha256": "79040041688de53fb1425cb2b16f3c5820bcfd5267e8093b3054825303962f02",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1503,7 +1666,8 @@
       "group": "LexerExec",
       "name": "NonGreedyClosure",
       "descriptor_sha256": "d9c398f0778970ef6b30cb5e97a7265c8d613042bbe5b449b941e32fbad71b9d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1512,7 +1676,8 @@
       "group": "LexerExec",
       "name": "NonGreedyConfigs",
       "descriptor_sha256": "c703867b3f1a0dd0833c4724aa28c833b14cb7d6686c657d953383b65776738c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1521,7 +1686,8 @@
       "group": "LexerExec",
       "name": "NonGreedyOptional",
       "descriptor_sha256": "0e69b738f63c594efeb7a2aac7a0f909b7096ca7787f074238c79120b0076a20",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1530,7 +1696,8 @@
       "group": "LexerExec",
       "name": "NonGreedyPositiveClosure",
       "descriptor_sha256": "7722e140f43e5d2b1dbf057fea090082d6d356b4ca70ab802425b9fa06cd3f11",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1539,7 +1706,8 @@
       "group": "LexerExec",
       "name": "NonGreedyTermination1",
       "descriptor_sha256": "ee42767b4a5b5eb7421bbe41ee800c7b38da08f0a03210ae64e70f095d1198a0",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1548,7 +1716,8 @@
       "group": "LexerExec",
       "name": "NonGreedyTermination2",
       "descriptor_sha256": "d642c4b32e8773a670ba6f23e6e68230251d2fcd972718a4456b76ada8b52a31",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1557,7 +1726,8 @@
       "group": "LexerExec",
       "name": "Parentheses",
       "descriptor_sha256": "7e5d8bcd5216a6490da741043e010c857851c1be1588ee165a5f0ac1f9c04844",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1566,7 +1736,8 @@
       "group": "LexerExec",
       "name": "PositionAdjustingLexer",
       "descriptor_sha256": "0c48069af93e827cd31be7c64f9bb5382a0769c5391e0921215d587e1b0d7073",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1575,7 +1746,8 @@
       "group": "LexerExec",
       "name": "QuoteTranslation",
       "descriptor_sha256": "68be23e47ac39c210aee94de04bb72e654be6d8b9211e9b743cd0a4cc1c2da54",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1584,7 +1756,8 @@
       "group": "LexerExec",
       "name": "RecursiveLexerRuleRefWithWildcardPlus_1",
       "descriptor_sha256": "54f4f54c0ac3c3a29832fa85df1af34aef25b6c61033ae6e80160d3091032dd3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1593,7 +1766,8 @@
       "group": "LexerExec",
       "name": "RecursiveLexerRuleRefWithWildcardPlus_2",
       "descriptor_sha256": "608eb93580c8561eb1cc9590d33e2a28da490015e76b2488d01bbc22103fe5bc",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1602,7 +1776,8 @@
       "group": "LexerExec",
       "name": "RecursiveLexerRuleRefWithWildcardStar_1",
       "descriptor_sha256": "343d14ae292733beaad746d144e5f57fb5e2d17a9c37e9599ff7dd31782858f7",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1611,7 +1786,8 @@
       "group": "LexerExec",
       "name": "RecursiveLexerRuleRefWithWildcardStar_2",
       "descriptor_sha256": "746fe85f6f21a3535c80ffdf693d33f5af5bfef3c927d844028603deb76309ba",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1620,7 +1796,8 @@
       "group": "LexerExec",
       "name": "RefToRuleDoesNotSetTokenNorEmitAnother",
       "descriptor_sha256": "06e01692b952d211019ce1226c25204e35ac617196c28a563fe21e687558a088",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1629,7 +1806,8 @@
       "group": "LexerExec",
       "name": "ReservedWordsEscaping",
       "descriptor_sha256": "30e062851f1e18d5c68bfffc97510f16b5973849e7dcd9ec05d3976fad000a7a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1638,7 +1816,8 @@
       "group": "LexerExec",
       "name": "ReservedWordsEscaping_NULL",
       "descriptor_sha256": "8d59e86d090a5679d8d6144e7536fdbafe8db96fdfa84fefbf96f0fc510c93e2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1647,7 +1826,8 @@
       "group": "LexerExec",
       "name": "Slashes",
       "descriptor_sha256": "74869ef1502caa296484c8b1839869bde7920e2a843dace3335423418cefe221",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1656,7 +1836,8 @@
       "group": "LexerExec",
       "name": "StackoverflowDueToNotEscapedHyphen",
       "descriptor_sha256": "e7417f9bcd2dff82978f86eab89a2f3f95691e002ffbecb5efe5ecce51e6cdd9",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1665,7 +1846,8 @@
       "group": "LexerExec",
       "name": "TokenType0xFFFF",
       "descriptor_sha256": "8188e46c0fb09ed0b4a2861afdfbd30c4018ea205b7a0a57a80ea6bd2eb3ccb1",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1674,7 +1856,8 @@
       "group": "LexerExec",
       "name": "UnicodeCharSet",
       "descriptor_sha256": "b65f8eeacb491b9d5164ca8b17fd1e21d90cf50046134f667ee6c7f0831cef96",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1683,7 +1866,8 @@
       "group": "LexerExec",
       "name": "ZeroLengthToken",
       "descriptor_sha256": "cfea0b79c6e48488d891a71afee10c87a1c24a5690956764da43138bdfeaae10",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1692,7 +1876,8 @@
       "group": "Listeners",
       "name": "Basic",
       "descriptor_sha256": "fcbdd4982408330a2267fa829e27876cb8266e46b9cad5b90a9f4cf27db3f6b0",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1701,7 +1886,8 @@
       "group": "Listeners",
       "name": "LR",
       "descriptor_sha256": "fc7ab992e3438680c6152ed55b5e6ed936b4520787d4464bb96255fd078b1538",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1710,7 +1896,8 @@
       "group": "Listeners",
       "name": "LRWithLabels",
       "descriptor_sha256": "4371589e2d6bee39a43f74b8da99faae4c4c7baca36a0b4e69e826432cfb1d61",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1719,7 +1906,8 @@
       "group": "Listeners",
       "name": "RuleGetters_1",
       "descriptor_sha256": "6433d02b9a53a472c2112bcce4f16b6aebb450cabc183a4c95270ec8cebe9e5b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1728,7 +1916,8 @@
       "group": "Listeners",
       "name": "RuleGetters_2",
       "descriptor_sha256": "bf29e6d3e1be87f66cd5ae3966f3c641f4a64f5b04a571b095c7dfea1481ac22",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1737,7 +1926,8 @@
       "group": "Listeners",
       "name": "TokenGetters_1",
       "descriptor_sha256": "2ab196b55a47b466ab6729e3c4c2018d655c260ad330a79cc2d0cd749b8919b6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1746,7 +1936,8 @@
       "group": "Listeners",
       "name": "TokenGetters_2",
       "descriptor_sha256": "7ce4eaa8c9e4ff80aecbc29d9d23a2b83740fcbd88a1e8ac19d4ca75db852c37",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1755,7 +1946,8 @@
       "group": "ParserErrors",
       "name": "ConjuringUpToken",
       "descriptor_sha256": "2a03558894ff46f36858d109731776f335647e494a4c201078e823894adddd94",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1764,7 +1956,8 @@
       "group": "ParserErrors",
       "name": "ConjuringUpTokenFromSet",
       "descriptor_sha256": "567c306570cb48c6088030d207df3b1f53d2b8f042bf9e0d2514756492062350",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1773,7 +1966,8 @@
       "group": "ParserErrors",
       "name": "ContextListGetters",
       "descriptor_sha256": "1bb43773060ea2eaef8ee6945a60767bffd14e401d027f98b7f9e212c85357fc",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1782,7 +1976,8 @@
       "group": "ParserErrors",
       "name": "DuplicatedLeftRecursiveCall_1",
       "descriptor_sha256": "0ef64590c4efec8d297821ba9a4a456cd5196e7ef3906b895becec3d07ca363c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1791,7 +1986,8 @@
       "group": "ParserErrors",
       "name": "DuplicatedLeftRecursiveCall_2",
       "descriptor_sha256": "a3ddfccf8d0adcebbcac16e267939a730ae9b8b36255b168fc00793989e685e7",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1800,7 +1996,8 @@
       "group": "ParserErrors",
       "name": "DuplicatedLeftRecursiveCall_3",
       "descriptor_sha256": "61648a195f228789926cb5fb7dfa07b4196d73d8a790cbfcc6cefb3758ebfc17",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1809,7 +2006,8 @@
       "group": "ParserErrors",
       "name": "DuplicatedLeftRecursiveCall_4",
       "descriptor_sha256": "4a1ea0f0133149aba352867c9f3258cfb32aedacfd2c4d58d222d90e351388ac",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1818,7 +2016,8 @@
       "group": "ParserErrors",
       "name": "ExtraneousInput",
       "descriptor_sha256": "9b3e1097dbc45cfac9f2c4aa8ececf8e8d89427fc82730f00104b6d203f4dc55",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1827,7 +2026,8 @@
       "group": "ParserErrors",
       "name": "InvalidATNStateRemoval",
       "descriptor_sha256": "f49b90bf663edb49c70831f2e69d915bfc02009ec6c864f3b11111bb48452e48",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1836,7 +2036,8 @@
       "group": "ParserErrors",
       "name": "InvalidEmptyInput",
       "descriptor_sha256": "442e47056d157c71dd99a4efdfede32a00bdb1f6b5e46b0efca6074ce005304d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1845,7 +2046,8 @@
       "group": "ParserErrors",
       "name": "LL1ErrorInfo",
       "descriptor_sha256": "3db847b1f6a165d5d8b185bdc01337a780b3e0c624cad5ca236dea348a13a4c9",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1854,7 +2056,8 @@
       "group": "ParserErrors",
       "name": "LL2",
       "descriptor_sha256": "86a0585db4d3c326f86422d99aab644ce153c295678013c92825abf6ad6b2f35",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1863,7 +2066,8 @@
       "group": "ParserErrors",
       "name": "LL3",
       "descriptor_sha256": "75a9cfcadabde6067fb25b1ae6ede60d1586218191e95dcde6360bdf1eba1223",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1872,7 +2076,8 @@
       "group": "ParserErrors",
       "name": "LLStar",
       "descriptor_sha256": "4e9b06e5ced8d2328ba26066a6096086af9f9b9042fb8d36c0ebc18422fd03e4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1881,7 +2086,8 @@
       "group": "ParserErrors",
       "name": "MultiTokenDeletionBeforeLoop",
       "descriptor_sha256": "6b8ea6e136aecf21200f4f98a28a0a918a5cacca5bea22639a9e8547f0ef736b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1890,7 +2096,8 @@
       "group": "ParserErrors",
       "name": "MultiTokenDeletionBeforeLoop2",
       "descriptor_sha256": "a883af4d3bb10f07df24bdf8224a00a6658996cd5107b4b5e1015aa70a10e492",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1899,7 +2106,8 @@
       "group": "ParserErrors",
       "name": "MultiTokenDeletionDuringLoop",
       "descriptor_sha256": "b021efc0023ee924e0329a0a69759a259cb827d7d58f3c3c9b7f30524c6c4702",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1908,7 +2116,8 @@
       "group": "ParserErrors",
       "name": "MultiTokenDeletionDuringLoop2",
       "descriptor_sha256": "b6543aa9708e24925bf4a81e008f766309d8340b2bbe4685817c5bb10a46a6c9",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1917,7 +2126,8 @@
       "group": "ParserErrors",
       "name": "NoViableAltAvoidance",
       "descriptor_sha256": "42da4acdaf94a51851019fb9997087e8108e7b43f43e812a09a133c2d6bccc81",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1926,7 +2136,8 @@
       "group": "ParserErrors",
       "name": "SingleSetInsertion",
       "descriptor_sha256": "8497250107a1a01d277ecbe45e23acc0141339fd41e9fc07dc9d956922f6e92b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1935,7 +2146,8 @@
       "group": "ParserErrors",
       "name": "SingleSetInsertionConsumption",
       "descriptor_sha256": "7a3f80b638e877d307e7cb9dc00cb121a3a62b21bfe112f35b64e82c65433ae2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1944,7 +2156,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletion",
       "descriptor_sha256": "dd1b1d48e21f065ea56132f5e3ccf92d7bf571527e5e5a1d8964195413570604",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1953,7 +2166,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionBeforeAlt",
       "descriptor_sha256": "391b4d2096be2c439dcf808da8b47e56bb03c20670f93b5a0817190e971d8608",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1962,7 +2176,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionBeforeLoop",
       "descriptor_sha256": "32b23490342c42eff9047d029a50e3476f71d8276f4a4acbef3f76d6296c1ede",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1971,7 +2186,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionBeforeLoop2",
       "descriptor_sha256": "392e837333bf426e76f50ad3ad0664b85867849da3770c29208e95e09c7bf74b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1980,7 +2196,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionBeforePredict",
       "descriptor_sha256": "33af47051a3eb654ebd47fe7ff42e91713e7b74404c951bb3d352aca54279d0f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1989,7 +2206,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionConsumption",
       "descriptor_sha256": "9a49b18d651e02e25a4435799d59acb578e04757f87e473f76c020c68386feaa",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -1998,7 +2216,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionDuringLoop",
       "descriptor_sha256": "5850a6a013a0073ce1aef1cdd15099080c68a82aed35d3b5a1115371fd905b34",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2007,7 +2226,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionDuringLoop2",
       "descriptor_sha256": "3ec7bc76851c63af336675c4f1bd3e1e5ae30cc3fdfef65a4cab719f22c4b20a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2016,7 +2236,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenDeletionExpectingSet",
       "descriptor_sha256": "b0850ec4cbcb6795941b7df2d95abe939857655ae4c0b275e846ec8027f0063c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2025,7 +2246,8 @@
       "group": "ParserErrors",
       "name": "SingleTokenInsertion",
       "descriptor_sha256": "70d108d4c39b828ff473ab59f261cd768be6b4b683405978caaa7621a50b609d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2034,7 +2256,8 @@
       "group": "ParserErrors",
       "name": "TokenMismatch",
       "descriptor_sha256": "dd8445b2409f6e53a856d2bebbce25aeb19c797f0414c6562cd5a8c5c81fd981",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2043,7 +2266,8 @@
       "group": "ParserErrors",
       "name": "TokenMismatch2",
       "descriptor_sha256": "74ba9b3d585dacee907da0d67a97d8478c0e7d57296988442bf2aa8b5758145f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2052,7 +2276,8 @@
       "group": "ParserErrors",
       "name": "TokenMismatch3",
       "descriptor_sha256": "03f7eb93609a4d47cfc4910e17d2a047bf3302528c8e4af54a125c26a663ab7d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2061,7 +2286,8 @@
       "group": "ParserExec",
       "name": "AorAPlus",
       "descriptor_sha256": "4d121f1c12c6806e1cbebf75bbd920bf0a6629656c0b37b0f005f0e3c827fbca",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2070,7 +2296,8 @@
       "group": "ParserExec",
       "name": "AorAStar_1",
       "descriptor_sha256": "f1d0c409969ff659d2f6acbac58f2d5167c5a4e3d96fc8b82c31332d3ffedc69",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2079,7 +2306,8 @@
       "group": "ParserExec",
       "name": "AorAStar_2",
       "descriptor_sha256": "0a98e98b6c6c8c13b4ec6cba5d9b5d4a6371cd7111d7c40c16a09f76bb4bdf3b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2088,7 +2316,8 @@
       "group": "ParserExec",
       "name": "AorB",
       "descriptor_sha256": "b8b254e44d0671d864c4908dc993ce89d0b715184b3fa48b6edb00c99d702d6b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2097,7 +2326,8 @@
       "group": "ParserExec",
       "name": "AorBPlus",
       "descriptor_sha256": "84c76ac329120ef65c0f59005b1441e5cc931e3fc08ce1d64b0732256313c541",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2106,7 +2336,8 @@
       "group": "ParserExec",
       "name": "AorBStar_1",
       "descriptor_sha256": "7c62d248ccb58148e9f89f04869d8e079f71a6b9052c9a9396090d7c241a3f26",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2115,7 +2346,8 @@
       "group": "ParserExec",
       "name": "AorBStar_2",
       "descriptor_sha256": "120b080e50d0b7d7cf281e14db7e97fd1ed3ae8a76da5fc82673db1e263c736c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2124,7 +2356,8 @@
       "group": "ParserExec",
       "name": "APlus",
       "descriptor_sha256": "1a22b742675a28da9899248d2049bfb5cf36765aeae06d36bca1aef2a6b90296",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2133,7 +2366,8 @@
       "group": "ParserExec",
       "name": "AStar_1",
       "descriptor_sha256": "f0573c51b70115db45c37007e820356b31892f3a70f91015ab3ff715abb2377b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2142,7 +2376,8 @@
       "group": "ParserExec",
       "name": "AStar_2",
       "descriptor_sha256": "c536ca50fa3654268d78b29c6854a526735cd365b4502f23edb4876f849eb061",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2151,7 +2386,8 @@
       "group": "ParserExec",
       "name": "Basic",
       "descriptor_sha256": "9d475fa6ac98fd6fd40466379a08c079c9fd62fa5df4f4f42cea6c003f23676f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2160,7 +2396,8 @@
       "group": "ParserExec",
       "name": "BuildParseTree_FALSE",
       "descriptor_sha256": "b31e3c4bfcaa88218df63c23da33e0298a17dfbb0cf4222151e85691218bff44",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "notBuildParseTree"
       ],
@@ -2171,7 +2408,8 @@
       "group": "ParserExec",
       "name": "BuildParseTree_TRUE",
       "descriptor_sha256": "4518202c0767346c0da87c208249193d6b8e7cb3844fdea0759dadbe164109a5",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2180,7 +2418,8 @@
       "group": "ParserExec",
       "name": "IfIfElseGreedyBinding1",
       "descriptor_sha256": "1dec304fb42c220e8a12784bb001657f2fbd0afeb0961e140f77e17ce3b2951f",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2189,7 +2428,8 @@
       "group": "ParserExec",
       "name": "IfIfElseGreedyBinding2",
       "descriptor_sha256": "419f5a937e9c7f8e9ca39faa24d97604038a2e93b4063381ead1c6e198aad1ed",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2198,7 +2438,8 @@
       "group": "ParserExec",
       "name": "IfIfElseNonGreedyBinding1",
       "descriptor_sha256": "dbf4b0a92bf25526d5c9a0ba64032b18a0ed214a6f4b40772b91af9be720ca52",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2207,7 +2448,8 @@
       "group": "ParserExec",
       "name": "IfIfElseNonGreedyBinding2",
       "descriptor_sha256": "c2e6c5dc98993184867ad7c0f556d6bd4148e6e21d67f592abc0fa5ef9eca397",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2216,7 +2458,8 @@
       "group": "ParserExec",
       "name": "Keyword_1",
       "descriptor_sha256": "bd511c916bca09c835d671111375769160955c143ddf2bd49de670b7568f8463",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2225,7 +2468,8 @@
       "group": "ParserExec",
       "name": "Keyword_2",
       "descriptor_sha256": "18c004b3845f40f8dfea248a276ce88c21c4e03a467a36477561886b752986e6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2234,7 +2478,8 @@
       "group": "ParserExec",
       "name": "Keyword_3",
       "descriptor_sha256": "ae8241e6fad1ae5eb0e8edefcd044a75d5c41f064766243cd91e1ba789feefa6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2243,7 +2488,8 @@
       "group": "ParserExec",
       "name": "Keyword_4",
       "descriptor_sha256": "4a26867d7f2d9f8878178b33ec860042e38ca0163d324698350e14bd65948e04",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2252,7 +2498,8 @@
       "group": "ParserExec",
       "name": "Keyword_5",
       "descriptor_sha256": "0ad66120fa5b0f74aab598453eb10a859121a535b0e23e85238204cbf9bd3388",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2261,7 +2508,8 @@
       "group": "ParserExec",
       "name": "Keyword_6",
       "descriptor_sha256": "fe296586d5ef9a3d5d8ee3d5bab13f2c5fe7c0a1d0272876602e45acdb325b25",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2270,7 +2518,8 @@
       "group": "ParserExec",
       "name": "LabelAliasingAcrossLabeledAlternatives",
       "descriptor_sha256": "d6618547234835369fb422ab14a55a20b999394ff4276ccad3ba11e3980127d2",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2279,7 +2528,8 @@
       "group": "ParserExec",
       "name": "Labels",
       "descriptor_sha256": "83d2f387dce991c66f9e6019b2737ba7c270b0d89862f00ec3e5f7d92fefd978",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2288,7 +2538,8 @@
       "group": "ParserExec",
       "name": "ListLabelForClosureContext",
       "descriptor_sha256": "58618aa620ae482b5cbdfecab7745fdbb64f602c18ee7a575e6561186b2a12e3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2297,7 +2548,8 @@
       "group": "ParserExec",
       "name": "ListLabelsOnRuleRefStartOfAlt",
       "descriptor_sha256": "b1a2814e8da2fe6fcbfd9b11d57892778a4f1d0f9c0d1bc6ed305f8e6c29a9b7",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2306,7 +2558,8 @@
       "group": "ParserExec",
       "name": "ListLabelsOnSet",
       "descriptor_sha256": "c614ff1308f91624b8b693d66e3bf6f8d30f62617be69ff1099d84e9f62eacdb",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2315,7 +2568,8 @@
       "group": "ParserExec",
       "name": "LL1OptionalBlock_1",
       "descriptor_sha256": "542d8be63f59c0ffb81fe9b9debc87c8983833efc5dd3686c737e23d6823a7c6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2324,7 +2578,8 @@
       "group": "ParserExec",
       "name": "LL1OptionalBlock_2",
       "descriptor_sha256": "3f3e1e8498ae9ff46250fde3b8c0187e2cff141ab9036c3f3f0dc46237ef9b34",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2333,7 +2588,8 @@
       "group": "ParserExec",
       "name": "MultipleEOFHandling",
       "descriptor_sha256": "acca318310c42530c1593bf1f4434092b989e91693c41524dbeddca04ee72120",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2342,7 +2598,8 @@
       "group": "ParserExec",
       "name": "OpenDeviceStatement_Case1",
       "descriptor_sha256": "50aa41d9dd962c5fe599c86cc51595b9d281a33005f9bd80257b8e9636edd335",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2351,7 +2608,8 @@
       "group": "ParserExec",
       "name": "OpenDeviceStatement_Case2",
       "descriptor_sha256": "40dffd26663d162a69324147a741c71c6dee869b1ae5efc94861c0048cf70d59",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2360,7 +2618,8 @@
       "group": "ParserExec",
       "name": "OpenDeviceStatement_Case3",
       "descriptor_sha256": "7be4d490d8c15c241d50536f17e23bada4737b377cb0e32540a9590ac60c7e7d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2369,7 +2628,8 @@
       "group": "ParserExec",
       "name": "Optional_1",
       "descriptor_sha256": "5d026cb86627a16ba0fc4c528f45f150d779679fdd2c53a1e8b8d5ab507188f1",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2378,7 +2638,8 @@
       "group": "ParserExec",
       "name": "Optional_2",
       "descriptor_sha256": "d9f01b9bf9e451687729ae6a990a4b39d9663359c095642c360bff5ff10bfb46",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2387,7 +2648,8 @@
       "group": "ParserExec",
       "name": "Optional_3",
       "descriptor_sha256": "e1c629ed8edb4a1b9076e2a7eb7037ff2038ed0a212137433ed415a2af4cf7a1",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2396,7 +2658,8 @@
       "group": "ParserExec",
       "name": "Optional_4",
       "descriptor_sha256": "bdbf85cb293e8f949f4d871a17e231c758305ce8e7b8a497337ea1ebaeeb8430",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2405,7 +2668,8 @@
       "group": "ParserExec",
       "name": "OrderingPredicates",
       "descriptor_sha256": "dfa315bf6ac6af0011e5facb677a4265ad12eb64d9f08216fb9f1b2cc0087744",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2414,7 +2678,8 @@
       "group": "ParserExec",
       "name": "ParserProperty",
       "descriptor_sha256": "b0d19b0a259af87178da804a7e12c0415924bf8c225b205e8c3c8cb0631e7109",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2423,7 +2688,8 @@
       "group": "ParserExec",
       "name": "PredicatedIfIfElse",
       "descriptor_sha256": "6674d3bdc26928cf900d9096bd8b314c8a573727a555aee63e29aea52d0505b8",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2432,7 +2698,8 @@
       "group": "ParserExec",
       "name": "PredictionIssue334",
       "descriptor_sha256": "545c2149e73f12261a41f7ce66d9b07a302c5ac5d69870170e2c76f453b4e8d4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2441,7 +2708,8 @@
       "group": "ParserExec",
       "name": "PredictionMode_LL",
       "descriptor_sha256": "69729b476721dfccfe809e3998215a7fe58105cb3e6374f5366795311874bcf7",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "predictionMode=LL"
       ],
@@ -2452,7 +2720,8 @@
       "group": "ParserExec",
       "name": "PredictionMode_SLL",
       "descriptor_sha256": "9737935aefe63bb3b0149a37e0289a31e21a15d9706b40d9e34806c67e1b2312",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "predictionMode=SLL"
       ],
@@ -2463,7 +2732,8 @@
       "group": "ParserExec",
       "name": "ReferenceToATN_1",
       "descriptor_sha256": "9410a0b527c492049bbd51c473a11e5fc1cc1760671775415a09fcd2a8f777d6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2472,7 +2742,8 @@
       "group": "ParserExec",
       "name": "ReferenceToATN_2",
       "descriptor_sha256": "5e71d6e6e77aeea021409073856e01d36c8ff3cf48ff6bddba034eed3acede35",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2481,7 +2752,8 @@
       "group": "ParserExec",
       "name": "ReservedWordsEscaping",
       "descriptor_sha256": "ad903ba20dbfea0279e27ab74784554b2ca610d9fc50304bc29cd6672bd74086",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2490,7 +2762,8 @@
       "group": "ParserExec",
       "name": "TokenOffset",
       "descriptor_sha256": "852397e5b315c1548585e8210904b4843c2e3ebf4f66750ede0f9927ac0a42ea",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2499,7 +2772,8 @@
       "group": "ParserExec",
       "name": "uStartingCharDoesNotCauseIllegalUnicodeEscape",
       "descriptor_sha256": "6a6626dbf8da38b70ee98da2a5a3a2d5ca96558bfcbe49b54df676e39da23904",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2508,7 +2782,8 @@
       "group": "ParserExec",
       "name": "Wildcard",
       "descriptor_sha256": "18fd8b36b9efda5b494217bc016d35f59de44877ba0c3f7b68338071d8442123",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2517,7 +2792,8 @@
       "group": "ParseTrees",
       "name": "AltNum",
       "descriptor_sha256": "00e897f005719f8ae2232d679f062f86e8e9b21a9ae4646f7a327eb7112008e7",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2526,7 +2802,8 @@
       "group": "ParseTrees",
       "name": "ExtraToken",
       "descriptor_sha256": "dbc4bc9ff4fbfda66994f41fad8f736fa2e28b0d9de58c0cd0ff204d84ff3e3b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2535,7 +2812,8 @@
       "group": "ParseTrees",
       "name": "ExtraTokensAndAltLabels",
       "descriptor_sha256": "b06fdc3596b6a4c746a599050529f1ca5e28729ca29a9d412a78dcdbee554a29",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2544,7 +2822,8 @@
       "group": "ParseTrees",
       "name": "NoViableAlt",
       "descriptor_sha256": "e1b70484d296e9adcfdad23cd124617919ede58bd5b3b57f14430eca75c6936e",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2553,7 +2832,8 @@
       "group": "ParseTrees",
       "name": "RuleRef",
       "descriptor_sha256": "63b020b8a909866708ba87c233c5070c84700154d1498c169c27a4ec1708e19b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2562,7 +2842,8 @@
       "group": "ParseTrees",
       "name": "Sync",
       "descriptor_sha256": "6e18c2d2a7f18d0038b6253e4ff9f26ea7b5400786f0f8c7e0ac51346f37cb96",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2571,7 +2852,8 @@
       "group": "ParseTrees",
       "name": "Token2",
       "descriptor_sha256": "e79199bede0b1b4a272e287176b648e8b0ebf2cca86eb5027311bf487133d7fa",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2580,7 +2862,8 @@
       "group": "ParseTrees",
       "name": "TokenAndRuleContextString",
       "descriptor_sha256": "97306a3ab55f29930c3eb59eebce89caadbf38341a4bb9aaf109ca1071ace9df",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2589,7 +2872,8 @@
       "group": "ParseTrees",
       "name": "TwoAltLoop",
       "descriptor_sha256": "f30a37bd901eef0c9e51e0048b987ac9ca3a39c7d44a75a9b0d4cabc7a79a434",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2598,7 +2882,8 @@
       "group": "ParseTrees",
       "name": "TwoAlts",
       "descriptor_sha256": "91db0145fda8e9996430334a3a973c253021406931a0280d20f68dcc5feabf71",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2607,7 +2892,8 @@
       "group": "SemPredEvalLexer",
       "name": "DisableRule",
       "descriptor_sha256": "f80723e31b356511de5ee4a386f69055628f270039d76e49c41f7cf487474a7d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDFA"
       ],
@@ -2618,7 +2904,8 @@
       "group": "SemPredEvalLexer",
       "name": "EnumNotID",
       "descriptor_sha256": "e0233b92fcd458e99c01142295c0ecc8663eb716d040b1ba483dcf0fce9c0edf",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDFA"
       ],
@@ -2629,7 +2916,8 @@
       "group": "SemPredEvalLexer",
       "name": "IDnotEnum",
       "descriptor_sha256": "ebe26d4566342e1c6ba12205e731166d1b0e406c6eb4d834d1fd16433afa25c5",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDFA"
       ],
@@ -2640,7 +2928,8 @@
       "group": "SemPredEvalLexer",
       "name": "IDvsEnum",
       "descriptor_sha256": "0a2436088ca970a93ed7d509f94b065f78a1039b1ce8e32fb1a3046ee9173ce1",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDFA"
       ],
@@ -2651,7 +2940,8 @@
       "group": "SemPredEvalLexer",
       "name": "Indent",
       "descriptor_sha256": "6b062ce8b2e7fd75b8f215e6b7e1a2b2c18f443bb7268b4b3a70be474bdda7d6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDFA"
       ],
@@ -2662,7 +2952,8 @@
       "group": "SemPredEvalLexer",
       "name": "LexerInputPositionSensitivePredicates",
       "descriptor_sha256": "aa9b0f97cc00d13576c86aca8008f3daeed98b12c7ddfdd6e736c9e1592c0594",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDFA"
       ],
@@ -2673,7 +2964,8 @@
       "group": "SemPredEvalLexer",
       "name": "PredicatedKeywords",
       "descriptor_sha256": "b713aa31519afbd2d494cf6839744a682acd51a4db3971de26fcc27340ee1d06",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2682,7 +2974,8 @@
       "group": "SemPredEvalLexer",
       "name": "RuleSempredFunction",
       "descriptor_sha256": "75b642ee484e46918a4af0f73715bfbe78e8255b70b790972499b86affc367c4",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2691,7 +2984,8 @@
       "group": "SemPredEvalParser",
       "name": "ActionHidesPreds",
       "descriptor_sha256": "db4e3e024085867f1aa6a73fa42d29d7f5942694dbc57b7bcc18c168b730f4f9",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2700,7 +2994,8 @@
       "group": "SemPredEvalParser",
       "name": "ActionsHidePredsInGlobalFOLLOW",
       "descriptor_sha256": "c3b6df9bdf399f34d8f7f11e7f1953ca58db8d622f5a0d93f33041e6da6fb83b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2709,7 +3004,8 @@
       "group": "SemPredEvalParser",
       "name": "AtomWithClosureInTranslatedLRRule",
       "descriptor_sha256": "05ec28ec3b727ae440bf834e95173589194f96200a43b4876379be294ac7a7bf",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2718,7 +3014,8 @@
       "group": "SemPredEvalParser",
       "name": "DepedentPredsInGlobalFOLLOW",
       "descriptor_sha256": "9ad5f3bac324b4ea50fa83065d7ada29a1acbef0f10163d3be83c37fad7bc5fe",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2727,7 +3024,8 @@
       "group": "SemPredEvalParser",
       "name": "DependentPredNotInOuterCtxShouldBeIgnored",
       "descriptor_sha256": "d7828df244bfec68cf5d93d49c58c5857b348d56bf98e4e66524505ffe176b54",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2736,7 +3034,8 @@
       "group": "SemPredEvalParser",
       "name": "DisabledAlternative",
       "descriptor_sha256": "c4634606469f28ac858dd187fbbc7febd6f7965910a3070c26cb5f46a89794cc",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2745,7 +3044,8 @@
       "group": "SemPredEvalParser",
       "name": "IndependentPredNotPassedOuterCtxToAvoidCastException",
       "descriptor_sha256": "7b048e1bd68ed5398e8d10980bc143b7a1f8429070a5f55a2777970084942d09",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2754,7 +3054,8 @@
       "group": "SemPredEvalParser",
       "name": "NoTruePredsThrowsNoViableAlt",
       "descriptor_sha256": "3b2e62d75f0f5627fd8f5780a0d98acdbe8cabcb28833c9b7ec443024b4dbfbf",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2763,7 +3064,8 @@
       "group": "SemPredEvalParser",
       "name": "Order",
       "descriptor_sha256": "6bc9b10455e1203c3e82427cd759f24686fa83c938d0905af1dfb19cc10b07d5",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2772,7 +3074,8 @@
       "group": "SemPredEvalParser",
       "name": "PredFromAltTestedInLoopBack_1",
       "descriptor_sha256": "c06d8932404fe3cc74c0a7a3d5d09fd37b2d8b7806cfd0c1a278796b6ec03336",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2781,7 +3084,8 @@
       "group": "SemPredEvalParser",
       "name": "PredFromAltTestedInLoopBack_2",
       "descriptor_sha256": "d51fe1c114340a00be1dca1901b39eb1ea14d350cc8ad3cf441bfd53c44df2fd",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2790,7 +3094,8 @@
       "group": "SemPredEvalParser",
       "name": "PredicateDependentOnArg",
       "descriptor_sha256": "2907a8281f44145d52d39f81e0edd8e7f2da054834c071df9e63aac7caf842fd",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2799,7 +3104,8 @@
       "group": "SemPredEvalParser",
       "name": "PredicateDependentOnArg2",
       "descriptor_sha256": "5c43d7a007f5bc339b92e35222370a27f42041955762c6b8c8ae7b67db64d64a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2808,7 +3114,8 @@
       "group": "SemPredEvalParser",
       "name": "PredsInGlobalFOLLOW",
       "descriptor_sha256": "8c66bd4af22c2c4c10092ec4797b9f8bcd4f5757409ca9311bba469f7690810d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2817,7 +3124,8 @@
       "group": "SemPredEvalParser",
       "name": "PredTestedEvenWhenUnAmbig_1",
       "descriptor_sha256": "22cce372b9f5ecdd937770e6703ce9ebf3b1f03ae4aecdad8bfd0d542f60013e",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2826,7 +3134,8 @@
       "group": "SemPredEvalParser",
       "name": "PredTestedEvenWhenUnAmbig_2",
       "descriptor_sha256": "b512ea260c79a81e0a7b89434c1fdf07557a46c16b1363df35fcc3de53ab629c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2835,7 +3144,8 @@
       "group": "SemPredEvalParser",
       "name": "RewindBeforePredEval",
       "descriptor_sha256": "74517df00504c1ed406c852d2b8a7195dc9ead3b0984de67cbd5643e563a9b8b",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2844,7 +3154,8 @@
       "group": "SemPredEvalParser",
       "name": "Simple",
       "descriptor_sha256": "b2bdd95fd624807c8be00dcd284360aea0d053e0bcdf834b37e0960ac71c64ea",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2853,7 +3164,8 @@
       "group": "SemPredEvalParser",
       "name": "SimpleValidate",
       "descriptor_sha256": "6332ecdc6561664a28a8c32ee8d7b129896991f082f37a9fb8ed9a074edc7210",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2862,7 +3174,8 @@
       "group": "SemPredEvalParser",
       "name": "SimpleValidate2",
       "descriptor_sha256": "94ba0670df8ce74cf22c89025a17f2936837f8ed0547f96c48a30b044d16728d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2871,7 +3184,8 @@
       "group": "SemPredEvalParser",
       "name": "ToLeft",
       "descriptor_sha256": "cb425aad9f9a4c2f38403b7d3928bf7d20c2a87de38457341236776ba1a0084a",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2880,7 +3194,8 @@
       "group": "SemPredEvalParser",
       "name": "ToLeftWithVaryingPredicate",
       "descriptor_sha256": "dab5a3836c800e49ec74be5acb843eb2f445b91e20ecfd1dc435afe1ada625dd",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2889,7 +3204,8 @@
       "group": "SemPredEvalParser",
       "name": "TwoUnpredicatedAlts",
       "descriptor_sha256": "a581190955d1b598c4bcf00d13f28814ef676f8d110623769a06056114172d50",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -2900,7 +3216,8 @@
       "group": "SemPredEvalParser",
       "name": "TwoUnpredicatedAltsAndOneOrthogonalAlt",
       "descriptor_sha256": "adfba0dcd075a81c57b8bffb588bf662c4538b8a0376d44a4c7b91e89bff6a00",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [
         "showDiagnosticErrors"
       ],
@@ -2911,7 +3228,8 @@
       "group": "SemPredEvalParser",
       "name": "UnpredicatedPathsInAlt",
       "descriptor_sha256": "7a2c8d0c401b997a17a17b45a11fd479cb5147ddb29f44accb7b194272fc6dad",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2920,7 +3238,8 @@
       "group": "SemPredEvalParser",
       "name": "ValidateInDFA",
       "descriptor_sha256": "036c5eda56a897a5316ad442cce464485ba82ab1e832b279559a3289c77b611c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2929,7 +3248,8 @@
       "group": "Sets",
       "name": "CharSetLiteral",
       "descriptor_sha256": "8c8815b602fe7aabe1774c35f94150be46ca755d43694d3ce42c8e9fec797fea",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2938,7 +3258,8 @@
       "group": "Sets",
       "name": "ComplementSet",
       "descriptor_sha256": "b9f0d3dc5f87b5f2bf61438c46111768195aaf3896d32ee902ceb7d0ce1af76d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2947,7 +3268,8 @@
       "group": "Sets",
       "name": "LexerOptionalSet",
       "descriptor_sha256": "17478885249d1665945987def2b913e8f883e38d032c360247753bef39588898",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2956,7 +3278,8 @@
       "group": "Sets",
       "name": "LexerPlusSet",
       "descriptor_sha256": "b90cfd2070af66b9280c59052e9053782da748e5c80cf81973c8bf11e3406c16",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2965,7 +3288,8 @@
       "group": "Sets",
       "name": "LexerStarSet",
       "descriptor_sha256": "2d4b707f736ebda18ad575b8010c2b894de99f73c12aab37de9d604efa7f54bc",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2974,7 +3298,8 @@
       "group": "Sets",
       "name": "NotChar",
       "descriptor_sha256": "70abad1146861682f876aec654ddb19cd3b9fdc6982aca5f69643e20ebda25da",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2983,7 +3308,8 @@
       "group": "Sets",
       "name": "NotCharSet",
       "descriptor_sha256": "8a7518663ad473261eb5faf52ffbe0d231080f2375b81a5b0b990e85bbfcddb1",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -2992,7 +3318,8 @@
       "group": "Sets",
       "name": "NotCharSetWithRuleRef3",
       "descriptor_sha256": "ecbb4a0f126a5b3cd82ea7eb193ca270e9d95d19a943098186495df3562058d8",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3001,7 +3328,8 @@
       "group": "Sets",
       "name": "OptionalLexerSingleElement",
       "descriptor_sha256": "94260f571ed5c8841a77b2bc02d483d7faa6aed3e97822a413ae752af04b6149",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3010,7 +3338,8 @@
       "group": "Sets",
       "name": "OptionalSet",
       "descriptor_sha256": "d6a0a17806c3387f4651166b84e8533d8d3a33cbf759b6eeeac4af9c50a43cb6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3019,7 +3348,8 @@
       "group": "Sets",
       "name": "OptionalSingleElement",
       "descriptor_sha256": "533ce3e5e9743347dec352039a585cf6b584057a17431da1d81f650730cf63d5",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3028,7 +3358,8 @@
       "group": "Sets",
       "name": "ParserNotSet",
       "descriptor_sha256": "b997bff1bd10b1e5298aceb6a51de4fdc60a7f517441801579518aedd7992a83",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3037,7 +3368,8 @@
       "group": "Sets",
       "name": "ParserNotToken",
       "descriptor_sha256": "f46d3c1052c8f28976bfb8b7daa48d6e53abc7af9f2ee6b1f5eea2a698d03ced",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3046,7 +3378,8 @@
       "group": "Sets",
       "name": "ParserNotTokenWithLabel",
       "descriptor_sha256": "52133bb17c3f15c64f336258c70247226027aefce35a2aac33d0a501f90045d9",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3055,7 +3388,8 @@
       "group": "Sets",
       "name": "ParserSet",
       "descriptor_sha256": "d1e1d7b06389a4adeaadf7f6e574a205f62d67a3b6dc5f05dc679bb7aeeed890",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3064,7 +3398,8 @@
       "group": "Sets",
       "name": "PlusLexerSingleElement",
       "descriptor_sha256": "23c5576b21547347cb3cb7302173d64292a4f5a286981850d6596c2167e0c96d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3073,7 +3408,8 @@
       "group": "Sets",
       "name": "PlusSet",
       "descriptor_sha256": "b68d96e6f7324879929c7bedb377851efa861864d80e3dab317be8e9a568ad87",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3082,7 +3418,8 @@
       "group": "Sets",
       "name": "RuleAsSet",
       "descriptor_sha256": "21e4d911425041c0a16f230bfb0beca0e6a9e918d6668783fe7e26c7d1ccda1e",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3091,7 +3428,8 @@
       "group": "Sets",
       "name": "SeqDoesNotBecomeSet",
       "descriptor_sha256": "77cb3ee21388f5f7c50975194a6cf9ed8cf0805704a09c1b25a694ae17247310",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3100,7 +3438,8 @@
       "group": "Sets",
       "name": "StarLexerSingleElement_1",
       "descriptor_sha256": "d2715d6520eff475523fc24600d5d45920ad221b39d4df3c793f9767d922aef1",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3109,7 +3448,8 @@
       "group": "Sets",
       "name": "StarLexerSingleElement_2",
       "descriptor_sha256": "a737ce13b60da24403e4a15a7f9bee49bec4f336f28fea02248f43bf5eae117d",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3118,7 +3458,8 @@
       "group": "Sets",
       "name": "StarSet",
       "descriptor_sha256": "2556625a97abfe14788b774a737b82b05ef87621030b47edcefa1852e69c70de",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3127,7 +3468,8 @@
       "group": "Sets",
       "name": "UnicodeEscapedBMPRangeSet",
       "descriptor_sha256": "b2a9f8f138192d4e1f363cc1d41072b4fafb39f825b6dec42f5a0417f8e9c2c0",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3136,7 +3478,8 @@
       "group": "Sets",
       "name": "UnicodeEscapedBMPSet",
       "descriptor_sha256": "f34f238f28526663991c6c17caf8f2856440c590c44f061a80525740210dfb41",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3145,7 +3488,8 @@
       "group": "Sets",
       "name": "UnicodeEscapedSMPRangeSet",
       "descriptor_sha256": "730ed5b8792c5ceba2139c864b29f4f0e0308a74dfcc7e06d67c9e6e5baceb06",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3154,7 +3498,8 @@
       "group": "Sets",
       "name": "UnicodeEscapedSMPRangeSetMismatch",
       "descriptor_sha256": "0e665f7453a918ef050de16ca791b3b64b5d3cf0c88b73deda390af230bc1701",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3163,7 +3508,8 @@
       "group": "Sets",
       "name": "UnicodeEscapedSMPSet",
       "descriptor_sha256": "20c200e917f459a7df2f9a71ce48e5157321f4c7523edf442de51508403d2576",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3172,7 +3518,8 @@
       "group": "Sets",
       "name": "UnicodeNegatedBMPSetIncludesSMPCodePoints",
       "descriptor_sha256": "2957bc00820e2b3e949e1a6e72ab0707db0281c81822d8b56c48fec70411c4a6",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3181,7 +3528,8 @@
       "group": "Sets",
       "name": "UnicodeNegatedSMPSetIncludesBMPCodePoints",
       "descriptor_sha256": "e712c891590caa7dd65e946d20f2d7a5f18dd02fb7d6b2393597b70a778a9bc3",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3190,7 +3538,8 @@
       "group": "Sets",
       "name": "UnicodeUnescapedBMPRangeSet",
       "descriptor_sha256": "57f3dda69fd3d1eefc122c717c635b8fff324cefe4dcdc50fc3039201e5c17af",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"
@@ -3199,7 +3548,8 @@
       "group": "Sets",
       "name": "UnicodeUnescapedBMPSet",
       "descriptor_sha256": "9fc5a68d8c5a39a040b7eca4655118d96c8da8d185c7175d54d1e83924528b5c",
-      "mode": "Java tokens, trees, diagnostics, actions and attribute frames",
+      "mode": "Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames",
+      "original_stdout_verified": true,
       "flags": [],
       "build_tree": true,
       "prediction_mode": "LL"

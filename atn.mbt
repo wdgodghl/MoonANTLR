@@ -103,6 +103,10 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     parser_actions: Map([]),
     rule_actions: Map([]),
     rule_exceptions: [],
+    decisions: [],
+    adaptive_decisions: [],
+    adaptive_metadata: false,
+    adaptive_sites: Map([]),
   }
   let nnon_greedy = rd.count()
   for (source_kind, target) in links {
@@ -228,6 +232,7 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
   let ndecisions = rd.count()
   for _ in 0..<ndecisions {
     let state = rd.read()
+    atn.decisions.push(state)
     atn.check_state(state)
     if !is_decision(atn.states[state].kind) {
       raise InvalidAtn("decision table references a non-decision state")
@@ -285,6 +290,34 @@ pub fn deserialize(data : Array[Int32]) -> Atn raise RuntimeError {
     raise InvalidAtn("rule token type out of bounds")
   }
   atn
+}
+
+///|
+pub fn Atn::with_adaptive_decision_sites(
+  self : Atn,
+  sites : Array[(Int32, Int32)],
+) -> Atn raise RuntimeError {
+  if self.kind != 1 {
+    raise InvalidAtn("parser ATN expected")
+  }
+  let decisions : Array[Int32] = []
+  let entries : Map[Int32, Int32] = Map([])
+  for (state, decision) in sites {
+    if decision < 0 ||
+      decision >= self.decisions.length() ||
+      self.decisions[decision] != state ||
+      entries.contains(state) {
+      raise InvalidAtn("invalid adaptive decision metadata")
+    }
+    decisions.push(state)
+    entries[state] = decision
+  }
+  {
+    ..self,
+    adaptive_decisions: decisions,
+    adaptive_metadata: true,
+    adaptive_sites: entries,
+  }
 }
 
 ///|

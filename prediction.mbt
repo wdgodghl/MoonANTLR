@@ -2,7 +2,43 @@
 pub(all) enum PredictionMode {
   SLL
   LL
+  LL_EXACT_AMBIG_DETECTION
 }
+
+///|
+/// Committed host actions may change settings at the same sites as ANTLR.
+pub(all) struct ParserControl {
+  mut prediction_mode : PredictionMode
+  mut build_tree : Bool
+  mut bail : Bool
+  mut dfa : String
+}
+
+///|
+pub fn ParserControl::dump_dfa(self : ParserControl) -> String {
+  self.dfa
+}
+
+///|
+#derive(Debug, Eq, ToJson)
+pub(all) struct PredictionEvent {
+  kind : String
+  decision : Int32
+  start : Int32
+  stop : Int32
+  exact : Bool
+  alternatives : Array[Int32]
+  prediction : Int32
+}
+
+///|
+pub extend PredictionEvent with @debug.Debug::{to_repr}
+
+///|
+pub extend PredictionEvent with Eq::{equal, not_equal}
+
+///|
+pub extend PredictionEvent with ToJson::{to_json}
 
 ///|
 /// Observable counters for one parse; DFA storage is isolated per parse.
@@ -66,6 +102,8 @@ priv struct Predictor {
   mut max_lookahead : Int32
   mut failure_pos : Int32
   mut mode : PredictionMode
+  events : Array[PredictionEvent]
+  adaptive_dfas : Map[Int32, AdaptiveDfa]
 }
 
 ///|
@@ -94,6 +132,8 @@ fn Predictor::new(atn : Atn, budget : Budget) -> Predictor {
     max_lookahead: 0,
     failure_pos: 0,
     mode: LL,
+    events: [],
+    adaptive_dfas: Map([]),
   }
 }
 
@@ -401,7 +441,7 @@ fn Predictor::predict(
       }
     }
     let caller = self.start(state, precedence, context)
-    let caller_accepts = self.mode is LL &&
+    let caller_accepts = !(self.mode is SLL) &&
       context != 0 &&
       self.states[caller].configs.any(cfg => {
         self.states[immediate].accepted.contains(cfg.alt) &&

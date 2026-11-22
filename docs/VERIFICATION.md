@@ -118,8 +118,10 @@ preserved and executed against both targets. See
 `tools/upstream_oracle.py` also compares every declared attribute in every rule
 frame and observable Parser member state; action offsets come from an
 instrumented Java reference. The migration reports every generation failure.
-JVM debug output and internal Java runtime API tests are outside this functional
-corpus. The 13 lifecycle/label cases additionally check init/after/finally and
+Original stdout is compared for all 350 descriptors, including Parser/Lexer DFA,
+listener getters, rule text, Token formatting and predicate observations. Unknown
+host actions fail generation. Internal Java runtime API tests are outside this
+functional corpus. The 13 lifecycle/label cases additionally check init/after/finally and
 synthetic repeated-label capture order. C# snapshots cover all 8 Lexer and 22
 preprocessor mutating helper entrances, including their stacks and return values.
 
@@ -129,3 +131,11 @@ init/after failures, nested finally, recognition and host catch clauses, handler
 failures and exception replacement. Application tests also cover disabled-tree
 labels and contextual Lexer predicate forwarding through source parsing APIs.
 See the [delivery checklist](DELIVERY_CHECKLIST.md) for feature-to-evidence mapping.
+
+`LL_EXACT_AMBIG_DETECTION` and original prediction diagnostic flags are applied
+at their original sites. All 17 prediction-report descriptors compare structured
+callbacks and exact diagnostic text as well as the full tree. DFA serialization
+comes from actual closure sets and visited edges. Lexer predicate-dependent edges
+are not cached, and actions in referenced Lexer rules are not committed.
+`tools/control_oracle.py` adds 14 independent Java cases for Bail cancellation,
+mid-rule tree-building changes and start/stop boundaries of empty rules.

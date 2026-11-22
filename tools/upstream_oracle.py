@@ -1,14 +1,10 @@
-"""Reproduce structural behavior of pinned upstream ANTLR runtime descriptors.
-
-Original Java host observation actions remain in the generated Java reference.
-MoonBit binds these observation-only actions to no-ops; tree/Token/diagnostic
-observations are asserted directly instead of comparing JVM debug-DFA dumps.
-"""
+"""Compare pinned upstream ANTLR descriptors, including original observations."""
 import argparse,ast,base64,concurrent.futures,hashlib,json,os,re,subprocess
 from collections import Counter
 from pathlib import Path
 from build_target import build
-from generate import ANTLR_SHA256,read_interp
+from generate import ANTLR_SHA256,read_interp,read_vocabulary
+from upstream_actions import print_statements,lexer_bindings,validate_action
 ROOT=Path(__file__).resolve().parents[1]
 EXPECTED_CATEGORIES={'CompositeLexers':2,'CompositeParsers':15,'FullContextParsing':15,
     'LeftRecursion':98,'LexerErrors':12,'LexerExec':42,'Listeners':7,'ParseTrees':10,
@@ -77,7 +73,8 @@ def exported(path,name):
 
 def predicate_expression(expression,tokens):
     expression=expression.strip()[1:].rsplit('}',1)[0].strip()
-    if expression.startswith('this.pred('):expression=expression[len('this.pred('):-1]
+    if expression.startswith('this.pred('):
+        return 'observed_pred(printed, '+predicate_expression('{'+expression[len('this.pred('):-1]+'}',tokens)+')'
     if expression in {'true','false'}:return expression
     match=re.fullmatch(r'this\._input\.LT\((\d+)\)\.getText\(\)\.equals\((".*?")\)',expression)
     if match:return f'event.lookahead({match[1]}).text == {match[2]}'
@@ -90,12 +87,12 @@ def predicate_expression(expression,tokens):
     if not re.fullmatch(r'[\w\s().,"%!=<>+\-]+',expression):raise ValueError('Unbound parser predicate: '+expression)
     return expression
 
-def parser_bindings(parser,grammar,tokens):
+def parser_bindings(parser,grammar,tokens,names):
     declarations=exported(parser,'attribute_declarations')
     arguments=exported(parser,'argument_expressions')
     predicates=exported(parser,'parser_predicate_sources')
     actions=exported(parser,'parser_action_sources')
-    lines=['  let bindings : @runtime.RuleSemantics = {','    ..@runtime.RuleSemantics::new(),']
+    lines=['  let printed = StringBuilder()', '  let bindings : @runtime.RuleSemantics = {','    ..@runtime.RuleSemantics::new(),']
     if declarations:
         defaults=[]
         for rule,role,name,kind,initializer in declarations:
@@ -149,7 +146,14 @@ def parser_bindings(parser,grammar,tokens):
             return f'{accessor}({frame}.values, {quoted(field)})'
         return re.sub(r'\$(\w+)\.(\w+)',attribute,expression)
     for ordinal,body in enumerate(actions):
+        validate_action(body)
         statements=[]
+        if 'setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION)' in body:
+            statements.append('event.control.unwrap().prediction_mode = @runtime.LL_EXACT_AMBIG_DETECTION')
+        for value in re.findall(r'setBuildParseTree\((true|false)\)',body):
+            statements.append('event.control.unwrap().build_tree = '+value)
+        if 'setErrorHandler(new BailErrorStrategy())' in body:
+            statements.append('event.control.unwrap().bail = true')
         for name,operator,value in re.findall(r'this\.(\w+)\s*(\+=|=)\s*(-?\d+|true|false)\s*;',body):
             if value in {'true','false'}:value=f'Json::boolean({value})'
             else:
@@ -162,6 +166,7 @@ def parser_bindings(parser,grammar,tokens):
             kind=kinds.pop();expression=expression_value(expression,kind)
             value=f'Json::string({expression})' if kind=='String' else f'Json::number(({expression}).to_double())'
             statements.append(f'event.frame.values[{quoted(name)}] = {value}')
+        statements += print_statements(body,tokens,label_states,{name:kind for _,_,name,kind,_ in declarations},names,grammar,exported(parser,'rule_alternative_sites'))
         if statements:effects.append((ordinal,statements))
     if effects:
         lines+=['    action: (event, ordinal) => {','      match ordinal {']
@@ -195,7 +200,7 @@ def main():
     if hashlib.sha256(jar.read_bytes()).hexdigest()!=ANTLR_SHA256:cli.error('ANTLR jar checksum mismatch')
     scratch=ROOT/'.local/upstream-reference';scratch.mkdir(parents=True,exist_ok=True)
     plugin=build(jar,ROOT/'.local/moonbit-target.jar',args.javac)
-    run([args.javac,'-encoding','UTF-8','-cp',jar,'-d',scratch,ROOT/'tools/UpstreamRenderer.java',ROOT/'tools/UpstreamLexerOracle.java',ROOT/'tools/UpstreamAttributes.java',ROOT/'tools/Oracle.java'])
+    run([args.javac,'-encoding','UTF-8','-cp',jar,'-d',scratch,ROOT/'tools/UpstreamRenderer.java',ROOT/'tools/UpstreamLexerOracle.java',ROOT/'tools/UpstreamAttributes.java',ROOT/'tools/Oracle.java',ROOT/'tools/PredictionTrace.java'])
     paths=sorted((path for group in (ROOT/'conformance/upstream').iterdir() if group.is_dir() for path in group.glob('*.txt')),key=descriptor_order)
     if dict(Counter(path.parent.name for path in paths))!=EXPECTED_CATEGORIES:
         cli.error('Pinned functional descriptor inventory differs from the 350-case corpus')
@@ -240,12 +245,18 @@ def main():
         payload=base64.b64encode(data['input'].encode()).decode()+'\n'
         classpath=str(directory)+os.pathsep+str(scratch)+os.pathsep+str(jar)
         lexer_name=name if data['type']=='Lexer' else name+'Lexer'
-        lex=run([args.java,'-Dfile.encoding=UTF-8','-cp',classpath,'UpstreamLexerOracle',lexer_name],input=payload)
+        lex=run([args.java,'-Dfile.encoding=UTF-8','-Dmoonantlr.showDFA='+str('showDFA' in flags).lower(),'-cp',classpath,'UpstreamLexerOracle',lexer_name],input=payload)
         lex=json.loads(lex.stdout[lex.stdout.rfind('{"tokens":'):])
+        if data['type']=='Lexer' and lex['stdout']!=data.get('output',''):
+            raise ValueError('Java Lexer stdout differs from pinned original descriptor')
+        if data['type']=='Lexer' and lex['stderr']!=data.get('errors',''):
+            raise ValueError('Java Lexer stderr differs from pinned original descriptor')
         out=['///|',f'test "upstream {path.parent.name} {path.stem}" {{']
         alias=f'@u{index:03d}'
         if data['type']=='Lexer':
-            extra=', lexer_action=(_, _) => ()'
+            out += ['  let printed = StringBuilder()']
+            out += lexer_bindings(exported(generated/(name+'.mbt'),'lexer_action_sources'))
+            extra=', lexer_action=lexer_observer'
             if path.parent.name=='SemPredEvalLexer':
                 sources=re.findall(r'\{([^{}]*)\}\s*\?',grammar.read_text(encoding='utf8'))
                 expressions=[]
@@ -261,30 +272,47 @@ def main():
                 out += ['  let predicate : @runtime.LexerContextPredicate = event => match event.predicate {']
                 out += [f'    {i} => {expression}' for i,expression in enumerate(expressions)]
                 out += ['    _ => false','  }']
-                extra=', lexer_context_predicate=predicate, lexer_action=(_, _) => ()'
+                extra=', lexer_context_predicate=predicate, lexer_action=lexer_observer'
             if path.stem=='PositionAdjustingLexer':
+                out += ['  ignore(lexer_observer)']
                 out += [f'  let lexed = position_adjusted_tokens({alias}.lexer_data(), {quoted(data["input"])}, 4, 5)']
             else:
-                out += [f'  let lexed = @runtime.deserialize({alias}.lexer_data()).tokenize_recovering({quoted(data["input"])}{extra})']
+                out += [f'  let cursor = @runtime.deserialize({alias}.lexer_data()).lexer_cursor({quoted(data["input"])}{extra}, recover=true)']
+                if 'showDFA' in flags:out += ['  cursor.enable_dfa_trace()']
+                out += ['  let tokens : Array[@runtime.Token] = []','  while true { let token = cursor.next_token(); tokens.push(token); if token.kind == -1 { break } }','  let lexed : @runtime.LexResult = { tokens, errors: cursor.diagnostics() }']
+            out += ['  for token in lexed.tokens { printed.write_string(observed_token_string(token, lexed.tokens) + "\\n") }']
+            if 'showDFA' in flags:out += ['  printed.write_string(cursor.dump_dfa())']
+            out += [f'  assert_eq(printed.to_string(), {quoted(lex["stdout"])})']
         else:
             declarations=exported(native_parser,'attribute_declarations')
             specification=','.join(str(rule)+':'+field for rule,_,field,_,_ in declarations)
-            reference=run([args.java,'-Dfile.encoding=UTF-8','-Dmoonantlr.attributes='+specification,'-Dmoonantlr.buildTree='+str(build_tree).lower(),'-Dmoonantlr.predictionMode='+prediction_mode,'-cp',classpath,'Oracle',name,data['start'],'default'],input=payload)
+            reference=run([args.java,'-Dfile.encoding=UTF-8','-Dmoonantlr.attributes='+specification,'-Dmoonantlr.reportPrediction='+str('showDiagnosticErrors' in flags).lower(),'-Dmoonantlr.buildTree='+str(build_tree).lower(),'-Dmoonantlr.predictionMode='+prediction_mode,'-cp',classpath,'Oracle',name,data['start'],'default'],input=payload)
             row=json.loads(reference.stdout[reference.stdout.rfind('{"tree":'):])
+            if row['stdout']!=data.get('output',''):
+                raise ValueError('Java parser stdout differs from pinned original descriptor')
+            if row['stderr']!=data.get('errors',''):
+                raise ValueError('Java parser stderr differs from pinned original descriptor')
+            (directory/'reference-observations.json').write_text(json.dumps(row,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
             rules=read_interp(directory/(name+'.interp'))[1];start=rules.index(data['start'])
             positions=', '.join(f'(Some({line}), Some({col}))' for line,col in row['parserErrors'])
             tokens=dict((name,int(value)) for name,value in re.findall(r'^(\w+)=(\d+)$',(directory/(name+'.tokens')).read_text(),re.M))
-            bindings,shared=parser_bindings(native_parser,original,tokens)
+            bindings,shared=parser_bindings(native_parser,original,tokens,read_vocabulary(directory/(name+'.interp')))
             trace=[(int(ordinal),int(offset)) for ordinal,offset in re.findall(r'MOON_ACTION:(\d+):(\d+)',reference.stderr)]
             out += bindings
-            options=f', build_tree={str(build_tree).lower()}, prediction_mode=@runtime.{prediction_mode}'
-            out += ['  let actions : Array[(Int,Int)] = []',f'  let grammar = {alias}.grammar()',f'  let parsed = grammar.parse_default({quoted(data["input"])}{options}, start_rule={start}, semantics=bindings, shared={shared}, lexer_action=(_, _) => (), parser_action=event => actions.push((event.action,event.next_token.start)))',
+            out += lexer_bindings(exported(generated/(name+'Lexer.mbt'),'lexer_action_sources'))
+            options=f', report_prediction={str("showDiagnosticErrors" in flags).lower()}, build_tree={str(build_tree).lower()}, prediction_mode=@runtime.{prediction_mode}'
+            out += ['  let actions : Array[(Int,Int)] = []',f'  let grammar = {alias}.grammar()',f'  let parsed = grammar.parse_default({quoted(data["input"])}{options}, start_rule={start}, semantics=bindings, shared={shared}, lexer_action=lexer_observer, parser_action=event => actions.push((event.action,event.next_token.start)))',
                 f'  @debug.assert_eq(actions, [{tuples(trace)}])',
                 f'  assert_eq(parsed.tree.to_sexpr(), {quoted(row["tree"])})',f'  @debug.assert_eq(parsed.diagnostics.map(d => (d.line, d.column)), [{positions}])',
                 f'  @debug.assert_eq(parsed.tree.error_tokens().map(t => (t.kind,t.text,t.start,t.end,t.line,t.column,t.channel)), [{tuples(row["errorTokens"])}])',
                 f'  assert_eq(parsed.next_token.kind, {row["nextKind"]})',f'  assert_eq(parsed.next_token.text, {quoted(row["nextText"])})',
                 f'  let lexed = grammar.tokenize_recovering({quoted(data["input"])}, lexer_action=(_, _) => ())']
             out += [f'  assert_eq(bound_frame_json(parsed.frame.unwrap(), build_tree={str(build_tree).lower()}), @json.parse({quoted(json.dumps(row["frame"],ensure_ascii=False,separators=(",",":")))}))']
+            out += [f'  assert_eq(printed.to_string(), {quoted(row["stdout"])})']
+            if 'showDiagnosticErrors' in flags:
+                out += [f'  let expected_prediction : Json = {json.dumps(row["predictionEvents"],ensure_ascii=False)}', '  @debug.assert_eq(Json::array(parsed.prediction_events.map(event => event.to_json())), expected_prediction)']
+                prediction_messages=[line+'\n' for line in row['stderr'].splitlines() if re.match(r'line \d+:\d+ report',line)]
+                out += [f'  assert_eq(parsed.diagnostics.filter(d => d.code.has_prefix("prediction_")).map(d => "line " + d.line.unwrap().to_string() + ":" + d.column.unwrap().to_string() + " " + d.message + "\\n").join(""), {quoted("".join(prediction_messages))})']
             if not build_tree:out += ['  assert_true(parsed.context.children.is_empty())']
             if prediction_mode=='SLL':out += ['  assert_eq(parsed.prediction.full_context_fallbacks, 0)']
             out += [f'  @debug.assert_eq(bound_listener_events(parsed.tree), {quoted(row["events"])})']
@@ -293,7 +321,7 @@ def main():
         positions=', '.join(f'({line}, {col})' for line,col in lex['errors'])
         out += [f'  @debug.assert_eq(lexed.tokens.map(t => (t.kind,t.text,t.start,t.end,t.line,t.column,t.channel)), [{tuples(lex["tokens"])}])',
             f'  @debug.assert_eq(lexed.errors.map(e => match e {{ @runtime.LexicalError(line,col,_) => (line,col); _ => (-1,-1) }}), [{positions}])','}','']
-        return index,package,out,{'group':path.parent.name,'name':path.stem,'descriptor_sha256':hashlib.sha256(path.read_text(encoding="utf8").encode("utf8")).hexdigest(),'mode':'Java tokens, trees, diagnostics, actions and attribute frames','flags':flags,'build_tree':build_tree,'prediction_mode':prediction_mode}
+        return index,package,out,{'group':path.parent.name,'name':path.stem,'descriptor_sha256':hashlib.sha256(path.read_text(encoding="utf8").encode("utf8")).hexdigest(),'mode':'Original stdout, Java tokens, trees, diagnostics, prediction events, actions and attribute frames','original_stdout_verified':True,'flags':flags,'build_tree':build_tree,'prediction_mode':prediction_mode}
     rows=[];failures=[]
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
         pending={pool.submit(process,pair):pair[1] for pair in enumerate(paths)}

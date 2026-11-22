@@ -15,6 +15,20 @@ pub(all) struct SemanticEvent {
   frame : RuleFrame
   tokens : Array[Token]
   lookahead_fn : (Int32) -> Token raise RuntimeError
+  control : ParserControl?
+  rule_stack : Array[String]
+  expected_fn : (() -> Array[Int32] raise RuntimeError)?
+}
+
+///|
+/// Expected terminal kinds at the committed action site.
+pub fn SemanticEvent::expected_tokens(
+  self : SemanticEvent,
+) -> Array[Int32] raise RuntimeError {
+  match self.expected_fn {
+    Some(query) => query().filter(kind => kind != -2)
+    None => raise Unsupported("expected tokens require committed parsing")
+  }
 }
 
 ///|

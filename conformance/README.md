@@ -38,21 +38,26 @@ the original Java templates and generates both targets from the same grammar.
 Java actions are instrumented only in private reference artifacts to record
 their ordinal and next-token offset. Native artifacts retain the original
 action bodies as metadata. MoonBit adapters implement state-changing actions,
-predicates, arguments and attributes; observation-only printing is replaced by
-direct assertions. The position-adjusting Lexer adapter implements the
+predicates, arguments and attributes. Observation actions produce strings from
+the live native runtime, compared verbatim with the original stdout. Unknown
+actions fail generation. The position-adjusting Lexer adapter implements the
 descriptor's seek and token-boundary operations.
 
 Assertions compare all Token metadata, full error-node trees, diagnostic
 positions, error Token intervals, the remaining Token, action order/offsets,
 every declared attribute in every rule frame and observable Parser member
 state. Generated Visitor/Listener behavior also has dedicated API tests.
-JVM-specific debug-DFA text and Java reflection/type spelling are not compared
-as text. Original `predictionMode=SLL`, `predictionMode=LL` and
+All 350 cases compare original stdout, including Token formatting, rule text,
+tree formatting, listener getters, predicate observations and Parser/Lexer DFA
+serialization. Reference stdout/stderr must also match the pinned descriptors.
+Original `predictionMode=SLL`, `predictionMode=LL` and
 `notBuildParseTree` flags configure both targets. Forced SLL asserts no LL
 fallback; disabled tree building asserts absent context children. The manifest
 retains original flags and effective settings. Unknown flags fail generation.
-Debug-print flags are recorded as presentation options. Original expected
-stdout is preserved in the descriptors rather than asserted verbatim.
+`showDFA` enables actual Lexer DFA observations. `showDiagnosticErrors` compares
+complete prediction callbacks and diagnostic messages, including exact ambiguity
+mode selected by grammar actions. DFA states and predicate-dependent edges are
+derived from executed ATN closures, never from expected strings.
 This is a functional descriptor migration, not a port of every Java
 runtime API or proof for every possible grammar/host program.
 

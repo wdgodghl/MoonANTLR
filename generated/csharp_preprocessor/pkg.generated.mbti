@@ -6,9 +6,13 @@ import {
 }
 
 // Values
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)]
+
 pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
 
 pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
+
+pub fn lexer_action_sources() -> Array[(Int32, Int32, String)]
 
 pub fn lexer_data() -> Array[Int32]
 

@@ -37,6 +37,11 @@ pub fn RuntimeError::diagnostic(
   grammar : Grammar,
 ) -> Diagnostic {
   match self {
+    ParseCancelled(_, line, column, expected) =>
+      {
+        ..SyntaxError(line, column, expected).diagnostic(grammar),
+        code: "parse_cancelled",
+      }
     InvalidArgument(message) =>
       {
         code: "invalid_argument",

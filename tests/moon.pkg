@@ -1,4 +1,5 @@
 import {
+  "wdgodghl/moonantlr/generated/control",
   "wdgodghl/moonantlr/generated/exceptions",
   "wdgodghl/moonantlr/generated/lifecycle",
   "wdgodghl/moonantlr/generated/options",

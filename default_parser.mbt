@@ -10,12 +10,15 @@ pub(all) struct DefaultParseResult {
   diagnostics : Array[Diagnostic]
   next_token : Token
   prediction : PredictionStatistics
+  prediction_events : Array[PredictionEvent]
 }
 
 ///|
 priv struct DefaultParser {
   grammar : Grammar
-  build_tree : Bool
+  rule_stack : Array[String]
+  control : ParserControl
+  report_prediction : Bool
   input : ParserInput
   predictor : Predictor
   budget : Budget
@@ -24,6 +27,7 @@ priv struct DefaultParser {
   semantics : RuleSemantics?
   predicate : ParserPredicate?
   mut pos : Int32
+  mut matched_eof : Bool
   mut recovering : Bool
   mut last_error : Int32
   mut lexical_errors : Int32
@@ -111,6 +115,62 @@ fn DefaultParser::report(
 }
 
 ///|
+fn DefaultParser::prediction_diagnostic(
+  self : DefaultParser,
+  event : PredictionEvent,
+) -> Unit {
+  if event.kind == "ambiguity" && !event.exact {
+    return
+  }
+  let state = self.grammar.parser.decisions[event.decision]
+  let rule = self.grammar.rules[self.grammar.parser.states[state].rule]
+  let description = event.decision.to_string() + " (" + rule + ")"
+  let text = StringBuilder()
+  let mut line = 1
+  let mut column = 0
+  for token in self.input.original {
+    if token.start == event.stop {
+      line = token.line
+      column = token.column
+    }
+    if token.kind != -1 &&
+      token.start >= event.start &&
+      token.start <= event.stop {
+      text.write_string(token.text)
+    }
+  }
+  let message = match event.kind {
+    "attempting_full_context" =>
+      "reportAttemptingFullContext d=" +
+      description +
+      ", input='" +
+      text.to_string() +
+      "'"
+    "context_sensitivity" =>
+      "reportContextSensitivity d=" +
+      description +
+      ", input='" +
+      text.to_string() +
+      "'"
+    _ =>
+      "reportAmbiguity d=" +
+      description +
+      ": ambigAlts={" +
+      event.alternatives.map(alt => alt.to_string()).join(", ") +
+      "}, input='" +
+      text.to_string() +
+      "'"
+  }
+  self.diagnostics.push({
+    code: "prediction_" + event.kind,
+    message,
+    line: Some(line),
+    column: Some(column),
+    expected: [],
+  })
+}
+
+///|
 fn DefaultParser::recognition(
   self : DefaultParser,
   rule : Int32,
@@ -118,8 +178,16 @@ fn DefaultParser::recognition(
   index? : Int32,
   kind~ : String = "InputMismatchException",
 ) -> Unit raise RuntimeError {
-  if self.grammar.parser.rule_exceptions.contains(rule) {
+  if self.control.bail || self.grammar.parser.rule_exceptions.contains(rule) {
     let token = self.input.token(index.unwrap_or(self.pos))
+    if self.control.bail {
+      raise ParseCancelled(
+        kind,
+        token.line,
+        token.column,
+        expected.filter(kind => kind != -2),
+      )
+    }
     raise RecognitionError(
       kind,
       token.line,
@@ -147,7 +215,7 @@ fn DefaultParser::discard(
   children : Array[RecoveryTree],
 ) -> Unit raise RuntimeError {
   let token = self.input.token(self.pos)
-  if self.build_tree {
+  if self.control.build_tree {
     children.push(ErrorNode(token, "deleted"))
   }
   if token.kind != -1 {
@@ -206,11 +274,13 @@ fn DefaultParser::rule(
   let mut state_id = atn.starts[rule]
   let mut context : RuleContext = {
     name: self.grammar.rules[rule],
+    start_token: Some(self.input.token(self.pos)),
+    stop_token: None,
     children: [],
     sources: [],
     path: [],
     recovered_captures: Map([]),
-    build_tree: self.build_tree,
+    build_tree: self.control.build_tree,
     labels: [],
   }
   let mut frame = match (self.semantics, seed) {
@@ -218,6 +288,8 @@ fn DefaultParser::rule(
     _ => None
   }
   let mut children : Array[RecoveryTree] = []
+  self.rule_stack.push(context.name)
+  defer ignore(self.rule_stack.pop())
   errdefer (if unwind is Some(sink) {
     sink.val = Some(
       (
@@ -227,22 +299,26 @@ fn DefaultParser::rule(
       ),
     )
   })
-  frame = self.lifecycle(rule, "init", context, frame)
+  frame = self.lifecycle(rule, "init", context, frame, outer~)
   let mut finalized = false
   errdefer (if !finalized {
-    frame = self.lifecycle(rule, "finally", context, frame)
+    frame = self.lifecycle(rule, "finally", context, frame, outer~)
   })
   try {
     while true {
       self.budget.tick()
       let state = atn.states[state_id]
-      context = context.enter(state_id)
+      context = {
+        ..context.enter(state_id),
+        build_tree: self.control.build_tree,
+      }
       if state.kind == 7 {
         break
       }
       let token = self.input.token(self.pos)
       // sync is emitted at decisions and loop backs, before adaptive prediction.
-      if !self.recovering &&
+      if !self.control.bail &&
+        !self.recovering &&
         (
           state.kind == 3 ||
           state.kind == 4 ||
@@ -290,6 +366,7 @@ fn DefaultParser::rule(
       // sync may have discarded a token; predicates observe the new lookahead.
       let token = self.input.token(self.pos)
       let event_pos = self.pos
+      let event_state = state_id
       let event = frame.map(frame => SemanticEvent::{
         rule,
         site: state_id,
@@ -297,9 +374,13 @@ fn DefaultParser::rule(
         next_token: token,
         frame: frame.snapshot(),
         tokens: self.input.original,
+        control: Some(self.control),
+        rule_stack: self.rule_stack.copy().rev(),
+        expected_fn: Some(() => self.next_set(event_state, outer)),
         lookahead_fn: offset => self.input.token(event_pos + offset - 1),
       })
       let choice = if state.edges.length() > 1 {
+        self.predictor.mode = self.control.prediction_mode
         if self.semantics is Some(_) || self.predicate is Some(_) {
           self.predictor.states.clear()
           self.predictor.starts.clear()
@@ -316,15 +397,42 @@ fn DefaultParser::rule(
             }
           })
         }
-        let alts = self.predictor.predict(
-          state_id,
-          precedence,
-          outer,
-          self.input,
-          self.pos,
-          terminal_loop=!state.non_greedy &&
-            (state.kind == 10 || state.kind == 11),
-        )
+        let report_start = self.predictor.events.length()
+        let alts = if (
+            self.grammar.parser.adaptive_metadata &&
+            self.grammar.parser.adaptive_decisions.contains(state_id)
+          ) ||
+          (
+            !self.grammar.parser.adaptive_metadata &&
+            (
+              self.report_prediction ||
+              self.control.prediction_mode is LL_EXACT_AMBIG_DETECTION
+            )
+          ) {
+          self.predictor.adaptive_predict(
+            state_id,
+            precedence,
+            outer,
+            self.input,
+            self.pos,
+          )
+        } else {
+          self.predictor.predict(
+            state_id,
+            precedence,
+            outer,
+            self.input,
+            self.pos,
+            terminal_loop=!state.non_greedy &&
+              (state.kind == 10 || state.kind == 11),
+          )
+        }
+        if self.report_prediction {
+          for i in report_start..<self.predictor.events.length() {
+            self.prediction_diagnostic(self.predictor.events[i])
+          }
+        }
+        self.control.dfa = self.predictor.adaptive_dump(self.grammar)
         if alts.is_empty() {
           self.recognition(
             rule,
@@ -353,31 +461,29 @@ fn DefaultParser::rule(
                 })
               _ => None
             }
-            children = if self.build_tree {
+            children = if self.control.build_tree {
               [RuleNode(context.name, children)]
             } else {
               []
             }
             context = {
               name: context.name,
-              children: if self.build_tree {
+              start_token: context.start_token,
+              stop_token: None,
+              children: if self.control.build_tree {
                 [RuleChild(context)]
               } else {
                 []
               },
-              sources: if self.build_tree {
+              sources: if self.control.build_tree {
                 [-1]
               } else {
                 []
               },
               path: [],
               recovered_captures: Map([]),
-              build_tree: self.build_tree,
-              labels: if self.build_tree {
-                []
-              } else {
-                [(-1, RuleChild(context))]
-              },
+              build_tree: self.control.build_tree,
+              labels: [(-1, RuleChild(context))],
             }
           }
         3 => {
@@ -402,7 +508,7 @@ fn DefaultParser::rule(
               // A throwing call has a tree child, but its element label was
               // never assigned by the generated call expression.
               context = context.append(RuleChild(child), -2)
-              if self.build_tree {
+              if self.control.build_tree {
                 children.push(tree)
               }
               if frame is Some(parent) && child_frame is Some(child_frame) {
@@ -423,7 +529,7 @@ fn DefaultParser::rule(
             frame = Some({ ..parent, shared: child.shared, })
           }
           context = context.append(RuleChild(child), state_id)
-          if self.build_tree {
+          if self.control.build_tree {
             children.push(tree)
           }
         }
@@ -474,6 +580,9 @@ fn DefaultParser::rule(
           let mut matched = self.input.token(self.pos)
           if !atn.matches(edge, matched.kind) {
             let expected = self.next_set(state_id, outer)
+            if self.control.bail {
+              self.recognition(rule, expected)
+            }
             if atn.matches(edge, self.input.token(self.pos + 1).kind) {
               self.report(expected)
               self.discard(children)
@@ -500,7 +609,7 @@ fn DefaultParser::rule(
               }
               if edge.kind == 5 {
                 context = context.append(TokenChild(inserted), state_id)
-                if self.build_tree {
+                if self.control.build_tree {
                   children.push(ErrorNode(inserted, "inserted"))
                 }
               } else {
@@ -508,16 +617,7 @@ fn DefaultParser::rule(
                 // for a label, without Parser.match's synthetic error-node step.
                 let captures = context.recovered_captures.copy()
                 let values = captures.get(state_id).unwrap_or([]).copy()
-                values.push(
-                  (
-                    if self.build_tree {
-                      context.children.length()
-                    } else {
-                      context.labels.length()
-                    },
-                    inserted,
-                  ),
-                )
+                values.push((context.labels.length(), inserted))
                 captures[state_id] = values
                 context = { ..context, recovered_captures: captures, }
               }
@@ -533,8 +633,11 @@ fn DefaultParser::rule(
           self.error_states.clear()
           self.last_error = -1
           context = context.append(TokenChild(matched), state_id)
-          if self.build_tree {
+          if self.control.build_tree {
             children.push(TokenNode(matched))
+          }
+          if matched.kind == -1 {
+            self.matched_eof = true
           }
           if matched.kind != -1 {
             self.pos += 1
@@ -546,7 +649,17 @@ fn DefaultParser::rule(
     }
     context = include_error_tokens(context, children)
     if atn.states[state_id].kind == 7 {
-      frame = self.lifecycle(rule, "after", context, frame)
+      context = {
+        ..context,
+        stop_token: if self.matched_eof {
+          Some(self.input.token(self.pos))
+        } else if self.pos > 0 {
+          Some(self.input.token(self.pos - 1))
+        } else {
+          None
+        },
+      }
+      frame = self.lifecycle(rule, "after", context, frame, outer~)
     }
   } catch {
     error => {
@@ -557,6 +670,7 @@ fn DefaultParser::rule(
         raise error
       }
       let event_pos = self.pos
+      let event_state = state_id
       frame = Some(
         handle(
           {
@@ -566,6 +680,9 @@ fn DefaultParser::rule(
             frame: current,
             next_token: self.input.token(self.pos),
             tokens: self.input.original,
+            control: Some(self.control),
+            rule_stack: self.rule_stack.copy().rev(),
+            expected_fn: Some(() => self.next_set(event_state, outer)),
             lookahead_fn: offset => self.input.token(event_pos + offset - 1),
           },
           error,
@@ -574,7 +691,7 @@ fn DefaultParser::rule(
     }
   }
   finalized = true
-  frame = self.lifecycle(rule, "finally", context, frame)
+  frame = self.lifecycle(rule, "finally", context, frame, outer~)
   (
     include_error_tokens(context, children),
     RuleNode(context.name, children),
@@ -589,6 +706,7 @@ fn DefaultParser::lifecycle(
   phase : String,
   context : RuleContext,
   frame : RuleFrame?,
+  outer~ : Int32 = 0,
 ) -> RuleFrame? raise RuntimeError {
   guard self.grammar.parser.rule_actions.get((rule, phase)) is Some(action) else {
     return frame
@@ -605,6 +723,11 @@ fn DefaultParser::lifecycle(
           frame,
           next_token,
           tokens: self.input.original,
+          control: Some(self.control),
+          rule_stack: self.rule_stack.copy().rev(),
+          expected_fn: Some(() => {
+            self.next_set(self.grammar.parser.starts[rule], outer)
+          }),
           lookahead_fn: offset => self.input.token(event_pos + offset - 1),
         },
         action,
@@ -625,6 +748,7 @@ fn DefaultParser::lifecycle(
 pub fn Grammar::parse_default(
   self : Grammar,
   source : String,
+  report_prediction~ : Bool = false,
   prediction_mode~ : PredictionMode = LL,
   build_tree~ : Bool = true,
   start_rule~ : Int32 = 0,
@@ -648,6 +772,7 @@ pub fn Grammar::parse_default(
   )
   self.default_input(
     { visible: [], original: [], lexer: Some(cursor), },
+    report_prediction~,
     prediction_mode~,
     build_tree~,
     start_rule~,
@@ -667,6 +792,7 @@ pub fn Grammar::parse_default_tokens(
   tokens : Array[Token],
   original_tokens? : Array[Token],
   channel~ : Int32 = 0,
+  report_prediction~ : Bool = false,
   prediction_mode~ : PredictionMode = LL,
   build_tree~ : Bool = true,
   start_rule~ : Int32 = 0,
@@ -680,6 +806,7 @@ pub fn Grammar::parse_default_tokens(
   let visible = TokenStream::new(tokens, channel~).visible_tokens()
   self.default_input(
     { visible, original: original_tokens.unwrap_or(tokens), lexer: None, },
+    report_prediction~,
     prediction_mode~,
     build_tree~,
     start_rule~,
@@ -696,6 +823,7 @@ pub fn Grammar::parse_default_tokens(
 fn Grammar::default_input(
   self : Grammar,
   input : ParserInput,
+  report_prediction~ : Bool = false,
   prediction_mode~ : PredictionMode = LL,
   build_tree~ : Bool = true,
   start_rule~ : Int32 = 0,
@@ -724,7 +852,9 @@ fn Grammar::default_input(
   let budget : Budget = { remaining: work_limit, }
   let parser : DefaultParser = {
     grammar: self,
-    build_tree,
+    rule_stack: [],
+    control: { build_tree, prediction_mode, bail: false, dfa: "", },
+    report_prediction,
     input,
     predictor: Predictor::new(self.parser, budget),
     budget,
@@ -733,6 +863,7 @@ fn Grammar::default_input(
     semantics,
     predicate,
     pos: 0,
+    matched_eof: false,
     recovering: false,
     last_error: -1,
     lexical_errors: 0,
@@ -758,6 +889,7 @@ fn Grammar::default_input(
     tree,
     diagnostics,
     next_token,
+    prediction_events: parser.predictor.events.copy(),
     prediction: {
       decisions: parser.predictor.decisions,
       full_context_fallbacks: parser.predictor.fallbacks,

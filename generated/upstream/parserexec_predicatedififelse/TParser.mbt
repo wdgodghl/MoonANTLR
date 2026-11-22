@@ -6,6 +6,11 @@ pub fn parser_predicate_sources() -> Array[(Int32, Int32, String)] {
 }
 
 ///|
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)] {
+  [(19, 1)]
+}
+
+///|
 pub fn parser_data() -> Array[Int32] {
   [
     4, 1, 4, 22, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1,
@@ -23,7 +28,9 @@ pub fn parser_data() -> Array[Int32] {
 pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
   {
     lexer: @runtime.deserialize(lexer_data()),
-    parser: @runtime.deserialize(parser_data()),
+    parser: @runtime.deserialize(parser_data()).with_adaptive_decision_sites(
+      adaptive_decision_sites(),
+    ),
     rules: ["s", "stmt", "ifStmt"],
     vocabulary: ["0", "'if'", "'else'", "ID", "WS"],
   }

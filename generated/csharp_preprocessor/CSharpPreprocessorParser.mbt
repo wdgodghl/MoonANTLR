@@ -49,6 +49,11 @@ pub fn parser_action_sources() -> Array[String] {
 }
 
 ///|
+pub fn adaptive_decision_sites() -> Array[(Int32, Int32)] {
+  [(122, 6), (124, 7)]
+}
+
+///|
 pub fn parser_action_sites() -> Array[Int32] {
   [
     9, 14, 19, 24, 28, 32, 44, 49, 54, 61, 68, 73, 78, 86, 88, 90, 94, 98, 105, 110,
@@ -118,9 +123,9 @@ pub fn parser_data() -> Array[Int32] {
 pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
   {
     lexer: @runtime.deserialize(lexer_data()),
-    parser: @runtime.deserialize(parser_data()).with_parser_action_sites(
-      parser_action_sites(),
-    ),
+    parser: @runtime.deserialize(parser_data())
+    .with_parser_action_sites(parser_action_sites())
+    .with_adaptive_decision_sites(adaptive_decision_sites()),
     rules: [
       "preprocessor_directive", "directive_new_line_or_sharp", "preprocessor_expression",
     ],

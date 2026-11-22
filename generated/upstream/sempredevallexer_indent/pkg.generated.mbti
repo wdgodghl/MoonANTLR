@@ -6,6 +6,8 @@ import {
 }
 
 // Values
+pub fn lexer_action_sources() -> Array[(Int32, Int32, String)]
+
 pub fn lexer_data() -> Array[Int32]
 
 pub fn lexer_predicate_sources() -> Array[(Int32, Int32, String)]
