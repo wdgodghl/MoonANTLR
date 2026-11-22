@@ -385,7 +385,10 @@ fn DefaultParser::rule(
           let seed = match (self.semantics, event) {
             (Some(bindings), Some(event)) =>
               Some(RuleFrame::{
-                values: (bindings.arguments)(event, edge.b),
+                values: (bindings.arguments)(
+                  { ..event, frame: frame.unwrap(), },
+                  edge.b,
+                ),
                 shared: frame.unwrap().shared,
                 children: [],
               })

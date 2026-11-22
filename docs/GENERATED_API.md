@@ -251,3 +251,7 @@ for source-language catch dispatch. Actions and handlers receive committed
 frames: writes before a thrown exception remain visible to catch/finally, and
 Parser member state is shared by nested invocations. An exceptionally exited
 child remains in the partial tree; its call-site element label remains unset.
+
+Committed argument-expression bindings may raise `RuntimeError` and receive the
+caller's live frame. Evaluation effects such as a post-increment occur before
+the call; they remain visible when argument evaluation throws and finally runs.

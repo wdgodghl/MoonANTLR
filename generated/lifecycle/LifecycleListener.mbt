@@ -13,6 +13,10 @@ pub(all) struct LifecycleListener {
   exit_set_loop : (LifecycleSet_loopContext) -> Unit
   enter_nested : (LifecycleNestedContext) -> Unit
   exit_nested : (LifecycleNestedContext) -> Unit
+  enter_argument_caller : (LifecycleArgument_callerContext) -> Unit
+  exit_argument_caller : (LifecycleArgument_callerContext) -> Unit
+  enter_argument : (LifecycleArgumentContext) -> Unit
+  exit_argument : (LifecycleArgumentContext) -> Unit
 }
 
 ///|
@@ -29,6 +33,10 @@ pub fn LifecycleListener::new() -> LifecycleListener {
     exit_set_loop: _ => (),
     enter_nested: _ => (),
     exit_nested: _ => (),
+    enter_argument_caller: _ => (),
+    exit_argument_caller: _ => (),
+    enter_argument: _ => (),
+    exit_argument: _ => (),
   }
 }
 
@@ -44,6 +52,9 @@ pub fn LifecycleListener::walk(
       (self.enter_set_sequence)(LifecycleSet_sequenceContext::{ node, })
     "set_loop" => (self.enter_set_loop)(LifecycleSet_loopContext::{ node, })
     "nested" => (self.enter_nested)(LifecycleNestedContext::{ node, })
+    "argument_caller" =>
+      (self.enter_argument_caller)(LifecycleArgument_callerContext::{ node, })
+    "argument" => (self.enter_argument)(LifecycleArgumentContext::{ node, })
     _ => ()
   }
   for child in node.children {
@@ -59,6 +70,9 @@ pub fn LifecycleListener::walk(
       (self.exit_set_sequence)(LifecycleSet_sequenceContext::{ node, })
     "set_loop" => (self.exit_set_loop)(LifecycleSet_loopContext::{ node, })
     "nested" => (self.exit_nested)(LifecycleNestedContext::{ node, })
+    "argument_caller" =>
+      (self.exit_argument_caller)(LifecycleArgument_callerContext::{ node, })
+    "argument" => (self.exit_argument)(LifecycleArgumentContext::{ node, })
     _ => ()
   }
 }

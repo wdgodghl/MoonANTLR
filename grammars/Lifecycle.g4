@@ -12,6 +12,7 @@ grammar Lifecycle;
    if (stage.equals("finally") || stage.equals("outer-finally")) finalCounts.add(commits);
    if (("," + failStages + ",").contains("," + stage + ",")) throw new IllegalStateException(stage);
  }
+ public int argumentValue(int value) { failIf("argument"); return value; }
 }
 document returns [int total]
 @init { failIf("init"); $total = 1; offsets.add(100 + getCurrentToken().getStartIndex()); }
@@ -30,4 +31,12 @@ nested
 @after { failIf("outer-after"); }
  : document;
 finally { failIf("outer-finally"); }
+
+
+argument_caller returns [int total]
+@init { $total = 0; failIf("init"); }
+@after { failIf("after"); }
+ : argument[argumentValue($total++)] EOF;
+finally { totals.add($total); failIf("finally"); }
+argument[int seed] : 'x';
 WS : [ \t\r\n]+ -> skip;

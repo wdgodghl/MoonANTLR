@@ -602,3 +602,76 @@ test "Java lifecycle exception Exceptions outer inline x" {
   )
   @debug.assert_eq(actual, expected)
 }
+
+///|
+test "Java lifecycle exception Lifecycle argument_caller success x" {
+  let actual = lifecycle_exception(5, [], caught=false, input="x")
+  let expected : (
+    Array[String],
+    String,
+    Int32,
+    String,
+    Array[Int32],
+    Array[Int32],
+    Int32,
+  ) = (
+    ["init", "argument", "after", "finally"],
+    "",
+    0,
+    "(argument_caller (argument \"x\") <EOF>)",
+    [1],
+    [4],
+    -1,
+  )
+  @debug.assert_eq(actual, expected)
+}
+
+///|
+test "Java lifecycle exception Lifecycle argument_caller argument x" {
+  let actual = lifecycle_exception(5, ["argument"], caught=false, input="x")
+  let expected : (
+    Array[String],
+    String,
+    Int32,
+    String,
+    Array[Int32],
+    Array[Int32],
+    Int32,
+  ) = (["init", "argument", "finally"], "argument", 0, "", [1], [3], -1)
+  @debug.assert_eq(actual, expected)
+}
+
+///|
+test "Java lifecycle exception Lifecycle argument_caller after x" {
+  let actual = lifecycle_exception(5, ["after"], caught=false, input="x")
+  let expected : (
+    Array[String],
+    String,
+    Int32,
+    String,
+    Array[Int32],
+    Array[Int32],
+    Int32,
+  ) = (["init", "argument", "after", "finally"], "after", 0, "", [1], [4], -1)
+  @debug.assert_eq(actual, expected)
+}
+
+///|
+test "Java lifecycle exception Lifecycle argument_caller argument,finally x" {
+  let actual = lifecycle_exception(
+    5,
+    ["argument", "finally"],
+    caught=false,
+    input="x",
+  )
+  let expected : (
+    Array[String],
+    String,
+    Int32,
+    String,
+    Array[Int32],
+    Array[Int32],
+    Int32,
+  ) = (["init", "argument", "finally"], "finally", 0, "", [1], [3], -1)
+  @debug.assert_eq(actual, expected)
+}

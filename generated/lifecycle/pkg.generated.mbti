@@ -6,6 +6,8 @@ import {
 }
 
 // Values
+pub fn argument_expressions() -> Array[(Int32, String)]
+
 pub fn attribute_declarations() -> Array[(Int32, String, String, String, String)]
 
 pub fn grammar() -> @moonantlr.Grammar raise @moonantlr.RuntimeError
@@ -23,6 +25,35 @@ pub fn rule_action_sites() -> Array[(Int32, String, Int32)]
 // Errors
 
 // Types and methods
+pub struct LifecycleArgumentContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LifecycleArgumentContext::alternative(Self) -> String?
+pub fn LifecycleArgumentContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LifecycleArgumentContext::get_argument(Self) -> Array[Self]
+pub fn LifecycleArgumentContext::get_token_literal_1(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleArgumentContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct LifecycleArgumentContextAttributes {
+  attr_seed : Int32?
+}
+pub fn LifecycleArgumentContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
+pub struct LifecycleArgument_callerContext {
+  node : @moonantlr.RuleContext
+}
+pub fn LifecycleArgument_callerContext::alternative(Self) -> String?
+pub fn LifecycleArgument_callerContext::from_raw(@moonantlr.RuleContext) -> Self?
+pub fn LifecycleArgument_callerContext::get_argument(Self) -> Array[LifecycleArgumentContext]
+pub fn LifecycleArgument_callerContext::get_argument_caller(Self) -> Array[Self]
+pub fn LifecycleArgument_callerContext::get_token_EOF(Self) -> Array[@moonantlr.Token]
+pub fn LifecycleArgument_callerContext::raw(Self) -> @moonantlr.RuleContext
+
+pub(all) struct LifecycleArgument_callerContextAttributes {
+  attr_total : Int32?
+}
+pub fn LifecycleArgument_callerContextAttributes::from_frame(@moonantlr.RuleFrame) -> Self raise @moonantlr.RuntimeError
+
 pub struct LifecycleBrokenContext {
   node : @moonantlr.RuleContext
 }
@@ -71,6 +102,10 @@ pub(all) struct LifecycleListener {
   exit_set_loop : (LifecycleSet_loopContext) -> Unit
   enter_nested : (LifecycleNestedContext) -> Unit
   exit_nested : (LifecycleNestedContext) -> Unit
+  enter_argument_caller : (LifecycleArgument_callerContext) -> Unit
+  exit_argument_caller : (LifecycleArgument_callerContext) -> Unit
+  enter_argument : (LifecycleArgumentContext) -> Unit
+  exit_argument : (LifecycleArgumentContext) -> Unit
 }
 pub fn LifecycleListener::new() -> Self
 pub fn LifecycleListener::walk(Self, @moonantlr.RuleContext) -> Unit
@@ -88,6 +123,8 @@ pub struct LifecycleParser {
   grammar : @moonantlr.Grammar
 }
 pub fn LifecycleParser::new() -> Self raise @moonantlr.RuntimeError
+pub fn LifecycleParser::parse_argument(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleArgumentContext raise @moonantlr.RuntimeError
+pub fn LifecycleParser::parse_argument_caller(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleArgument_callerContext raise @moonantlr.RuntimeError
 pub fn LifecycleParser::parse_broken(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleBrokenContext raise @moonantlr.RuntimeError
 pub fn LifecycleParser::parse_document(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleDocumentContext raise @moonantlr.RuntimeError
 pub fn LifecycleParser::parse_nested(Self, String, parser_action? : (@moonantlr.ParserActionEvent) -> Unit) -> LifecycleNestedContext raise @moonantlr.RuntimeError
@@ -132,6 +169,8 @@ pub(all) struct LifecycleVisitor[T] {
   visit_set_sequence : (LifecycleSet_sequenceContext, Array[T]) -> T
   visit_set_loop : (LifecycleSet_loopContext, Array[T]) -> T
   visit_nested : (LifecycleNestedContext, Array[T]) -> T
+  visit_argument_caller : (LifecycleArgument_callerContext, Array[T]) -> T
+  visit_argument : (LifecycleArgumentContext, Array[T]) -> T
 }
 pub fn[T] LifecycleVisitor::new(terminal~ : (@moonantlr.Token) -> T, rule~ : (@moonantlr.RuleContext, Array[T]) -> T) -> Self[T]
 pub fn[T] LifecycleVisitor::visit(Self[T], @moonantlr.RuleContext) -> T

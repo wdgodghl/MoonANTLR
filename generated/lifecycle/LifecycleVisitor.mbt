@@ -8,6 +8,8 @@ pub(all) struct LifecycleVisitor[T] {
   visit_set_sequence : (LifecycleSet_sequenceContext, Array[T]) -> T
   visit_set_loop : (LifecycleSet_loopContext, Array[T]) -> T
   visit_nested : (LifecycleNestedContext, Array[T]) -> T
+  visit_argument_caller : (LifecycleArgument_callerContext, Array[T]) -> T
+  visit_argument : (LifecycleArgumentContext, Array[T]) -> T
 }
 
 ///|
@@ -22,6 +24,8 @@ pub fn[T] LifecycleVisitor::new(
     visit_set_sequence: (context, children) => rule(context.raw(), children),
     visit_set_loop: (context, children) => rule(context.raw(), children),
     visit_nested: (context, children) => rule(context.raw(), children),
+    visit_argument_caller: (context, children) => rule(context.raw(), children),
+    visit_argument: (context, children) => rule(context.raw(), children),
   }
 }
 
@@ -56,6 +60,14 @@ pub fn[T] LifecycleVisitor::visit(
     "nested" => {
       let context = LifecycleNestedContext::{ node, }
       (self.visit_nested)(context, values)
+    }
+    "argument_caller" => {
+      let context = LifecycleArgument_callerContext::{ node, }
+      (self.visit_argument_caller)(context, values)
+    }
+    "argument" => {
+      let context = LifecycleArgumentContext::{ node, }
+      (self.visit_argument)(context, values)
     }
     _ => abort("foreign rule context")
   }

@@ -124,7 +124,7 @@ synthetic repeated-label capture order. C# snapshots cover all 8 Lexer and 22
 preprocessor mutating helper entrances, including their stacks and return values.
 
 The original SLL/LL and tree-building flags configure both reference and native
-targets. `tools/lifecycle_oracle.py` adds 30 real Java exception comparisons:
+targets. `tools/lifecycle_oracle.py` adds 34 real Java exception comparisons:
 init/after failures, nested finally, recognition and host catch clauses, handler
 failures and exception replacement. Application tests also cover disabled-tree
 labels and contextual Lexer predicate forwarding through source parsing APIs.

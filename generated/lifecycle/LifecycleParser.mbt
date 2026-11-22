@@ -25,10 +25,44 @@ pub fn LifecycleBrokenContextAttributes::from_frame(
 }
 
 ///|
+pub(all) struct LifecycleArgument_callerContextAttributes {
+  attr_total : Int32?
+}
+
+///|
+pub fn LifecycleArgument_callerContextAttributes::from_frame(
+  frame : @runtime.RuleFrame,
+) -> LifecycleArgument_callerContextAttributes raise @runtime.RuntimeError {
+  { attr_total: frame.int_value("total"), }
+}
+
+///|
+pub(all) struct LifecycleArgumentContextAttributes {
+  attr_seed : Int32?
+}
+
+///|
+pub fn LifecycleArgumentContextAttributes::from_frame(
+  frame : @runtime.RuleFrame,
+) -> LifecycleArgumentContextAttributes raise @runtime.RuntimeError {
+  { attr_seed: frame.int_value("seed"), }
+}
+
+///|
 pub fn attribute_declarations() -> Array[
   (Int32, String, String, String, String),
 ] {
-  [(0, "return", "total", "int", ""), (1, "return", "total", "int", "")]
+  [
+    (0, "return", "total", "int", ""),
+    (1, "return", "total", "int", ""),
+    (5, "return", "total", "int", ""),
+    (6, "argument", "seed", "int", ""),
+  ]
+}
+
+///|
+pub fn argument_expressions() -> Array[(Int32, String)] {
+  [(39, "argumentValue($total++)")]
 }
 
 ///|
@@ -42,12 +76,13 @@ pub fn parser_action_sources() -> Array[String] {
     "{ $total = 1; offsets.add(100 + getCurrentToken().getStartIndex()); }", "{ $total += 10; offsets.add(1000 + getCurrentToken().getStartIndex()); }",
     "{ $total += 1000; offsets.add(100000 + getCurrentToken().getStartIndex()); }",
     "{ failIf(\"outer-init\"); }", "{ failIf(\"outer-after\"); }", "{ failIf(\"outer-finally\"); }",
+    "{ $total = 0; failIf(\"init\"); }", "{ failIf(\"after\"); }", "{ totals.add($total); failIf(\"finally\"); }",
   ]
 }
 
 ///|
 pub fn parser_action_sites() -> Array[Int32] {
-  [11, 16]
+  [15, 20]
 }
 
 ///|
@@ -62,24 +97,30 @@ pub fn rule_action_sites() -> Array[(Int32, String, Int32)] {
     (4, "init", 8),
     (4, "after", 9),
     (4, "finally", 10),
+    (5, "init", 11),
+    (5, "after", 12),
+    (5, "finally", 13),
   ]
 }
 
 ///|
 pub fn parser_data() -> Array[Int32] {
   [
-    4, 1, 9, 36, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4, 1, 0,
-    1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 3,
-    1, 3, 1, 3, 5, 3, 27, 8, 3, 10, 3, 12, 3, 30, 9, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1,
-    4, 0, 0, 5, 0, 2, 4, 6, 8, 0, 3, 1, 0, 2, 3, 1, 0, 4, 5, 1, 0, 6, 7, 31, 0, 10,
-    1, 0, 0, 0, 2, 14, 1, 0, 0, 0, 4, 18, 1, 0, 0, 0, 6, 23, 1, 0, 0, 0, 8, 33, 1,
-    0, 0, 0, 10, 11, 5, 1, 0, 0, 11, 12, 6, 0, -1, 0, 12, 13, 5, 0, 0, 1, 13, 1,
-    1, 0, 0, 0, 14, 15, 5, 2, 0, 0, 15, 16, 5, 3, 0, 0, 16, 17, 6, 1, -1, 0, 17,
-    3, 1, 0, 0, 0, 18, 19, 7, 0, 0, 0, 19, 20, 7, 1, 0, 0, 20, 21, 7, 2, 0, 0, 21,
-    22, 5, 0, 0, 1, 22, 5, 1, 0, 0, 0, 23, 28, 7, 0, 0, 0, 24, 25, 5, 8, 0, 0, 25,
-    27, 7, 1, 0, 0, 26, 24, 1, 0, 0, 0, 27, 30, 1, 0, 0, 0, 28, 26, 1, 0, 0, 0, 28,
-    29, 1, 0, 0, 0, 29, 31, 1, 0, 0, 0, 30, 28, 1, 0, 0, 0, 31, 32, 5, 0, 0, 1, 32,
-    7, 1, 0, 0, 0, 33, 34, 3, 0, 0, 0, 34, 9, 1, 0, 0, 0, 1, 28,
+    4, 1, 9, 45, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4, 2, 5,
+    7, 5, 2, 6, 7, 6, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2,
+    1, 2, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3, 5, 3, 31, 8, 3, 10, 3, 12, 3, 34, 9, 3, 1,
+    3, 1, 3, 1, 4, 1, 4, 1, 5, 1, 5, 1, 5, 1, 6, 1, 6, 1, 6, 0, 0, 7, 0, 2, 4, 6,
+    8, 10, 12, 0, 3, 1, 0, 2, 3, 1, 0, 4, 5, 1, 0, 6, 7, 38, 0, 14, 1, 0, 0, 0, 2,
+    18, 1, 0, 0, 0, 4, 22, 1, 0, 0, 0, 6, 27, 1, 0, 0, 0, 8, 37, 1, 0, 0, 0, 10,
+    39, 1, 0, 0, 0, 12, 42, 1, 0, 0, 0, 14, 15, 5, 1, 0, 0, 15, 16, 6, 0, -1, 0,
+    16, 17, 5, 0, 0, 1, 17, 1, 1, 0, 0, 0, 18, 19, 5, 2, 0, 0, 19, 20, 5, 3, 0, 0,
+    20, 21, 6, 1, -1, 0, 21, 3, 1, 0, 0, 0, 22, 23, 7, 0, 0, 0, 23, 24, 7, 1, 0,
+    0, 24, 25, 7, 2, 0, 0, 25, 26, 5, 0, 0, 1, 26, 5, 1, 0, 0, 0, 27, 32, 7, 0, 0,
+    0, 28, 29, 5, 8, 0, 0, 29, 31, 7, 1, 0, 0, 30, 28, 1, 0, 0, 0, 31, 34, 1, 0,
+    0, 0, 32, 30, 1, 0, 0, 0, 32, 33, 1, 0, 0, 0, 33, 35, 1, 0, 0, 0, 34, 32, 1,
+    0, 0, 0, 35, 36, 5, 0, 0, 1, 36, 7, 1, 0, 0, 0, 37, 38, 3, 0, 0, 0, 38, 9, 1,
+    0, 0, 0, 39, 40, 3, 12, 6, 0, 40, 41, 5, 0, 0, 1, 41, 11, 1, 0, 0, 0, 42, 43,
+    5, 1, 0, 0, 43, 13, 1, 0, 0, 0, 1, 32,
   ]
 }
 
@@ -90,7 +131,10 @@ pub fn grammar() -> @runtime.Grammar raise @runtime.RuntimeError {
     parser: @runtime.deserialize(parser_data())
     .with_parser_action_sites(parser_action_sites())
     .with_rule_action_sites(rule_action_sites()),
-    rules: ["document", "broken", "set_sequence", "set_loop", "nested"],
+    rules: [
+      "document", "broken", "set_sequence", "set_loop", "nested", "argument_caller",
+      "argument",
+    ],
     vocabulary: [
       "0", "'x'", "'a'", "'b'", "'c'", "'d'", "'e'", "'f'", "','", "WS",
     ],
@@ -323,7 +367,7 @@ pub fn LifecycleSet_sequenceContext::get_token_EOF(
 pub fn LifecycleSet_sequenceContext::label_values(
   self : LifecycleSet_sequenceContext,
 ) -> Array[@runtime.Token] {
-  self.node.select_tokens([18, 19, 20])
+  self.node.select_tokens([22, 23, 24])
 }
 
 ///|
@@ -419,7 +463,7 @@ pub fn LifecycleSet_loopContext::get_token_EOF(
 pub fn LifecycleSet_loopContext::label_values(
   self : LifecycleSet_loopContext,
 ) -> Array[@runtime.Token] {
-  self.node.select_tokens([23, 25])
+  self.node.select_tokens([27, 29])
 }
 
 ///|
@@ -479,6 +523,123 @@ pub fn LifecycleNestedContext::get_nested(
 ///|
 pub fn LifecycleNestedContext::alternative(
   self : LifecycleNestedContext,
+) -> String? {
+  ignore(self)
+  None
+}
+
+///|
+pub struct LifecycleArgument_callerContext {
+  node : @runtime.RuleContext
+}
+
+///|
+pub fn LifecycleArgument_callerContext::raw(
+  self : LifecycleArgument_callerContext,
+) -> @runtime.RuleContext {
+  self.node
+}
+
+///|
+pub fn LifecycleArgument_callerContext::from_raw(
+  node : @runtime.RuleContext,
+) -> LifecycleArgument_callerContext? {
+  if node.name == "argument_caller" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
+pub fn LifecycleParser::parse_argument_caller(
+  self : LifecycleParser,
+  source : String,
+  parser_action? : @runtime.ParserAction,
+) -> LifecycleArgument_callerContext raise @runtime.RuntimeError {
+  { node: self.grammar.parse_context(source, start_rule=5, parser_action?), }
+}
+
+///|
+pub fn LifecycleArgument_callerContext::get_argument(
+  self : LifecycleArgument_callerContext,
+) -> Array[LifecycleArgumentContext] {
+  self.node.rules("argument").map(node => LifecycleArgumentContext::{ node, })
+}
+
+///|
+pub fn LifecycleArgument_callerContext::get_argument_caller(
+  self : LifecycleArgument_callerContext,
+) -> Array[LifecycleArgument_callerContext] {
+  self.node
+  .rules("argument_caller")
+  .map(node => LifecycleArgument_callerContext::{ node, })
+}
+
+///|
+pub fn LifecycleArgument_callerContext::get_token_EOF(
+  self : LifecycleArgument_callerContext,
+) -> Array[@runtime.Token] {
+  self.node.tokens(-1)
+}
+
+///|
+pub fn LifecycleArgument_callerContext::alternative(
+  self : LifecycleArgument_callerContext,
+) -> String? {
+  ignore(self)
+  None
+}
+
+///|
+pub struct LifecycleArgumentContext {
+  node : @runtime.RuleContext
+}
+
+///|
+pub fn LifecycleArgumentContext::raw(
+  self : LifecycleArgumentContext,
+) -> @runtime.RuleContext {
+  self.node
+}
+
+///|
+pub fn LifecycleArgumentContext::from_raw(
+  node : @runtime.RuleContext,
+) -> LifecycleArgumentContext? {
+  if node.name == "argument" {
+    Some({ node, })
+  } else {
+    None
+  }
+}
+
+///|
+pub fn LifecycleParser::parse_argument(
+  self : LifecycleParser,
+  source : String,
+  parser_action? : @runtime.ParserAction,
+) -> LifecycleArgumentContext raise @runtime.RuntimeError {
+  { node: self.grammar.parse_context(source, start_rule=6, parser_action?), }
+}
+
+///|
+pub fn LifecycleArgumentContext::get_argument(
+  self : LifecycleArgumentContext,
+) -> Array[LifecycleArgumentContext] {
+  self.node.rules("argument").map(node => LifecycleArgumentContext::{ node, })
+}
+
+///|
+pub fn LifecycleArgumentContext::get_token_literal_1(
+  self : LifecycleArgumentContext,
+) -> Array[@runtime.Token] {
+  self.node.tokens(1)
+}
+
+///|
+pub fn LifecycleArgumentContext::alternative(
+  self : LifecycleArgumentContext,
 ) -> String? {
   ignore(self)
   None

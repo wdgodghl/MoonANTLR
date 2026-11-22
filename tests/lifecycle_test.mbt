@@ -76,6 +76,19 @@ fn lifecycle_exception(
   let mut captures = -1
   let bindings : @runtime.RuleSemantics = {
     ..@runtime.RuleSemantics::new(),
+    arguments: (event, _) => {
+      if event.context.name == "argument_caller" {
+        let old = match event.frame.values.get("total") {
+          Some(Number(value, ..)) => value.to_int()
+          _ => 0
+        }
+        event.frame.values["total"] = Json::number((old + 1).to_double())
+        record(event.frame, "argument")
+        Map([("seed", Json::number(old.to_double()))])
+      } else {
+        Map([])
+      }
+    },
     action: (event, ordinal) => {
       let body = sources[ordinal]
       for
@@ -83,6 +96,14 @@ fn lifecycle_exception(
           "init", "inline", "after", "finally", "outer-init", "outer-after", "outer-finally",
         ] {
         if body.contains("failIf(\"" + stage + "\")") {
+          if event.context.name == "argument_caller" {
+            if stage == "init" {
+              event.frame.values["total"] = Json::number(0.0)
+            }
+            if stage == "finally" {
+              totals.push(event.frame.int_value("total").unwrap())
+            }
+          }
           if event.context.name == "document" &&
             (stage == "inline" || stage == "after" || stage == "finally") {
             let old = match event.frame.values.get("total") {

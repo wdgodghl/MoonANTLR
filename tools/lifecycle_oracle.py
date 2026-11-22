@@ -22,6 +22,7 @@ def main():
     cases += [('Exceptions','caught_host',stage,'x',1) for stage in ['','inline','inline,catch','inline,finally']]
     cases += [('Exceptions','specific','','x',2),('Exceptions','specific','','xaa',2),('Exceptions','predicate_failure','','x',3)]
     cases += [("Exceptions","outer",stage,"x",4) for stage in ["","inline"]]
+    cases += [("Lifecycle","argument_caller",stage,"x",5) for stage in ["","argument","after","argument,finally"]]
     for grammar,rule,stage,source,start in cases:
         result=subprocess.run([args.java,'-cp',str(directory)+os.pathsep+str(jar),'LifecycleExceptionOracle',grammar,rule,stage,source],capture_output=True,encoding='utf8',check=True)
         row=json.loads(result.stdout)

@@ -25,7 +25,7 @@ pub(all) struct RuleSemantics {
   enter : (Int32, RuleFrame) -> RuleFrame
   /// Construct a fresh attribute scope when left recursion wraps its left child.
   wrap : (Int32, RuleFrame) -> RuleFrame
-  arguments : (SemanticEvent, Int32) -> Map[String, Json]
+  arguments : (SemanticEvent, Int32) -> Map[String, Json] raise RuntimeError
   action : (SemanticEvent, Int32) -> RuleFrame raise RuntimeError
   predicate : (SemanticEvent, Int32) -> Bool raise RuntimeError
   handle_exception : ((SemanticEvent, RuntimeError) -> RuleFrame raise RuntimeError)?

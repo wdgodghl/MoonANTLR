@@ -274,7 +274,7 @@ pub fn RuleFrame::string_value(Self, String) -> String? raise RuntimeError
 pub(all) struct RuleSemantics {
   enter : (Int32, RuleFrame) -> RuleFrame
   wrap : (Int32, RuleFrame) -> RuleFrame
-  arguments : (SemanticEvent, Int32) -> Map[String, @json.Json]
+  arguments : (SemanticEvent, Int32) -> Map[String, @json.Json] raise RuntimeError
   action : (SemanticEvent, Int32) -> RuleFrame raise RuntimeError
   predicate : (SemanticEvent, Int32) -> Bool raise RuntimeError
   handle_exception : ((SemanticEvent, RuntimeError) -> RuleFrame raise RuntimeError)?

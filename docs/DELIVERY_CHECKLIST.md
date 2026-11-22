@@ -18,7 +18,7 @@ MoonBit 绑定，不宣称自动翻译任意宿主程序。
 | SLL/LL 冲突选择 | `prediction_mode=SLL` 禁止 LL 回退；默认 LL 支持上下文回退；原始模式标志在两端实际应用 |
 | 默认恢复及错误节点 | 插入、删除、上下文同步、连续错误；比较完整错误树、Token 区间、行列、剩余 Token 及动作偏移 |
 | 关闭解析树构建 | `build_tree=false` 不产生子树与错误节点；独立保留标签及源区间；两端实际应用 `notBuildParseTree` |
-| 生命周期及异常 | 保留 init、after、finally、catch 源码；30 个独立 Java 对照检查初始化失败、动作失败、处理器失败、嵌套退出、异常替换与恢复树 |
+| 生命周期及异常 | 保留 init、after、finally、catch 源码；34 个独立 Java 对照检查初始化失败、动作失败、处理器失败、嵌套退出、异常替换与恢复树 |
 | 上游分类及四目标 | 13 类 350 个固定描述用例；CI 分别检查、构建、测试 wasm、wasm-gc、JS、native；参考任务从原始语法重新生成并拒绝差异 |
 | 来源与许可证 | `THIRD_PARTY_NOTICES.md`、BSD-3-Clause/EPL-1.0 许可及语法声明；C# 派生部分保留 EPL-1.0 |
 
