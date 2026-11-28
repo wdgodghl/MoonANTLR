@@ -14,6 +14,7 @@ fn expression_ast(node : @grammar.TypedExpressionContext) -> Json {
 
 ///|
 /// Analyze a DSL document and return JSON for the browser host.
+#export_name("analyze")
 pub fn analyze(source : String) -> String {
   let report : Json = try {
     let grammar = @grammar.grammar()

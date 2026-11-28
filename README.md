@@ -26,9 +26,17 @@ MoonANTLR 面向 ANTLR4 的 MoonBit 代码生成目标与运行时：让 `.g4` �
 
 ## 安装与运行
 
-Mooncakes 已发布 `wdgodghl/moonantlr`。在 MoonBit 项目中运行 `moon add wdgodghl/moonantlr` 添加依赖。
+Mooncakes 模块为 `wdgodghl/moonantlr`。本次验收版本为 **0.2.0**，安装时明确指定版本：
 
-需要 MoonBit 编译器 **0.10.16 或更新版本**，当前开发基线为 **0.10.20**。也可从源码运行：
+```sh
+moon add wdgodghl/moonantlr@0.2.0
+```
+
+旧的 0.1.2 发布包不包含本次验收的全部功能，请使用 0.2.0 或对应源码。
+
+需要 MoonBit 编译器 **1.0.0-rc1 或更新版本**。CI 固定使用 **1.0.0-rc1+3c0520448**，检查、构建和测试 wasm、wasm-gc、JS、native 四个目标。也可从源码运行：
+
+工具链安装方式见 [MoonBit 官方下载页](https://www.moonbitlang.com/download)。
 
 ```sh
 git clone https://github.com/wdgodghl/MoonANTLR.git

@@ -3,8 +3,8 @@ import {
   "wdgodghl/moonantlr/generated/typed" @grammar,
 }
 
+pkgtype(kind: "foreign_library")
+
 options(
-  link: {
-    "wasm-gc": { "exports": [ "analyze" ], "use-js-builtin-string": true },
-  },
+  link: { "wasm-gc": { "use-js-builtin-string": true } },
 )

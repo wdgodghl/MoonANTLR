@@ -21,9 +21,10 @@ jobs:
           node-version: "24"
       - name: Install pinned MoonBit toolchain
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.20+65efd5b93
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 1.0.0-rc1+3c0520448
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - run: moon version --all
+      - run: python3 tools/check_toolchain.py
       - run: moon update
       - run: moon fmt --check
       - run: moon check --target ${{ matrix.target }} --deny-warn
@@ -56,8 +57,9 @@ jobs:
           python-version: "3.12"
       - name: Install pinned MoonBit toolchain
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.10.20+65efd5b93
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 1.0.0-rc1+3c0520448
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - run: python3 tools/check_toolchain.py
       - run: moon update
       - name: Regenerate upstream artifacts and reference cases
         run: |

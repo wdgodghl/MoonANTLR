@@ -19,7 +19,7 @@ moon run examples/typed
 moon run cmd/main
 ```
 
-The baseline uses moonc 0.10.20. All declared runtime logic is MoonBit and has
+The acceptance baseline uses moonc 1.0.0-rc1+3c0520448. All declared runtime logic is MoonBit and has
 no external package dependency beyond the standard library.
 
 ## Independent Java reference

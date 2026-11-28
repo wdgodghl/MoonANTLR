@@ -3,6 +3,11 @@
 本清单对应申报书的具体功能及验收条件。嵌入的 Java/C# 正文按申报方案迁移为
 MoonBit 绑定，不宣称自动翻译任意宿主程序。
 
+验收版本为 `0.2.0`，工具链固定为 `moonc 1.0.0-rc1+3c0520448`。
+`tools/check_toolchain.py` 在 CI 中拒绝低于 `1.0.0-rc1` 的编译器。
+本地四个编译目标各通过 2748 项测试，并通过示例、CLI 与浏览器编辑器检查。
+安装与发布版本可通过 `moon view wdgodghl/moonantlr@0.2.0` 核对。
+
 | 申报内容 | 实现与验证入口 |
 | --- | --- |
 | JSON 结构及带行列错误 | `generated/json`、`inspect/report.mbt`、`tests/oracle_test.mbt`；运行 `moon run cmd/main` |
